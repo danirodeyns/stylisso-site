@@ -1,0 +1,114 @@
+/* 📱 Resets & font baseline */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+body {
+  background-color: white;
+  color: black;
+  transition: all 0.3s ease-in-out;
+}
+
+/* 🌙 Auto dark mode via system preference */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: black;
+    color: white;
+  }
+
+  .site-header,
+  .site-footer {
+    background-color: #111;
+  }
+
+  .product-card {
+    background-color: #222;
+    border-color: #333;
+  }
+
+  a {
+    color: #eee;
+  }
+}
+
+/* 🧱 Layout */
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background-color: #f4f4f4;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.main-nav a {
+  margin-left: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.hero-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 3rem 2rem;
+}
+
+.hero-text {
+  flex: 1;
+}
+
+.hero-text h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: black;
+  color: white;
+  text-decoration: none;
+  margin-top: 1rem;
+  transition: background-color 0.2s;
+}
+
+.cta-button:hover {
+  background-color: #444;
+}
+
+.hero-image {
+  flex: 1;
+  text-align: center;
+}
+
+.product-preview {
+  padding: 2rem;
+}
+
+.product-grid {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.product-card {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  flex: 1 1 250px;
+  text-align: center;
+}
+
+.site-footer {
+  text-align: center;
+  padding: 1rem;
+  background-color: #f4f4f4;
+  margin-top: 2rem;
+}
