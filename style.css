@@ -210,7 +210,7 @@ footer {
 }
 
 .custom-lang-select:focus .selected-flag,
-.custom-lang-select:hover .selected-flag {
+.custom-lang-select.open .selected-flag {
   background: #e0e0e0;
 }
 
