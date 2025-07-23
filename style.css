@@ -57,10 +57,12 @@ nav a {
   margin-top: 1rem;
   transition: background-color 0.2s;
   border-radius: 0.75rem; /* afgeronde hoeken */
+  border: 2px solid #444; /* vaste border */
 }
 
 .cta-button:hover {
-  background-color: #444;
+  background-color: white;
+  color: black;
 }
 
 .hero-image {
@@ -115,10 +117,12 @@ footer {
   .cta-button {
     background-color: white;
     color: black;
+    border: 2px solid #444; /* border blijft gelijk */
   }
 
   .cta-button:hover {
-    background-color: #ccc;
+    background-color: black;
+    color: white;
   }
 
   a {
