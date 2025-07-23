@@ -12,25 +12,38 @@ body {
   transition: all 0.3s ease-in-out;
 }
 
-/* 🌙 Auto dark mode via system preference */
+/* 🔵 DARK MODE OVERRIDES - ÉÉN duidelijk blok */
 @media (prefers-color-scheme: dark) {
   body {
-    background-color: black;
+    background-color: #000;
     color: white;
   }
 
   .site-header,
-  .site-footer {
+  .site-footer,
+  nav,
+  footer {
     background-color: #111;
+    color: #ccc;
   }
 
-  .product-card {
+  .product-card,
+  .hero {
     background-color: #222;
-    border-color: #333;
+    color: white;
   }
 
   a {
-    color: #eee;
+    color: white;
+  }
+
+  .cta-button {
+    background-color: white;
+    color: black;
+  }
+
+  .cta-button:hover {
+    background-color: #ccc;
   }
 }
 
@@ -112,6 +125,7 @@ body {
   background-color: #f4f4f4;
   margin-top: 2rem;
 }
+
 /* === BASISSTIJLEN (light mode) === */
 body {
   background-color: white;
@@ -131,26 +145,4 @@ nav, footer {
 
 a {
   color: black;
-}
-
-/* === DARK MODE OVERRIDES === */
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #000;
-    color: white;
-  }
-
-  nav, footer {
-    background-color: #111;
-    color: #ccc;
-  }
-
-  .hero, .product-card {
-    background-color: #222;
-    color: white;
-  }
-
-  a {
-    color: white;
-  }
 }
