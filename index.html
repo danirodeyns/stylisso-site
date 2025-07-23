@@ -12,19 +12,22 @@
     <form class="search-bar" action="#" method="get">
       <input type="text" placeholder="Zoeken" name="q" />
     </form>
-    <select class="lang-select" name="lang">
-      <option value="be-nl">🇧🇪 België (Nederlands)</option>
-      <option value="be-fr">🇧🇪 Belgique (Français)</option>
-      <option value="be-en">🇧🇪 Belgium (English)</option>
-      <option value="fr-fr">🇫🇷 France (Français)</option>
-      <option value="fr-en">🇫🇷 France (English)</option>
-      <option value="nl-nl">🇳🇱 Nederland (Nederlands)</option>
-      <option value="nl-en">🇳🇱 Netherlands (English)</option>
-      <option value="lu-fr">🇱🇺 Luxembourg (Français)</option>
-      <option value="lu-de">🇱🇺 Luxemburg (Deutsch)</option>
-      <option value="lu-lb">🇱🇺 Lëtzebuerg (Lëtzebuergesch)</option>
-      <option value="lu-en">🇱🇺 Luxembourg (English)</option>
-    </select>
+    <div class="custom-lang-select" tabindex="0">
+      <span class="selected-flag" id="selectedFlag" data-value="be-nl">🇧🇪</span>
+      <div class="flag-dropdown" id="flagDropdown">
+        <div data-value="be-nl">🇧🇪 België (Nederlands)</div>
+        <div data-value="be-fr">🇧🇪 Belgique (Français)</div>
+        <div data-value="be-en">🇧🇪 Belgium (English)</div>
+        <div data-value="fr-fr">🇫🇷 France (Français)</div>
+        <div data-value="fr-en">🇫🇷 France (English)</div>
+        <div data-value="nl-nl">🇳🇱 Nederland (Nederlands)</div>
+        <div data-value="nl-en">🇳🇱 Netherlands (English)</div>
+        <div data-value="lu-fr">🇱🇺 Luxembourg (Français)</div>
+        <div data-value="lu-de">🇱🇺 Luxemburg (Deutsch)</div>
+        <div data-value="lu-lb">🇱🇺 Lëtzebuerg (Lëtzebuergesch)</div>
+        <div data-value="lu-en">🇱🇺 Luxembourg (English)</div>
+      </div>
+    </div>
     <nav class="main-nav">
       <a href="login.html" class="cta-button">Login</a>
       <a href="registreren.html" class="cta-button-alt">Registreren</a>

@@ -190,7 +190,62 @@ footer {
   border-color: #888;
 }
 
-/* 🌙 Automatisch donker thema op basis van systeeminstelling */
+.custom-lang-select {
+  position: relative;
+  display: inline-block;
+  margin-left: 1rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.selected-flag {
+  font-size: 2rem;
+  user-select: none;
+  display: inline-block;
+  vertical-align: middle;
+  padding: 0.1rem 0.5rem;
+  border-radius: 2rem;
+  background: #f4f4f4;
+  transition: background 0.2s;
+}
+
+.custom-lang-select:focus .selected-flag,
+.custom-lang-select:hover .selected-flag {
+  background: #e0e0e0;
+}
+
+.flag-dropdown {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 110%;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  z-index: 10;
+  min-width: 220px;
+  padding: 0.5rem 0;
+}
+
+.flag-dropdown div {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  white-space: nowrap;
+  border-radius: 0.5rem;
+  transition: background 0.2s;
+}
+
+.flag-dropdown div:hover {
+  background: #f4f4f4;
+}
+
+.custom-lang-select.open .flag-dropdown {
+  display: block;
+}
+
+/* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #000;
@@ -246,4 +301,16 @@ footer {
     color: #eee;
     border: 1px solid #444;
   }
+
+  .selected-flag {
+    background: #222;
   }
+  .flag-dropdown {
+    background: #222;
+    border: 1px solid #444;
+    color: #eee;
+  }
+  .flag-dropdown div:hover {
+    background: #333;
+  }
+}
