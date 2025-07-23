@@ -1,4 +1,4 @@
-/* 📱 Resets & font baseline */
+/* 🔄 Basisinstellingen */
 * {
   margin: 0;
   padding: 0;
@@ -12,28 +12,20 @@ body {
   transition: all 0.3s ease-in-out;
 }
 
-/* 🔵 DARK MODE OVERRIDES - ÉÉN duidelijk blok */
+/* 🌙 Automatisch donker thema op basis van systeeminstelling */
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #000;
-    color: white;
+    color: #fff;
   }
 
-  .site-header,
-  .site-footer,
-  nav,
-  footer {
+  header, footer, nav {
     background-color: #111;
-    color: #ccc;
+    color: #eee;
   }
 
-  .product-card,
-  .hero {
+  .hero, .product-card {
     background-color: #222;
-    color: white;
-  }
-
-  a {
     color: white;
   }
 
@@ -45,12 +37,17 @@ body {
   .cta-button:hover {
     background-color: #ccc;
   }
+
+  a {
+    color: white;
+  }
 }
 
 /* 🧱 Layout */
-.site-header {
+header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 1rem 2rem;
   background-color: #f4f4f4;
 }
@@ -60,7 +57,7 @@ body {
   font-weight: bold;
 }
 
-.main-nav a {
+nav a {
   margin-left: 1.5rem;
   text-decoration: none;
   color: inherit;
@@ -117,32 +114,12 @@ body {
   padding: 1rem;
   flex: 1 1 250px;
   text-align: center;
+  background-color: #eaeaea;
 }
 
-.site-footer {
+footer {
   text-align: center;
   padding: 1rem;
   background-color: #f4f4f4;
   margin-top: 2rem;
-}
-
-/* === BASISSTIJLEN (light mode) === */
-body {
-  background-color: white;
-  color: black;
-  font-family: Arial, sans-serif;
-}
-
-nav, footer {
-  background-color: #f1f1f1;
-  color: black;
-}
-
-.hero, .product-card {
-  background-color: #eaeaea;
-  color: black;
-}
-
-a {
-  color: black;
 }
