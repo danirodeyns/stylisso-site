@@ -173,6 +173,23 @@ footer {
   color: #222;
 }
 
+/* Taalkeuze */
+.lang-select {
+  margin-left: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  border: 1px solid #ccc;
+  background: #f4f4f4;
+  font-size: 1rem;
+  color: #222;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.lang-select:focus {
+  border-color: #888;
+}
+
 /* 🌙 Automatisch donker thema op basis van systeeminstelling */
 @media (prefers-color-scheme: dark) {
   body {
@@ -222,5 +239,11 @@ footer {
   }
   .search-bar input {
     color: #fff;
+  }
+
+  .lang-select {
+    background: #222;
+    color: #eee;
+    border: 1px solid #444;
   }
   }
