@@ -97,31 +97,40 @@ footer {
   margin-top: 2rem;
 }
 
-/* 🔎 Zoekbalk */
+/* Zoekbalk */
 .search-bar {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  margin: 0 1rem;
+  gap: 0;
+  background: #f4f4f4;
+  border-radius: 2rem;
+  padding: 0.25rem 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border: 1px solid #ddd;
+  max-width: 300px;
 }
 
 .search-bar input {
-  padding: 0.5rem 1rem;
-  border: 1px solid #ccc;
-  border-radius: 1rem;
+  border: none;
+  background: transparant;
+  padding: 0.75rem 1rem;
+  border-radius: 2rem 0 0 2rem;
   outline: none;
-  width: 200px;
+  font-size: 1rem;
+  flex: 1;
+  color: #222;
 }
 
 .search-bar button {
-  background-color: black;
-  color: white;
   border: none;
-  padding: 0.5rem 0.75rem;
-  border-radius: 1rem;
+  background: #222;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0 2rem 2rem 0;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background 0.2s;
 }
 
 .search-bar button:hover {
@@ -165,18 +174,20 @@ footer {
     color: #fff;
   }
 
+ .search-bar {
+    background: #222;
+    border: 1px solid #444;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
   .search-bar input {
-  background-color: #222;
-  color: white;
-  border: 1px solid #555;
+    color: #fff;
   }
-
   .search-bar button {
-  background-color: white;
-  color: black;
+    background: #fff;
+    color: #111;
   }
-
   .search-bar button:hover {
-  background-color: #ccc;
+    background: #ccc;
+    color: #111;
   }
 }
