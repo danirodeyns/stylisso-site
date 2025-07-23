@@ -15,6 +15,10 @@ document.addEventListener('DOMContentLoaded', function () {
       flag.textContent = e.target.textContent.split(' ')[0]; // Alleen vlag tonen
       flag.setAttribute('data-value', e.target.dataset.value);
       select.classList.remove('open');
+      // Redirect naar de juiste pagina
+      if (e.target.dataset.href) {
+        window.location.href = e.target.dataset.href;
+      }
     }
   });
 
