@@ -26,10 +26,13 @@ header {
   font-weight: bold;
 }
 
-nav a {
-  margin-left: 1.5rem;
-  text-decoration: none;
-  color: inherit;
+nav a.cta-button {
+  margin-left: 2rem;
+  margin-right: 0.5rem;
+}
+
+nav a.cta-button-alt {
+  margin-left: 0;
 }
 
 .hero-section {
