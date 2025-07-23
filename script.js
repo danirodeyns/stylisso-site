@@ -11,12 +11,13 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   dropdown.addEventListener('click', function (e) {
-    if (e.target.dataset.value) {
-      flag.textContent = e.target.textContent.split(' ')[0]; // Alleen vlag tonen
-      flag.setAttribute('data-value', e.target.dataset.value);
-      select.classList.remove('open');
-      // Redirect naar de juiste pagina
-      if (e.target.dataset.href) {
+    if (e.target.dataset.value && e.target.dataset.href) {
+      // Alleen redirecten, niet de vlag aanpassen op deze pagina
+      if (window.location.pathname.endsWith(e.target.dataset.href)) {
+        // Zelfde pagina, sluit alleen dropdown
+        select.classList.remove('open');
+      } else {
+        // Ga naar de gekozen pagina
         window.location.href = e.target.dataset.href;
       }
     }
