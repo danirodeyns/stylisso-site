@@ -304,7 +304,7 @@ footer {
   }
 
   .selected-flag {
-    background: #222;
+    background: none;
   }
   .flag-dropdown {
     background: #222;
