@@ -97,6 +97,37 @@ footer {
   margin-top: 2rem;
 }
 
+/* 🔎 Zoekbalk */
+.search-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0 1rem;
+}
+
+.search-bar input {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 1rem;
+  outline: none;
+  width: 200px;
+}
+
+.search-bar button {
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.search-bar button:hover {
+  background-color: #444;
+}
+
 /* 🌙 Automatisch donker thema op basis van systeeminstelling */
 @media (prefers-color-scheme: dark) {
   body {
@@ -132,5 +163,20 @@ footer {
   .logo {
     background: #000;
     color: #fff;
+  }
+
+  .search-bar input {
+  background-color: #222;
+  color: white;
+  border: 1px solid #555;
+  }
+
+  .search-bar button {
+  background-color: white;
+  color: black;
+  }
+
+  .search-bar button:hover {
+  background-color: #ccc;
   }
 }
