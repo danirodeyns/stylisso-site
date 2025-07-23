@@ -12,42 +12,6 @@ body {
   transition: all 0.3s ease-in-out;
 }
 
-/* 🌙 Automatisch donker thema op basis van systeeminstelling */
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #000;
-    color: #fff;
-  }
-
-  header, footer, nav {
-    background-color: #111;
-    color: #eee;
-  }
-
-  .hero, .product-card {
-    background-color: #222;
-    color: white;
-  }
-
-  .cta-button {
-    background-color: white;
-    color: black;
-  }
-
-  .cta-button:hover {
-    background-color: #ccc;
-  }
-
-  a {
-    color: white;
-  }
-
-  .logo {
-    background: #000;
-    color: #fff;
-  }
-}
-
 /* 🧱 Layout */
 header {
   display: flex;
@@ -127,4 +91,40 @@ footer {
   padding: 1rem;
   background-color: #f4f4f4;
   margin-top: 2rem;
+}
+
+/* 🌙 Automatisch donker thema op basis van systeeminstelling */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #000;
+    color: #fff;
+  }
+
+  header, footer, nav {
+    background-color: #111;
+    color: #eee;
+  }
+
+  .hero, .product-card {
+    background-color: #222;
+    color: white;
+  }
+
+  .cta-button {
+    background-color: white;
+    color: black;
+  }
+
+  .cta-button:hover {
+    background-color: #ccc;
+  }
+
+  a {
+    color: white;
+  }
+
+  .logo {
+    background: #000;
+    color: #fff;
+  }
 }
