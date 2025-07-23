@@ -63,7 +63,7 @@ nav a {
 .cta-button:hover {
   background-color: white;
   color: black;
-  border-color: white;
+  border-color: black;
 }
 
 .hero-image {
@@ -147,7 +147,7 @@ footer {
   .cta-button:hover {
     background-color: black;
     color: white;
-    border-color: black;
+    border-color: white;
   }
 
   a {
