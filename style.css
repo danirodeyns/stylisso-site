@@ -66,6 +66,10 @@ nav a {
   border-color: black;
 }
 
+.cta-button-alt:hover {
+  border-color: black;
+}
+
 .hero-image {
   flex: 1;
   text-align: center;
@@ -147,6 +151,10 @@ footer {
   .cta-button:hover {
     background-color: black;
     color: white;
+    border-color: white;
+  }
+
+  .cta-button-alt:hover {
     border-color: white;
   }
 
