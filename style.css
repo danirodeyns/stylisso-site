@@ -66,6 +66,16 @@ nav a {
   border-color: black;
 }
 
+.cta-button-alt {
+  background: none;
+  color: inherit;
+  border: 2px solid transparent;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  transition: border-color 0.2s;
+  text-decoration: none;
+}
+
 .cta-button-alt:hover {
   border-color: black;
 }
