@@ -271,7 +271,7 @@ footer {
 .selected-flag:hover {
   background-color: #f4f4f4;
   border-radius: 50%;
-  padding: 0rem 0.25rem;
+  padding: 0.25rem 0.5rem;
 }
 
 /* Winkelwagentje knop */
@@ -301,8 +301,8 @@ footer {
 }
 
 .cart-icon-wrapper {
-  width: 3rem;
-  height: 3rem;
+  width: 2.5rem;
+  height: 2.5rem;
   display: flex;
   justify-content: center;
   align-items: center;
