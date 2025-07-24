@@ -19,6 +19,7 @@ header {
   align-items: center;
   padding: 1rem 2rem;
   background-color: white;
+  border-bottom: 1px solid #f4f4f4;
 }
 
 .logo {
@@ -300,7 +301,13 @@ footer {
     color: #fff;
   }
 
-  header, nav {
+  header {
+    background-color: black;
+    color: #eee;
+    border-bottom: 1px solid #333;
+  }
+
+  nav {
     background-color: black;
     color: #eee;
   }
