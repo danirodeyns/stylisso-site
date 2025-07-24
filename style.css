@@ -274,8 +274,8 @@ footer {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;
-  background: #f4f4f4; /* zelfde als zoekbalk */
-  margin-right: 1rem;
+  background: black;
+  margin-right: 0.25rem;
   transition: background 0.2s;
   text-decoration: none;
 }
