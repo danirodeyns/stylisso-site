@@ -271,7 +271,7 @@ footer {
 .selected-flag:hover {
   background-color: #f4f4f4;
   border-radius: 50%;
-  padding: 0.25rem;
+  padding: 0rem 0.25rem;
 }
 
 /* Winkelwagentje knop */
@@ -300,11 +300,24 @@ footer {
   display: none;
 }
 
-.cart-button:hover .cart-icon-light,
-.cart-button:hover .cart-icon-dark {
-  background-color: #f4f4f4;
+.cart-icon-wrapper {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border-radius: 50%;
-  padding: 0.25rem;
+  transition: background-color 0.2s;
+}
+
+.cart-button:hover .cart-icon-wrapper {
+  background-color: #f4f4f4;
+}
+
+.cart-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  pointer-events: none;
 }
 
 /* Dark mode */
@@ -400,7 +413,7 @@ footer {
     display: block;
   }
 
-  .cart-button:hover .cart-icon-dark {
+  .cart-button:hover .cart-icon-wrapper {
     background-color: #333;
   }
 }
