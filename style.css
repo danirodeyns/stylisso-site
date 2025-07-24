@@ -246,6 +246,19 @@ footer {
   display: block;
 }
 
+.flag-icon {
+  width: 2rem;
+  height: 2rem;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+  border-radius: 0.2rem;
+  background: none;
+}
+
+.selected-flag img {
+  margin-right: 0;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {

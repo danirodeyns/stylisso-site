@@ -11,19 +11,19 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   dropdown.addEventListener('click', function (e) {
-    if (e.target.dataset.value && e.target.dataset.href) {
-      // Alleen redirecten, niet de vlag aanpassen op deze pagina
-      if (window.location.pathname.endsWith(e.target.dataset.href)) {
-        // Zelfde pagina, sluit alleen dropdown
-        select.classList.remove('open');
-      } else {
-        // Ga naar de gekozen pagina
-        window.location.href = e.target.dataset.href;
+    if (e.target.closest('div[data-value]')) {
+      const item = e.target.closest('div[data-value]');
+      const img = item.querySelector('img').cloneNode();
+      flag.innerHTML = '';
+      flag.appendChild(img);
+      flag.setAttribute('data-value', item.dataset.value);
+      select.classList.remove('open');
+      if (item.dataset.href) {
+        window.location.href = item.dataset.href;
       }
     }
   });
 
-  // Sluit dropdown als je buiten klikt
   document.addEventListener('click', function (e) {
     if (!select.contains(e.target)) {
       select.classList.remove('open');
