@@ -282,18 +282,18 @@ footer {
   border: none;
   outline: none;
   padding: 0;
+  overflow: hidden; /* Zorg dat de icon-afbeelding niet uitsteekt */
 }
 
-.cart-button svg {
-  width: 2.5rem;
-  height: 2.5rem;
+.cart-button img.cart-icon {
+  width: 2rem;
+  height: 2rem;
   display: block;
-  background: transparent;
-  fill: white;
+  pointer-events: none;
 }
 
-.cart-button:hover {
-  background: #444;
+.cart-icon-dark {
+  display: none;
 }
 
 /* Dark mode */
@@ -365,10 +365,20 @@ footer {
     background: #333;
   }
 
-  .cart-button {
+   .cart-button {
     background: #222; /* zelfde als zoekbalk in dark mode */
   }
+
   .cart-button:hover {
     background: #333;
+  }
+
+  /* Toon donkere icoon, verberg lichte */
+  .cart-icon-light {
+    display: none;
+  }
+
+  .cart-icon-dark {
+    display: block;
   }
 }
