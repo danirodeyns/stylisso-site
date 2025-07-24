@@ -6,20 +6,22 @@ document.addEventListener('DOMContentLoaded', function () {
   const flag = document.getElementById('selectedFlag');
   const dropdown = document.getElementById('flagDropdown');
 
-  select.addEventListener('click', function (e) {
+  select.addEventListener('click', function () {
     select.classList.toggle('open');
   });
 
   dropdown.addEventListener('click', function (e) {
-    if (e.target.closest('div[data-value]')) {
-      const item = e.target.closest('div[data-value]');
-      const img = item.querySelector('img').cloneNode();
-      flag.innerHTML = '';
-      flag.appendChild(img);
-      flag.setAttribute('data-value', item.dataset.value);
-      select.classList.remove('open');
-      if (item.dataset.href) {
-        window.location.href = item.dataset.href;
+    const item = e.target.closest('div[data-value]');
+    if (item) {
+      // Controleer of de gekozen pagina verschilt van de huidige
+      const targetHref = item.dataset.href;
+      const currentPage = window.location.pathname.split('/').pop();
+      if (targetHref && targetHref !== currentPage) {
+        // Ga naar de gekozen pagina, vlag wordt daar automatisch aangepast
+        window.location.href = targetHref;
+      } else {
+        // Sluit alleen de dropdown, vlag blijft hetzelfde
+        select.classList.remove('open');
       }
     }
   });
