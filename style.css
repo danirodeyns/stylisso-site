@@ -18,7 +18,7 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: #f4f4f4;
+  background-color: white;
 }
 
 .logo {
@@ -121,8 +121,9 @@ nav a.cta-button-alt {
 footer {
   text-align: center;
   padding: 1rem;
-  background-color: #f4f4f4;
+  background-color: white;
   margin-top: 2rem;
+  border-top: 1px solid #f4f4f4; /* scheidingslijn bovenaan */
 }
 
 .footer-links ul {
