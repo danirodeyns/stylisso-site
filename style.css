@@ -268,28 +268,24 @@ footer {
 
 /* Winkelwagentje knop */
 .cart-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 100%;
-  background: black;
-  color: white;
-  margin-right: 0.25rem;
-  transition: background 0.2s;
-  text-decoration: none;
+  display: inline-block;
+  padding: 0;
+  margin: 0 0.25rem;
+  background: none;
   border: none;
   outline: none;
-  padding: 0;
-  overflow: hidden; /* Zorg dat de icon-afbeelding niet uitsteekt */
+  text-decoration: none;
 }
 
-.cart-button img.cart-icon {
+.cart-icon {
   width: 2rem;
   height: 2rem;
-  display: block;
+  display: none;
   pointer-events: none;
+}
+
+.cart-icon-light {
+  display: block;
 }
 
 .cart-icon-dark {
@@ -365,15 +361,6 @@ footer {
     background: #333;
   }
 
-   .cart-button {
-    background: #222; /* zelfde als zoekbalk in dark mode */
-  }
-
-  .cart-button:hover {
-    background: #333;
-  }
-
-  /* Toon donkere icoon, verberg lichte */
   .cart-icon-light {
     display: none;
   }
