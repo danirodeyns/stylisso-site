@@ -271,9 +271,9 @@ footer {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 100%;
   background: black;
   color: white;
   margin-right: 0.25rem;
@@ -285,15 +285,15 @@ footer {
 }
 
 .cart-button svg {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
   display: block;
   background: transparent;
   fill: white;
 }
 
 .cart-button:hover {
-  background: #333;
+  background: #444;
 }
 
 /* Dark mode */
