@@ -266,6 +266,30 @@ footer {
   object-fit: contain;
 }
 
+/* Winkelwagentje knop */
+.cart-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: #f4f4f4; /* zelfde als zoekbalk */
+  margin-right: 1rem;
+  transition: background 0.2s;
+  text-decoration: none;
+}
+
+.cart-button svg {
+  width: 2rem;
+  height: 2rem;
+  display: block;
+}
+
+.cart-button:hover {
+  background: #e0e0e0;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
@@ -332,6 +356,13 @@ footer {
     color: #eee;
   }
   .flag-dropdown div:hover {
+    background: #333;
+  }
+
+  .cart-button {
+    background: #222; /* zelfde als zoekbalk in dark mode */
+  }
+  .cart-button:hover {
     background: #333;
   }
 }
