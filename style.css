@@ -283,6 +283,7 @@ footer {
   border: none;
   outline: none;
   text-decoration: none;
+  position: relative;
 }
 
 .cart-icon {
