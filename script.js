@@ -32,3 +32,40 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
+  // Dummy-items (vervang later door echte uit localStorage of API)
+  let cart = [
+    { id: 1, name: "T-shirt", price: "€29,99" },
+    { id: 2, name: "Sneakers", price: "€89,00" }
+  ];
+
+  const cartDropdown = document.getElementById('cartDropdown');
+  const cartItemsList = document.querySelector('.cart-items');
+  const emptyCartMsg = document.querySelector('.empty-cart');
+
+  function renderCart() {
+    cartItemsList.innerHTML = "";
+    if (cart.length === 0) {
+      emptyCartMsg.style.display = "block";
+    } else {
+      emptyCartMsg.style.display = "none";
+      cart.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          ${item.name} <span>${item.price}</span>
+          <button class="remove-item" data-id="${item.id}">❌</button>
+        `;
+        cartItemsList.appendChild(li);
+      });
+    }
+  }
+
+  // Verwijder item
+  cartItemsList.addEventListener('click', function (e) {
+    if (e.target.classList.contains('remove-item')) {
+      const id = parseInt(e.target.dataset.id, 10);
+      cart = cart.filter(item => item.id !== id);
+      renderCart();
+    }
+  });
+
+  renderCart(); // initieel tonen

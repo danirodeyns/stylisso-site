@@ -320,6 +320,30 @@ footer {
   pointer-events: none;
 }
 
+.cart-dropdown {
+  display: none;
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 240px;
+  padding: 1rem;
+  z-index: 20;
+}
+
+.cart-button:hover .cart-dropdown {
+  display: block;
+}
+
+.cart-dropdown p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #444;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
@@ -415,5 +439,15 @@ footer {
 
   .cart-button:hover .cart-icon-wrapper {
     background-color: #333;
+  }
+
+    .cart-dropdown {
+    background: #222;
+    border: 1px solid #444;
+    color: #eee;
+  }
+
+  .cart-dropdown p {
+    color: #ccc;
   }
 }
