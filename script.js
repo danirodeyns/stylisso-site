@@ -51,8 +51,12 @@ document.addEventListener('DOMContentLoaded', function () {
       cart.forEach(item => {
         const li = document.createElement('li');
         li.innerHTML = `
-          ${item.name} <span>${item.price}</span>
-          <button class="remove-item" data-id="${item.id}">❌</button>
+          <span class="item-text">${item.name} <span class="item-price">€${item.price}</span>
+          </span>
+          <button class="remove-item" data-id="${item.id}">
+            <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
+            <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
+          </button>
         `;
         cartItemsList.appendChild(li);
       });
