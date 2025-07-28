@@ -397,6 +397,20 @@ footer {
   display: none;
 }
 
+.logo-icon {
+  width: 2rem;
+  height: 2rem;
+  display: none;
+}
+
+.logo-icon-light {
+  display: block;
+}
+
+.logo-icon-dark {
+  display: none;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
@@ -507,6 +521,13 @@ footer {
     display: none;
   }
   .remove-icon-dark {
+    display: block;
+  }
+  .logo-icon-light {
+    display: none;
+  }
+
+  .logo-icon-dark {
     display: block;
   }
 }
