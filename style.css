@@ -393,18 +393,19 @@ footer {
 .hero-section {
   position: relative;
   width: 100%;
-  height: 100vh; /* of een vaste hoogte zoals 600px */
   overflow: hidden;
+  display: inline-block;
 }
 
 .hero-background {
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: cover;
-  position: absolute;
+  position: relative;
   top: 0;
   left: 0;
   z-index: 1;
+  display: block;
 }
 
 .hero-overlay {
