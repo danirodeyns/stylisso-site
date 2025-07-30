@@ -182,13 +182,13 @@ footer {
 .selected-flag {
   font-size: 1.65rem;
   user-select: none;
-  display: inline-block;
-  vertical-align: middle;
-  /* Verwijder deze regels of zet ze op none/0: */
-  background: none;
-  padding: 0;
-  border-radius: 0;
-  transition: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
 }
 
 .custom-lang-select:focus .selected-flag,
@@ -249,8 +249,6 @@ footer {
 
 .selected-flag:hover {
   background-color: #f4f4f4;
-  border-radius: 50%;
-  padding: 0.25rem 0.5rem;
 }
 
 /* Winkelwagentje knop */
