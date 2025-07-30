@@ -20,6 +20,8 @@ header {
   padding: 1rem 2rem;
   background-color: white;
   border-bottom: 1px solid #f4f4f4;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .logo {
@@ -67,6 +69,19 @@ header {
 
 .cta-button-alt:hover {
   border-color: black;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: inherit;
+  font-weight: 500;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  transition: background-color 0.2s;
+}
+
+.nav-link:hover {
+  background-color: #f4f4f4;
 }
 
 .product-preview {
@@ -124,6 +139,10 @@ footer {
 
 /* Zoekbalk */
 .search-bar {
+  flex: 1;
+  max-width: 400px;
+  min-width: 102px;
+  width: 100%;
   display: flex;
   align-items: center;
   background: #f4f4f4;
@@ -131,7 +150,7 @@ footer {
   padding: 0.25rem 0.5rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   border: 1px solid #ddd;
-  max-width: 300px;
+  transition: width 0.3s ease;
 }
 
 .search-bar input {
@@ -335,6 +354,14 @@ footer {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-shrink:0;
+}
+
+.header-center {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex: 1; /* neemt alle beschikbare ruimte tussen links en rechts in */
 }
 
 .item-text {
@@ -375,6 +402,8 @@ footer {
   display: flex;
   align-items: center;
   gap: 2rem; /* afstand tussen logo en zoekbalk */
+  flex: 1;
+  flex-shrink: 0;
 }
 
 .logo-icon {
@@ -467,6 +496,10 @@ footer {
 
   .cta-button-alt:hover {
     border-color: white;
+  }
+
+  .nav-link:hover {
+    background-color: #333;
   }
 
   a {
