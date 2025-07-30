@@ -21,7 +21,7 @@ header {
   background-color: white;
   border-bottom: 1px solid #f4f4f4;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .logo {
@@ -359,7 +359,8 @@ footer {
 
 .header-center {
   display: flex;
-  gap: 1.5rem;
+  gap: 0rem;
+  margin-left: -1rem;
   justify-content: center;
   flex: 1; /* neemt alle beschikbare ruimte tussen links en rechts in */
 }
@@ -404,6 +405,7 @@ footer {
   gap: 2rem; /* afstand tussen logo en zoekbalk */
   flex: 1;
   flex-shrink: 0;
+  min-width: 275px;;
 }
 
 .logo-icon {
