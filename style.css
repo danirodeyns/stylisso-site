@@ -37,22 +37,13 @@ header {
   text-decoration: none;
 }
 
-nav a.cta-button {
-  margin-left: 2rem;
-  margin-right: 0.25rem;
-}
-
-nav a.cta-button-alt {
-  margin-left: 0;
-}
-
 .cta-button {
   display: inline-block;
   padding: 0.75rem 1rem;
   background-color: black;
   color: white;
   text-decoration: none;
-  margin-top: 1rem;
+  margin-top: 0rem;
   transition: background-color 0.2s;
   border-radius: 0.75rem; /* afgeronde hoeken */
   border: 2px solid black; /* vaste border */
@@ -174,7 +165,7 @@ footer {
 .custom-lang-select {
   position: relative;
   display: inline-block;
-  margin-left: 1rem;
+  margin-left: 0rem;
   cursor: pointer;
   outline: none;
 }
@@ -338,6 +329,12 @@ footer {
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 0;
+}
+
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .item-text {
