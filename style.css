@@ -405,7 +405,7 @@ footer {
   gap: 2rem; /* afstand tussen logo en zoekbalk */
   flex: 1;
   flex-shrink: 0;
-  min-width: 275px;;
+  min-width: 300px;;
 }
 
 .logo-icon {
