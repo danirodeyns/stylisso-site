@@ -180,7 +180,7 @@ footer {
 }
 
 .selected-flag {
-  font-size: 2rem;
+  font-size: 1.65rem;
   user-select: none;
   display: inline-block;
   vertical-align: middle;
