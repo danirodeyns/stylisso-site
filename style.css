@@ -199,8 +199,8 @@ footer {
 .flag-dropdown {
   display: none;
   position: absolute;
-  left: 0;
   top: 110%;
+  right: 0;
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 1rem;
