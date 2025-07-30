@@ -371,6 +371,12 @@ footer {
   display: none;
 }
 
+.logo-search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 2rem; /* afstand tussen logo en zoekbalk */
+}
+
 .logo-icon {
   width: 9.5rem;
   height: 2rem;
