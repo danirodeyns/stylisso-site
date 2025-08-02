@@ -475,7 +475,7 @@ footer {
 .header-dropdown div {
   padding: 0.5rem 1rem;
   font-size: 0.95rem;
-  color: #444;
+  color: black;
   cursor: pointer;
   border-radius: 0.5rem;
   transition: background 0.2s;
@@ -632,6 +632,10 @@ footer {
   background: #222;
   border: 1px solid #444;
   color: #eee;
+  }
+
+  .header-dropdown div {
+  color: white;
   }
 
   .header-dropdown div:hover {
