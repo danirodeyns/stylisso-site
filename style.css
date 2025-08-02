@@ -455,6 +455,55 @@ footer {
   color: inherit;
 }
 
+.header-item {
+  position: relative;
+}
+
+.header-dropdown {
+  display: none;
+  position: absolute;
+  top: 110%;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 240px;
+  padding: 1rem;
+  z-index: 20;
+}
+
+.header-dropdown div {
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  color: #444;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  transition: background 0.2s;
+}
+
+.header-dropdown div:hover {
+  background: #f4f4f4;
+}
+
+/* Hover trigger */
+.header-item:hover .header-dropdown {
+  display: block;
+}
+
+/* Positionering dropdowns */
+.align-left {
+  left: 0;
+}
+
+.align-center {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.align-right {
+  right: 0;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
@@ -577,5 +626,15 @@ footer {
 
   .logo-icon-dark {
     display: block;
+  }
+
+  .header-dropdown {
+  background: #222;
+  border: 1px solid #444;
+  color: #eee;
+  }
+
+  .header-dropdown div:hover {
+  background: #333;
   }
 }
