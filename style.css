@@ -472,16 +472,17 @@ footer {
   z-index: 20;
 }
 
-.header-dropdown div {
+.header-dropdown a {
+  display: block;
   padding: 0.5rem 1rem;
-  font-size: 0.95rem;
-  color: black;
-  cursor: pointer;
+  text-decoration: none;
+  color: #222; /* aanpasbaar naar wens */
+  font-weight: 500;
   border-radius: 0.5rem;
-  transition: background 0.2s;
+  transition: background-color 0.2s ease;
 }
 
-.header-dropdown div:hover {
+.header-dropdown a:hover {
   background: #f4f4f4;
 }
 
@@ -637,11 +638,11 @@ footer {
   color: #eee;
   }
 
-  .header-dropdown div {
+  .header-dropdown a {
   color: white;
   }
 
-  .header-dropdown div:hover {
+  .header-dropdown a:hover {
   background: #333;
   }
 }
