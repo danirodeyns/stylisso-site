@@ -493,15 +493,18 @@ footer {
 /* Positionering dropdowns */
 .align-left {
   left: 0;
+  top: 1.85rem;
 }
 
 .align-center {
   left: 58%;
   transform: translateX(-50%);
+  top: 1.85rem;
 }
 
 .align-right {
   right: 0;
+  top: 1.85rem;
 }
 
 /* Dark mode */
