@@ -13,9 +13,28 @@
     </a>
   </header>
 
-  <main class="page-content">
+  <main class="bestelstatus">
     <h1>Bestelstatus</h1>
-    <p>Deze pagina is momenteel in ontwikkeling. Kom later terug voor meer info over <strong>Bestelstatus</strong>.</p>
+    <p>Vul je bestelnummer en e-mailadres in om de status van je bestelling te bekijken.</p>
+
+    <form class="order-status-form">
+      <label for="order-number">Bestelnummer</label>
+      <input type="text" id="order-number" name="order-number" required placeholder="Bijv. STY123456" />
+
+      <label for="email">E-mailadres</label>
+      <input type="email" id="email" name="email" required placeholder="jouw@email.com" />
+
+      <button type="submit" class="cta-button">Bekijk status</button>
+    </form>
+
+    <div class="order-status-result" id="orderStatusResult" style="display: none;">
+      <!-- Dit wordt dynamisch gevuld na submit -->
+      <h2>Jouw Bestelling</h2>
+      <p><strong>Status:</strong> In behandeling</p>
+      <p><strong>Besteldatum:</strong> 4 augustus 2025</p>
+      <p><strong>Bezorgadres:</strong> Jan Jansen, Voorbeeldstraat 123, 1000 Brussel</p>
+      <p><strong>Verwachte levering:</strong> 9 augustus 2025</p>
+    </div>
   </main>
 
   <footer class="site-footer">
