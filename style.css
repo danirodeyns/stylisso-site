@@ -444,7 +444,7 @@ footer {
   position: absolute;
   bottom: 2rem;
   left: 2rem;
-  z-index: 2;
+  z-index: 2;  
   color: white;
   max-width: 60%;
 }
@@ -506,6 +506,21 @@ footer {
 .align-right {
   right: 0;
   top: 1.85rem;
+}
+
+.algemene voorwaarden {
+  padding: 2rem; /* of margin: 2rem; */
+  max-width: 800px;
+  margin: 0 auto; /* centreert op de pagina */
+}
+
+.algemene voorwaarden h2 {
+  margin-top: 2rem;
+}
+
+.algemene voorwaarden p {
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
 }
 
 /* Dark mode */
