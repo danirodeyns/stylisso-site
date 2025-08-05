@@ -508,17 +508,17 @@ footer {
   top: 1.85rem;
 }
 
-.algemene voorwaarden {
+.algemene-voorwaarden {
   padding: 2rem; /* of margin: 2rem; */
   max-width: 800px;
   margin: 0 auto; /* centreert op de pagina */
 }
 
-.algemene voorwaarden h2 {
+.algemene-voorwaarden h2 {
   margin-top: 2rem;
 }
 
-.algemene voorwaarden p {
+.algemene-voorwaarden p {
   margin-bottom: 1.5rem;
   line-height: 1.6;
 }
