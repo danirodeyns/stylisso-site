@@ -133,39 +133,28 @@
     </nav>
   </header>
 
-<main class="betaalmethodes">
-    <h1>Betaalmethodes</h1>
-    <p>Bij Stylisso bieden we meerdere veilige betaalmogelijkheden aan zodat jij zorgeloos je bestelling kunt afronden.</p>
+<main class="bestelstatus">
+    <h1>Bestelstatus</h1>
+    <p>Vul je bestelnummer en e-mailadres in om de status van je bestelling te bekijken.</p>
 
-    <section class="payment-option">
-      <h2>💳 Kredietkaart</h2>
-      <p>Wij aanvaarden Visa, Mastercard en American Express. Betalingen worden veilig verwerkt via onze betaalprovider.</p>
-    </section>
+    <form class="order-status-form">
+      <label for="order-number">Bestelnummer</label>
+      <input type="text" id="order-number" name="order-number" required placeholder="Bijv. STY123456" />
 
-    <section class="payment-option">
-      <h2>🏦 Bancontact</h2>
-      <p>Betaal eenvoudig via je Belgische bank met Bancontact. Je wordt doorgestuurd naar je vertrouwde bankomgeving.</p>
-    </section>
+      <label for="email">E-mailadres</label>
+      <input type="email" id="email" name="email" required placeholder="jouw@email.com" />
 
-    <section class="payment-option">
-      <h2>🌐 iDEAL</h2>
-      <p>Nederlandse klanten kunnen betalen met iDEAL via hun eigen bank.</p>
-    </section>
+      <button type="submit" class="cta-button">Bekijk status</button>
+    </form>
 
-    <section class="payment-option">
-      <h2>📱 Apple Pay & Google Pay</h2>
-      <p>Snelle en veilige betalingen via je smartphone, zonder kaartgegevens in te voeren.</p>
-    </section>
-
-    <section class="payment-option">
-      <h2>💰 Overschrijving</h2>
-      <p>Kies voor een manuele bankoverschrijving. Je bestelling wordt verwerkt zodra we de betaling ontvangen hebben.</p>
-    </section>
-
-    <section class="payment-option">
-      <h2>🛍️ Cadeaubonnen</h2>
-      <p>Heb je een Stylisso-cadeaubon? Vul je code in tijdens het afrekenen om deze toe te passen.</p>
-    </section>
+    <div class="order-status-result" id="orderStatusResult" style="display: none;">
+      <!-- Dit wordt dynamisch gevuld na submit -->
+      <h2>Jouw Bestelling</h2>
+      <p><strong>Status:</strong> In behandeling</p>
+      <p><strong>Besteldatum:</strong> 4 augustus 2025</p>
+      <p><strong>Bezorgadres:</strong> Jan Jansen, Voorbeeldstraat 123, 1000 Brussel</p>
+      <p><strong>Verwachte levering:</strong> 9 augustus 2025</p>
+    </div>
   </main>
 
   <footer class="site-footer">
