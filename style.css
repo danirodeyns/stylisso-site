@@ -560,10 +560,14 @@ footer {
   padding: 0 0rem;
 }
 
+.payment-intro {
+  margin-bottom: 1.25rem; /* of bijv. 20px */
+}
+
 .payment-option {
   background-color: #f9f9f9;
   border-radius: 0.75rem;
-  padding: 1.5rem;
+  padding: 1.25rem;
   margin-bottom: 1.5rem;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
