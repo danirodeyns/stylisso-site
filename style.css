@@ -555,9 +555,9 @@ footer {
 }
 
 .betaalmethodes {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 3rem auto;
-  padding: 0 1rem;
+  padding: 0 0rem;
 }
 
 .payment-option {
@@ -713,5 +713,11 @@ footer {
 
   .header-dropdown a:hover {
   background: #333;
+  }
+
+  .payment-option {
+  background-color: #1f1f1f;
+  color: #f0f0f0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
   }
 }
