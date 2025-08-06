@@ -581,6 +581,15 @@ footer {
   margin: 0.5rem 0 0;
 }
 
+.category-hero {
+  padding: 2rem;
+}
+
+.category-hero h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
