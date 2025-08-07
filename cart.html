@@ -133,23 +133,16 @@
     </nav>
   </header>
 
- <main class="page-content">
+  <main class="page-content">
     <section class="cart-container">
       <section class="category-hero">
         <h1>Winkelwagen</h1>
       </section>
 
       <div class="cart-items" id="cart-items">
-        <img src="producten/broek1.jpg" alt="Productafbeelding">
-        <div class="item-info">
-            <h3>Productnaam</h3>
-            <p>Variant of maat</p>
-            <p>Prijs: €XX,XX</p>
-            <label>
-                Aantal:
-                <input type="number" value="1" min="1">
-            </label>
-        </div>
+        <p class="empty-cart" style="display:none;">Je winkelwagen is leeg</p>
+        <!-- Product items worden door JS toegevoegd -->
+      </div>
 
       <div class="cart-summary" id="cart-summary">
         <p>Subtotaal: <strong id="cart-subtotal">€0,00</strong></p>
@@ -157,6 +150,7 @@
       </div>
     </section>
   </main>
+
 
   <footer class="site-footer">
     <div class="footer-links">
