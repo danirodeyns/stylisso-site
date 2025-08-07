@@ -54,7 +54,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (cart.length === 0) {
       emptyCartMsg.style.display = "block";
       subtotalDisplay.textContent = "€0,00";
+      cartSummary.style.display = "none";
       return;
+    } else {
+  cartSummary.style.display = "block";
     }
 
     emptyCartMsg.style.display = "none";
