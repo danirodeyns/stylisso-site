@@ -211,7 +211,7 @@ footer {
   position: absolute;
   top: 110%;
   right: 0;
-  background: #fff;
+  background: #f4f4f4;
   border: 1px solid #ddd;
   border-radius: 1rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -313,7 +313,7 @@ footer {
   position: absolute;
   top: 110%;
   right: 0;
-  background: #fff;
+  background: #f4f4f4;
   border: 1px solid #ccc;
   border-radius: 0.75rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -783,7 +783,7 @@ input[type="number"] {
   .flag-dropdown {
     background: #222;
     border: 1px solid #444;
-    color: #f4f4f4;
+    color: #eee;
   }
   .flag-dropdown div:hover {
     background: #333;
