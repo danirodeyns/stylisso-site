@@ -814,12 +814,21 @@ input[type="number"] {
   .cart-dropdown p {
     color: #888;
   }
+
+  .cart-dropdown .empty-cart {
+    text-align: center;
+    color: #888;
+    padding: 0rem;
+  }
+
   .remove-icon-light {
     display: none;
   }
+
   .remove-icon-dark {
     display: block;
   }
+
   .logo-icon-light {
     display: none;
   }
@@ -829,23 +838,23 @@ input[type="number"] {
   }
 
   .header-dropdown {
-  background: #222;
-  border: 1px solid #444;
-  color: #eee;
+    background: #222;
+    border: 1px solid #444;
+    color: #eee;
   }
 
   .header-dropdown a {
-  color: white;
+    color: white;
   }
 
   .header-dropdown a:hover {
-  background: #333;
+    background: #333;
   }
 
   .payment-option {
-  background-color: #1f1f1f;
-  color: #f0f0f0;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    background-color: #1f1f1f;
+    color: #f0f0f0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
   }
 
   .cart-container {
@@ -879,6 +888,6 @@ input[type="number"] {
   .empty-cart-message {
     color: #888;
     background: #222;
-    border: #444;
+    border: 1px solid #444;
   }
 }
