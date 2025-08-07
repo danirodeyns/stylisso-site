@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const cartItemsContainer = document.getElementById('cart-items');
   const emptyCartMsg = document.querySelector('.empty-cart');
   const subtotalDisplay = document.getElementById('cart-subtotal');
+  const cartSummary = document.getElementById('cart-summary');
 
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
@@ -48,19 +49,18 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function renderCartItems() {
-    if (!cartItemsContainer) return;
-    cartItemsContainer.innerHTML = "";
+  if (!cartItemsContainer) return;
+  cartItemsContainer.innerHTML = "";
 
-    if (cart.length === 0) {
-      emptyCartMsg.style.display = "block";
-      subtotalDisplay.textContent = "€0,00";
-      cartSummary.style.display = "none";
-      return;
-    } else {
-  cartSummary.style.display = "block";
-    }
+  if (cart.length === 0) {
+    emptyCartMsg.style.display = "block";
+    subtotalDisplay.textContent = "€0,00";
+    if (cartSummary) cartSummary.style.display = "none";  // verberg samenvatting
+    return;
+  }
 
-    emptyCartMsg.style.display = "none";
+  emptyCartMsg.style.display = "none";
+  if (cartSummary) cartSummary.style.display = "block";  // toon samenvatting
 
     cart.forEach(item => {
       const itemDiv = document.createElement('div');
