@@ -592,10 +592,7 @@ footer {
 
 /* Winkelwagen container */
 .cart-container {
-  background-color: #fff;
   padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .cart-container h1 {
@@ -833,7 +830,7 @@ input[type="number"] {
   }
 
   .cart-container {
-    background-color: #1a1a1a;
+    background-color: black;
     color: #eee;
   }
 
