@@ -102,7 +102,7 @@ function renderCartItems() {
 
     if (cart.length === 0) {
       const emptyMsg = document.createElement('p');
-      emptyMsg.className = 'empty-cart-message';
+      emptyMsg.className = 'empty-cart';
       emptyMsg.textContent = 'Je winkelwagen is leeg';
       cartDropdown.appendChild(emptyMsg);
       return;
