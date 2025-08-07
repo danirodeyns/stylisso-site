@@ -52,10 +52,10 @@ function renderCartItems() {
   cartItemsContainer.innerHTML = "";
 
   if (cart.length === 0) {
-    let emptyMsg = cartItemsContainer.querySelector('.empty-carts');
+    let emptyMsg = cartItemsContainer.querySelector('.empty-cart-message');
     if (!emptyMsg) {
       emptyMsg = document.createElement('p');
-      emptyMsg.className = 'empty-carts';
+      emptyMsg.className = 'empty-cart-message';
       emptyMsg.textContent = 'Je winkelwagen is leeg';
       cartItemsContainer.appendChild(emptyMsg);
     }
@@ -66,7 +66,7 @@ function renderCartItems() {
     return;
   }
 
-  const emptyMsg = cartItemsContainer.querySelector('.empty-carts');
+  const emptyMsg = cartItemsContainer.querySelector('.empty-cart-message');
   if (emptyMsg) emptyMsg.style.display = "none";
 
   if (cartSummary) cartSummary.style.display = "block";
@@ -102,7 +102,7 @@ function renderCartItems() {
 
     if (cart.length === 0) {
       const emptyMsg = document.createElement('p');
-      emptyMsg.className = 'empty-carts';
+      emptyMsg.className = 'empty-cart-message';
       emptyMsg.textContent = 'Je winkelwagen is leeg';
       cartDropdown.appendChild(emptyMsg);
       return;
