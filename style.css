@@ -685,6 +685,13 @@ input[type="number"] {
   background-color: #333;
 }
 
+.empty-cart {
+  text-align: center;
+  margin-top: 40px;
+  font-weight: 500;
+  color: #888;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {

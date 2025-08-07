@@ -46,16 +46,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     subtotalDisplay.textContent = `€${total.toFixed(2)}`;
   }
-  
+
 function renderCartItems() {
   if (!cartItemsContainer) return;
   cartItemsContainer.innerHTML = "";
 
   if (cart.length === 0) {
-    let emptyMsg = cartItemsContainer.querySelector('.empty-cart');
+    let emptyMsg = cartItemsContainer.querySelector('.empty-carts');
     if (!emptyMsg) {
       emptyMsg = document.createElement('p');
-      emptyMsg.className = 'empty-cart';
+      emptyMsg.className = 'empty-carts';
       emptyMsg.textContent = 'Je winkelwagen is leeg';
       cartItemsContainer.appendChild(emptyMsg);
     }
@@ -66,7 +66,7 @@ function renderCartItems() {
     return;
   }
 
-  const emptyMsg = cartItemsContainer.querySelector('.empty-cart');
+  const emptyMsg = cartItemsContainer.querySelector('.empty-carts');
   if (emptyMsg) emptyMsg.style.display = "none";
 
   if (cartSummary) cartSummary.style.display = "block";
@@ -102,7 +102,7 @@ function renderCartItems() {
 
     if (cart.length === 0) {
       const emptyMsg = document.createElement('p');
-      emptyMsg.className = 'empty-cart';
+      emptyMsg.className = 'empty-carts';
       emptyMsg.textContent = 'Je winkelwagen is leeg';
       cartDropdown.appendChild(emptyMsg);
       return;
