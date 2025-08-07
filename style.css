@@ -590,6 +590,97 @@ footer {
   margin-bottom: 1rem;
 }
 
+/* Winkelwagen container */
+.cart-container {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Cart Items */
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.cart-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1rem;
+}
+
+.cart-item img {
+  width: 100px;
+  height: auto;
+  border-radius: 4px;
+}
+
+.item-info {
+  flex: 1;
+}
+
+.item-info h3 {
+  margin: 0 0 0.5rem;
+}
+
+.item-info p {
+  margin: 0.2rem 0;
+}
+
+.item-info label {
+  display: block;
+  margin-top: 0.5rem;
+}
+
+input[type="number"] {
+  width: 60px;
+  padding: 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Verwijderknop */
+.remove-button {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.remove-button:hover {
+  background-color: #cc0000;
+}
+
+/* Totaal en afrekenen */
+.cart-summary {
+  text-align: right;
+}
+
+.cart-summary p {
+  font-size: 1.2rem;
+}
+
+.checkout-button {
+  background-color: black;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  text-decoration: none;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 1rem;
+}
+
+.checkout-button:hover {
+  background-color: #333;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
@@ -732,5 +823,33 @@ footer {
   background-color: #1f1f1f;
   color: #f0f0f0;
   box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+  }
+
+  .cart-container {
+    background-color: #1a1a1a;
+    color: #eee;
+  }
+
+  .cart-item {
+    border-color: #444;
+  }
+
+  input[type="number"] {
+    background-color: #2a2a2a;
+    color: #fff;
+    border: 1px solid #555;
+  }
+
+  .remove-button {
+    background-color: #ff6666;
+  }
+
+  .checkout-button {
+    background-color: #fff;
+    color: #000;
+  }
+
+  .checkout-button:hover {
+    background-color: #ddd;
   }
 }

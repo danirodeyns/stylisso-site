@@ -1,7 +1,8 @@
-// Hier kun je later dynamisch producten laden via de BigBuy API
+// Stylisso site script
 console.log("Stylisso site loaded.");
 
 document.addEventListener('DOMContentLoaded', function () {
+  // --- Taalkeuze vlag dropdown ---
   const select = document.querySelector('.custom-lang-select');
   const flag = document.getElementById('selectedFlag');
   const dropdown = document.getElementById('flagDropdown');
@@ -13,14 +14,11 @@ document.addEventListener('DOMContentLoaded', function () {
   dropdown.addEventListener('click', function (e) {
     const item = e.target.closest('div[data-value]');
     if (item) {
-      // Controleer of de gekozen pagina verschilt van de huidige
       const targetHref = item.dataset.href;
       const currentPage = window.location.pathname.split('/').pop();
       if (targetHref && targetHref !== currentPage) {
-        // Ga naar de gekozen pagina, vlag wordt daar automatisch aangepast
         window.location.href = targetHref;
       } else {
-        // Sluit alleen de dropdown, vlag blijft hetzelfde
         select.classList.remove('open');
       }
     }
@@ -31,45 +29,117 @@ document.addEventListener('DOMContentLoaded', function () {
       select.classList.remove('open');
     }
   });
-});
-  // Dummy-items (vervang later door echte uit localStorage of API)
-  let cart = [
-    { id: 1, name: "T-shirt", price: "€29,99" },
-    { id: 2, name: "Sneakers", price: "€89,00" }
-  ];
 
+  // --- Winkelwagen beheer ---
   const cartDropdown = document.getElementById('cartDropdown');
-  const cartItemsList = document.querySelector('.cart-items');
+  const cartItemsContainer = document.getElementById('cart-items');
   const emptyCartMsg = document.querySelector('.empty-cart');
+  const subtotalDisplay = document.getElementById('cart-subtotal');
 
-  function renderCart() {
-    cartItemsList.innerHTML = "";
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+  function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }
+
+  function calculateSubtotal() {
+    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    subtotalDisplay.textContent = `€${total.toFixed(2)}`;
+  }
+
+  function renderCartItems() {
+    if (!cartItemsContainer) return;
+    cartItemsContainer.innerHTML = "";
+
     if (cart.length === 0) {
       emptyCartMsg.style.display = "block";
-    } else {
-      emptyCartMsg.style.display = "none";
-      cart.forEach(item => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <span class="item-text">${item.name} <span class="item-price">€${item.price}</span>
-          </span>
+      subtotalDisplay.textContent = "€0,00";
+      return;
+    }
+
+    emptyCartMsg.style.display = "none";
+
+    cart.forEach(item => {
+      const itemDiv = document.createElement('div');
+      itemDiv.classList.add('cart-item');
+      itemDiv.innerHTML = `
+        <img src="${item.image}" alt="${item.name}" class="item-image">
+        <div class="item-info">
+          <h3>${item.name}</h3>
+          <p>${item.variant || ''}</p>
+          <p>Prijs: €${item.price.toFixed(2)}</p>
+          <label>
+            Aantal:
+            <input type="number" value="${item.quantity}" min="1" data-id="${item.id}" class="quantity-input">
+          </label>
           <button class="remove-item" data-id="${item.id}">
             <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
             <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
           </button>
-        `;
-        cartItemsList.appendChild(li);
-      });
+        </div>
+      `;
+      cartItemsContainer.appendChild(itemDiv);
+    });
+
+    calculateSubtotal();
+  }
+
+  function renderCartDropdown() {
+    if (!cartDropdown) return;
+    cartDropdown.innerHTML = "";
+
+    if (cart.length === 0) {
+      const emptyMsg = document.createElement('p');
+      emptyMsg.className = 'empty-cart';
+      emptyMsg.textContent = 'Je winkelwagen is leeg';
+      cartDropdown.appendChild(emptyMsg);
+      return;
+    }
+
+    const ul = document.createElement('ul');
+    ul.classList.add('dropdown-cart-list');
+
+    cart.forEach(item => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span class="item-text">${item.name} <span class="item-price">€${item.price.toFixed(2)}</span></span>
+      `;
+      ul.appendChild(li);
+    });
+
+    cartDropdown.appendChild(ul);
+  }
+
+  function updateQuantity(id, quantity) {
+    const item = cart.find(p => p.id === id);
+    if (item) {
+      item.quantity = quantity;
+      saveCart();
+      renderCartItems();
+      renderCartDropdown();
     }
   }
 
-  // Verwijder item
-  cartItemsList.addEventListener('click', function (e) {
-    if (e.target.classList.contains('remove-item')) {
+  document.addEventListener('change', function (e) {
+    if (e.target.classList.contains('quantity-input')) {
       const id = parseInt(e.target.dataset.id, 10);
-      cart = cart.filter(item => item.id !== id);
-      renderCart();
+      const quantity = parseInt(e.target.value, 10);
+      if (!isNaN(quantity) && quantity > 0) {
+        updateQuantity(id, quantity);
+      }
     }
   });
 
-  renderCart(); // initieel tonen
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('.remove-item')) {
+      const id = parseInt(e.target.closest('.remove-item').dataset.id, 10);
+      cart = cart.filter(item => item.id !== id);
+      saveCart();
+      renderCartItems();
+      renderCartDropdown();
+    }
+  });
+
+  renderCartItems();
+  renderCartDropdown();
+});
