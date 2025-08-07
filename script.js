@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // --- Winkelwagen beheer ---
   const cartDropdown = document.getElementById('cartDropdown');
   const cartItemsContainer = document.getElementById('cart-items');
-  const emptyCartMsg = document.querySelector('.empty-cart');
   const subtotalDisplay = document.getElementById('cart-subtotal');
   const cartSummary = document.getElementById('cart-summary');
 
@@ -47,45 +46,55 @@ document.addEventListener('DOMContentLoaded', function () {
     const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     subtotalDisplay.textContent = `€${total.toFixed(2)}`;
   }
-
-  function renderCartItems() {
+  
+function renderCartItems() {
   if (!cartItemsContainer) return;
   cartItemsContainer.innerHTML = "";
 
   if (cart.length === 0) {
-    emptyCartMsg.style.display = "block";
+    let emptyMsg = cartItemsContainer.querySelector('.empty-cart');
+    if (!emptyMsg) {
+      emptyMsg = document.createElement('p');
+      emptyMsg.className = 'empty-cart';
+      emptyMsg.textContent = 'Je winkelwagen is leeg';
+      cartItemsContainer.appendChild(emptyMsg);
+    }
+    emptyMsg.style.display = "block";
+
     subtotalDisplay.textContent = "€0,00";
-    if (cartSummary) cartSummary.style.display = "none";  // verberg samenvatting
+    if (cartSummary) cartSummary.style.display = "none";
     return;
   }
 
-  emptyCartMsg.style.display = "none";
-  if (cartSummary) cartSummary.style.display = "block";  // toon samenvatting
+  const emptyMsg = cartItemsContainer.querySelector('.empty-cart');
+  if (emptyMsg) emptyMsg.style.display = "none";
 
-    cart.forEach(item => {
-      const itemDiv = document.createElement('div');
-      itemDiv.classList.add('cart-item');
-      itemDiv.innerHTML = `
-        <img src="${item.image}" alt="${item.name}" class="item-image">
-        <div class="item-info">
-          <h3>${item.name}</h3>
-          <p>${item.variant || ''}</p>
-          <p>Prijs: €${item.price.toFixed(2)}</p>
-          <label>
-            Aantal:
-            <input type="number" value="${item.quantity}" min="1" data-id="${item.id}" class="quantity-input">
-          </label>
-          <button class="remove-item" data-id="${item.id}">
-            <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
-            <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
-          </button>
-        </div>
-      `;
-      cartItemsContainer.appendChild(itemDiv);
-    });
+  if (cartSummary) cartSummary.style.display = "block";
 
-    calculateSubtotal();
-  }
+  cart.forEach(item => {
+    const itemDiv = document.createElement('div');
+    itemDiv.classList.add('cart-item');
+    itemDiv.innerHTML = `
+      <img src="${item.image}" alt="${item.name}" class="item-image">
+      <div class="item-info">
+        <h3>${item.name}</h3>
+        <p>${item.variant || ''}</p>
+        <p>Prijs: €${item.price.toFixed(2)}</p>
+        <label>
+          Aantal:
+          <input type="number" value="${item.quantity}" min="1" data-id="${item.id}" class="quantity-input">
+        </label>
+        <button class="remove-item" data-id="${item.id}">
+          <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
+          <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
+        </button>
+      </div>
+    `;
+    cartItemsContainer.appendChild(itemDiv);
+  });
+
+  calculateSubtotal();
+}
 
   function renderCartDropdown() {
     if (!cartDropdown) return;
