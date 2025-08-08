@@ -736,12 +736,13 @@ input[type="number"] {
 }
 
 .contact-form button {
-  padding: 0.75rem;
+  padding: 0.75rem 1.5rem;
   font-size: 1rem;
   font-weight: 600;
+  transition: all 0.3s ease;
   color: #fff;
   background: #111;
-  border: none;
+  border: 1px solid #000;
   border-radius: 8px;
   cursor: pointer;
 }
@@ -935,5 +936,15 @@ input[type="number"] {
     color: #888;
     background: #222;
     border: 1px solid #444;
+  }
+
+  .contact-form button {
+    background: #000;   /* zelfde stijl als andere knoppen */
+    color: #fff;
+    border: 1px solid #fff;
+  }
+
+  .contact-form button:hover {
+    background: #222;
   }
 }
