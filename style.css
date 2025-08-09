@@ -1356,4 +1356,18 @@ input[type="number"] {
     background-color: black;
     color: white;
   }
+
+  .verzending-en-levering-container {
+    color: #fff;
+    background-color: black;
+  }
+
+  .verzending-en-levering-container h1,
+  .verzending-en-levering-container h2 {
+    color: #fff;
+  }
+
+  .verzending-en-levering-container a {
+    color: #fff;
+  }
 }
