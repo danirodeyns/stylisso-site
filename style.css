@@ -510,7 +510,7 @@ footer {
 
 .algemene-voorwaarden {
   padding: 2rem; /* of margin: 2rem; */
-  max-width: 1000px;
+  max-width: 80vw;
   margin: 0 auto; /* centreert op de pagina */
 }
 
@@ -524,9 +524,9 @@ footer {
 }
 
 .bestelstatus {
-  max-width: 600px;
-  margin: 3rem auto;
-  padding: 0 1rem;
+  max-width: 80vw;
+  margin: 2rem auto;
+  padding: 1.5rem;
 }
 
 .order-status-form {
@@ -555,7 +555,7 @@ footer {
 }
 
 .betaalmethodes {
-  max-width: 1000px;
+  max-width: 80vw;
   margin: 3rem auto;
   padding: 0 0rem;
 }
@@ -731,7 +731,7 @@ input[type="number"] {
   font-weight: 600;
 }
 
-.contact-form input[type="text"],
+.contact-form input,
 .contact-form textarea {
   width: 100%;
   padding: 0.5rem;
@@ -743,7 +743,7 @@ input[type="number"] {
   transition: border-color 0.3s ease;
 }
 
-.contact-form input[type="text"]:focus,
+.contact-form input:focus,
 .contact-form textarea:focus {
   border-color: black;
   outline: none;
