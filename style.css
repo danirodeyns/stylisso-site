@@ -757,6 +757,57 @@ input[type="number"] {
   border-color: black;
 }
 
+/* Container */
+.auth-container {
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 100vh;
+}
+
+/* Linker- en rechterkant */
+.auth-section {
+    flex: 1;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Form titels */
+.auth-section h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Form styling */
+.auth-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.auth-section label {
+    font-weight: 600;
+}
+
+.auth-section input {
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+/* Kleine tekst onder login */
+.small-text {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.small-text a {
+    color: inherit;
+    text-decoration: underline;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
@@ -958,5 +1009,11 @@ input[type="number"] {
     background-color: black;
     color: white;
     border-color: white;
+  }
+
+  .auth-section input {
+    background-color: #222;
+    border: 1px solid #444;
+    color: #fff;
   }
 }
