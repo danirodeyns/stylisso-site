@@ -853,6 +853,38 @@ input[type="number"] {
   color: #333;
 }
 
+.privacybeleid-container {
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 20px;
+  color: #333;
+  background-color: #fff;
+}
+
+.privacybeleid-container h1,
+.privacybeleid-container h2 {
+  color: #222;
+}
+
+.privacybeleid-container h1 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.privacybeleid-container section {
+  margin-bottom: 2rem;
+}
+
+.privacybeleid-container a {
+  color: #333;
+  text-decoration: none;
+}
+
+.privacybeleid-container a:hover {
+  text-decoration: underline;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
