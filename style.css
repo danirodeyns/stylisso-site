@@ -809,25 +809,25 @@ input[type="number"] {
 }
 
 .forgot-pasword-section h1 {
-    margin-bottom: 0.5rem; /* minder ruimte tussen titel en intro */
+  margin-bottom: 0.5rem; /* minder ruimte tussen titel en intro */
 }
 
 .forgot-pasword-section p {
-    margin-bottom: 1.5rem; /* meer ruimte tussen intro en label */
+  margin-bottom: 1.5rem; /* meer ruimte tussen intro en label */
 }
 
 .back-link {
-    margin-top: 0.5rem;
-    text-align: left;
+  margin-top: 0.5rem;
+  text-align: left;
 }
 
 .back-link a {
-    color: var(--accent-color);
-    text-decoration: none;
+  color: var(--accent-color);
+  text-decoration: none;
 }
 
 .back-link a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .over-ons-container {
@@ -879,10 +879,6 @@ input[type="number"] {
 
 .privacybeleid-container a {
   color: #333;
-  text-decoration: none;
-}
-
-.privacybeleid-container a:hover {
   text-decoration: underline;
 }
 
@@ -920,7 +916,6 @@ input[type="number"] {
 
 .retourzendingen-container a {
   color: #333;
-  text-decoration: none;
   text-decoration: underline;
 }
 
@@ -1050,10 +1045,6 @@ input[type="number"] {
 
 .verzending-en-levering-container a {
   color: #333;
-  text-decoration: none;
-}
-
-.verzending-en-levering-container a:hover {
   text-decoration: underline;
 }
 
