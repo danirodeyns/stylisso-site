@@ -510,7 +510,8 @@ footer {
 
 .algemene-voorwaarden {
   padding: 2rem; /* of margin: 2rem; */
-  max-width: 80vw;
+  width: 80vw;
+  max-width: 1300px;
   margin: 0 auto; /* centreert op de pagina */
 }
 
@@ -524,7 +525,8 @@ footer {
 }
 
 .bestelstatus {
-  max-width: 80vw;
+  width: 80vw;
+  max-width: 1300px;
   margin: 2rem auto;
   padding: 1.5rem;
 }
@@ -581,7 +583,8 @@ footer {
 }
 
 .betaalmethodes {
-  max-width: 80vw;
+  width: 80vw;
+  max-width: 1300px;
   margin: 3rem auto;
   padding: 0 0rem;
 }
@@ -731,7 +734,8 @@ input[type="number"] {
 }
 
 .contact-container {
-  max-width: 80vw;
+  width: 80vw;
+  max-width: 1300px;
   margin: 2rem auto;
   padding: 1.5rem;
 }
@@ -869,7 +873,8 @@ input[type="number"] {
 }
 
 .over-ons-container {
-  max-width: 80vw;
+  width: 80vw;
+  max-width: 1300px;
   margin: 2rem auto;
   padding: 0 1rem;
   font-size: 1.1rem;
@@ -893,7 +898,8 @@ input[type="number"] {
 
 .privacybeleid-container {
   line-height: 1.6;
-  max-width: 80vw;
+  width: 80vw;
+  max-width: 1300px;
   margin: 40px auto;
   padding: 0 20px;
   color: #333;
@@ -930,7 +936,8 @@ input[type="number"] {
 
 .retourzendingen-container {
   line-height: 1.6;
-  max-width: 80vw;
+  width: 80vw;
+  max-width: 1300px;
   margin: 40px auto;
   padding: 0 20px;
   color: #333;
@@ -970,7 +977,8 @@ input[type="number"] {
 }
 
 .reviews-container {
-  max-width: 80vw;
+  width: 80vw;
+  max-width: 1300px;
   margin: 40px auto;
   padding: 0 20px;
   font-family: Arial, sans-serif;
@@ -1059,7 +1067,8 @@ input[type="number"] {
 
 .verzending-en-levering-container {
   line-height: 1.6;
-  max-width: 80vw;
+  width: 80vw;
+  max-width: 1300px;
   margin: 40px auto;
   padding: 0 20px;
   color: #333;
