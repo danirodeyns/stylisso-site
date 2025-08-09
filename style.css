@@ -1238,7 +1238,7 @@ input[type="number"] {
     border: 1px solid #888;
   }
 
-  .order-status-form input[type="text"]:focus,
+  .order-status-form input:focus,
   .order-status-form textarea:focus {
     border-color: white;
   }
@@ -1302,7 +1302,7 @@ input[type="number"] {
     color: #fff;
   }
 
-  .contact-form input[type="text"],
+  .contact-form input,
   .contact-form select,
   .contact-form textarea {
     border: 1px solid #888;
@@ -1310,7 +1310,7 @@ input[type="number"] {
     color: white; 
   }
 
-  .contact-form input[type="text"]:focus,
+  .contact-form input:focus,
   .contact-form select:focus,
   .contact-form textarea:focus {
     border-color: white;
