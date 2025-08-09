@@ -896,6 +896,12 @@ input[type="number"] {
   color: #333;
 }
 
+.over-ons-container b {
+  margin-bottom: 1rem;
+  text-align: justify;
+  color: #333;
+}
+
 .over-ons-container ul {
   padding-left: 0.5rem; /* iets meer ruimte tussen rand container en bullets */
 }
@@ -1379,6 +1385,10 @@ input[type="number"] {
   }
 
   .over-ons-container p {
+    color: #fff;
+  }
+
+  .over-ons-container b {
     color: #fff;
   }
 
