@@ -946,7 +946,11 @@ input[type="number"] {
   background-color: #fff;
 }
 
-.reviews-container h1,
+.reviews-container h1 {
+  color: #222;
+  margin-bottom: 0rem;
+}
+
 .reviews-container h2 {
   color: #222;
   margin-bottom: 1rem;
@@ -978,7 +982,7 @@ input[type="number"] {
 .review-form label {
   display: block;
   font-weight: 600;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0rem;
 }
 
 .review-form input[type="text"],
@@ -990,7 +994,7 @@ input[type="number"] {
   border-radius: 4px;
   font-size: 1rem;
   box-sizing: border-box;
-  margin-bottom: 1rem;
+  margin-bottom: 0rem;
   transition: border-color 0.3s ease;
 }
 
@@ -1016,6 +1020,7 @@ input[type="number"] {
 
 .review-form button:hover {
   background-color: white;
+  color: black;
 }
 
 /* Dark mode */
