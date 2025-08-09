@@ -807,18 +807,17 @@ input[type="number"] {
   text-decoration: underline;
 }
 
-/* Alleen voor wachtwoord vergeten pagina */
-.forgot-password-page .auth-section h1 {
+.forgot-pasword-section h1 {
     margin-bottom: 0.5rem; /* minder ruimte tussen titel en intro */
 }
 
-.forgot-password-page .intro-text {
+.forgot-pasword-section p {
     margin-bottom: 1.5rem; /* meer ruimte tussen intro en label */
 }
 
 .back-link {
-    margin-top: 1rem;
-    text-align: center;
+    margin-top: 0.5rem;
+    text-align: left;
 }
 
 .back-link a {
