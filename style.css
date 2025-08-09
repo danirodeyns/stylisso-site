@@ -921,13 +921,14 @@ input[type="number"] {
 .retourzendingen-container a {
   color: #333;
   text-decoration: none;
-}
-
-.retourzendingen-container a:hover {
   text-decoration: underline;
 }
 
 .retourzendingen-container ul {
+  padding-left: 0.5rem; /* iets meer ruimte tussen rand container en bullets */
+}
+
+.retourzendingen-container ol {
   padding-left: 0.5rem; /* iets meer ruimte tussen rand container en bullets */
 }
 
