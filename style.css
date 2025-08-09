@@ -1008,6 +1008,7 @@ input[type="number"] {
 .review-form button {
   display: inline-block;
   padding: 0.75rem 1rem;
+  width: 100%;
   background-color: black;
   color: white;
   text-decoration: none;
@@ -1278,5 +1279,46 @@ input[type="number"] {
 
   .retourzendingen-container a {
     color: #fff;
+  }
+
+  .reviews-container {
+    color: #fff;
+    line-height: 1.6;
+    background-color: black;
+  }
+
+  .reviews-container h1 {
+    color: #fff;
+  }
+
+  .reviews-container h2 {
+    color: #fff;
+  }
+
+  .reviews-list .review h2 {
+    color: #ccc;
+  }
+
+  .review-form input[type="text"],
+  .review-form select,
+  .review-form textarea {
+    border: 1px solid #444;
+  }
+
+  .review-form input[type="text"]:focus,
+  .review-form select:focus,
+  .review-form textarea:focus {
+    border-color: white;
+  }
+
+  .review-form button {
+    background-color: white;
+    color: black;
+    border: 2px solid white;
+  }
+
+  .review-form button:hover {
+    background-color: black;
+    color: white;
   }
 }
