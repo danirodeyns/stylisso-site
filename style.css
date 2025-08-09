@@ -1024,6 +1024,39 @@ input[type="number"] {
   color: black;
 }
 
+.verzending-en-levering-container {
+  line-height: 1.6;
+  max-width: 80vw;
+  margin: 40px auto;
+  padding: 0 20px;
+  color: #333;
+  background-color: #fff;
+}
+
+.verzending-en-levering-container h1,
+.verzending-en-levering-container h2 {
+  color: #222;
+}
+
+.verzending-en-levering-container h1 {
+  text-align: left;
+  margin-bottom: 1rem;
+  font-size: 2.5rem;
+}
+
+.verzending-en-levering-container section {
+  margin-bottom: 2rem;
+}
+
+.verzending-en-levering-container a {
+  color: #333;
+  text-decoration: none;
+}
+
+.verzending-en-levering-container a:hover {
+  text-decoration: underline;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
