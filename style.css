@@ -544,7 +544,7 @@ footer {
   border-radius: 0.5rem;
 }
 
-.order-status-form input[type="text"]:focus,
+.order-status-form input:focus,
 .order-status-form textarea:focus {
   border-color: black;
   outline: none;
@@ -1018,7 +1018,7 @@ input[type="number"] {
   margin-bottom: 0rem;
 }
 
-.review-form input[type="text"],
+.review-form input,
 .review-form select,
 .review-form textarea {
   width: 100%;
@@ -1031,7 +1031,7 @@ input[type="number"] {
   transition: border-color 0.3s ease;
 }
 
-.review-form input[type="text"]:focus,
+.review-form input:focus,
 .review-form select:focus,
 .review-form textarea:focus {
   border-color: black;
@@ -1400,7 +1400,7 @@ input[type="number"] {
     color: #ccc;
   }
 
-  .review-form input[type="text"],
+  .review-form input,
   .review-form select,
   .review-form textarea {
     border: 1px solid #888;
@@ -1408,7 +1408,7 @@ input[type="number"] {
     color: white; 
   }
 
-  .review-form input[type="text"]:focus,
+  .review-form input:focus,
   .review-form select:focus,
   .review-form textarea:focus {
     border-color: white;
