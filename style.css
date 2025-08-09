@@ -896,6 +896,14 @@ input[type="number"] {
   color: #333;
 }
 
+.over-ons-container ul {
+  padding-left: 0.5rem; /* iets meer ruimte tussen rand container en bullets */
+}
+
+.over-ons-container li {
+  margin-left: 0.5rem; /* extra marge tussen bullet en tekst */
+}
+
 .privacybeleid-container {
   line-height: 1.6;
   width: 80vw;
