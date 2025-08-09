@@ -731,7 +731,7 @@ input[type="number"] {
   font-weight: 600;
 }
 
-.contact-form input,
+.contact-form input[type="text"],
 .contact-form textarea {
   width: 100%;
   padding: 0.5rem;
@@ -744,7 +744,6 @@ input[type="number"] {
 }
 
 .contact-form input[type="text"]:focus,
-.contact-form select:focus,
 .contact-form textarea:focus {
   border-color: black;
   outline: none;
@@ -1250,6 +1249,20 @@ input[type="number"] {
 
   .contact-titel h1 {
     color: #fff;
+  }
+
+  .contact-form input[type="text"],
+  .contact-form select,
+  .contact-form textarea {
+    border: 1px solid #888;
+    background-color: #444;
+    color: white; 
+  }
+
+  .contact-form input[type="text"]:focus,
+  .contact-form select:focus,
+  .contact-form textarea:focus {
+    border-color: white;
   }
 
   .contact-form button {
