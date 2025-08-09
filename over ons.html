@@ -3,32 +3,175 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>About - Stylisso</title>
+  <title>Stylisso</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="site-header">
-    <div class="logo">Stylisso</div>
+    <div class="logo-search-wrapper">
+      <a href="index.html" class="logo">
+        <span class="logo-icon-wrapper">
+          <img src="logo/logo.png" alt="logo" class="logo-icon logo-icon-light"/>
+          <img src="logo/logo (dark mode).png" alt="logo" class="logo-icon logo-icon-dark"/>
+        </span>
+      </a>
+      <form class="search-bar" action="#" method="get">
+        <input type="text" placeholder="Zoeken" name="q" />
+      </form>
+    </div>
+    <div class="header-center">
+      <div class="header-item">
+        <a href="mannen.html" class="nav-link">Mannen</a>
+          <div class="header-dropdown align-left">
+            <a href="shirts-mannen.html">Shirts</a>
+            <a href="truien-mannen.html">Truien</a>
+            <a href="hemden-mannen.html">Hemden</a>
+            <a href="riemen-mannen.html">Riemen</a>
+            <a href="broeken-mannen.html">Broeken</a>
+            <a href="leggings-mannen.html">Leggings</a>
+            <a href="joggingbroeken-mannen.html">Joggingbroeken</a>
+            <a href="trainingsbroeken-mannen.html">Trainingsbroeken</a>
+            <a href="trainingspakken-mannen.html">Trainingspakken</a>
+            <a href="sokken-mannen.html">Sokken</a>
+            <a href="schoenen-mannen.html">Schoenen</a>
+            <a href="brillen-mannen.html">Brillen</a>
+          </div>
+      </div>
+      <div class="header-item">
+        <a href="vrouwen.html" class="nav-link">Vrouwen</a>
+          <div class="header-dropdown align-center">
+            <a href="shirts-vrouwen.html">Shirts</a>
+            <a href="topjes-vrouwen.html">Topjes</a>
+            <a href="truien-vrouwen.html">Truien</a>
+            <a href="kleedjes-vrouwen.html">Kleedjes</a>
+            <a href="rokjes-vrouwen.html">Rokjes</a>
+            <a href="riemen-vrouwen.html">Riemen</a>
+            <a href="broeken-vrouwen.html">Broeken</a>
+            <a href="leggings-vrouwen.html">Leggings</a>
+            <a href="joggingsbroeken-vrouwen.html">Joggingsbroeken</a>
+            <a href="trainingsbroeken-vrouwen.html">Trainingsbroeken</a>
+            <a href="trainingspakken-vrouwen.html">Trainingspakken</a>
+            <a href="sokken-vrouwen.html">Sokken</a>
+            <a href="schoenen-vrouwen.html">Schoenen</a>
+            <a href="brillen-vrouwen.html">Brillen</a>
+          </div>
+      </div>
+      <div class="header-item">
+        <a href="producten.html" class="nav-link">Producten</a>
+          <div class="header-dropdown align-right">
+            <a href="stretchbanden-producten.html">Stretchbanden</a>
+            <a href="voorarmknijpers-producten.html">Voorarmknijpers</a>
+            <a href="springtouwen-producten.html">Springtouwen</a>
+            <a href="foamrollers-producten.html">Foamrollers</a>
+            <a href="gewichthefriemen-producten.html">Gewichthefriemen</a>
+            <a href="handdoeken-producten.html">Handdoeken</a>
+            <a href="zweetbanden-producten.html">Zweetbanden</a>
+            <a href="grip handschoenen-producten.html">Grip handschoenen</a>
+            <a href="shakers-producten.html">Shakers</a>
+            <a href="proteïnen-producten.html">Proteïnen</a>            
+          </div>
+      </div>
+    </div>    
     <nav class="main-nav">
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
-      <a href="login.html">Login</a>
-      <a href="registreren.html">Registreren</a>
+      <a href="cart.html" class="cart-button" aria-label="Winkelwagen">
+        <span class="cart-icon-wrapper">
+          <img src="shopping bag/shopping bag.png" alt="Cart" class="cart-icon cart-icon-light" />
+          <img src="shopping bag/shopping bag (dark mode).png" alt="Cart" class="cart-icon cart-icon-dark" />
+        </span>
+        <div class="cart-dropdown" id="cartDropdown">
+          <p class="empty-cart">Je winkelwagen is leeg</p>
+        </div>
+      </a>
+      <a href="login_registreren.html" class="cta-button">Login</a>
+      <a href="login_registreren.html" class="cta-button-alt">Registreren</a>
+      <div class="custom-lang-select" tabindex="0">
+        <span class="selected-flag" id="selectedFlag" data-value="be-nl">
+          <img src="flags/be.png" alt="België" class="flag-icon" />
+        </span>
+        <div class="flag-dropdown" id="flagDropdown">
+          <div data-value="be-nl" data-href="index.html">
+            <img src="flags/be.png" alt="België" class="flag-icon" /> België (Nederlands)
+          </div>
+          <div data-value="be-fr" data-href="index-be-fr.html">
+            <img src="flags/be.png" alt="België" class="flag-icon" /> Belgique (Français)
+          </div>
+          <div data-value="be-en" data-href="index-be-en.html">
+            <img src="flags/be.png" alt="België" class="flag-icon" /> Belgium (English)
+          </div>
+          <div data-value="nl-nl" data-href="index-nl-nl.html">
+            <img src="flags/nl.png" alt="Nederland" class="flag-icon" /> Nederland (Nederlands)
+          </div>
+          <div data-value="nl-en" data-href="index-nl-en.html">
+            <img src="flags/nl.png" alt="Nederland" class="flag-icon" /> Netherlands (English)
+          </div>
+          <div data-value="fr-fr" data-href="index-fr-fr.html">
+            <img src="flags/fr.png" alt="Frankrijk" class="flag-icon" /> France (Français)
+          </div>
+          <div data-value="fr-en" data-href="index-fr-en.html">
+            <img src="flags/fr.png" alt="Frankrijk" class="flag-icon" /> France (English)
+          </div>
+          <div data-value="de-de" data-href="index-de-de.html">
+            <img src="flags/de.png" alt="Duitsland" class="flag-icon" /> Deutschland (Deutsch)
+          </div>
+          <div data-value="de-en" data-href="index-de-en.html">
+            <img src="flags/de.png" alt="Duitsland" class="flag-icon" /> Germany (English)
+          </div>      
+          <div data-value="lu-fr" data-href="index-lu-fr.html">
+            <img src="flags/lu.png" alt="Luxemburg" class="flag-icon" /> Luxembourg (Français)
+          </div>
+          <div data-value="lu-de" data-href="index-lu-de.html">
+            <img src="flags/lu.png" alt="Luxemburg" class="flag-icon" /> Luxemburg (Deutsch)
+          </div>
+          <div data-value="lu-lb" data-href="index-lu-lb.html">
+            <img src="flags/lu.png" alt="Luxemburg" class="flag-icon" /> Lëtzebuerg (Lëtzebuergesch)
+          </div>
+          <div data-value="lu-en" data-href="index-lu-en.html">
+            <img src="flags/lu.png" alt="Luxemburg" class="flag-icon" /> Luxembourg (English)
+          </div>
+        </div>
+      </div>
     </nav>
   </header>
 
-  <main class="hero-section">
-    <div class="hero-text">
-      <h1>About Stylisso</h1>
-      <p>Stylisso is where fashion meets performance. Our mission is to empower your every step with bold design and quality.</p>
-    </div>
-    <div class="hero-image">
-      <img src="https://via.placeholder.com/600x400?text=About+Stylisso" alt="About Image" />
-    </div>
+  <main class="over-ons-container">
+    <h1>Over Ons</h1>
+    <p>
+      Welkom bij Stylisso! Wij zijn een gepassioneerd team dat zich inzet om je de beste kleding- en accessoireservaring te bieden, met een perfecte mix van stijl en functionaliteit.
+    </p>
+    <p>
+      Sinds onze oprichting streven wij ernaar om kleding te ontwerpen die niet alleen modieus is, maar ook comfortabel en duurzaam. Onze collectie is zorgvuldig samengesteld met oog voor kwaliteit en detail, zodat jij er elke dag op je best uitziet.
+    </p>
+    <p>
+      Bij Stylisso geloven we in innovatie en verantwoordelijkheid. Daarom werken we samen met leveranciers die onze waarden delen en kiezen we bewust voor materialen die een positieve impact hebben op het milieu.
+    </p>
+    <p>
+      Onze klanten staan altijd centraal. We luisteren naar je wensen en feedback om onze service en producten continu te verbeteren. Of je nu sportief, casual of elegant gekleed wilt gaan, bij ons vind je iets dat perfect bij je past.
+    </p>
+    <p>
+      Daarnaast bieden we een breed scala aan producten voor mannen en vrouwen, variërend van comfortabele sportkleding tot stijlvolle accessoires. Dankzij onze nauwe samenwerking met betrouwbare partners kunnen we een divers assortiment garanderen dat voortdurend vernieuwd wordt.
+    </p>
+    <p>
+      We nodigen je uit om onze collectie te ontdekken en de perfecte items te vinden die jouw stijl versterken. Bedankt dat je voor Stylisso kiest!
+    </p>
   </main>
 
   <footer class="site-footer">
+    <div class="footer-links">
+      <ul>
+        <li><a href="over ons.html">Over ons</a></li>
+        <li><a href="bestelstatus.html">Bestelstatus</a></li>
+        <li><a href="verzending en levering.html">Verzending en levering</a></li>
+        <li><a href="retourzendingen.html">Retourzendingen</a></li>
+        <li><a href="betaalmethodes.html">Betaalmethodes</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="reviews.html">Reviews</a></li>
+        <li><a href="algemene voorwaarden.html">Algemene voorwaarden</a></li>
+        <li><a href="privacybeleid.html">Privacybeleid</a></li>
+      </ul>
+    </div>
     <p>&copy; 2025 Stylisso. All rights reserved.</p>
   </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
