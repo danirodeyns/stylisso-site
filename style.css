@@ -855,7 +855,7 @@ input[type="number"] {
 
 .privacybeleid-container {
   line-height: 1.6;
-  max-width: 800px;
+  max-width: 80vw;
   margin: 40px auto;
   padding: 0 20px;
   color: #333;
@@ -884,6 +884,14 @@ input[type="number"] {
 
 .privacybeleid-container a:hover {
   text-decoration: underline;
+}
+
+.privacybeleid-container ul {
+  padding-left: 0.5rem; /* iets meer ruimte tussen rand container en bullets */
+}
+
+.privacybeleid-container li {
+  margin-left: 0.5rem; /* extra marge tussen bullet en tekst */
 }
 
 /* Dark mode */
