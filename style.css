@@ -894,6 +894,47 @@ input[type="number"] {
   margin-left: 0.5rem; /* extra marge tussen bullet en tekst */
 }
 
+.retourzendingen-container {
+  line-height: 1.6;
+  max-width: 80vw;
+  margin: 40px auto;
+  padding: 0 20px;
+  color: #333;
+  background-color: #fff;
+}
+
+.retourzendingen-container h1,
+.retourzendingen-container h2 {
+  color: #222;
+}
+
+.retourzendingen-container h1 {
+  text-align: left;
+  margin-bottom: 1rem;
+  font-size: 2.5rem;
+}
+
+.retourzendingen-container section {
+  margin-bottom: 2rem;
+}
+
+.retourzendingen-container a {
+  color: #333;
+  text-decoration: none;
+}
+
+.retourzendingen-container a:hover {
+  text-decoration: underline;
+}
+
+.retourzendingen-container ul {
+  padding-left: 0.5rem; /* iets meer ruimte tussen rand container en bullets */
+}
+
+.retourzendingen-container li {
+  margin-left: 0.5rem; /* extra marge tussen bullet en tekst */
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
@@ -1134,6 +1175,20 @@ input[type="number"] {
   }
 
   .privacybeleid-container a {
+    color: #fff;
+  }
+
+  .retourzendingen-container {
+    color: #fff;
+    background-color: black;
+  }
+
+  .retourzendingen-container h1,
+  .retourzendingen-container h2 {
+    color: #fff;
+  }
+
+  .retourzendingen-container a {
     color: #fff;
   }
 }
