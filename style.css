@@ -800,6 +800,7 @@ input[type="number"] {
 .small-text {
   margin-top: 1rem;
   font-size: 0.9rem;
+  color: black;
 }
 
 .small-text a {
@@ -1036,6 +1037,10 @@ input[type="number"] {
     background-color: #222;
     border: 1px solid #444;
     color: #fff;
+  }
+
+  .small-text {
+  color: white;
   }
 
   .back-link a {
