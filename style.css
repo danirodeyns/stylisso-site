@@ -807,6 +807,20 @@ input[type="number"] {
   text-decoration: underline;
 }
 
+.back-link {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.back-link a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.back-link a:hover {
+    text-decoration: underline;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
