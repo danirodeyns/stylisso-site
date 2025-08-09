@@ -1149,7 +1149,7 @@ input[type="number"] {
     border: 1px solid #444;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }
-  
+
   .search-bar input {
     color: #fff;
   }
@@ -1237,6 +1237,8 @@ input[type="number"] {
   .order-status-form input,
   .order-status-form textarea {
     border: 1px solid #888;
+    background-color: #444;
+    color: white;
   }
 
   .order-status-form input:focus,
@@ -1244,6 +1246,14 @@ input[type="number"] {
     border-color: white;
     background: #444;
     color: white;
+  }
+
+  .order-status-form input::placeholder,
+  .order-status-form textarea::placeholder,
+  .review-form input::placeholder,
+  .review-form select::placeholder,
+  .review-form textarea::placeholder {
+    color: #fff;
   }
 
   .order-status-form button {
@@ -1306,7 +1316,6 @@ input[type="number"] {
   }
 
   .contact-form input,
-  .contact-form select,
   .contact-form textarea {
     border: 1px solid #888;
     background-color: #444;
@@ -1314,7 +1323,6 @@ input[type="number"] {
   }
 
   .contact-form input:focus,
-  .contact-form select:focus,
   .contact-form textarea:focus {
     border-color: white;
   }
