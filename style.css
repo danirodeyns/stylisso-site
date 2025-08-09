@@ -625,7 +625,7 @@ footer {
 }
 
 .cart-container h1 {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
   margin-bottom: 1rem;
   color: inherit;
   font-weight: 700;
@@ -741,7 +741,7 @@ input[type="number"] {
 }
 
 .contact-titel h1 {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
   font-weight: 700;
   color: #111;
   margin-bottom: 0rem;
@@ -816,7 +816,7 @@ input[type="number"] {
 
 /* Form titels */
 .auth-section h1 {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
   margin-bottom: 1.5rem;
 }
 
@@ -883,7 +883,7 @@ input[type="number"] {
 }
 
 .over-ons-container h1 {
-  font-size: 2.5rem;
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
   margin-bottom: 1.5rem;
   font-weight: 700;
   text-align: left;
@@ -932,7 +932,7 @@ input[type="number"] {
 .privacybeleid-container h1 {
   text-align: left;
   margin-bottom: 1rem;
-  font-size: 2.5rem;
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
 }
 
 .privacybeleid-container section {
@@ -970,7 +970,7 @@ input[type="number"] {
 .retourzendingen-container h1 {
   text-align: left;
   margin-bottom: 1rem;
-  font-size: 2.5rem;
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
 }
 
 .retourzendingen-container section {
@@ -1008,6 +1008,7 @@ input[type="number"] {
 .reviews-container h1 {
   color: #222;
   margin-bottom: 0rem;
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
 }
 
 .reviews-container h2 {
@@ -1101,7 +1102,7 @@ input[type="number"] {
 .verzending-en-levering-container h1 {
   text-align: left;
   margin-bottom: 1rem;
-  font-size: 2.5rem;
+  font-size: clamp(1.5rem, 2vw + 1rem, 2.5rem);
 }
 
 .verzending-en-levering-container section {
