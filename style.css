@@ -1149,6 +1149,7 @@ input[type="number"] {
     border: 1px solid #444;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }
+  
   .search-bar input {
     color: #fff;
   }
@@ -1241,6 +1242,8 @@ input[type="number"] {
   .order-status-form input:focus,
   .order-status-form textarea:focus {
     border-color: white;
+    background: #444;
+    color: white;
   }
 
   .order-status-form button {
