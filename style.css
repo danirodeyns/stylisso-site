@@ -759,53 +759,52 @@ input[type="number"] {
 
 /* Container */
 .auth-container {
-    display: flex;
-    flex-wrap: wrap;
-    min-height: 100vh;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 /* Linker- en rechterkant */
 .auth-section {
-    flex: 1;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 /* Form titels */
 .auth-section h1 {
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 /* Form styling */
 .auth-section form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .auth-section label {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .auth-section input {
-    padding: 0.75rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
 }
 
 /* Kleine tekst onder login */
 .small-text {
-    margin-top: 1rem;
-    font-size: 0.9rem;
+  margin-top: 1rem;
+  font-size: 0.9rem;
 }
 
 .small-text a {
-    color: inherit;
-    text-decoration: underline;
+  color: inherit;
+  text-decoration: underline;
 }
 
 /* Dark mode */
