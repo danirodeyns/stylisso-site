@@ -843,7 +843,7 @@ input[type="number"] {
 .auth-section input {
   padding: 0.75rem;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 0.75rem;
   font-size: 1rem;
 }
 
