@@ -2,48 +2,53 @@
 session_start();
 include 'db_connect.php';
 
+header('Content-Type: application/json');
+
 if (!isset($_SESSION['user_id'])) {
-    echo "Je moet ingelogd zijn.";
+    echo json_encode(['success' => false, 'message' => 'Je moet ingelogd zijn.']);
     exit;
 }
 
 $user_id = $_SESSION['user_id'];
 
-// Product toevoegen aan cart
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'], $_POST['quantity'])) {
-    $product_id = (int)$_POST['product_id'];
-    $quantity = (int)$_POST['quantity'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $product_id = isset($data['product_id']) ? (int)$data['product_id'] : 0;
+    $quantity = isset($data['quantity']) ? (int)$data['quantity'] : 0;
 
-    // Check of product al in cart zit
-    $sql = "SELECT id, quantity FROM cart WHERE user_id=$user_id AND product_id=$product_id";
-    $result = $conn->query($sql);
-
-    if ($result->num_rows > 0) {
-        // Updaten
-        $row = $result->fetch_assoc();
-        $new_qty = $row['quantity'] + $quantity;
-        $conn->query("UPDATE cart SET quantity=$new_qty WHERE id=" . $row['id']);
-    } else {
-        // Toevoegen
-        $conn->query("INSERT INTO cart (user_id, product_id, quantity) VALUES ($user_id, $product_id, $quantity)");
+    if ($product_id <= 0 || $quantity < 1) {
+        echo json_encode(['success' => false, 'message' => 'Ongeldige product ID of hoeveelheid.']);
+        exit;
     }
-    echo "Product toegevoegd aan winkelwagen.<br>";
+
+    $stmt = $conn->prepare("UPDATE cart SET quantity = quantity + ? WHERE user_id = ? AND product_id = ?");
+    $stmt->bind_param("iii", $quantity, $user_id, $product_id);
+    $stmt->execute();
+
+    if ($stmt->affected_rows === 0) {
+        $stmt = $conn->prepare("INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?)");
+        $stmt->bind_param("iii", $user_id, $product_id, $quantity);
+        $stmt->execute();
+    }
+
+    echo json_encode(['success' => true, 'message' => 'Product toegevoegd aan winkelwagen.']);
+    exit;
 }
 
-// Toon cart
-$sql = "SELECT cart.id, products.name, products.price, cart.quantity 
-        FROM cart 
-        JOIN products ON cart.product_id = products.id 
-        WHERE cart.user_id = $user_id";
+// GET: haal cart op
+$stmt = $conn->prepare("
+    SELECT cart.id, products.name, products.price, products.image, cart.quantity, cart.variant
+    FROM cart
+    JOIN products ON cart.product_id = products.id
+    WHERE cart.user_id = ?
+");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
 
-$result = $conn->query($sql);
-
-echo "<h2>Jouw winkelwagen</h2>";
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        echo htmlspecialchars($row['name']) . " - €" . $row['price'] . " x " . $row['quantity'] . "<br>";
-    }
-} else {
-    echo "Winkelwagen is leeg.";
+$cart = [];
+while ($row = $result->fetch_assoc()) {
+    $cart[] = $row;
 }
-?>
+
+echo json_encode(['success' => true, 'cart' => $cart]);

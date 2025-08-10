@@ -1,4 +1,3 @@
-// Stylisso site script
 console.log("Stylisso site loaded.");
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -36,67 +35,78 @@ document.addEventListener('DOMContentLoaded', function () {
   const subtotalDisplay = document.getElementById('cart-subtotal');
   const cartSummary = document.getElementById('cart-summary');
 
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-  function saveCart() {
-    localStorage.setItem('cart', JSON.stringify(cart));
+  // Haal cart op van server
+  function fetchCart() {
+    fetch('cart.php?action=get_cart')
+      .then(response => response.json())
+      .then(data => {
+        if(data.success){
+          renderCartItems(data.cart);
+          renderCartDropdown(data.cart);
+        } else {
+          console.error('Fout bij ophalen winkelwagen:', data.message);
+        }
+      })
+      .catch(err => {
+        console.error('Fout bij ophalen cart:', err);
+      });
   }
 
-  function calculateSubtotal() {
+  function calculateSubtotal(cart) {
     const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     subtotalDisplay.textContent = `€${total.toFixed(2)}`;
   }
 
-function renderCartItems() {
-  if (!cartItemsContainer) return;
-  cartItemsContainer.innerHTML = "";
+  function renderCartItems(cart) {
+    if (!cartItemsContainer) return;
+    cartItemsContainer.innerHTML = "";
 
-  if (cart.length === 0) {
-    let emptyMsg = cartItemsContainer.querySelector('.empty-cart-message');
-    if (!emptyMsg) {
-      emptyMsg = document.createElement('p');
-      emptyMsg.className = 'empty-cart-message';
-      emptyMsg.textContent = 'Je winkelwagen is leeg';
-      cartItemsContainer.appendChild(emptyMsg);
+    if (cart.length === 0) {
+      let emptyMsg = cartItemsContainer.querySelector('.empty-cart-message');
+      if (!emptyMsg) {
+        emptyMsg = document.createElement('p');
+        emptyMsg.className = 'empty-cart-message';
+        emptyMsg.textContent = 'Je winkelwagen is leeg';
+        cartItemsContainer.appendChild(emptyMsg);
+      }
+      emptyMsg.style.display = "block";
+
+      subtotalDisplay.textContent = "€0,00";
+      if (cartSummary) cartSummary.style.display = "none";
+      return;
     }
-    emptyMsg.style.display = "block";
 
-    subtotalDisplay.textContent = "€0,00";
-    if (cartSummary) cartSummary.style.display = "none";
-    return;
+    const emptyMsg = cartItemsContainer.querySelector('.empty-cart-message');
+    if (emptyMsg) emptyMsg.style.display = "none";
+
+    if (cartSummary) cartSummary.style.display = "block";
+
+    cart.forEach(item => {
+      const itemDiv = document.createElement('div');
+      itemDiv.classList.add('cart-item');
+      itemDiv.innerHTML = `
+        <img src="${item.image}" alt="${item.name}" class="item-image">
+        <div class="item-info">
+          <h3>${item.name}</h3>
+          <p>${item.variant || ''}</p>
+          <p>Prijs: €${item.price.toFixed(2)}</p>
+          <label>
+            Aantal:
+            <input type="number" value="${item.quantity}" min="1" data-id="${item.product_id}" class="quantity-input">
+          </label>
+          <button class="remove-item" data-id="${item.product_id}">
+            <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
+            <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
+          </button>
+        </div>
+      `;
+      cartItemsContainer.appendChild(itemDiv);
+    });
+
+    calculateSubtotal(cart);
   }
 
-  const emptyMsg = cartItemsContainer.querySelector('.empty-cart-message');
-  if (emptyMsg) emptyMsg.style.display = "none";
-
-  if (cartSummary) cartSummary.style.display = "block";
-
-  cart.forEach(item => {
-    const itemDiv = document.createElement('div');
-    itemDiv.classList.add('cart-item');
-    itemDiv.innerHTML = `
-      <img src="${item.image}" alt="${item.name}" class="item-image">
-      <div class="item-info">
-        <h3>${item.name}</h3>
-        <p>${item.variant || ''}</p>
-        <p>Prijs: €${item.price.toFixed(2)}</p>
-        <label>
-          Aantal:
-          <input type="number" value="${item.quantity}" min="1" data-id="${item.id}" class="quantity-input">
-        </label>
-        <button class="remove-item" data-id="${item.id}">
-          <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
-          <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
-        </button>
-      </div>
-    `;
-    cartItemsContainer.appendChild(itemDiv);
-  });
-
-  calculateSubtotal();
-}
-
-  function renderCartDropdown() {
+  function renderCartDropdown(cart) {
     if (!cartDropdown) return;
     cartDropdown.innerHTML = "";
 
@@ -122,36 +132,58 @@ function renderCartItems() {
     cartDropdown.appendChild(ul);
   }
 
-  function updateQuantity(id, quantity) {
-    const item = cart.find(p => p.id === id);
-    if (item) {
-      item.quantity = quantity;
-      saveCart();
-      renderCartItems();
-      renderCartDropdown();
-    }
+  // Update hoeveelheid via AJAX naar server
+  function updateQuantityOnServer(productId, quantity) {
+    fetch('cart.php?action=update_quantity', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ product_id: productId, quantity: quantity })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        fetchCart();
+      } else {
+        alert('Fout bij bijwerken hoeveelheid');
+      }
+    });
   }
 
+  // Verwijder item via AJAX naar server
+  function removeItemFromServer(productId) {
+    fetch('cart.php?action=remove_item', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ product_id: productId })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        fetchCart();
+      } else {
+        alert('Fout bij verwijderen item');
+      }
+    });
+  }
+
+  // Eventlisteners
   document.addEventListener('change', function (e) {
     if (e.target.classList.contains('quantity-input')) {
-      const id = parseInt(e.target.dataset.id, 10);
+      const productId = parseInt(e.target.dataset.id, 10);
       const quantity = parseInt(e.target.value, 10);
       if (!isNaN(quantity) && quantity > 0) {
-        updateQuantity(id, quantity);
+        updateQuantityOnServer(productId, quantity);
       }
     }
   });
 
   document.addEventListener('click', function (e) {
     if (e.target.closest('.remove-item')) {
-      const id = parseInt(e.target.closest('.remove-item').dataset.id, 10);
-      cart = cart.filter(item => item.id !== id);
-      saveCart();
-      renderCartItems();
-      renderCartDropdown();
+      const productId = parseInt(e.target.closest('.remove-item').dataset.id, 10);
+      removeItemFromServer(productId);
     }
   });
 
-  renderCartItems();
-  renderCartDropdown();
+  // Initialiseer cart weergave
+  fetchCart();
 });
