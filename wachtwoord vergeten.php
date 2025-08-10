@@ -1,17 +1,10 @@
 <?php
-// Databaseverbinding (pas aan naar jouw gegevens)
-$host = "localhost";
-$dbname = "stylisso_db";
-$username = "root";
-$password = "";
-$conn = new mysqli($host, $username, $password, $dbname);
+// password_reset_request.php
 
-// Controleer verbinding
-if ($conn->connect_error) {
-    die("Databaseverbinding mislukt: " . $conn->connect_error);
-}
+session_start(); // Als je sessies gebruikt voor beveiliging
 
-// Formulierverwerking
+include 'db_connect.php';  // database connectie
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = trim($_POST["email"]);
 
@@ -21,6 +14,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Controleer of e-mailadres bestaat
     $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+    if (!$stmt) {
+        die("Voorbereiden mislukt: " . $conn->error);
+    }
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -36,6 +32,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Sla token op in database
     $stmt = $conn->prepare("UPDATE users SET reset_token = ?, reset_expires = ? WHERE email = ?");
+    if (!$stmt) {
+        die("Voorbereiden mislukt: " . $conn->error);
+    }
     $stmt->bind_param("sss", $token, $expires, $email);
     $stmt->execute();
 
