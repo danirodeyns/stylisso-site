@@ -115,6 +115,7 @@ header {
   border-radius: 0.5rem;
   transition: background 0.2s;
   text-decoration: none;
+  text-align: right;
 }
 
 .user-dropdown a:hover {
