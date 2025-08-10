@@ -1,0 +1,29 @@
+# ⛔ Gevoelige PHP-bestanden
+config.php
+
+# ⛔ Systeem- en editorbestanden
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ⛔ Logbestanden
+*.log
+logs/
+
+# ⛔ Cachebestanden
+cache/
+*.cache
+*.tmp
+
+# ⛔ Uploads en tijdelijke bestanden
+uploads/
+tmp/
+
+# ⛔ Composer (indien je later PHP libraries gebruikt)
+vendor/
+composer.lock
+
+# ⛔ Node.js (indien je later JS tooling gebruikt)
+node_modules/
+package-lock.json
