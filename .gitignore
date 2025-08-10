@@ -27,3 +27,5 @@ composer.lock
 # ⛔ Node.js (indien je later JS tooling gebruikt)
 node_modules/
 package-lock.json
+
+stylisso_db.sql
