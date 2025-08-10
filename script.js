@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (params.get('error_email') === 'exists') {
     showError('register-email', 'E-mail bestaat al');
   }
-  if (params.get('error_password') === 'nomatch') {
+  if (params.get('error_password2') === 'nomatch') {
     showError('register-password', 'Wachtwoorden komen niet overeen');
   }
 
