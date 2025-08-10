@@ -20,6 +20,24 @@ document.addEventListener('DOMContentLoaded', function () {
     .catch(error => {
       console.error('Fout bij laden header:', error);
     });
+
+    // --- Footer inladen via fetch ---
+fetch('footer.html')
+  .then(response => {
+    if (!response.ok) throw new Error('Footer kon niet geladen worden');
+    return response.text();
+  })
+  .then(html => {
+    const footerContainer = document.getElementById('footer-placeholder');
+    if (footerContainer) {
+      footerContainer.innerHTML = html;
+    } else {
+      console.warn('Geen container gevonden voor footer');
+    }
+  })
+  .catch(error => {
+    console.error('Fout bij laden footer:', error);
+  });
   
   // --- Taalkeuze vlag dropdown ---
   const select = document.querySelector('.custom-lang-select');
