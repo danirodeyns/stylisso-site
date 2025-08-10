@@ -9,86 +9,111 @@ document.addEventListener('DOMContentLoaded', function () {
     })
     .then(html => {
       const headerContainer = document.getElementById('header-placeholder');
-      if (headerContainer) {
-        headerContainer.innerHTML = html;
+      if (!headerContainer) {
+        console.warn('Geen container gevonden voor header');
+        return;
+      }
+      headerContainer.innerHTML = html;
 
-        // --- Check ingelogde gebruiker ---
-        fetch('current_user.php')
-          .then(res => res.json())
-          .then(data => {
-            const loginBtn = headerContainer.querySelector('#loginBtn');
-            const registerBtn = headerContainer.querySelector('#registerBtn');
-            const userDisplay = headerContainer.querySelector('#userDisplay');
-            const userDropdown = headerContainer.querySelector('#userDropdown');
+      // --- Check ingelogde gebruiker ---
+      fetch('current_user.php')
+        .then(res => res.json())
+        .then(data => {
+          const loginBtn = headerContainer.querySelector('#loginBtn');
+          const registerBtn = headerContainer.querySelector('#registerBtn');
+          const userDisplay = headerContainer.querySelector('#userDisplay');
+          const userDropdown = headerContainer.querySelector('#userDropdown');
 
-            if (data.loggedIn) {
-              if (loginBtn) loginBtn.style.display = 'none';
-              if (registerBtn) registerBtn.style.display = 'none';
+          if (data.loggedIn) {
+            if (loginBtn) loginBtn.style.display = 'none';
+            if (registerBtn) registerBtn.style.display = 'none';
 
-              if (userDisplay) {
-                userDisplay.textContent = `Welkom, ${data.userName}`;
-                userDisplay.style.display = 'inline-block';
-              }
-
-              if (userDisplay && userDropdown) {
-                userDisplay.classList.add('user-button');
-                userDropdown.classList.add('user-dropdown');
-
-                userDisplay.addEventListener('click', function (e) {
-                  e.stopPropagation();
-                  userDropdown.classList.toggle('open');
-                });
-
-                document.addEventListener('click', function (e) {
-                  if (!userDropdown.contains(e.target) && !userDisplay.contains(e.target)) {
-                    userDropdown.classList.remove('open');
-                  }
-                });
-              }
-
-            } else {
-              if (loginBtn) loginBtn.style.display = 'inline-block';
-              if (registerBtn) registerBtn.style.display = 'inline-block';
-              if (userDisplay) userDisplay.style.display = 'none';
-              if (userDropdown) userDropdown.classList.remove('open');
+            if (userDisplay) {
+              userDisplay.textContent = `Welkom, ${data.userName}`;
+              userDisplay.style.display = 'inline-block';
+              userDisplay.classList.add('user-button');
             }
-          })
-          .catch(err => console.error('Fout bij ophalen huidige gebruiker:', err));
 
-        // --- Taalkeuze vlag dropdown (NA header inladen!) ---
-        const select = headerContainer.querySelector('.custom-lang-select');
-        const dropdown = headerContainer.querySelector('#flagDropdown');
+            if (userDropdown) {
+              userDropdown.classList.add('user-dropdown');
+            }
 
-        if (select && dropdown) {
-          select.addEventListener('click', function (e) {
-            e.stopPropagation();
-            select.classList.toggle('open');
-          });
+            if (userDisplay && userDropdown) {
+              userDisplay.addEventListener('click', function (e) {
+                e.stopPropagation();
+                userDropdown.classList.toggle('open');
+              });
 
-          dropdown.addEventListener('click', function (e) {
-            const item = e.target.closest('div[data-value]');
-            if (item) {
-              const targetHref = item.dataset.href;
-              const currentPage = window.location.pathname.split('/').pop();
-              if (targetHref && targetHref !== currentPage) {
-                window.location.href = targetHref;
+              document.addEventListener('click', function (e) {
+                if (!userDropdown.contains(e.target) && !userDisplay.contains(e.target)) {
+                  userDropdown.classList.remove('open');
+                }
+              });
+            }
+          } else {
+            if (loginBtn) loginBtn.style.display = 'inline-block';
+            if (registerBtn) registerBtn.style.display = 'inline-block';
+            if (userDisplay) userDisplay.style.display = 'none';
+            if (userDropdown) userDropdown.classList.remove('open');
+          }
+        })
+        .catch(err => console.error('Fout bij ophalen huidige gebruiker:', err));
+
+      // --- Logout knop event listener ---
+      const logoutBtn = headerContainer.querySelector('#logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          fetch('logout.php', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                const currentPage = window.location.pathname.split('/').pop();
+                const redirectPages = ['profielinstellingen.php', 'andere_pagina.php'];
+
+                if (redirectPages.includes(currentPage)) {
+                  window.location.href = 'login_registreren.html';
+                } else {
+                  window.location.reload();
+                }
               } else {
-                select.classList.remove('open');
+                alert('Uitloggen mislukt');
               }
-            }
-          });
+            })
+            .catch(() => alert('Fout bij uitloggen'));
+        });
+      }
 
-          document.addEventListener('click', function (e) {
-            if (!select.contains(e.target)) {
+      // --- Taalkeuze vlag dropdown ---
+      const select = headerContainer.querySelector('.custom-lang-select');
+      const dropdown = headerContainer.querySelector('#flagDropdown');
+
+      if (select && dropdown) {
+        select.addEventListener('click', function (e) {
+          e.stopPropagation();
+          select.classList.toggle('open');
+        });
+
+        dropdown.addEventListener('click', function (e) {
+          const item = e.target.closest('div[data-value]');
+          if (item) {
+            const targetHref = item.dataset.href;
+            const currentPage = window.location.pathname.split('/').pop();
+            if (targetHref && targetHref !== currentPage) {
+              window.location.href = targetHref;
+            } else {
               select.classList.remove('open');
             }
-          });
-        } else {
-          console.warn('Dropdown elementen niet gevonden in de header');
-        }
+          }
+        });
 
+        document.addEventListener('click', function (e) {
+          if (!select.contains(e.target)) {
+            select.classList.remove('open');
+          }
+        });
       } else {
-        console.warn('Geen container gevonden voor header');
+        console.warn('Dropdown elementen niet gevonden in de header');
       }
     })
     .catch(error => {
