@@ -245,14 +245,19 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // --- Foutmeldingen uit queryparameters ---
+  // --- Foutmeldingen en oude waarden uit queryparameters ---
   const params = new URLSearchParams(window.location.search);
 
   function showError(inputId, message) {
     const input = document.getElementById(inputId);
     if (input) {
+      // Verwijder bestaande foutmelding als die er is
+      const existingError = input.parentNode.querySelector('.input-error');
+      if (existingError) existingError.remove();
+
       const errorMsg = document.createElement('div');
       errorMsg.textContent = message;
+      errorMsg.className = 'input-error';
       errorMsg.style.color = "red";
       errorMsg.style.fontSize = "0.9em";
       errorMsg.style.marginTop = "4px";
@@ -260,14 +265,24 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  // Toon foutmeldingen
   if (params.get('error_email') === 'exists') {
     showError('register-email', 'E-mail bestaat al');
   }
   if (params.get('error_password') === 'mismatch') {
     showError('register-password', 'Wachtwoorden komen niet overeen');
   }
-  if (params.get('error_username') === 'exists') {
-    showError('register-username', 'Gebruikersnaam bestaat al');
+
+  // Oude waarden terugzetten in formulier
+  const oldName = params.get('old_name');
+  if (oldName) {
+    const nameInput = document.getElementById('register-name');
+    if (nameInput) nameInput.value = decodeURIComponent(oldName);
   }
 
+  const oldEmail = params.get('old_email');
+  if (oldEmail) {
+    const emailInput = document.getElementById('register-email');
+    if (emailInput) emailInput.value = decodeURIComponent(oldEmail);
+  }
 });
