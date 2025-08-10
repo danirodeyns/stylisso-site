@@ -245,4 +245,29 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // --- Foutmeldingen uit queryparameters ---
+  const params = new URLSearchParams(window.location.search);
+
+  function showError(inputId, message) {
+    const input = document.getElementById(inputId);
+    if (input) {
+      const errorMsg = document.createElement('div');
+      errorMsg.textContent = message;
+      errorMsg.style.color = "red";
+      errorMsg.style.fontSize = "0.9em";
+      errorMsg.style.marginTop = "4px";
+      input.insertAdjacentElement('afterend', errorMsg);
+    }
+  }
+
+  if (params.get('error_email') === 'exists') {
+    showError('register-email', 'E-mail bestaat al');
+  }
+  if (params.get('error_password') === 'mismatch') {
+    showError('register-password', 'Wachtwoorden komen niet overeen');
+  }
+  if (params.get('error_username') === 'exists') {
+    showError('register-username', 'Gebruikersnaam bestaat al');
+  }
+
 });

@@ -1,41 +1,47 @@
 <?php
-session_start();
 include 'db_connect.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['register-name'] ?? '');
-    $email = trim($_POST['register-email'] ?? '');
+    $name         = trim($_POST['register-name'] ?? '');
+    $email        = trim($_POST['register-email'] ?? '');
     $password_raw = $_POST['register-password'] ?? '';
-    $password2_raw = $_POST['register-password2'] ?? '';
-    $address = '';
+    $password2_raw= $_POST['register-password2'] ?? '';
+    $address      = '';
 
-    // Bewaar oude waarden om formulier te kunnen opvullen
-    $_SESSION['old_name'] = $name;
-    $_SESSION['old_email'] = $email;
-
-    if (empty($name) || empty($email) || empty($password_raw) || empty($password2_raw)) {
-        $_SESSION['register_error'] = ['field' => 'general', 'message' => 'Vul alle velden in.'];
-        header('Location: login_registreren.html');
+    // 1. Controleer lege velden (per veld apart)
+    if (empty($name)) {
+        header('Location: login_registreren.html?error_name=empty&old_email=' . urlencode($email));
+        exit;
+    }
+    if (empty($email)) {
+        header('Location: login_registreren.html?error_email=empty&old_name=' . urlencode($name));
+        exit;
+    }
+    if (empty($password_raw)) {
+        header('Location: login_registreren.html?error_password=empty&old_name=' . urlencode($name) . '&old_email=' . urlencode($email));
+        exit;
+    }
+    if (empty($password2_raw)) {
+        header('Location: login_registreren.html?error_password2=empty&old_name=' . urlencode($name) . '&old_email=' . urlencode($email));
         exit;
     }
 
+    // 2. Ongeldig e-mailadres
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $_SESSION['register_error'] = ['field' => 'email', 'message' => 'Ongeldig e-mailadres.'];
-        header('Location: login_registreren.html');
+        header('Location: login_registreren.html?error_email=invalid&old_name=' . urlencode($name));
         exit;
     }
 
+    // 3. Wachtwoorden komen niet overeen
     if ($password_raw !== $password2_raw) {
-        $_SESSION['register_error'] = ['field' => 'password2', 'message' => 'Wachtwoorden komen niet overeen.'];
-        header('Location: login_registreren.html');
+        header('Location: login_registreren.html?error_password2=nomatch&old_name=' . urlencode($name) . '&old_email=' . urlencode($email));
         exit;
     }
 
-    // Controleer of email al bestaat
+    // 4. Controleer of email al bestaat
     $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
     if (!$stmt) {
-        $_SESSION['register_error'] = ['field' => 'general', 'message' => 'Database fout: ' . $conn->error];
-        header('Location: login_registreren.html');
+        header('Location: login_registreren.html?error_general=db_error&old_name=' . urlencode($name) . '&old_email=' . urlencode($email));
         exit;
     }
     $stmt->bind_param("s", $email);
@@ -43,34 +49,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        $_SESSION['register_error'] = ['field' => 'email', 'message' => 'Email bestaat al.'];
-        header('Location: login_registreren.html');
+        header('Location: login_registreren.html?error_email=exists&old_name=' . urlencode($name));
         exit;
     }
 
-    // Wachtwoord hashen
+    // 5. Wachtwoord hashen
     $password = password_hash($password_raw, PASSWORD_DEFAULT);
 
-    // Nieuwe gebruiker toevoegen
+    // 6. Nieuwe gebruiker toevoegen
     $stmt = $conn->prepare("INSERT INTO users (name, email, password, address) VALUES (?, ?, ?, ?)");
     if (!$stmt) {
-        $_SESSION['register_error'] = ['field' => 'general', 'message' => 'Database fout: ' . $conn->error];
-        header('Location: login_registreren.html');
+        header('Location: login_registreren.html?error_general=db_error&old_name=' . urlencode($name) . '&old_email=' . urlencode($email));
         exit;
     }
     $stmt->bind_param("ssss", $name, $email, $password, $address);
 
     if ($stmt->execute()) {
-        // Registratie succesvol, oude data en errors verwijderen
-        unset($_SESSION['old_name'], $_SESSION['old_email'], $_SESSION['register_error']);
-
-        $_SESSION['user_id'] = $conn->insert_id;
-        $_SESSION['user_name'] = $name;
-        header('Location: index.php');  // Pas aan naar jouw homepage
+        header('Location: login_registreren.html?success=registered');
         exit;
     } else {
-        $_SESSION['register_error'] = ['field' => 'general', 'message' => 'Fout bij registratie: ' . $conn->error];
-        header('Location: login_registreren.html');
+        header('Location: login_registreren.html?error_general=insert_failed&old_name=' . urlencode($name) . '&old_email=' . urlencode($email));
         exit;
     }
 } else {
