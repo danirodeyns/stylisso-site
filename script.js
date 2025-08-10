@@ -11,6 +11,38 @@ document.addEventListener('DOMContentLoaded', function () {
       const headerContainer = document.getElementById('header-placeholder');
       if (headerContainer) {
         headerContainer.innerHTML = html;
+
+        // --- Taalkeuze vlag dropdown (NA header inladen!) ---
+        const select = headerContainer.querySelector('.custom-lang-select');
+        const dropdown = headerContainer.querySelector('#flagDropdown');
+
+        if (select && dropdown) {
+          select.addEventListener('click', function () {
+            select.classList.toggle('open');
+          });
+
+          dropdown.addEventListener('click', function (e) {
+            const item = e.target.closest('div[data-value]');
+            if (item) {
+              const targetHref = item.dataset.href;
+              const currentPage = window.location.pathname.split('/').pop();
+              if (targetHref && targetHref !== currentPage) {
+                window.location.href = targetHref;
+              } else {
+                select.classList.remove('open');
+              }
+            }
+          });
+
+          document.addEventListener('click', function (e) {
+            if (!select.contains(e.target)) {
+              select.classList.remove('open');
+            }
+          });
+        } else {
+          console.warn('Dropdown elementen niet gevonden in de header');
+        }
+
       } else {
         console.warn('Geen container gevonden voor header');
       }
@@ -36,34 +68,6 @@ document.addEventListener('DOMContentLoaded', function () {
     .catch(error => {
       console.error('Fout bij laden footer:', error);
     });
-
-  // --- Taalkeuze vlag dropdown ---
-  const select = document.querySelector('.custom-lang-select');
-  const flag = document.getElementById('selectedFlag');
-  const dropdown = document.getElementById('flagDropdown');
-
-  select.addEventListener('click', function () {
-    select.classList.toggle('open');
-  });
-
-  dropdown.addEventListener('click', function (e) {
-    const item = e.target.closest('div[data-value]');
-    if (item) {
-      const targetHref = item.dataset.href;
-      const currentPage = window.location.pathname.split('/').pop();
-      if (targetHref && targetHref !== currentPage) {
-        window.location.href = targetHref;
-      } else {
-        select.classList.remove('open');
-      }
-    }
-  });
-
-  document.addEventListener('click', function (e) {
-    if (!select.contains(e.target)) {
-      select.classList.remove('open');
-    }
-  });
 
   // --- Winkelwagen beheer ---
   const cartDropdown = document.getElementById('cartDropdown');
