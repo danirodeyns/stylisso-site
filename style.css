@@ -92,13 +92,15 @@ header {
 .user-dropdown {
   display: none;
   position: absolute;
-  background-color: white;
-  border: 1px solid #ccc;
-  margin-top: 5px;
-  border-radius: 5px;
-  padding: 8px 12px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  z-index: 1000;
+  top: 110%;
+  right: 0;
+  background: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  z-index: 10;
+  min-width: 220px;
+  padding: 0.5rem 0;
 }
 
 .user-dropdown.open {
@@ -106,14 +108,16 @@ header {
 }
 
 .user-dropdown a {
-  display: block;
-  padding: 6px 10px;
-  color: #333;
-  text-decoration: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  white-space: nowrap;
+  border-radius: 0.5rem;
+  transition: background 0.2s;
 }
 
 .user-dropdown a:hover {
-  background-color: #eee;
+  background-color: #f4f4f4;
 }
 
 .nav-link {
@@ -1224,6 +1228,16 @@ input[type="number"] {
     background-color: black;
     color: white;
     border-color: white;
+  }
+
+  .user-dropdown {
+    background: #222;
+    border: 1px solid #444;
+    color: #eee;
+  }
+
+  .user-dropdown a:hover {
+  background: #333;
   }
 
   .nav-link:hover {
