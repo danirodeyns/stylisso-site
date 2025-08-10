@@ -23,8 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['name'];
-            echo "Inloggen gelukt!";
-            // header("Location: dashboard.php"); // Optioneel redirecten
+            header("Location: index.html");
             exit;
         } else {
             echo "Verkeerd wachtwoord.";

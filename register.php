@@ -22,19 +22,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = password_hash($password_raw, PASSWORD_DEFAULT);
 
     // Check of email al bestaat
-    $sql = "SELECT id FROM users WHERE email='$email'";
-    $result = $conn->query($sql);
+    $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
     if ($result->num_rows > 0) {
         echo "Email bestaat al.";
         exit;
     }
 
     // Insert nieuwe gebruiker
-    $sql = "INSERT INTO users (name, email, password, address) VALUES ('$name', '$email', '$password', '$address')";
-    if ($conn->query($sql) === TRUE) {
-        echo "Registratie gelukt.";
+    $stmt = $conn->prepare("INSERT INTO users (name, email, password, address) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $name, $email, $password, $address);
+
+    if ($stmt->execute()) {
+        // Direct inloggen na registratie
+        $_SESSION['user_id'] = $conn->insert_id;
+        $_SESSION['user_name'] = $name;
+
+        // Redirect naar startpagina
+        header("Location: index.html");
+        exit;
     } else {
         echo "Fout: " . $conn->error;
+        exit;
     }
 }
 ?>

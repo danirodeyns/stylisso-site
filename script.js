@@ -1,7 +1,7 @@
 console.log("Stylisso site loaded.");
 
 document.addEventListener('DOMContentLoaded', function () {
-   // --- Header inladen via fetch ---
+  // --- Header inladen via fetch ---
   fetch('header.html')
     .then(response => {
       if (!response.ok) throw new Error('Header kon niet geladen worden');
@@ -21,24 +21,24 @@ document.addEventListener('DOMContentLoaded', function () {
       console.error('Fout bij laden header:', error);
     });
 
-    // --- Footer inladen via fetch ---
-fetch('footer.html')
-  .then(response => {
-    if (!response.ok) throw new Error('Footer kon niet geladen worden');
-    return response.text();
-  })
-  .then(html => {
-    const footerContainer = document.getElementById('footer-placeholder');
-    if (footerContainer) {
-      footerContainer.innerHTML = html;
-    } else {
-      console.warn('Geen container gevonden voor footer');
-    }
-  })
-  .catch(error => {
-    console.error('Fout bij laden footer:', error);
-  });
-  
+  // --- Footer inladen via fetch ---
+  fetch('footer.html')
+    .then(response => {
+      if (!response.ok) throw new Error('Footer kon niet geladen worden');
+      return response.text();
+    })
+    .then(html => {
+      const footerContainer = document.getElementById('footer-placeholder');
+      if (footerContainer) {
+        footerContainer.innerHTML = html;
+      } else {
+        console.warn('Geen container gevonden voor footer');
+      }
+    })
+    .catch(error => {
+      console.error('Fout bij laden footer:', error);
+    });
+
   // --- Taalkeuze vlag dropdown ---
   const select = document.querySelector('.custom-lang-select');
   const flag = document.getElementById('selectedFlag');
@@ -78,7 +78,7 @@ fetch('footer.html')
     fetch('cart.php?action=get_cart')
       .then(response => response.json())
       .then(data => {
-        if(data.success){
+        if (data.success) {
           renderCartItems(data.cart);
           renderCartDropdown(data.cart);
         } else {
@@ -91,6 +91,7 @@ fetch('footer.html')
   }
 
   function calculateSubtotal(cart) {
+    if (!subtotalDisplay) return;
     const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     subtotalDisplay.textContent = `€${total.toFixed(2)}`;
   }
@@ -109,7 +110,7 @@ fetch('footer.html')
       }
       emptyMsg.style.display = "block";
 
-      subtotalDisplay.textContent = "€0,00";
+      if (subtotalDisplay) subtotalDisplay.textContent = "€0,00";
       if (cartSummary) cartSummary.style.display = "none";
       return;
     }
