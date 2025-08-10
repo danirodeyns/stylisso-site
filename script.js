@@ -1,6 +1,26 @@
 console.log("Stylisso site loaded.");
 
 document.addEventListener('DOMContentLoaded', function () {
+   // --- Header inladen via fetch ---
+  fetch('header.html')
+    .then(response => {
+      if (!response.ok) throw new Error('Header kon niet geladen worden');
+      return response.text();
+    })
+    .then(html => {
+      // Plaats header in de juiste container in je index.html
+      // Zorg dat je index.html een div heeft met id="header-placeholder"
+      const headerContainer = document.getElementById('header-placeholder');
+      if (headerContainer) {
+        headerContainer.innerHTML = html;
+      } else {
+        console.warn('Geen container gevonden voor header');
+      }
+    })
+    .catch(error => {
+      console.error('Fout bij laden header:', error);
+    });
+  
   // --- Taalkeuze vlag dropdown ---
   const select = document.querySelector('.custom-lang-select');
   const flag = document.getElementById('selectedFlag');
