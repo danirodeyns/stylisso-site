@@ -289,4 +289,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const emailInput = document.getElementById('register-email');
     if (emailInput) emailInput.value = decodeURIComponent(oldEmail);
   }
+
+  // Login fouten tonen via query params
+  if (params.get('error') === 'wrong_password') {
+    showError('login-password', 'Verkeerd wachtwoord');
+  }
+
+  if (params.get('error') === 'email_not_found') {
+    showError('login-email', 'E-mail niet gevonden');
+  }
+
+  // Oude waarde e-mail terugzetten bij loginformulier
+  const oldLoginEmail = params.get('old_email');
+  if (oldLoginEmail) {
+    const loginEmailInput = document.getElementById('login-email');
+    if (loginEmailInput) loginEmailInput.value = decodeURIComponent(oldLoginEmail);
+  }
 });

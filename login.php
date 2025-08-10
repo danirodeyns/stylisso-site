@@ -7,11 +7,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['login-email'] ?? '';
     $password = $_POST['login-password'] ?? '';
 
-    if (empty($email) || empty($password)) {
-        echo "Vul zowel e-mail als wachtwoord in.";
-        exit;
-    }
-
     // Prepared statement voor veiligheid
     $stmt = $conn->prepare("SELECT id, password, name FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
@@ -26,11 +21,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: index.html");
             exit;
         } else {
-            echo "Verkeerd wachtwoord.";
+            // Verkeerd wachtwoord
+            header('Location: login_registreren.html?error=wrong_password&old_email=' . urlencode($email));
             exit;
         }
     } else {
-        echo "E-mail niet gevonden.";
+        // E-mail niet gevonden
+        header('Location: login_registreren.html?error=email_not_found&old_email=' . urlencode($email));
         exit;
     }
 }
