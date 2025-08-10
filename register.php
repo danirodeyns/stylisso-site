@@ -1,38 +1,41 @@
 <?php
-// register.php
 session_start();
 include 'db_connect.php';
 
-header('Content-Type: application/json');
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Veilig ophalen van POST-waarden
-    $name = isset($_POST['register-name']) ? trim($_POST['register-name']) : '';
-    $email = isset($_POST['register-email']) ? trim($_POST['register-email']) : '';
-    $password_raw = isset($_POST['register-password']) ? $_POST['register-password'] : '';
-    $password2_raw = isset($_POST['register-password2']) ? $_POST['register-password2'] : '';
-    $address = ''; // leeg bij registratie
+    $name = trim($_POST['register-name'] ?? '');
+    $email = trim($_POST['register-email'] ?? '');
+    $password_raw = $_POST['register-password'] ?? '';
+    $password2_raw = $_POST['register-password2'] ?? '';
+    $address = '';
 
-    // Simpele validatie
+    // Bewaar oude waarden om formulier te kunnen opvullen
+    $_SESSION['old_name'] = $name;
+    $_SESSION['old_email'] = $email;
+
     if (empty($name) || empty($email) || empty($password_raw) || empty($password2_raw)) {
-        echo json_encode(['success' => false, 'error' => 'Vul alle velden in.']);
+        $_SESSION['register_error'] = ['field' => 'general', 'message' => 'Vul alle velden in.'];
+        header('Location: register_form.php');
         exit;
     }
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo json_encode(['success' => false, 'error' => 'Ongeldig e-mailadres.']);
+        $_SESSION['register_error'] = ['field' => 'email', 'message' => 'Ongeldig e-mailadres.'];
+        header('Location: register_form.php');
         exit;
     }
 
     if ($password_raw !== $password2_raw) {
-        echo json_encode(['success' => false, 'error' => 'Wachtwoorden komen niet overeen.']);
+        $_SESSION['register_error'] = ['field' => 'password2', 'message' => 'Wachtwoorden komen niet overeen.'];
+        header('Location: register_form.php');
         exit;
     }
 
-    // Check of email al bestaat
+    // Controleer of email al bestaat
     $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
     if (!$stmt) {
-        echo json_encode(['success' => false, 'error' => 'Database fout: ' . $conn->error]);
+        $_SESSION['register_error'] = ['field' => 'general', 'message' => 'Database fout: ' . $conn->error];
+        header('Location: register_form.php');
         exit;
     }
     $stmt->bind_param("s", $email);
@@ -40,35 +43,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        echo json_encode(['success' => false, 'error' => 'Email bestaat al.']);
+        $_SESSION['register_error'] = ['field' => 'email', 'message' => 'Email bestaat al.'];
+        header('Location: register_form.php');
         exit;
     }
 
-    // Hash het wachtwoord
+    // Wachtwoord hashen
     $password = password_hash($password_raw, PASSWORD_DEFAULT);
 
-    // Insert nieuwe gebruiker
+    // Nieuwe gebruiker toevoegen
     $stmt = $conn->prepare("INSERT INTO users (name, email, password, address) VALUES (?, ?, ?, ?)");
     if (!$stmt) {
-        echo json_encode(['success' => false, 'error' => 'Database fout: ' . $conn->error]);
+        $_SESSION['register_error'] = ['field' => 'general', 'message' => 'Database fout: ' . $conn->error];
+        header('Location: register_form.php');
         exit;
     }
     $stmt->bind_param("ssss", $name, $email, $password, $address);
 
     if ($stmt->execute()) {
-        // Direct inloggen na registratie
+        // Registratie succesvol, oude data en errors verwijderen
+        unset($_SESSION['old_name'], $_SESSION['old_email'], $_SESSION['register_error']);
+
         $_SESSION['user_id'] = $conn->insert_id;
         $_SESSION['user_name'] = $name;
-
-        echo json_encode(['success' => true]);
+        header('Location: index.php');  // Pas aan naar jouw homepage
         exit;
     } else {
-        echo json_encode(['success' => false, 'error' => 'Fout bij registratie: ' . $conn->error]);
+        $_SESSION['register_error'] = ['field' => 'general', 'message' => 'Fout bij registratie: ' . $conn->error];
+        header('Location: register_form.php');
         exit;
     }
 } else {
-    // Geen POST request
-    echo json_encode(['success' => false, 'error' => 'Ongeldige aanvraag.']);
+    header('Location: register_form.php');
     exit;
 }
 ?>

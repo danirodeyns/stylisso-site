@@ -245,41 +245,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // --- Toevoeging: AJAX registratieformulier verwerking ---
-
-  const registerForm = document.querySelector('.register-section form');
-  if (registerForm) {
-    registerForm.addEventListener('submit', function (e) {
-      e.preventDefault(); // voorkom pagina-refresh
-
-      const formData = new FormData(registerForm);
-
-      fetch('register.php', {
-        method: 'POST',
-        body: formData,
-      })
-      .then(response => response.json())
-      .then(data => {
-        const emailErrorDiv = document.getElementById('email-error');
-        emailErrorDiv.textContent = ''; // reset foutmelding
-
-        if (data.success) {
-          // Registratie gelukt => doorsturen naar startpagina
-          window.location.href = 'index.html';
-        } else {
-          // Foutmelding tonen onder het emailveld als het over email gaat
-          if (data.error && data.error.toLowerCase().includes('email')) {
-            emailErrorDiv.textContent = data.error;
-          } else {
-            alert(data.error || 'Er is een fout opgetreden.');
-          }
-        }
-      })
-      .catch(err => {
-        console.error('Fout bij registreren:', err);
-        alert('Er is een fout opgetreden bij het registreren.');
-      });
-    });
-  }
-
 });
