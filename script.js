@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Login fouten tonen via query params
   if (params.get('error') === 'wrong_password') {
-    showError('login-password', 'Verkeerd wachtwoord');
+    showError('login-password', 'Foutief wachtwoord');
   }
 
   if (params.get('error') === 'email_not_found') {
