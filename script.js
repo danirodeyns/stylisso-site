@@ -12,6 +12,36 @@ document.addEventListener('DOMContentLoaded', function () {
       if (headerContainer) {
         headerContainer.innerHTML = html;
 
+        // --- Check ingelogde gebruiker ---
+        fetch('current_user.php')
+          .then(res => res.json())
+          .then(data => {
+            if(data.loggedIn) {
+              // Voorbeeld: login/registreer knoppen verbergen
+              const loginBtn = headerContainer.querySelector('#loginBtn');
+              const registerBtn = headerContainer.querySelector('#registerBtn');
+              const userDisplay = headerContainer.querySelector('#userDisplay');
+
+              if(loginBtn) loginBtn.style.display = 'none';
+              if(registerBtn) registerBtn.style.display = 'none';
+
+              if(userDisplay) {
+                userDisplay.textContent = `Welkom, ${data.userName}`;
+                userDisplay.style.display = 'inline-block';
+              }
+            } else {
+              // Niet ingelogd, toon login/registreer, verberg user display
+              const loginBtn = headerContainer.querySelector('#loginBtn');
+              const registerBtn = headerContainer.querySelector('#registerBtn');
+              const userDisplay = headerContainer.querySelector('#userDisplay');
+
+              if(loginBtn) loginBtn.style.display = 'inline-block';
+              if(registerBtn) registerBtn.style.display = 'inline-block';
+              if(userDisplay) userDisplay.style.display = 'none';
+            }
+          })
+          .catch(err => console.error('Fout bij ophalen huidige gebruiker:', err));
+
         // --- Taalkeuze vlag dropdown (NA header inladen!) ---
         const select = headerContainer.querySelector('.custom-lang-select');
         const dropdown = headerContainer.querySelector('#flagDropdown');
