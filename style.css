@@ -89,6 +89,33 @@ header {
   border-color: black;
 }
 
+.user-dropdown {
+  display: none;
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  margin-top: 5px;
+  border-radius: 5px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+
+.user-dropdown.open {
+  display: block;
+}
+
+.user-dropdown a {
+  display: block;
+  padding: 6px 10px;
+  color: #333;
+  text-decoration: none;
+}
+
+.user-dropdown a:hover {
+  background-color: #eee;
+}
+
 .nav-link {
   text-decoration: none;
   color: inherit;

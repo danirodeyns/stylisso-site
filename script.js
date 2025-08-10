@@ -20,38 +20,37 @@ document.addEventListener('DOMContentLoaded', function () {
             const registerBtn = headerContainer.querySelector('#registerBtn');
             const userDisplay = headerContainer.querySelector('#userDisplay');
             const userDropdown = headerContainer.querySelector('#userDropdown');
-            // const userNameSpan = headerContainer.querySelector('#userName'); // alleen als je dit gebruikt
 
-            if(data.loggedIn) {
-              if(loginBtn) loginBtn.style.display = 'none';
-              if(registerBtn) registerBtn.style.display = 'none';
+            if (data.loggedIn) {
+              if (loginBtn) loginBtn.style.display = 'none';
+              if (registerBtn) registerBtn.style.display = 'none';
 
-              if(userDisplay) {
+              if (userDisplay) {
                 userDisplay.textContent = `Welkom, ${data.userName}`;
                 userDisplay.style.display = 'inline-block';
               }
 
-              if(userDisplay && userDropdown) {
-                userDisplay.addEventListener('click', () => {
-                  if(userDropdown.style.display === 'none' || userDropdown.style.display === '') {
-                    userDropdown.style.display = 'block';
-                  } else {
-                    userDropdown.style.display = 'none';
-                  }
+              if (userDisplay && userDropdown) {
+                userDisplay.classList.add('user-button');
+                userDropdown.classList.add('user-dropdown');
+
+                userDisplay.addEventListener('click', function (e) {
+                  e.stopPropagation();
+                  userDropdown.classList.toggle('open');
                 });
 
-                document.addEventListener('click', (e) => {
-                  if (!userDisplay.contains(e.target) && !userDropdown.contains(e.target)) {
-                    userDropdown.style.display = 'none';
+                document.addEventListener('click', function (e) {
+                  if (!userDropdown.contains(e.target) && !userDisplay.contains(e.target)) {
+                    userDropdown.classList.remove('open');
                   }
                 });
               }
 
             } else {
-              if(loginBtn) loginBtn.style.display = 'inline-block';
-              if(registerBtn) registerBtn.style.display = 'inline-block';
-              if(userDisplay) userDisplay.style.display = 'none';
-              if(userDropdown) userDropdown.style.display = 'none';
+              if (loginBtn) loginBtn.style.display = 'inline-block';
+              if (registerBtn) registerBtn.style.display = 'inline-block';
+              if (userDisplay) userDisplay.style.display = 'none';
+              if (userDropdown) userDropdown.classList.remove('open');
             }
           })
           .catch(err => console.error('Fout bij ophalen huidige gebruiker:', err));
@@ -61,7 +60,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const dropdown = headerContainer.querySelector('#flagDropdown');
 
         if (select && dropdown) {
-          select.addEventListener('click', function () {
+          select.addEventListener('click', function (e) {
+            e.stopPropagation();
             select.classList.toggle('open');
           });
 
