@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function () {
   fetchCart();
 
   // Logout functie
-  function handleLogout() {
+   function handleLogout() {
     fetch('logout.php', { method: 'POST' })
       .then(response => response.json())
       .then(data => {
