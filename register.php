@@ -15,19 +15,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($name) || empty($email) || empty($password_raw) || empty($password2_raw)) {
         $_SESSION['register_error'] = ['field' => 'general', 'message' => 'Vul alle velden in.'];
-        header('Location: register.php');
+        header('Location: login_registreren.html');
         exit;
     }
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['register_error'] = ['field' => 'email', 'message' => 'Ongeldig e-mailadres.'];
-        header('Location: register.php');
+        header('Location: login_registreren.html');
         exit;
     }
 
     if ($password_raw !== $password2_raw) {
         $_SESSION['register_error'] = ['field' => 'password2', 'message' => 'Wachtwoorden komen niet overeen.'];
-        header('Location: register.php');
+        header('Location: login_registreren.html');
         exit;
     }
 
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
     if (!$stmt) {
         $_SESSION['register_error'] = ['field' => 'general', 'message' => 'Database fout: ' . $conn->error];
-        header('Location: register.php');
+        header('Location: login_registreren.html');
         exit;
     }
     $stmt->bind_param("s", $email);
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($result->num_rows > 0) {
         $_SESSION['register_error'] = ['field' => 'email', 'message' => 'Email bestaat al.'];
-        header('Location: register.php');
+        header('Location: login_registreren.html');
         exit;
     }
 
@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $conn->prepare("INSERT INTO users (name, email, password, address) VALUES (?, ?, ?, ?)");
     if (!$stmt) {
         $_SESSION['register_error'] = ['field' => 'general', 'message' => 'Database fout: ' . $conn->error];
-        header('Location: register.php');
+        header('Location: login_registreren.html');
         exit;
     }
     $stmt->bind_param("ssss", $name, $email, $password, $address);
@@ -70,11 +70,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     } else {
         $_SESSION['register_error'] = ['field' => 'general', 'message' => 'Fout bij registratie: ' . $conn->error];
-        header('Location: register.php');
+        header('Location: login_registreren.html');
         exit;
     }
 } else {
-    header('Location: register.php');
+    header('Location: login_registreren.html');
     exit;
 }
 ?>
