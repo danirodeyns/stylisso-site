@@ -4,11 +4,19 @@ session_start();
 include 'db_connect.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $conn->real_escape_string($_POST['email']);
-    $password = $_POST['password'];
+    $email = $_POST['login-email'] ?? '';
+    $password = $_POST['login-password'] ?? '';
 
-    $sql = "SELECT id, password, name FROM users WHERE email='$email'";
-    $result = $conn->query($sql);
+    if (empty($email) || empty($password)) {
+        echo "Vul zowel e-mail als wachtwoord in.";
+        exit;
+    }
+
+    // Prepared statement voor veiligheid
+    $stmt = $conn->prepare("SELECT id, password, name FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     if ($result->num_rows === 1) {
         $user = $result->fetch_assoc();
@@ -16,18 +24,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['name'];
             echo "Inloggen gelukt!";
-            // header("Location: dashboard.php"); // Later redirect
+            // header("Location: dashboard.php"); // Optioneel redirecten
+            exit;
         } else {
             echo "Verkeerd wachtwoord.";
+            exit;
         }
     } else {
-        echo "Email niet gevonden.";
+        echo "E-mail niet gevonden.";
+        exit;
     }
 }
 ?>
 
 <form method="post">
-    Email: <input type="email" name="email" required><br>
-    Wachtwoord: <input type="password" name="password" required><br>
+    Email: <input type="email" name="login-email" required><br>
+    Wachtwoord: <input type="password" name="login-password" required><br>
     <button type="submit">Inloggen</button>
 </form>
