@@ -8,8 +8,6 @@ document.addEventListener('DOMContentLoaded', function () {
       return response.text();
     })
     .then(html => {
-      // Plaats header in de juiste container in je index.html
-      // Zorg dat je index.html een div heeft met id="header-placeholder"
       const headerContainer = document.getElementById('header-placeholder');
       if (headerContainer) {
         headerContainer.innerHTML = html;
@@ -73,7 +71,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const subtotalDisplay = document.getElementById('cart-subtotal');
   const cartSummary = document.getElementById('cart-summary');
 
-  // Haal cart op van server
   function fetchCart() {
     fetch('cart.php?action=get_cart')
       .then(response => response.json())
@@ -171,7 +168,6 @@ document.addEventListener('DOMContentLoaded', function () {
     cartDropdown.appendChild(ul);
   }
 
-  // Update hoeveelheid via AJAX naar server
   function updateQuantityOnServer(productId, quantity) {
     fetch('cart.php?action=update_quantity', {
       method: 'POST',
@@ -188,7 +184,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Verwijder item via AJAX naar server
   function removeItemFromServer(productId) {
     fetch('cart.php?action=remove_item', {
       method: 'POST',
@@ -205,7 +200,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Eventlisteners
   document.addEventListener('change', function (e) {
     if (e.target.classList.contains('quantity-input')) {
       const productId = parseInt(e.target.dataset.id, 10);
@@ -223,33 +217,69 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // Initialiseer cart weergave
   fetchCart();
 
   // Logout functie
-function handleLogout() {
-  fetch('logout.php', { method: 'POST' })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        const currentPage = window.location.pathname.split('/').pop();
-        const redirectPages = ['profielinstellingen.php', 'andere_pagina.php'];
+  function handleLogout() {
+    fetch('logout.php', { method: 'POST' })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const currentPage = window.location.pathname.split('/').pop();
+          const redirectPages = ['profielinstellingen.php', 'andere_pagina.php'];
 
-        if (redirectPages.includes(currentPage)) {
-          window.location.href = 'login_registreren.html';
-        } else {
-          window.location.reload();
+          if (redirectPages.includes(currentPage)) {
+            window.location.href = 'login_registreren.html';
+          } else {
+            window.location.reload();
+          }
         }
-      }
-    });
-}
+      });
+  }
 
-// Logout knop event listener (zorg dat je header logout knop deze ID heeft!)
-const logoutBtn = document.getElementById('logoutBtn');
-if (logoutBtn) {
-  logoutBtn.addEventListener('click', function(e) {
-    e.preventDefault();
-    handleLogout();
-  });
-}
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      handleLogout();
+    });
+  }
+
+  // --- Toevoeging: AJAX registratieformulier verwerking ---
+
+  const registerForm = document.querySelector('.register-section form');
+  if (registerForm) {
+    registerForm.addEventListener('submit', function (e) {
+      e.preventDefault(); // voorkom pagina-refresh
+
+      const formData = new FormData(registerForm);
+
+      fetch('register.php', {
+        method: 'POST',
+        body: formData,
+      })
+      .then(response => response.json())
+      .then(data => {
+        const emailErrorDiv = document.getElementById('email-error');
+        emailErrorDiv.textContent = ''; // reset foutmelding
+
+        if (data.success) {
+          // Registratie gelukt => doorsturen naar startpagina
+          window.location.href = 'index.html';
+        } else {
+          // Foutmelding tonen onder het emailveld als het over email gaat
+          if (data.error && data.error.toLowerCase().includes('email')) {
+            emailErrorDiv.textContent = data.error;
+          } else {
+            alert(data.error || 'Er is een fout opgetreden.');
+          }
+        }
+      })
+      .catch(err => {
+        console.error('Fout bij registreren:', err);
+        alert('Er is een fout opgetreden bij het registreren.');
+      });
+    });
+  }
+
 });
