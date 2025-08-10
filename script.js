@@ -16,21 +16,24 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch('current_user.php')
           .then(res => res.json())
           .then(data => {
-            if(data.loggedIn) {
-              // Voorbeeld: login/registreer knoppen verbergen
-              const loginBtn = headerContainer.querySelector('#loginBtn');
-              const registerBtn = headerContainer.querySelector('#registerBtn');
-              const userDisplay = headerContainer.querySelector('#userDisplay');
+            const loginBtn = headerContainer.querySelector('#loginBtn');
+            const registerBtn = headerContainer.querySelector('#registerBtn');
+            const userDisplay = headerContainer.querySelector('#userDisplay');
+            const userDropdown = headerContainer.querySelector('#userDropdown');
+            // const userNameSpan = headerContainer.querySelector('#userName'); // alleen als je dit gebruikt
 
+            if(data.loggedIn) {
               if(loginBtn) loginBtn.style.display = 'none';
               if(registerBtn) registerBtn.style.display = 'none';
 
-              if(userDisplay && userNameSpan) {
-                userNameSpan.textContent = data.userName;
+              if(userDisplay) {
+                userDisplay.textContent = `Welkom, ${data.userName}`;
                 userDisplay.style.display = 'inline-block';
+              }
 
+              if(userDisplay && userDropdown) {
                 userDisplay.addEventListener('click', () => {
-                  if(userDropdown.style.display === 'none') {
+                  if(userDropdown.style.display === 'none' || userDropdown.style.display === '') {
                     userDropdown.style.display = 'block';
                   } else {
                     userDropdown.style.display = 'none';
@@ -38,20 +41,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
 
                 document.addEventListener('click', (e) => {
-                  if(!userDisplay.contains(e.target)) {
+                  if (!userDisplay.contains(e.target) && !userDropdown.contains(e.target)) {
                     userDropdown.style.display = 'none';
                   }
                 });
               }
-            } else {
-              // Niet ingelogd, toon login/registreer, verberg user display
-              const loginBtn = headerContainer.querySelector('#loginBtn');
-              const registerBtn = headerContainer.querySelector('#registerBtn');
-              const userDisplay = headerContainer.querySelector('#userDisplay');
 
+            } else {
               if(loginBtn) loginBtn.style.display = 'inline-block';
               if(registerBtn) registerBtn.style.display = 'inline-block';
               if(userDisplay) userDisplay.style.display = 'none';
+              if(userDropdown) userDropdown.style.display = 'none';
             }
           })
           .catch(err => console.error('Fout bij ophalen huidige gebruiker:', err));
