@@ -225,4 +225,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Initialiseer cart weergave
   fetchCart();
+
+  // Logout functie
+function handleLogout() {
+  fetch('logout.php', { method: 'POST' })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        const currentPage = window.location.pathname.split('/').pop();
+        const redirectPages = ['profielinstellingen.php', 'andere_pagina.php'];
+
+        if (redirectPages.includes(currentPage)) {
+          window.location.href = 'login_registreren.html';
+        } else {
+          window.location.reload();
+        }
+      }
+    });
+}
+
+// Logout knop event listener (zorg dat je header logout knop deze ID heeft!)
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    handleLogout();
+  });
+}
 });
