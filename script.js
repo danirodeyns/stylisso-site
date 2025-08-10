@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
               if (data.success) {
                 const currentPage = window.location.pathname.split('/').pop();
-                const redirectPages = ['profielinstellingen.php', 'cart.html'];
+                const redirectPages = ['profielinstellingen.html', 'cart.html'];
 
                 if (redirectPages.includes(currentPage)) {
                   window.location.href = 'login_registreren.html';
