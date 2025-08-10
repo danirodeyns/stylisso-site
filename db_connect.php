@@ -3,7 +3,7 @@
 $dbHost = 'localhost';
 $dbUser = 'root';
 $dbPass = '';
-$dbName = 'mijnproject'; // Pas aan naar jouw db naam
+$dbName = 'stylisso_db'; // Pas aan naar jouw db naam
 
 $conn = new mysqli($dbHost, $dbUser, $dbPass, $dbName);
 
