@@ -25,9 +25,23 @@ document.addEventListener('DOMContentLoaded', function () {
               if(loginBtn) loginBtn.style.display = 'none';
               if(registerBtn) registerBtn.style.display = 'none';
 
-              if(userDisplay) {
-                userDisplay.textContent = `Welkom, ${data.userName}`;
+              if(userDisplay && userNameSpan) {
+                userNameSpan.textContent = data.userName;
                 userDisplay.style.display = 'inline-block';
+
+                userDisplay.addEventListener('click', () => {
+                  if(userDropdown.style.display === 'none') {
+                    userDropdown.style.display = 'block';
+                  } else {
+                    userDropdown.style.display = 'none';
+                  }
+                });
+
+                document.addEventListener('click', (e) => {
+                  if(!userDisplay.contains(e.target)) {
+                    userDropdown.style.display = 'none';
+                  }
+                });
               }
             } else {
               // Niet ingelogd, toon login/registreer, verberg user display
