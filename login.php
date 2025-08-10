@@ -36,9 +36,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
-<form method="post">
-    Email: <input type="email" name="login-email" required><br>
-    Wachtwoord: <input type="password" name="login-password" required><br>
-    <button type="submit">Inloggen</button>
-</form>

@@ -65,19 +65,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <title>Checkout</title>
-</head>
-<body>
-    <h1>Checkout</h1>
-    <form method="post" action="checkout.php">
-        <label for="address">Adres</label><br>
-        <textarea id="address" name="address" required><?= htmlspecialchars($current_address) ?></textarea><br><br>
-        <button type="submit">Bestelling plaatsen</button>
-    </form>
-</body>
-</html>

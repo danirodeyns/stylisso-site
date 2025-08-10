@@ -47,9 +47,3 @@ if ($result->num_rows > 0) {
     echo "Winkelwagen is leeg.";
 }
 ?>
-
-<form method="post">
-    Product ID: <input type="number" name="product_id" required><br>
-    Aantal: <input type="number" name="quantity" value="1" min="1" required><br>
-    <button type="submit">Toevoegen</button>
-</form>
