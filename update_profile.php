@@ -7,17 +7,17 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Database verbinding (pas aan naar jouw config)
+// Database verbinding
 include 'db_connect.php';
 
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$dsn = "mysql:host=$dbHost;dbname=$dbName;charset=utf8mb4";
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
 ];
 
 try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
+    $pdo = new PDO($dsn, $dbUser, $dbPass, $options);
 } catch (PDOException $e) {
     die("Database verbinding mislukt: " . $e->getMessage());
 }
@@ -28,17 +28,13 @@ function cleanInput($data) {
 }
 
 // Ontvang POST-data
-$username = cleanInput($_POST['username'] ?? '');
 $email = cleanInput($_POST['email'] ?? '');
 $password = $_POST['password'] ?? '';
 $passwordConfirm = $_POST['passwordConfirm'] ?? '';
 
-// Validatie simpel voorbeeld
+// Validatie
 $errors = [];
 
-if (empty($username)) {
-    $errors[] = 'Gebruikersnaam is verplicht.';
-}
 if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $errors[] = 'Een geldig e-mailadres is verplicht.';
 }
@@ -47,7 +43,6 @@ if ($password !== $passwordConfirm) {
 }
 
 if (count($errors) > 0) {
-    // Simpel terug met foutmeldingen, dit kan beter met session of redirect + flash messages
     foreach ($errors as $error) {
         echo "<p style='color:red;'>$error</p>";
     }
@@ -55,17 +50,16 @@ if (count($errors) > 0) {
     exit;
 }
 
-// Update statement bouwen
+// Basis parameters
 $params = [
-    ':username' => $username,
     ':email' => $email,
-    ':id' => $_SESSION['user_id']
+    ':id'    => $_SESSION['user_id']
 ];
 
-$sql = "UPDATE users SET username = :username, email = :email";
+// SQL opbouwen
+$sql = "UPDATE users SET email = :email";
 
 if (!empty($password)) {
-    // Wachtwoord hashen
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
     $sql .= ", password = :password";
     $params[':password'] = $hashedPassword;
