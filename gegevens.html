@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profielinstellingen - Stylisso</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="header-placeholder"></div>
+
+    <main class="account-container">
+
+      <!-- Linker menu -->
+      <nav class="account-menu">
+        <ul>
+          <li><a href="mijn_stylisso.html">Mijn Stylisso</a></li>
+          <li><a href="bestellingen.html">Bestellingen & Facturen</a></li>
+          <li><a href="retourneren.html">Retourneren</a></li>
+          <li><a href="gegevens.html" class="active">Gegevens & Voorkeuren</a></li>
+          <li><a href="cadeaubonnen.html">Cadeaubonnen</a></li>
+          <li><a id="logoutBtn">Uitloggen</a></li>
+        </ul>
+      </nav>
+
+      <!-- Rechter content -->
+      <section class="account-content">
+          <h1>Gegevens & Voorkeuren</h1>
+          <form id="profileForm" action="update_profile.php" method="POST">
+              <label for="email">E-mailadres</label>
+              <input type="email" id="email" name="email" required placeholder="jouw@email.com" />
+                  
+              <label for="password">Nieuw wachtwoord</label>
+              <input type="password" id="password" name="password" placeholder="Laat leeg om te behouden" />
+                
+              <label for="passwordConfirm">Bevestig nieuw wachtwoord</label>
+              <input type="password" id="passwordConfirm" name="passwordConfirm" placeholder="Nogmaals wachtwoord" />
+      
+              <button type="submit" class="cta-button">Updaten</button>
+          </form>
+      </section>
+
+    </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

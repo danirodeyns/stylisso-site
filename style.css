@@ -932,12 +932,49 @@ input[type="number"] {
   text-decoration: underline;
 }
 
-.profile-settings {
+.account-container {
   display: flex;
-  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 40px auto;
+  gap: 40px;
 }
 
-.profielinstellingen {
+/* Linkermenu */
+.account-menu {
+  width: 250px;
+  border-right: 1px solid #ccc;
+  padding: 2rem;
+}
+
+.account-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 2rem;
+  line-height: 1.6rem;
+}
+
+.account-menu li {
+  margin-bottom: 15px;
+}
+
+.account-menu a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.account-menu a:hover {
+  color: #000;
+}
+
+.account-menu a.active {
+  font-weight: bold;
+  color: #000;
+}
+
+/* Rechter content */
+.account-content {
   flex: 1;
   padding: 2rem;
   display: flex;
@@ -945,22 +982,23 @@ input[type="number"] {
   justify-content: flex-start;
 }
 
-.profielinstellingen h1 {
+.account-content h1 {
   font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
   margin-bottom: 1.5rem;
 }
 
-.profielinstellingen form {
+/* Form styling gebaseerd op jouw voorbeeld */
+.account-content form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.profielinstellingen label {
+.account-content label {
   font-weight: 600;
 }
 
-.profielinstellingen input {
+.account-content input {
   padding: 0.75rem;
   border: 1px solid #ccc;
   border-radius: 0.75rem;
@@ -1507,7 +1545,15 @@ input[type="number"] {
     text-decoration: none;
   }
 
-  .profielinstellingen input {
+  .account-menu a {
+    color: #ccc;
+  }
+
+  .account-menu a.active {
+    color: white;
+  }
+
+  .account-content input {
     background-color: #222;
     border: 1px solid #444;
     color: #fff;
