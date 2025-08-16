@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
               if (data.success) {
                 const currentPage = window.location.pathname.split('/').pop();
-                const redirectPages = ['profielinstellingen.html', 'cart.html'];
+                const redirectPages = ['mijn_stylisso.html', 'bestellingen.html', 'retourneren.html', 'gegevens.html', 'cadeaubonnen.html', 'cart.html'];
 
                 if (redirectPages.includes(currentPage)) {
                   window.location.href = 'login_registreren.html';
