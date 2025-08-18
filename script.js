@@ -387,3 +387,134 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });    
 });
+
+// ---------------------------
+// Nieuwe functie: Bestellingen laden
+// ---------------------------
+async function loadOrders() {
+  const container = document.getElementById('orders-container');
+  if (!container) return; // Alleen uitvoeren als container aanwezig is
+
+  try {
+    const response = await fetch('get_orders.php');
+    const orders = await response.json();
+
+    if (orders.error) {
+      container.innerHTML = `<p>${orders.error}</p>`;
+      return;
+    }
+
+    if (orders.length === 0) {
+      container.innerHTML = `<p>Je hebt nog geen bestellingen geplaatst.</p>`;
+      return;
+    }
+
+    let html = '<table class="orders-table">';
+    html += `
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Datum</th>
+          <th>Producten</th>
+          <th>Totaalprijs</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+    `;
+
+    orders.forEach(order => {
+      html += `
+        <tr>
+          <td>${order.order_id}</td>
+          <td>${order.created_at}</td>
+          <td>${order.products}</td>
+          <td>€${order.total_price}</td>
+          <td>${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</td>
+        </tr>
+      `;
+    });
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+
+  } catch (err) {
+    container.innerHTML = `<p>Fout bij laden van bestellingen.</p>`;
+    console.error(err);
+  }
+}
+
+// ---------------------------
+// Event listener bij DOM load
+// ---------------------------
+window.addEventListener('DOMContentLoaded', () => {
+  // Bestaande initialisaties
+  initHeaderFooter(); // voorbeeld
+
+  // Alleen bestellingen laden op bestellingen.html
+  if (document.getElementById('orders-container')) {
+    loadOrders();
+  }
+});
+
+// ---------------------------
+// Nieuwe functie: Retourneren
+// ---------------------------
+
+document.addEventListener('DOMContentLoaded', () => {
+    const orderSelect = document.getElementById('orderSelect');
+    const productSelect = document.getElementById('productSelect');
+    const returnForm = document.getElementById('returnForm');
+    const messageDiv = document.getElementById('return-message');
+    let orderItemsData = {};
+
+    // Haal bestellingen op
+    fetch('get_returns.php')
+        .then(res => res.json())
+        .then(data => {
+            if (data.orders) {
+                data.orders.forEach(order => {
+                    const option = document.createElement('option');
+                    option.value = order.id;
+                    option.textContent = `Order #${order.id} - ${order.created_at}`;
+                    orderSelect.appendChild(option);
+                });
+                orderItemsData = data.orderItems;
+
+                // vul producten van eerste order
+                if (data.orders[0]) fillProducts(data.orders[0].id);
+            }
+        });
+
+    function fillProducts(orderId) {
+        productSelect.innerHTML = '<option value="">-- Kies een product --</option>';
+        if (orderItemsData[orderId]) {
+            orderItemsData[orderId].forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.product_id;
+                option.textContent = `${item.name} (Aantal: ${item.quantity})`;
+                productSelect.appendChild(option);
+            });
+        }
+    }
+
+    orderSelect.addEventListener('change', function() {
+        fillProducts(this.value);
+    });
+
+    returnForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(returnForm);
+
+        fetch('submit_return.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(resp => {
+            messageDiv.textContent = resp.success || resp.error;
+            messageDiv.style.color = resp.success ? 'green' : 'red';
+            if (resp.success) returnForm.reset();
+        });
+    });
+});
