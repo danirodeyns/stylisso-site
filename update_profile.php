@@ -91,13 +91,6 @@ $sql .= " WHERE id = :id";
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 
-// Welkomstmail sturen
-$subject = "Welkom bij Stylisso!";
-$message = "Beste $name,\n\nJe profielgegevens zijn succesvol bijgewerkt.\nBedankt dat je deel uitmaakt van Stylisso!";
-$headers = "From: no-reply@stylisso.com\r\nReply-To: no-reply@stylisso.com";
-
-mail($email, $subject, $message, $headers);
-
 // Success terugsturen
 header("Location: gegevens.html?success=1");
 exit;

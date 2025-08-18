@@ -17,7 +17,7 @@ $options = [
 
 try {
     $pdo = new PDO($dsn, $dbUser, $dbPass, $options);
-    $stmt = $pdo->prepare("SELECT name, email, address FROM users WHERE id = :id");
+    $stmt = $pdo->prepare("SELECT name, email, address, newsletter FROM users WHERE id = :id");
     $stmt->execute([':id' => $_SESSION['user_id']]);
     $user = $stmt->fetch();
 

@@ -349,21 +349,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (loginEmailInput) loginEmailInput.value = decodeURIComponent(oldLoginEmail);
   }
 
-  function showError(inputId, message) {
-    const input = document.getElementById(inputId);
-    if (!input) return;
-    let errorEl = input.nextElementSibling;
-    if (!errorEl || !errorEl.classList.contains("error-message")) {
-      errorEl = document.createElement("div");
-      errorEl.classList.add("error-message");
-      errorEl.style.color = "red";
-      errorEl.style.fontSize = "0.9rem";
-      errorEl.style.marginTop = "0.25rem";
-      input.insertAdjacentElement("afterend", errorEl);
-    }
-    errorEl.textContent = message;
-  }
-
+    const form = document.getElementById('profileForm');
+    const messages = document.getElementById('formMessages');
+  
   if (params.get("error")) {
     const errors = params.get("error").split(",");
     errors.forEach(err => {
@@ -377,15 +365,12 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   if (params.get("success") === "1") {
-    const form = document.getElementById("profileForm");
     const successEl = document.createElement("p");
     successEl.textContent = "Profiel succesvol bijgewerkt!";
     successEl.style.color = "green";
     successEl.style.marginTop = "1rem";
     form.appendChild(successEl);
   }
-  const form = document.getElementById('profileForm');
-    const messages = document.getElementById('formMessages');
 
     // Huidige profielgegevens ophalen
     fetch('get_user_data.php')
@@ -395,6 +380,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('name').value = data.name;
                 document.getElementById('email').value = data.email;
                 document.getElementById('address').value = data.address;
+                const newsletterCheckbox = document.getElementById('newsletter');
+                document.getElementById('newsletter').checked = (data.newsletter == 1);
             } else {
                 messages.innerHTML = `<p style="color:red;">${data.error}</p>`;
             }
