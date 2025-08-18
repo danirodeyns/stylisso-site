@@ -29,6 +29,7 @@ $address = cleanInput($_POST['address'] ?? '');
 $email = cleanInput($_POST['email'] ?? '');
 $password = $_POST['password'] ?? '';
 $passwordConfirm = $_POST['passwordConfirm'] ?? '';
+$newsletter = isset($_POST['newsletter']) ? 1 : 0;
 
 $errors = [];
 
@@ -74,10 +75,11 @@ $params = [
     ':name' => $name,
     ':address' => $address,
     ':email' => $email,
+    ':newsletter' => $newsletter,
     ':id'    => $_SESSION['user_id']
 ];
 
-$sql = "UPDATE users SET name = :name, address = :address, email = :email";
+$sql = "UPDATE users SET name = :name, address = :address, email = :email, newsletter = :newsletter";
 
 if (!empty($password)) {
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
