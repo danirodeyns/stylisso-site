@@ -348,4 +348,77 @@ document.addEventListener('DOMContentLoaded', function () {
     const loginEmailInput = document.getElementById('login-email');
     if (loginEmailInput) loginEmailInput.value = decodeURIComponent(oldLoginEmail);
   }
+
+  function showError(inputId, message) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    let errorEl = input.nextElementSibling;
+    if (!errorEl || !errorEl.classList.contains("error-message")) {
+      errorEl = document.createElement("div");
+      errorEl.classList.add("error-message");
+      errorEl.style.color = "red";
+      errorEl.style.fontSize = "0.9rem";
+      errorEl.style.marginTop = "0.25rem";
+      input.insertAdjacentElement("afterend", errorEl);
+    }
+    errorEl.textContent = message;
+  }
+
+  if (params.get("error")) {
+    const errors = params.get("error").split(",");
+    errors.forEach(err => {
+      if (err === "name_empty") showError("name", "Naam is verplicht.");
+      if (err === "address_empty") showError("address", "Adres is verplicht.");
+      if (err === "email_invalid") showError("email", "Ongeldig e-mailadres.");
+      if (err === "email_exists") showError("email", "E-mailadres is al in gebruik.");
+      if (err === "password_mismatch") showError("passwordConfirm", "Wachtwoorden komen niet overeen.");
+      if (err === "password_same") showError("password", "Nieuw wachtwoord mag niet gelijk zijn aan het huidige.");
+    });
+  }
+
+  if (params.get("success") === "1") {
+    const form = document.getElementById("profileForm");
+    const successEl = document.createElement("p");
+    successEl.textContent = "Profiel succesvol bijgewerkt!";
+    successEl.style.color = "green";
+    successEl.style.marginTop = "1rem";
+    form.appendChild(successEl);
+  }
+  const form = document.getElementById('profileForm');
+    const messages = document.getElementById('formMessages');
+
+    // Huidige profielgegevens ophalen
+    fetch('get_profile.php')
+        .then(res => res.json())
+        .then(data => {
+            if (!data.error) {
+                document.getElementById('name').value = data.name;
+                document.getElementById('email').value = data.email;
+                document.getElementById('address').value = data.address;
+            } else {
+                messages.innerHTML = `<p style="color:red;">${data.error}</p>`;
+            }
+        });
+
+    // Formulier submit via AJAX
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        const formData = new FormData(form);
+
+        fetch('update_profile.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            messages.innerHTML = '';
+            if (data.success) {
+                messages.innerHTML = `<p style="color:green;">${data.success}</p>`;
+            } else if (data.errors) {
+                data.errors.forEach(err => {
+                    messages.innerHTML += `<p style="color:red;">${err}</p>`;
+                });
+            }
+        });
+    });
 });

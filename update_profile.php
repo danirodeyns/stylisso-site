@@ -1,13 +1,11 @@
 <?php
 session_start();
 
-// Controleer of gebruiker ingelogd is
 if (!isset($_SESSION['user_id'])) {
     header('Location: login_registreren.html');
     exit;
 }
 
-// Database verbinding
 include 'db_connect.php';
 
 $dsn = "mysql:host=$dbHost;dbname=$dbName;charset=utf8mb4";
@@ -22,42 +20,64 @@ try {
     die("Database verbinding mislukt: " . $e->getMessage());
 }
 
-// Functie om input te sanitiseren
 function cleanInput($data) {
     return htmlspecialchars(trim($data));
 }
 
-// Ontvang POST-data
+$name = cleanInput($_POST['name'] ?? '');
+$address = cleanInput($_POST['address'] ?? '');
 $email = cleanInput($_POST['email'] ?? '');
 $password = $_POST['password'] ?? '';
 $passwordConfirm = $_POST['passwordConfirm'] ?? '';
 
-// Validatie
 $errors = [];
 
+// Validaties
+if (empty($name)) {
+    $errors[] = 'name_empty';
+}
+if (empty($address)) {
+    $errors[] = 'address_empty';
+}
 if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $errors[] = 'Een geldig e-mailadres is verplicht.';
+    $errors[] = 'email_invalid';
 }
 if ($password !== $passwordConfirm) {
-    $errors[] = 'Wachtwoorden komen niet overeen.';
+    $errors[] = 'password_mismatch';
 }
 
-if (count($errors) > 0) {
-    foreach ($errors as $error) {
-        echo "<p style='color:red;'>$error</p>";
+// Check of e-mail al bestaat bij andere gebruiker
+$stmt = $pdo->prepare("SELECT id FROM users WHERE email = :email AND id != :id");
+$stmt->execute([':email' => $email, ':id' => $_SESSION['user_id']]);
+if ($stmt->fetch()) {
+    $errors[] = 'email_exists';
+}
+
+// Als er een wachtwoord is ingevoerd → check tegen huidige
+if (!empty($password)) {
+    $stmt = $pdo->prepare("SELECT password FROM users WHERE id = :id");
+    $stmt->execute([':id' => $_SESSION['user_id']]);
+    $currentUser = $stmt->fetch();
+
+    if ($currentUser && password_verify($password, $currentUser['password'])) {
+        $errors[] = 'password_same';
     }
-    echo "<p><a href='profielinstellingen.html'>Ga terug</a></p>";
+}
+
+if (!empty($errors)) {
+    header("Location: gegevens.html?" . http_build_query(['error' => implode(',', $errors), 'old_email' => urlencode($email)]));
     exit;
 }
 
-// Basis parameters
+// Update uitvoeren
 $params = [
+    ':name' => $name,
+    ':address' => $address,
     ':email' => $email,
     ':id'    => $_SESSION['user_id']
 ];
 
-// SQL opbouwen
-$sql = "UPDATE users SET email = :email";
+$sql = "UPDATE users SET name = :name, address = :address, email = :email";
 
 if (!empty($password)) {
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
@@ -66,15 +86,17 @@ if (!empty($password)) {
 }
 
 $sql .= " WHERE id = :id";
-
 $stmt = $pdo->prepare($sql);
+$stmt->execute($params);
 
-try {
-    $stmt->execute($params);
-    echo "<p style='color:green;'>Profiel succesvol bijgewerkt.</p>";
-    echo "<p><a href='profielinstellingen.html'>Terug naar profielinstellingen</a></p>";
-} catch (PDOException $e) {
-    echo "<p style='color:red;'>Fout bij bijwerken profiel: " . $e->getMessage() . "</p>";
-    echo "<p><a href='profielinstellingen.html'>Ga terug</a></p>";
-}
+// Welkomstmail sturen
+$subject = "Welkom bij Stylisso!";
+$message = "Beste $name,\n\nJe profielgegevens zijn succesvol bijgewerkt.\nBedankt dat je deel uitmaakt van Stylisso!";
+$headers = "From: no-reply@stylisso.com\r\nReply-To: no-reply@stylisso.com";
+
+mail($email, $subject, $message, $headers);
+
+// Success terugsturen
+header("Location: gegevens.html?success=1");
+exit;
 ?>
