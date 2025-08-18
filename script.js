@@ -388,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const messages = document.getElementById('formMessages');
 
     // Huidige profielgegevens ophalen
-    fetch('get_profile.php')
+    fetch('get_user_data.php')
         .then(res => res.json())
         .then(data => {
             if (!data.error) {
@@ -398,27 +398,5 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 messages.innerHTML = `<p style="color:red;">${data.error}</p>`;
             }
-        });
-
-    // Formulier submit via AJAX
-    form.addEventListener('submit', e => {
-        e.preventDefault();
-        const formData = new FormData(form);
-
-        fetch('update_profile.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            messages.innerHTML = '';
-            if (data.success) {
-                messages.innerHTML = `<p style="color:green;">${data.success}</p>`;
-            } else if (data.errors) {
-                data.errors.forEach(err => {
-                    messages.innerHTML += `<p style="color:red;">${err}</p>`;
-                });
-            }
-        });
-    });
+        });    
 });

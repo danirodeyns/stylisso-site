@@ -65,7 +65,7 @@ if (!empty($password)) {
 }
 
 if (!empty($errors)) {
-    header("Location: gegevens.html?" . http_build_query(['error' => implode(',', $errors), 'old_email' => urlencode($email)]));
+    header("Location: gegevens.html?succes=1");
     exit;
 }
 
