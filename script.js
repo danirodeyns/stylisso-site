@@ -84,6 +84,25 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       }
 
+      // Logout knop linker menu
+      const logoutButton = document.getElementById('logoutButton');
+      if (logoutButton) {
+        logoutButton.addEventListener('click', (e) => {
+          e.preventDefault();
+
+          fetch('logout.php', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                window.location.href = 'index.html';
+              } else {
+                alert('Uitloggen mislukt.');
+              }
+            })
+            .catch(err => console.error(err));
+        });
+      }
+
       // --- Taalkeuze vlag dropdown ---
       const select = headerContainer.querySelector('.custom-lang-select');
       const dropdown = headerContainer.querySelector('#flagDropdown');
