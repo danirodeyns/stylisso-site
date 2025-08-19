@@ -193,8 +193,8 @@ footer {
   top: 0;
   left: 0;
   width: 100%;
-  background: #111;
-  color: #fff;
+  background: #f0f0f0;
+  color: #222;
   text-align: center;
   padding: 15px;
   z-index: 9999;
@@ -212,8 +212,8 @@ footer {
 }
 
 .cookie-buttons button {
-  background: #fff;
-  color: #111;
+  background: #000;
+  color: #f0f0f0;
   border: none;
   padding: 8px 15px;
   cursor: pointer;
@@ -222,7 +222,7 @@ footer {
 }
 
 .cookie-buttons button:hover {
-  background: #ddd;
+  background: #444;
 }
 
 /* Zoekbalk */
@@ -1530,6 +1530,20 @@ input[type="number"] {
   .logo {
     background: #000;
     color: #fff;
+  }
+
+  .cookie-banner {
+    background: #111;
+    color: #fff;
+  }
+
+  .cookie-buttons button {
+    background: #fff;
+    color: #111;    
+  }
+
+  .cookie-buttons button:hover {
+    background: #ddd;
   }
 
  .search-bar {
