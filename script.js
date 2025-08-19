@@ -391,7 +391,7 @@ document.addEventListener('DOMContentLoaded', function () {
     form.appendChild(successEl);
   }
 
-    // Huidige profielgegevens ophalen en Mijn Stylisso overzicht vullen
+// Huidige profielgegevens ophalen en Mijn Stylisso overzicht vullen
 fetch('get_user_data.php')
     .then(res => res.json())
     .then(data => {
@@ -407,19 +407,48 @@ fetch('get_user_data.php')
             if (newsletterCheckbox) newsletterCheckbox.checked = (data.newsletter == 1);
 
             // NIEUW: Mijn Stylisso overzicht invullen
-            const userInfo = document.getElementById('user-info');
-            if (userInfo) {
-                userInfo.innerHTML = `Naam: ${data.name}<br>
-                                      Email: ${data.email}<br>
-                                      Adres: ${data.address}`;
+            const userName = document.getElementById('user-name');
+            const userEmail = document.getElementById('user-email');
+            const userAddressLine = document.getElementById('user-address-line');
+            const userAddress = document.getElementById('user-address');
+            const userCompanyLine = document.getElementById('user-company-line');
+            const userCompany = document.getElementById('user-company');
+            const userVatLine = document.getElementById('user-vat-line');
+            const userVat = document.getElementById('user-vat');
+
+            if (userName) userName.textContent = data.name;
+            if (userEmail) userEmail.textContent = data.email;
+
+            // Alleen tonen als adres is ingevuld
+            if (data.address && data.address.trim() !== '') {
+                userAddress.textContent = data.address;
+                userAddressLine.style.display = '';
+            } else {
+                userAddressLine.style.display = 'none';
+            }
+
+            // Alleen tonen als bedrijfsnaam is ingevuld
+            if (data.company_name && data.company_name.trim() !== '') {
+                userCompany.textContent = data.company_name;
+                userCompanyLine.style.display = '';
+            } else {
+                userCompanyLine.style.display = 'none';
+            }
+
+            // Alleen tonen als BTW-nummer is ingevuld
+            if (data.vat_number && data.vat_number.trim() !== '') {
+                userVat.textContent = data.vat_number;
+                userVatLine.style.display = '';
+            } else {
+                userVatLine.style.display = 'none';
             }
         } else {
             const messages = document.getElementById('messages');
             if (messages) messages.innerHTML = `<p style="color:red;">${data.error}</p>`;
         }
     })
-    .catch(err => console.error('Fout bij ophalen van gebruikersgegevens:', err));   
-});
+    .catch(err => console.error('Fout bij ophalen van gebruikersgegevens:', err));
+  });
 
 // ---------------------------
 // Nieuwe functie: Bestellingen laden
