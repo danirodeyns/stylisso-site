@@ -1044,6 +1044,24 @@ input[type="number"] {
   border-color: black;
 }
 
+.summary-section {
+  background-color: #f9f9f9;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.summary-section h2 {
+  margin-top: 0rem;
+  margin-bottom: 0.25rem;
+}
+
+.summary-section p {
+  margin-bottom: 0.25rem;
+  line-height: 1.6;
+}
+
 .orders-container {
  text-align: center;
 }
@@ -1704,6 +1722,12 @@ input[type="number"] {
     background-color: black;
     color: white;
     border-color: white;
+  }
+
+  .summary-section {
+    background-color: #1f1f1f;
+    color: #f0f0f0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
   }
 
   .voucher-form input {

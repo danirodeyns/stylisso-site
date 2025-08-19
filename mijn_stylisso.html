@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mijn Stylisso - Overzicht</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="header-placeholder"></div>
+
+  <main class="account-container">
+
+    <!-- Linker menu -->
+    <nav class="account-menu">
+      <ul>
+        <li><a href="mijn_stylisso.html" class="active">Mijn Stylisso</a></li>
+        <li><a href="bestellingen.html">Bestellingen & Facturen</a></li>
+        <li><a href="retourneren.html">Retourneren</a></li>
+        <li><a href="gegevens.html">Gegevens & Voorkeuren</a></li>
+        <li><a href="cadeaubonnen.html">Cadeaubonnen</a></li>
+        <li><a href="#" id="logoutButton">Uitloggen</a></li>
+      </ul>
+    </nav>
+
+    <!-- Rechter content -->
+    <section class="account-content">
+      <h1>Welkom bij Mijn Stylisso</h1>
+      <p>Overzicht van je gegevens, bestelling en cadeaubonnen.</p>
+
+      <!-- Sectie 1: Mijn Gegevens -->
+      <div class="summary-section">
+        <h2>Mijn Gegevens</h2>
+        <p id="user-info">
+          Naam: <span id="user-name">jouwnaam</span><br>
+          Email: <span id="user-email">jouwnaam@example.com</span><br>
+          Adres: <span id="user-address">Voorbeeldstraat 1, 1000 Brussel</span>
+        </p>
+        <a href="gegevens.html" class="btn">Gegevens aanpassen</a>
+      </div>
+
+      <!-- Sectie 2: Laatste bestelling -->
+      <div class="summary-section">
+        <h2>Laatste bestelling</h2>
+        <!-- Hier komt de dynamische inhoud -->
+        <p id="last-order">Nog geen bestellingen om weer te geven.</p>
+        <a href="bestellingen.html" class="btn">Bekijk bestellingen</a>
+      </div>
+
+
+      <!-- Sectie 3: Laatste cadeaubon -->
+      <div class="summary-section">
+        <h2>Laatste cadeaubon</h2>
+        <!-- Hier komt de dynamische inhoud -->
+        <p id="last-voucher">Nog geen cadeaubonnen om weer te geven.</p>
+        <a href="cadeaubonnen.html" class="btn">Bekijk cadeaubonnen</a>
+      </div>
+
+    </section>
+
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

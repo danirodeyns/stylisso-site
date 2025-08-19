@@ -391,20 +391,34 @@ document.addEventListener('DOMContentLoaded', function () {
     form.appendChild(successEl);
   }
 
-    // Huidige profielgegevens ophalen
-    fetch('get_user_data.php')
-        .then(res => res.json())
-        .then(data => {
-            if (!data.error) {
-                document.getElementById('name').value = data.name;
-                document.getElementById('email').value = data.email;
-                document.getElementById('address').value = data.address;
-                const newsletterCheckbox = document.getElementById('newsletter');
-                document.getElementById('newsletter').checked = (data.newsletter == 1);
-            } else {
-                messages.innerHTML = `<p style="color:red;">${data.error}</p>`;
+    // Huidige profielgegevens ophalen en Mijn Stylisso overzicht vullen
+fetch('get_user_data.php')
+    .then(res => res.json())
+    .then(data => {
+        if (!data.error) {
+            // OUD: profielpagina invullen
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const addressInput = document.getElementById('address');
+            const newsletterCheckbox = document.getElementById('newsletter');
+            if (nameInput) nameInput.value = data.name;
+            if (emailInput) emailInput.value = data.email;
+            if (addressInput) addressInput.value = data.address;
+            if (newsletterCheckbox) newsletterCheckbox.checked = (data.newsletter == 1);
+
+            // NIEUW: Mijn Stylisso overzicht invullen
+            const userInfo = document.getElementById('user-info');
+            if (userInfo) {
+                userInfo.innerHTML = `Naam: ${data.name}<br>
+                                      Email: ${data.email}<br>
+                                      Adres: ${data.address}`;
             }
-        });    
+        } else {
+            const messages = document.getElementById('messages');
+            if (messages) messages.innerHTML = `<p style="color:red;">${data.error}</p>`;
+        }
+    })
+    .catch(err => console.error('Fout bij ophalen van gebruikersgegevens:', err));   
 });
 
 // ---------------------------
@@ -460,6 +474,11 @@ async function loadOrders() {
   } catch (err) {
     container.innerHTML = `<p>Fout bij laden van bestellingen.</p>`;
     console.error(err);
+  }
+
+  // Alleen aanroepen op mijn_stylisso.html
+  if (document.getElementById('last-order')) {
+    loadLastOrder();
   }
 }
 
@@ -541,15 +560,24 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
   const voucherList = document.getElementById('voucher-list');
 
+  if (!voucherList) return; // Alleen uitvoeren als element aanwezig is
+
   fetch('get_vouchers.php')
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`HTTP fout! status: ${res.status}`);
+      }
+      return res.json();
+    })
     .then(data => {
+      console.log('Voucher data:', data); // debug
+
       if (data.error) {
         voucherList.innerHTML = `<p>${data.error}</p>`;
         return;
       }
 
-      if (data.length === 0) {
+      if (!Array.isArray(data) || data.length === 0) {
         voucherList.innerHTML = `<p>Geen cadeaubonnen gekoppeld.</p>`;
         return;
       }
@@ -565,10 +593,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <strong>Status:</strong> ${voucher.is_used ? 'Gebruikt' : 'Beschikbaar'} | 
           <small>Toegevoegd op: ${voucher.redeemed_at}</small>
         `;
-
-        // optie: kleurstatus
         li.style.color = voucher.is_used ? 'red' : 'green';
-
         ul.appendChild(li);
       });
 
@@ -576,7 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
       voucherList.appendChild(ul);
     })
     .catch(err => {
-      voucherList.innerHTML = `<p>Fout bij ophalen van cadeaubonnen.</p>`;
-      console.error(err);
+      voucherList.innerHTML = `<p>Fout bij laden van cadeaubonnen. Controleer console.</p>`;
+      console.error('Fout bij ophalen vouchers:', err);
     });
 });
