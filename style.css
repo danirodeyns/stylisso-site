@@ -940,6 +940,15 @@ input[type="number"] {
   font-size: 1rem;
 }
 
+.auth-section a {
+  color: black;
+  text-decoration: underline;
+}
+
+.auth-section a:hover {
+  text-decoration: none;
+}
+
 /* Kleine tekst onder login */
 .small-text {
   margin-top: 1rem;
@@ -1768,6 +1777,10 @@ input[type="number"] {
     background-color: #222;
     border: 1px solid #444;
     color: #fff;
+  }
+
+  .auth-section a {
+    color: white;
   }
 
   .small-text {

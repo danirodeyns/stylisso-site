@@ -7,6 +7,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password_raw = $_POST['register-password'] ?? '';
     $password2_raw= $_POST['register-password2'] ?? '';
     $address      = '';
+    $newsletter     = isset($_POST['newsletter']) ? 1 : 0;
+    $terms_accepted = isset($_POST['terms_of_use']) ? 1 : 0;
 
     // 1. Controleer lege velden (per veld apart)
     if (empty($name)) {
@@ -23,6 +25,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if (empty($password2_raw)) {
         header('Location: login_registreren.html?error_password2=empty&old_name=' . urlencode($name) . '&old_email=' . urlencode($email));
+        exit;
+    }
+    // Controleer of algemene voorwaarden zijn aangevinkt
+    if (!$terms_accepted) {
+        header('Location: login_registreren.html?error_terms=required&old_name=' . urlencode($name) . '&old_email=' . urlencode($email));
         exit;
     }
 
@@ -56,13 +63,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // 5. Wachtwoord hashen
     $password = password_hash($password_raw, PASSWORD_DEFAULT);
 
-    // 6. Nieuwe gebruiker toevoegen
-    $stmt = $conn->prepare("INSERT INTO users (name, email, password, address) VALUES (?, ?, ?, ?)");
+    // 6. Nieuwe gebruiker toevoegen (inclusief newsletter en terms_accepted)
+    $stmt = $conn->prepare("INSERT INTO users (name, email, password, address, newsletter, terms_accepted) VALUES (?, ?, ?, ?, ?, ?)");
     if (!$stmt) {
         header('Location: login_registreren.html?error_general=db_error&old_name=' . urlencode($name) . '&old_email=' . urlencode($email));
         exit;
     }
-    $stmt->bind_param("ssss", $name, $email, $password, $address);
+    $stmt->bind_param("sssiii", $name, $email, $password, $address, $newsletter, $terms_accepted);
 
     if ($stmt->execute()) {
         header('Location: login_registreren.html?success=registered');
@@ -71,8 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: login_registreren.html?error_general=insert_failed&old_name=' . urlencode($name) . '&old_email=' . urlencode($email));
         exit;
     }
-} else {
-    header('Location: login_registreren.html');
-    exit;
+} else { 
+    header('Location: login_registreren.html'); exit;
 }
 ?>
