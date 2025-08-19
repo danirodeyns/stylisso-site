@@ -1104,10 +1104,37 @@ input[type="number"] {
 /* Chrome, Edge, Safari, Firefox */
 .voucher-form input[type=number]::-webkit-inner-spin-button, 
 .voucher-form input[type=number]::-webkit-outer-spin-button {
-  -moz-appearance: textfield;
+  -moz-appearance: none;
   -webkit-appearance: none;
-  appearance: textfield;
+  appearance: none;
   margin: 0;
+}
+
+.amount-buttons {
+  display: flex;
+  gap: 0.5rem; /* ruimte tussen knoppen */
+  margin: 0rem;
+}
+
+.amount-buttons button {
+  flex: 1; /* alle knoppen gelijk breed */
+  padding: 0.75rem 1rem; /* zelfde als input */
+  border: 1px solid #ccc; /* zelfde als input */
+  border-radius: 0.75rem; /* zelfde als input */
+  font-size: 1rem; /* zelfde als input */
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.amount-buttons button.active {
+  background-color: black;
+  color: white;
+  border-color: black;
+}
+
+.amount-buttons button:hover {
+  background-color: #f0f0f0;
 }
 
 .voucher-form button {

@@ -8,8 +8,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $amount = floatval($_POST['amount']);
     $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
 
-    if ($amount < 5 || $amount > 500) {
-        die("Ongeldig bedrag. Kies een bedrag tussen €5 en €500.");
+    if ($amount < 5) {
+        die("Ongeldig bedrag. Kies een bedrag van minimaal €5.");
     }
 
     if (!$email) {

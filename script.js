@@ -638,3 +638,46 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Fout bij ophalen vouchers:', err);
     });
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const buttons = document.querySelectorAll('.amount-buttons button');
+    const customButton = document.getElementById('custom-button');
+    const customAmountInput = document.getElementById('custom-amount');
+
+    // Standaard input verbergen totdat Aangepast is gekozen
+    customAmountInput.style.display = 'none';
+    customAmountInput.disabled = true;
+
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Active class resetten
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // Klik op deze knop markeren
+            button.classList.add('active');
+
+            if (button.dataset.amount === 'custom') {
+                // Aangepast geselecteerd -> input zichtbaar en inschakelen
+                customAmountInput.style.display = 'block';
+                customAmountInput.disabled = false;
+                customAmountInput.focus();
+                customAmountInput.value = '';
+            } else {
+                // Ander bedrag -> input verbergen en waarde invullen
+                customAmountInput.style.display = 'none';
+                customAmountInput.disabled = true;
+                customAmountInput.value = button.dataset.amount;
+            }
+        });
+    });
+
+    // Optioneel: bij submit checken dat bedrag minimaal 5 is
+    const form = document.querySelector('.voucher-form');
+    form.addEventListener('submit', e => {
+        const amount = parseFloat(customAmountInput.value);
+        if (!customAmountInput.disabled && amount < 5) {
+            e.preventDefault();
+            alert('Voer een bedrag van minimaal €5 in.');
+        }
+    });
+});
