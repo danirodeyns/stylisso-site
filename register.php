@@ -64,12 +64,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = password_hash($password_raw, PASSWORD_DEFAULT);
 
     // 6. Nieuwe gebruiker toevoegen (inclusief newsletter en terms_accepted)
-    $stmt = $conn->prepare("INSERT INTO users (name, email, password, address, newsletter, terms_accepted) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO users (name, email, password, newsletter, terms_accepted) VALUES (?, ?, ?, ?, ?)");
     if (!$stmt) {
         header('Location: login_registreren.html?error_general=db_error&old_name=' . urlencode($name) . '&old_email=' . urlencode($email));
         exit;
     }
-    $stmt->bind_param("sssiii", $name, $email, $password, $address, $newsletter, $terms_accepted);
+    $stmt->bind_param("sssii", $name, $email, $password, $newsletter, $terms_accepted);
 
     if ($stmt->execute()) {
         header('Location: login_registreren.html?success=registered');
