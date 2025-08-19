@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadeaubonnen - Stylisso</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="header-placeholder"></div>
+
+  <main class="voucher-container">
+    <section class="voucher-titel">
+      <h1>🛍️ Cadeaubon kopen</h1>
+      <p>Kies het bedrag van je cadeaubon en ontvang de code per e-mail.</p>
+    </section>
+
+    <form action="purchase_voucher.php" method="POST" class="voucher-form">
+      <label for="amount">Bedrag (€):</label>
+      <input type="number" id="amount" name="amount" min="5" max="500" step="1" placeholder="50" required>
+
+      <label for="email">E-mailadres:</label>
+      <input type="email" id="email" name="email" placeholder="E-mailadres" required>
+
+      <button type="submit">Cadeaubon kopen</button>
+    </form>    
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -987,6 +987,12 @@ input[type="number"] {
   margin-bottom: 0.25rem;
 }
 
+.account-content h2 {
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+  margin-top: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
 .account-content p {
   margin-bottom: 1.5rem;
 }
@@ -1040,6 +1046,84 @@ input[type="number"] {
 
 .orders-container {
  text-align: center;
+}
+
+.voucher-container {
+  width: 80vw;
+  max-width: 1300px;
+  margin: 2rem auto;
+  margin-bottom: 2rem;
+}
+
+.voucher-titel h1 {
+  font-size: 2rem;
+  margin-bottom: 0.25rem;
+}
+
+.voucher-titel p {
+  margin-bottom: 1.5rem;
+}
+
+.voucher-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.voucher-form label {
+  font-weight: 600;
+}
+
+.voucher-form input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+}
+
+/* Chrome, Edge, Safari, Firefox */
+.voucher-form input[type=number]::-webkit-inner-spin-button, 
+.voucher-form input[type=number]::-webkit-outer-spin-button {
+  -moz-appearance: textfield;
+  -webkit-appearance: none;
+  appearance: textfield;
+  margin: 0;
+}
+
+.voucher-form button {
+  display: inline-block;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  background-color: black;
+  color: white;
+  text-decoration: none;
+  margin-top: 0rem;
+  transition: background-color 0.2s;
+  border-radius: 0.75rem;
+  border: 2px solid black;
+  cursor: pointer;
+}
+
+.voucher-form button:hover {
+  background-color: white;
+  color: black;
+  border-color: black;
+}
+
+.voucher-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.voucher-list li {
+  background: #f8f8f8;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #ddd;
 }
 
 .over-ons-container {
@@ -1620,6 +1704,34 @@ input[type="number"] {
     background-color: black;
     color: white;
     border-color: white;
+  }
+
+  .voucher-form input {
+    background-color: #444;
+    border: 1px solid #888;
+    color: white;
+  }
+
+  .voucher-form input::placeholder {
+    color: #999;
+  }
+
+  .voucher-form button {
+    background-color: #444;
+    color: White;
+    border: 2px solid #888;
+  }
+
+  .voucher-form button:hover {
+    background-color: black;
+    color: white;
+    border-color: white;
+  }
+
+  .voucher-list li {
+    background: #1f1f1f;
+    color: #f0f0f0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
   }
 
   .over-ons-container h1 {

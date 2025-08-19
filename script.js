@@ -518,3 +518,46 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const voucherList = document.getElementById('voucher-list');
+
+  fetch('get_vouchers.php')
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        voucherList.innerHTML = `<p>${data.error}</p>`;
+        return;
+      }
+
+      if (data.length === 0) {
+        voucherList.innerHTML = `<p>Geen cadeaubonnen gekoppeld.</p>`;
+        return;
+      }
+
+      const ul = document.createElement('ul');
+      ul.classList.add('voucher-list');
+
+      data.forEach(voucher => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <strong>Code:</strong> ${voucher.code} | 
+          <strong>Waarde:</strong> €${Number(voucher.value).toFixed(2)} | 
+          <strong>Status:</strong> ${voucher.is_used ? 'Gebruikt' : 'Beschikbaar'} | 
+          <small>Toegevoegd op: ${voucher.redeemed_at}</small>
+        `;
+
+        // optie: kleurstatus
+        li.style.color = voucher.is_used ? 'red' : 'green';
+
+        ul.appendChild(li);
+      });
+
+      voucherList.innerHTML = '';
+      voucherList.appendChild(ul);
+    })
+    .catch(err => {
+      voucherList.innerHTML = `<p>Fout bij ophalen van cadeaubonnen.</p>`;
+      console.error(err);
+    });
+});

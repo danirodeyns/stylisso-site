@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profielinstellingen - Stylisso</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="header-placeholder"></div>
+
+    <main class="account-container">
+
+      <!-- Linker menu -->
+      <nav class="account-menu">
+        <ul>
+          <li><a href="mijn_stylisso.html">Mijn Stylisso</a></li>
+          <li><a href="bestellingen.html">Bestellingen & Facturen</a></li>
+          <li><a href="retourneren.html">Retourneren</a></li>
+          <li><a href="gegevens.html">Gegevens & Voorkeuren</a></li>
+          <li><a href="cadeaubonnen.html" class="active">Cadeaubonnen</a></li>
+          <li><a id="logoutBtn">Uitloggen</a></li>
+        </ul>
+      </nav>
+     
+      <!-- Rechter content -->
+      <section class="account-content">
+        <h1>Cadeaubonnen</h1>
+        <p>Voeg hier een cadeauboncode toe om deze aan je account te koppelen en te gebruiken bij je volgende bestelling.</p>
+
+        <div id="voucher-message"></div>
+
+        <!-- Cadeaubon formulier -->
+        <form id="voucherForm" action="redeem_voucher.php" method="POST">
+          <label for="voucher_code">Cadeauboncode</label>
+          <input type="text" id="voucher_code" name="voucher_code" placeholder="Voer je cadeauboncode in" required />
+          <button type="submit">Opslaan</button>
+        </form>
+
+        <!-- Overzicht gekoppelde bonnen -->
+        <h2>Mijn gekoppelde cadeaubonnen</h2>
+        <div id="voucher-list">
+          <p>Geen cadeaubonnen gekoppeld.</p>
+        </div>
+      </section>
+
+    </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
