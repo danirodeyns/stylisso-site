@@ -1104,6 +1104,15 @@ input[type="number"] {
   line-height: 1.6;
 }
 
+.btn {
+  color: black;
+  text-decoration: underline;
+}
+
+.btn:hover {
+  text-decoration: none;
+}
+
 .orders-container {
  text-align: center;
 }
@@ -1817,6 +1826,11 @@ input[type="number"] {
     background-color: #1f1f1f;
     color: #f0f0f0;
     box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+  }
+
+  .btn {
+    color: #f0f0f0;
+    text-decoration: underline;
   }
 
   .voucher-form input {
