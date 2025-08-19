@@ -984,6 +984,10 @@ input[type="number"] {
 
 .account-content h1 {
   font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+  margin-bottom: 0.25rem;
+}
+
+.account-content p {
   margin-bottom: 1.5rem;
 }
 
@@ -1003,6 +1007,35 @@ input[type="number"] {
   border: 1px solid #ccc;
   border-radius: 0.75rem;
   font-size: 1rem;
+}
+
+.account-content select {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.account-content button {
+    display: inline-block;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  background-color: black;
+  color: white;
+  text-decoration: none;
+  margin-top: 0rem;
+  transition: background-color 0.2s;
+  border-radius: 0.75rem;
+  border: 2px solid black;
+  cursor: pointer;
+}
+
+.account-content button:hover {
+  background-color: white;
+  color: black;
+  border-color: black;
 }
 
 .over-ons-container {
@@ -1549,14 +1582,40 @@ input[type="number"] {
     color: #ccc;
   }
 
+  .account-menu a:hover {
+    color: white;
+  }
+
   .account-menu a.active {
     color: white;
   }
 
   .account-content input {
-    background-color: #222;
-    border: 1px solid #444;
-    color: #fff;
+    background-color: #444;
+    border: 1px solid #888;
+    color: white;
+  }
+
+  .account-content input::placeholder {
+    color: #999;
+  }
+
+  .account-content select {
+    background-color: #444;
+    border: 1px solid #888;
+    color: white;
+  }
+
+  .account-content button {
+    background-color: #444;
+    color: White;
+    border: 2px solid #888;
+  }
+
+  .account-content button:hover {
+    background-color: black;
+    color: white;
+    border-color: white;
   }
 
   .over-ons-container h1 {
