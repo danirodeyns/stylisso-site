@@ -401,10 +401,14 @@ fetch('get_user_data.php')
             const emailInput = document.getElementById('email');
             const addressInput = document.getElementById('address');
             const newsletterCheckbox = document.getElementById('newsletter');
+            const companyInput = document.getElementById('company_name');
+            const vatInput = document.getElementById('vat_number');
             if (nameInput) nameInput.value = data.name;
             if (emailInput) emailInput.value = data.email;
             if (addressInput) addressInput.value = data.address;
             if (newsletterCheckbox) newsletterCheckbox.checked = (data.newsletter == 1);
+            if (companyInput && data.company_name) companyInput.value = data.company_name;
+            if (vatInput && data.vat_number) vatInput.value = data.vat_number;
 
             // NIEUW: Mijn Stylisso overzicht invullen
             const userName = document.getElementById('user-name');
