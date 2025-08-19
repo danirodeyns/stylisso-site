@@ -22,7 +22,7 @@ try {
     
     // Selecteer gebruikersgegevens inclusief bedrijf en BTW-nummer
     $stmt = $pdo->prepare("
-        SELECT name, email, address, newsletter, company, vat
+        SELECT name, email, address, newsletter, company_name, vat_number
         FROM users
         WHERE id = :id
     ");

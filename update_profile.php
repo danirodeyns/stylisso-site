@@ -27,6 +27,8 @@ function cleanInput($data) {
 $name = cleanInput($_POST['name'] ?? '');
 $address = cleanInput($_POST['address'] ?? '');
 $email = cleanInput($_POST['email'] ?? '');
+$company_name = cleanInput($_POST['company_name'] ?? '');
+$vat_number = cleanInput($_POST['vat_number'] ?? '');
 $password = $_POST['password'] ?? '';
 $passwordConfirm = $_POST['passwordConfirm'] ?? '';
 $newsletter = isset($_POST['newsletter']) ? 1 : 0;
@@ -66,20 +68,23 @@ if (!empty($password)) {
 }
 
 if (!empty($errors)) {
-    header("Location: gegevens.html?succes=1");
+    header("Location: gegevens.html?success=0&errors=" . implode(',', $errors));
     exit;
 }
 
 // Update uitvoeren
 $params = [
-    ':name' => $name,
-    ':address' => $address,
-    ':email' => $email,
-    ':newsletter' => $newsletter,
-    ':id'    => $_SESSION['user_id']
+    ':name'         => $name,
+    ':address'      => $address,
+    ':email'        => $email,
+    ':company_name' => $company_name,
+    ':vat_number'   => $vat_number,
+    ':newsletter'   => $newsletter,
+    ':id'           => $_SESSION['user_id']
 ];
 
-$sql = "UPDATE users SET name = :name, address = :address, email = :email, newsletter = :newsletter";
+$sql = "UPDATE users 
+        SET name = :name, address = :address, email = :email, company_name = :company_name, vat_number = :vat_number, newsletter = :newsletter";
 
 if (!empty($password)) {
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
