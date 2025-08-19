@@ -134,11 +134,60 @@ document.addEventListener('DOMContentLoaded', function () {
       } else {
         console.warn('Dropdown elementen niet gevonden in de header');
       }
+      // --- Cookie banner initialiseren ---
+      function initCookieBanner() {
+        const banner = document.getElementById("cookie-banner");
+        const acceptAll = document.getElementById("accept-all");
+        const acceptFunctional = document.getElementById("accept-functional");
+
+        if (!banner) return; // Banner bestaat niet, stop
+
+        function setCookie(name, value, days) {
+          const date = new Date();
+          date.setTime(date.getTime() + (days*24*60*60*1000));
+          const expires = "expires=" + date.toUTCString();
+          document.cookie = name + "=" + value + ";" + expires + ";path=/;SameSite=Lax";
+        }
+
+        function getCookie(name) {
+          const cname = name + "=";
+          const decodedCookie = decodeURIComponent(document.cookie);
+          const ca = decodedCookie.split(';');
+          for (let i = 0; i < ca.length; i++) {
+            let c = ca[i].trim();
+            if (c.indexOf(cname) === 0) return c.substring(cname.length, c.length);
+          }
+          return "";
+        }
+
+        if (getCookie("cookieConsent")) {
+          banner.style.display = "none";
+        } else {
+          banner.style.display = "block";
+        }
+
+        if (acceptAll) {
+          acceptAll.addEventListener("click", () => {
+            setCookie("cookieConsent", "all", 365);
+            banner.style.display = "none";
+          });
+        }
+
+        if (acceptFunctional) {
+          acceptFunctional.addEventListener("click", () => {
+            setCookie("cookieConsent", "functional", 365);
+            banner.style.display = "none";
+          });
+        }
+      }
+
+      // ✅ Pas hier aanroepen, NA het inladen van de header
+      initCookieBanner();
     })
     .catch(error => {
       console.error('Fout bij laden header:', error);
     });
-
+    
   // --- Footer inladen via fetch ---
   fetch('footer.html')
     .then(response => {

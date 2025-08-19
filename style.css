@@ -188,6 +188,43 @@ footer {
   text-decoration: underline;
 }
 
+.cookie-banner {
+  display: block;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #111;
+  color: #fff;
+  text-align: center;
+  padding: 15px;
+  z-index: 9999;
+  font-size: 14px;
+}
+
+.cookie-banner p {
+  margin: 0 0 10px 0;
+}
+
+.cookie-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.cookie-buttons button {
+  background: #fff;
+  color: #111;
+  border: none;
+  padding: 8px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background 0.2s ease-in-out;
+}
+
+.cookie-buttons button:hover {
+  background: #ddd;
+}
+
 /* Zoekbalk */
 .search-bar {
   flex: 1;
