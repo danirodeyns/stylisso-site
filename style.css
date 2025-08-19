@@ -1110,33 +1110,6 @@ input[type="number"] {
   margin: 0;
 }
 
-.amount-buttons {
-  display: flex;
-  gap: 0.5rem; /* ruimte tussen knoppen */
-  margin: 0rem;
-}
-
-.amount-buttons button {
-  flex: 1; /* alle knoppen gelijk breed */
-  padding: 0.75rem 1rem; /* zelfde als input */
-  border: 1px solid #ccc; /* zelfde als input */
-  border-radius: 0.75rem; /* zelfde als input */
-  font-size: 1rem; /* zelfde als input */
-  background-color: white;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.amount-buttons button.active {
-  background-color: black;
-  color: white;
-  border-color: black;
-}
-
-.amount-buttons button:hover {
-  background-color: #f0f0f0;
-}
-
 .voucher-form button {
   display: inline-block;
   padding: 0.75rem 1rem;
@@ -1155,6 +1128,34 @@ input[type="number"] {
   background-color: white;
   color: black;
   border-color: black;
+}
+
+.amount-buttons {
+  display: flex;
+  gap: 0.5rem; /* ruimte tussen knoppen */
+  margin: 0rem;
+}
+
+.amount-buttons button {
+  flex: 1; /* alle knoppen gelijk breed */
+  padding: 0.75rem 1rem; /* zelfde als input */
+  border: 1px solid #ccc; /* zelfde als input */
+  border-radius: 0.75rem; /* zelfde als input */
+  font-size: 1rem; /* zelfde als input */
+  background-color: white;
+  color: black;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.amount-buttons button.active {
+  background-color: black;
+  color: white;
+  border-color: black;
+}
+
+.amount-buttons button:hover {
+  background-color: #f0f0f0;
 }
 
 .voucher-list {
@@ -1777,6 +1778,22 @@ input[type="number"] {
     background-color: black;
     color: white;
     border-color: white;
+  }
+
+  .amount-buttons button {
+    border: 1px solid #888; /* zelfde als input */
+    background-color: #444;
+    color: white;    
+  }
+
+  .amount-buttons button.active {
+    background-color: white;
+    color: black;
+    border-color: white;
+  }
+
+  .amount-buttons button:hover {
+    background-color: #999;
   }
 
   .voucher-list li {
