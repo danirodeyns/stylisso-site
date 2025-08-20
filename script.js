@@ -7,9 +7,15 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(data => {
       window.csrfToken = data.csrf_token;
       console.log("CSRF-token ingesteld:", window.csrfToken);
+
+      // CSRF-token in het verborgen inputveld van het formulier zetten
+      const csrfInput = document.getElementById('csrf_token');
+      if (csrfInput) {
+          csrfInput.value = window.csrfToken;
+      }
     })
     .catch(err => console.error('CSRF-token kon niet opgehaald worden', err));
-  
+
   // --- Header inladen via fetch ---
   fetch('header.html')
     .then(response => {

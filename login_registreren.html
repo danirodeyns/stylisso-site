@@ -15,6 +15,9 @@
     <section class="auth-section login-section">
         <h1>Inloggen</h1>
         <form action="login.php" method="POST">
+            <!-- Voeg dit direct na de <form> tag toe -->
+            <input type="hidden" name="csrf_token" id="csrf_token" value="" />
+            
             <label for="login-email">E-mailadres</label>
             <input type="email" id="login-email" name="login-email" placeholder="jouw@email.com" required>
 
