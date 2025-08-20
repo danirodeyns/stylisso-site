@@ -41,9 +41,6 @@ $errors = [];
 if (empty($name)) {
     $errors[] = 'name_empty';
 }
-if (empty($address)) {
-    $errors[] = 'address_empty';
-}
 if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $errors[] = 'email_invalid';
 }
