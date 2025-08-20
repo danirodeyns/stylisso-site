@@ -79,44 +79,64 @@ document.addEventListener('DOMContentLoaded', function () {
       if (logoutBtn) {
         logoutBtn.addEventListener('click', function (e) {
           e.preventDefault();
-          fetch('logout.php', { method: 'POST' })
-            .then(res => res.json())
-            .then(data => {
-              if (data.success) {
-                const currentPage = window.location.pathname.split('/').pop();
-                const redirectPages = ['mijn_stylisso.html', 'bestellingen.html', 'retourneren.html', 'gegevens.html', 'cadeaubonnen.html', 'cart.html'];
 
-                if (redirectPages.includes(currentPage)) {
-                  window.location.href = 'login_registreren.html';
-                } else {
-                  window.location.reload();
-                }
+          fetch('logout.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `csrf_token=${encodeURIComponent(window.csrfToken)}`
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              const currentPage = window.location.pathname.split('/').pop();
+              const redirectPages = [
+                'mijn_stylisso.html',
+                'bestellingen.html',
+                'retourneren.html',
+                'gegevens.html',
+                'cadeaubonnen.html',
+                'cart.html'
+              ];
+
+              if (redirectPages.includes(currentPage)) {
+                window.location.href = 'login_registreren.html';
               } else {
-                alert('Uitloggen mislukt');
+                window.location.reload();
               }
-            })
-            .catch(() => alert('Fout bij uitloggen'));
+            } else {
+              alert('Uitloggen mislukt');
+            }
+          })
+          .catch(() => alert('Fout bij uitloggen'));
         });
       }
 
-      // Logout knop linker menu
+      // --- Logout knop linker menu ---
       const logoutButton = document.getElementById('logoutButton');
       if (logoutButton) {
         logoutButton.addEventListener('click', (e) => {
           e.preventDefault();
 
-          fetch('logout.php', { method: 'POST' })
-            .then(res => res.json())
-            .then(data => {
-              if (data.success) {
-                window.location.href = 'index.html';
-              } else {
-                alert('Uitloggen mislukt.');
-              }
-            })
-            .catch(err => console.error(err));
+          fetch('logout.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `csrf_token=${encodeURIComponent(window.csrfToken)}`
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              window.location.href = 'index.html';
+            } else {
+              alert('Uitloggen mislukt.');
+            }
+          })
+          .catch(err => console.error('Fout bij uitloggen:', err));
         });
-      }
+}
 
       // --- Taalkeuze vlag dropdown ---
       const select = headerContainer.querySelector('.custom-lang-select');
