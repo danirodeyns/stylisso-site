@@ -1,6 +1,8 @@
 <?php
 // csrf.php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Token genereren (indien nog niet aanwezig)
 if (empty($_SESSION['csrf_token'])) {
