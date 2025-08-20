@@ -5,17 +5,18 @@ document.addEventListener('DOMContentLoaded', function () {
   fetch('csrf.php')
     .then(res => res.json())
     .then(data => {
-      window.csrfToken = data.csrf_token;
-      console.log("CSRF-token ingesteld:", window.csrfToken);
+      if (!data.csrf_token) throw new Error('Geen CSRF-token ontvangen');
 
-      // CSRF-token in het verborgen inputveld van het formulier zetten
-      const csrfInput = document.getElementById('csrf_token');
-      if (csrfInput) {
-          csrfInput.value = window.csrfToken;
-      }
+      // Alle forms op de pagina
+      document.querySelectorAll('form').forEach(form => {
+        const csrfInput = form.querySelector('input[name="csrf_token"]');
+        if (csrfInput) csrfInput.value = data.csrf_token;
+      });
+
+      console.log("CSRF-token ingesteld voor alle formulieren:", data.csrf_token);
     })
     .catch(err => console.error('CSRF-token kon niet opgehaald worden', err));
-
+    
   // --- Header inladen via fetch ---
   fetch('header.html')
     .then(response => {

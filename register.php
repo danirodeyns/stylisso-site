@@ -74,11 +74,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($stmt->execute()) {
         // **Automatisch inloggen**
-        $_POST['login-email'] = $email;          // geregistreerde e-mail
-        $_POST['login-password'] = $password_raw; // originele wachtwoord
-        $_POST['cookies_accepted'] = '1';        // accepteer functionele cookies automatisch
+        $_SESSION['user_id'] = $conn->insert_id; // ID van de nieuw aangemaakte gebruiker
+        $_SESSION['user_name'] = $name;
 
-        include 'login.php'; // login.php zal sessie + cookie aanmaken en redirecten
+        // Zet langdurige cookie automatisch
+        $token = bin2hex(random_bytes(16));
+        $update = $conn->prepare("UPDATE users SET remember_token = ? WHERE id = ?");
+        $update->bind_param("si", $token, $_SESSION['user_id']);
+        $update->execute();
+
+        setcookie('user_login', json_encode([
+            'id' => $_SESSION['user_id'],
+            'name' => $name,
+            'token' => $token
+        ]), time() + (30*24*60*60), "/"); // 30 dagen
+
+        header("Location: index.html"); // redirect naar homepage
         exit;
     } else {
         header('Location: login_registreren.html?error_general=insert_failed&old_name=' . urlencode($name) . '&old_email=' . urlencode($email));

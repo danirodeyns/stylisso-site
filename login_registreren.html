@@ -36,6 +36,9 @@
     <section class="auth-section register-section">
         <h1>Registreren</h1>
         <form action="register.php" method="POST">
+            <!-- Voeg dit direct na de <form> tag toe -->
+            <input type="hidden" name="csrf_token" id="csrf_token" value="" />
+            
             <label for="register-name">Naam</label>
             <input type="text" id="register-name" name="register-name" placeholder="Voornaam en Achternaam" required>
 
