@@ -3,6 +3,8 @@ session_start();
 header('Content-Type: application/json');
 
 include 'db_connect.php';
+include 'csrf.php';
+csrf_validate(); // stopt script als token fout is
 
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['error' => 'Niet ingelogd']);

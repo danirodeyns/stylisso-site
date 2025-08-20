@@ -39,7 +39,10 @@
 
     <section class="review-form">
       <h2>Laat ook een review achter</h2>
-      <form action="reviews-mailing.php" method="post">
+      <form action="reviews-mailing.php" method="POST">
+        <!-- Voeg dit direct na de <form> tag toe -->
+        <input type="hidden" name="csrf_token" id="csrf_token" value="" />
+
         <label for="name">Naam:</label><br />
         <input type="text" id="name" name="name" placeholder="Naam" required /><br /><br />
 

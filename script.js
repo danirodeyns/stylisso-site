@@ -1,6 +1,15 @@
 console.log("Stylisso site loaded.");
 
 document.addEventListener('DOMContentLoaded', function () {
+  // --- CSRF-token ophalen ---
+  fetch('csrf.php')
+    .then(res => res.json())
+    .then(data => {
+      window.csrfToken = data.csrf_token;
+      console.log("CSRF-token ingesteld:", window.csrfToken);
+    })
+    .catch(err => console.error('CSRF-token kon niet opgehaald worden', err));
+  
   // --- Header inladen via fetch ---
   fetch('header.html')
     .then(response => {

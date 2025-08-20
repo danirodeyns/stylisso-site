@@ -4,6 +4,8 @@
 session_start(); // Als je sessies gebruikt voor beveiliging
 
 include 'db_connect.php';  // database connectie
+include 'csrf.php';
+csrf_validate(); // stopt script als token fout is
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = trim($_POST["email"]);

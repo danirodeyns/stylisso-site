@@ -7,6 +7,8 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 include 'db_connect.php';
+include 'csrf.php';
+csrf_validate(); // stopt script als token fout is
 
 $dsn = "mysql:host=$dbHost;dbname=$dbName;charset=utf8mb4";
 $options = [

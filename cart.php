@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'db_connect.php';
+include 'csrf.php';
 
 header('Content-Type: application/json');
 
@@ -12,6 +13,7 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_validate();
     $data = json_decode(file_get_contents('php://input'), true);
     $product_id = isset($data['product_id']) ? (int)$data['product_id'] : 0;
     $quantity = isset($data['quantity']) ? (int)$data['quantity'] : 0;

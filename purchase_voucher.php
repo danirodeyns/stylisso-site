@@ -1,6 +1,8 @@
 <?php
 session_start();
 require 'db_connect.php'; // PDO connectie
+include 'csrf.php';
+csrf_validate(); // stopt script als token fout is
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 

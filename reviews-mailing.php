@@ -1,4 +1,8 @@
 <?php
+session_start();
+include 'csrf.php';
+csrf_validate(); // stopt script als token fout is
+
 // Ontvanger van de e-mails
 $to = "klantendienst@stylisso.be";
 

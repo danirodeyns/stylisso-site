@@ -29,6 +29,9 @@
           <h1>Gegevens & Voorkeuren</h1>
           <p>Hier kun je je persoonlijke gegevens bekijken en aanpassen, en je voorkeuren voor communicatie beheren.</p>
           <form id="profileForm" action="update_profile.php" method="POST">
+            <!-- Voeg dit direct na de <form> tag toe -->
+            <input type="hidden" name="csrf_token" id="csrf_token" value="" />
+            
             <label for="name">Naam</label>
             <input type="text" id="name" name="name" placeholder="Jouw naam" />
 

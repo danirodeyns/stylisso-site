@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'db_connect.php';
+include 'csrf.php';
 
 if (!isset($_SESSION['user_id'])) {
     echo "Je moet ingelogd zijn.";
@@ -18,6 +19,7 @@ $user = $result->fetch_assoc();
 $current_address = $user['address'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_validate();
     // Adres uit formulier
     $new_address = trim($_POST['address']);
 

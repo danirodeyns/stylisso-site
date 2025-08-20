@@ -33,6 +33,8 @@
 
         <!-- Cadeaubon formulier -->
         <form id="voucherForm" action="redeem_voucher.php" method="POST">
+          <!-- Voeg dit direct na de opening van het formulier toe -->
+          <input type="hidden" name="csrf_token" id="csrf_token" value="" />
           <label for="voucher_code">Cadeauboncode</label>
           <input type="text" id="voucher_code" name="voucher_code" placeholder="Voer je cadeauboncode in" required />
           <button type="submit">Opslaan</button>

@@ -17,6 +17,9 @@
             <p class="intro-text">Vul hieronder je e-mailadres in. We sturen je een link om je wachtwoord te resetten.</p>
             
             <form class="auth-form" action="wachtwoord vergeten.php" method="POST">
+                <!-- CSRF-token toevoegen -->
+                <input type="hidden" name="csrf_token" id="csrf_token" value="" />
+              
                 <label for="email">E-mailadres</label>
                 <input type="email" id="email" name="email" placeholder="jouw@email.com" required>
 

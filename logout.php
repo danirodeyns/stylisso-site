@@ -1,6 +1,8 @@
 <?php
 session_start();
 include 'db_connect.php'; // DB connectie nodig om token te verwijderen
+include 'csrf.php';
+csrf_validate(); // stopt script als token fout is
 
 // Verwijder remember cookie en token uit DB indien aanwezig
 if (isset($_COOKIE['user_login'])) {

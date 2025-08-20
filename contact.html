@@ -17,6 +17,9 @@
     </section>
 
     <form action="contact-mailing.php" method="POST" class="contact-form">
+        <!-- Voeg dit direct na de <form> tag toe -->
+        <input type="hidden" name="csrf_token" id="csrf_token" value="" />
+        
         <label for="name">Naam:</label>
         <input type="text" id="name" name="name" placeholder="Naam" required>
 

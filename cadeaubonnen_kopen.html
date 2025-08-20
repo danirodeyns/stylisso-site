@@ -17,6 +17,8 @@
     </section>
 
     <form action="purchase_voucher.php" method="POST" class="voucher-form">
+      <!-- Voeg dit direct na de <form> tag toe -->
+      <input type="hidden" name="csrf_token" id="csrf_token" value="" />
       <label>Bedrag:</label>
       <div class="amount-buttons">
         <button type="button" data-amount="15">€15</button>

@@ -2,6 +2,8 @@
 // login.php
 session_start();
 include 'db_connect.php';
+include 'csrf.php';
+csrf_validate(); // stopt script als token fout is
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['login-email'] ?? '';
