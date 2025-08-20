@@ -1,16 +1,17 @@
 <?php
+// register.php
+session_start();
 include 'db_connect.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name         = trim($_POST['register-name'] ?? '');
-    $email        = trim($_POST['register-email'] ?? '');
-    $password_raw = $_POST['register-password'] ?? '';
-    $password2_raw= $_POST['register-password2'] ?? '';
-    $address      = '';
+    $name           = trim($_POST['register-name'] ?? '');
+    $email          = trim($_POST['register-email'] ?? '');
+    $password_raw   = $_POST['register-password'] ?? '';
+    $password2_raw  = $_POST['register-password2'] ?? '';
     $newsletter     = isset($_POST['newsletter']) ? 1 : 0;
     $terms_accepted = isset($_POST['terms_of_use']) ? 1 : 0;
 
-    // 1. Controleer lege velden (per veld apart)
+    // 1. Controleer lege velden
     if (empty($name)) {
         header('Location: login_registreren.html?error_name=empty&old_email=' . urlencode($email));
         exit;
@@ -27,7 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: login_registreren.html?error_password2=empty&old_name=' . urlencode($name) . '&old_email=' . urlencode($email));
         exit;
     }
-    // Controleer of algemene voorwaarden zijn aangevinkt
     if (!$terms_accepted) {
         header('Location: login_registreren.html?error_terms=required&old_name=' . urlencode($name) . '&old_email=' . urlencode($email));
         exit;
@@ -54,31 +54,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
-
     if ($result->num_rows > 0) {
         header('Location: login_registreren.html?error_email=exists&old_name=' . urlencode($name));
         exit;
     }
 
     // 5. Wachtwoord hashen
-    $password = password_hash($password_raw, PASSWORD_DEFAULT);
+    $password_hashed = password_hash($password_raw, PASSWORD_DEFAULT);
 
-    // 6. Nieuwe gebruiker toevoegen (inclusief newsletter en terms_accepted)
+    // 6. Nieuwe gebruiker toevoegen
     $stmt = $conn->prepare("INSERT INTO users (name, email, password, newsletter, terms_accepted) VALUES (?, ?, ?, ?, ?)");
     if (!$stmt) {
         header('Location: login_registreren.html?error_general=db_error&old_name=' . urlencode($name) . '&old_email=' . urlencode($email));
         exit;
     }
-    $stmt->bind_param("sssii", $name, $email, $password, $newsletter, $terms_accepted);
+    $stmt->bind_param("sssii", $name, $email, $password_hashed, $newsletter, $terms_accepted);
 
     if ($stmt->execute()) {
-        header('Location: login_registreren.html?success=registered');
+        // **Automatisch inloggen**
+        $_POST['login-email'] = $email;          // geregistreerde e-mail
+        $_POST['login-password'] = $password_raw; // originele wachtwoord
+        $_POST['cookies_accepted'] = '1';        // accepteer functionele cookies automatisch
+
+        include 'login.php'; // login.php zal sessie + cookie aanmaken en redirecten
         exit;
     } else {
         header('Location: login_registreren.html?error_general=insert_failed&old_name=' . urlencode($name) . '&old_email=' . urlencode($email));
         exit;
     }
-} else { 
-    header('Location: login_registreren.html'); exit;
+
+} else {
+    header('Location: login_registreren.html');
+    exit;
 }
 ?>
