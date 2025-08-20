@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(data => {
       if (!data.csrf_token) throw new Error('Geen CSRF-token ontvangen');
 
+      window.csrfToken = data.csrf_token;
+      
       // Alle forms op de pagina
       document.querySelectorAll('form').forEach(form => {
         const csrfInput = form.querySelector('input[name="csrf_token"]');
@@ -16,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
       console.log("CSRF-token ingesteld voor alle formulieren:", data.csrf_token);
     })
     .catch(err => console.error('CSRF-token kon niet opgehaald worden', err));
-    
+
   // --- Header inladen via fetch ---
   fetch('header.html')
     .then(response => {
