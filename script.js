@@ -139,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const banner = document.getElementById("cookie-banner");
         const acceptAll = document.getElementById("accept-all");
         const acceptFunctional = document.getElementById("accept-functional");
+        const cookiesAcceptedField = document.getElementById("cookiesAccepted"); // hidden login field
 
         if (!banner) return; // Banner bestaat niet, stop
 
@@ -160,10 +161,15 @@ document.addEventListener('DOMContentLoaded', function () {
           return "";
         }
 
-        if (getCookie("cookieConsent")) {
-          banner.style.display = "none";
+        const cookieConsent = getCookie("cookieConsent");
+
+        if (cookieConsent && (cookieConsent === "all" || cookieConsent === "functional")) {
+            banner.style.display = "none";
+            if (cookiesAcceptedField) {
+                cookiesAcceptedField.value = "1"; // lange termijn cookie mag
+            }
         } else {
-          banner.style.display = "block";
+            banner.style.display = "block";
         }
 
         if (acceptAll) {
