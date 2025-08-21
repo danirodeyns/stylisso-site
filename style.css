@@ -1289,26 +1289,34 @@ input[type="number"] {
   border-radius: 0.5rem;
   margin-bottom: 0.5rem;
   border: 1px solid #ddd;
-  display: flex;             /* Flex container */
-  justify-content: space-between; /* Spreid de items */
-  align-items: center;       /* Verticaal centreren */
-  gap: 1rem;                 /* Optionele ruimte tussen items */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .voucher-list li span {
-  flex: 1;                   /* Elk onderdeel neemt evenveel ruimte in */
+  white-space: nowrap;
 }
 
 .voucher-list li .left {
   text-align: left;
+  flex: 1;
 }
 
 .voucher-list li .center {
   text-align: center;
+  flex: 1;
 }
 
 .voucher-list li .right {
   text-align: right;
+  flex: 1;
+}
+
+.voucher-list li .separator {
+  flex: 0; /* neemt exact de breedte van het symbool in */
+  text-align: center;
+  color: #999;
 }
 
 .over-ons-container {

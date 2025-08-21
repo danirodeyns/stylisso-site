@@ -760,7 +760,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const li = document.createElement('li');
         li.innerHTML = `
           <span class="left"><strong>Code:</strong> ${voucher.code}</span>
+          <span class="separator">|</span>
           <span class="center"><strong>Resterende waarde:</strong> €${Number(voucher.value).toFixed(2)}</span>
+          <span class="separator">|</span>
           <span class="right"><strong>Vervalt op:</strong> ${voucher.expires_at || 'Onbepaald'}</span>
         `;
         ul.appendChild(li);
