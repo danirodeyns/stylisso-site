@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stylisso - Afrekenen</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="header-placeholder"></div>
+
+  <main class="checkout-page">
+    <!-- Links: formulier -->
+    <form id="checkoutForm" class="checkout-form">
+      <input type="hidden" name="csrf_token" value="">
+
+      <label for="name">Naam</label>
+      <input type="text" id="name" name="name" placeholder="Naam" required />
+
+      <label for="address">Adres</label>
+      <input type="text" id="address" name="address" placeholder="Straat + Nr, Postcode + Stad" required />
+
+      <label for="company_name">Bedrijfsnaam</label>
+      <input type="text" id="company_name" name="company_name" placeholder="Bedrijf (Optioneel)" />
+
+      <label for="vat_number">BTW-nummer</label>
+      <input type="text" id="vat_number" name="vat_number" placeholder="BTW-nummer (Optioneel)" />
+
+      <label for="email">E-mailadres</label>
+      <input type="email" id="email" name="email" placeholder="jouw@email.com" required />
+
+      <label for="betaalmethode">Betaalmethode</label>
+      <select id="payment_method" name="payment_method" required>
+        <option value="">Kies een optie</option>
+        <option value="ideal">iDEAL</option>
+        <option value="creditcard">Creditcard</option>
+      </select>
+
+      <button type="submit" class="checkout-button">Betalen</button>
+    </form>
+
+    <!-- Rechts: samenvatting -->
+    <div class="summary-box">
+      <h2>Orderoverzicht</h2>
+      <div class="summary-row">
+        <span>Subtotaal:</span>
+        <span id="subtotalDisplay">€0,00</span>
+      </div>
+      <div class="summary-row">
+        <span>Verzendkosten:</span>
+        <span id="shippingCost">€5,00</span>
+      </div>
+      <div class="summary-row">
+        <span>BTW (21%):</span>
+        <span id="taxAmount">€0,00</span>
+      </div>
+      <hr />
+      <div class="summary-row">
+        <strong>Totaal:</strong>
+        <strong id="totalAmount">€0,00</strong>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="script.js"></script>
+
+</body>
+</html>

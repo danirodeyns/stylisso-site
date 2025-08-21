@@ -829,6 +829,65 @@ input[type="number"] {
   line-height: clamp(2rem, calc(80vh - 20rem), 80vh); 
 }
 
+.checkout-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  padding: 40px;
+}
+
+.checkout-form {
+  flex: 2.5; /* groter gedeelte */
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.checkout-form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0rem;
+}
+
+.checkout-form input,
+.checkout-form select,
+.checkout-form textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  margin-bottom: 0rem;
+  transition: border-color 0.3s ease;
+}
+
+.checkout-form input:focus,
+.checkout-form select:focus,
+.checkout-form textarea:focus {
+  border-color: black;
+  outline: none;
+}
+
+.summary-box {
+  flex: 1;
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+}
+
+.summary-box h2 {
+  margin-top: 0;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+}
+
 .contact-container {
   width: 80vw;
   max-width: 1300px;
@@ -1731,13 +1790,34 @@ input[type="number"] {
   }
 
   .checkout-button:hover {
-    background-color: #ddd;
+    background-color: black;
+    color: white;
+    border-color: white;
   }
 
   .empty-cart-message {
     color: #888;
     background: #222;
     border: 1px solid #444;
+  }
+
+  .checkout-form input,
+  .checkout-form select,
+  .checkout-form textarea {
+    border: 1px solid #888;
+    background-color: #444;
+    color: white; 
+  }
+
+  .checkout-form input:focus,
+  .checkout-form select:focus,
+  .checkout-form textarea:focus {
+    border-color: white;
+  }
+
+  .summary-box {
+    border: 1px solid #444;
+    background-color: #222;
   }
 
   .contact-titel h1 {

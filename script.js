@@ -401,6 +401,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
   fetchCart();
 
+  // ================================
+  // CHECKOUT FORM: update profiel + afrekenen
+  // ================================
+  const checkoutForm = document.getElementById('checkoutForm');
+  if (checkoutForm) {
+      checkoutForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+
+          const formData = new FormData(checkoutForm);
+
+          fetch('update_profile.php', {
+              method: 'POST',
+              body: formData
+          })
+          .then(response => response.text())
+          .then(data => {
+              // Optioneel: check success via GET-param in redirect of response
+              // Redirect naar afrekenen.php
+              window.location.href = 'afrekenen.php';
+          })
+          .catch(err => {
+              console.error('Fout bij updaten profiel:', err);
+              alert('Er is iets misgegaan bij het updaten van je gegevens.');
+          });
+      });
+  }
+
   // --- Foutmeldingen en oude waarden uit queryparameters ---
   const params = new URLSearchParams(window.location.search);
 
