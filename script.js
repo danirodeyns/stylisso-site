@@ -749,7 +749,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       if (validVouchers.length === 0) {
-        voucherList.innerHTML = `<p>Geen geldige cadeaubonnen beschikbaar.</p>`;
+        voucherList.innerHTML = `<p>Geen cadeaubonnen gekoppeld.</p>`;
         return;
       }
 
@@ -759,9 +759,9 @@ document.addEventListener('DOMContentLoaded', () => {
       validVouchers.forEach(voucher => {
         const li = document.createElement('li');
         li.innerHTML = `
-          <strong>Code:</strong> ${voucher.code} | 
-          <strong>Resterende waarde:</strong> €${Number(voucher.value).toFixed(2)} | 
-          <strong>Vervalt op:</strong> ${voucher.expires_at || 'Onbepaald'}
+          <span class="left"><strong>Code:</strong> ${voucher.code}</span>
+          <span class="center"><strong>Resterende waarde:</strong> €${Number(voucher.value).toFixed(2)}</span>
+          <span class="right"><strong>Vervalt op:</strong> ${voucher.expires_at || 'Onbepaald'}</span>
         `;
         ul.appendChild(li);
       });
