@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'db_connect.php'; // PDO connectie
+require 'db_connect.php';
 include 'csrf.php';
 csrf_validate(); // stopt script als token fout is
 
@@ -22,16 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $code = strtoupper(bin2hex(random_bytes(4)));
 
     // Optioneel: vervaldatum instellen (bijv. 1 jaar geldig)
-    $expires_at = date('Y-m-d', strtotime('+1 year'));
+    $expires_at = date('Y-m-d H:i:s', strtotime('+1 year'));
 
     // Voeg toe aan vouchers tabel
-    $stmt = $pdo->prepare("INSERT INTO vouchers (code, value, remaining_value, expires_at) VALUES (:code, :value, :remaining_value, :expires_at)");
-    $stmt->execute([
-        ':code' => $code,
-        ':value' => $amount,
-        ':remaining_value' => $amount,
-        ':expires_at' => $expires_at
-    ]);
+    $stmt = $conn->prepare("INSERT INTO vouchers (code, value, remaining_value, expires_at) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("sdds", $code, $amount, $amount, $expires_at);
+    $stmt->execute();
 
     // Mail de boncode naar de gebruiker
     $subject = "Jouw Stylisso cadeaubon";

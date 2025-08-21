@@ -739,7 +739,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Standaard input verbergen totdat Aangepast is gekozen
     customAmountInput.style.display = 'none';
-    customAmountInput.disabled = true;
 
     buttons.forEach(button => {
         button.addEventListener('click', () => {
@@ -752,13 +751,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (button.dataset.amount === 'custom') {
                 // Aangepast geselecteerd -> input zichtbaar en inschakelen
                 customAmountInput.style.display = 'block';
-                customAmountInput.disabled = false;
-                customAmountInput.focus();
                 customAmountInput.value = '';
+                customAmountInput.focus();
             } else {
                 // Ander bedrag -> input verbergen en waarde invullen
                 customAmountInput.style.display = 'none';
-                customAmountInput.disabled = true;
                 customAmountInput.value = button.dataset.amount;
             }
         });
