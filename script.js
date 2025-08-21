@@ -356,23 +356,21 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateQuantityOnServer(productId, quantity) {
     fetch('cart.php?action=update_quantity', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': window.csrfToken // <<< Voeg dit toe
+      },
       body: JSON.stringify({ product_id: productId, quantity: quantity })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        fetchCart();
-      } else {
-        alert('Fout bij bijwerken hoeveelheid');
-      }
     });
   }
 
   function removeItemFromServer(productId) {
     fetch('cart.php?action=remove_item', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': window.csrfToken // <<< Voeg dit toe
+      },
       body: JSON.stringify({ product_id: productId })
     })
     .then(response => response.json())
