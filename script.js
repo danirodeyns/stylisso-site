@@ -720,17 +720,15 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
   const voucherList = document.getElementById('voucher-list');
 
-  if (!voucherList) return; // Alleen uitvoeren als element aanwezig is
+  if (!voucherList) return;
 
   fetch('get_vouchers.php')
     .then(res => {
-      if (!res.ok) {
-        throw new Error(`HTTP fout! status: ${res.status}`);
-      }
+      if (!res.ok) throw new Error(`HTTP fout! status: ${res.status}`);
       return res.json();
     })
     .then(data => {
-      console.log('Voucher data:', data); // debug
+      console.log('Voucher data:', data);
 
       if (data.error) {
         voucherList.innerHTML = `<p>${data.error}</p>`;
@@ -742,17 +740,29 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      const now = new Date();
+
+      // Filter alleen geldige vouchers
+      const validVouchers = data.filter(voucher => {
+        const expiresAt = voucher.expires_at ? new Date(voucher.expires_at) : null;
+        return voucher.value > 0 && (!expiresAt || expiresAt >= now);
+      });
+
+      if (validVouchers.length === 0) {
+        voucherList.innerHTML = `<p>Geen geldige cadeaubonnen beschikbaar.</p>`;
+        return;
+      }
+
       const ul = document.createElement('ul');
       ul.classList.add('voucher-list');
 
-      data.forEach(voucher => {
+      validVouchers.forEach(voucher => {
         const li = document.createElement('li');
         li.innerHTML = `
           <strong>Code:</strong> ${voucher.code} | 
-          <strong>Resterende waarde :</strong> €${Number(voucher.value).toFixed(2)} | 
-          <strong>Vervalt op: </strong> ${voucher.expires_at}
+          <strong>Resterende waarde:</strong> €${Number(voucher.value).toFixed(2)} | 
+          <strong>Vervalt op:</strong> ${voucher.expires_at || 'Onbepaald'}
         `;
-        li.style.color = voucher.is_used ? 'red' : 'green';
         ul.appendChild(li);
       });
 
