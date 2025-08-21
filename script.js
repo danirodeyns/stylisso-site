@@ -623,6 +623,16 @@ window.addEventListener('DOMContentLoaded', () => {
 // ---------------------------
 
 document.addEventListener('DOMContentLoaded', () => {
+    fetch('csrf.php')
+    .then(res => res.json())
+    .then(data => {
+        if (data.csrf_token) {
+            document.querySelectorAll('input[name="csrf_token"]').forEach(input => {
+                input.value = data.csrf_token;
+            });
+        }
+    });
+  
     const orderSelect = document.getElementById('orderSelect');
     const productSelect = document.getElementById('productSelect');
     const returnForm = document.getElementById('returnForm');
