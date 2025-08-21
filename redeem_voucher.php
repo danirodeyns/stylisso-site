@@ -12,7 +12,12 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $code = strtoupper(trim($_POST['code']));
+    // Controleer of voucher_code aanwezig is
+    if (!isset($_POST['voucher_code']) || empty(trim($_POST['voucher_code']))) {
+        die("Voer een geldige boncode in.");
+    }
+
+    $code = strtoupper(trim($_POST['voucher_code']));
 
     // Controleer of bon bestaat, nog waarde heeft en niet verlopen is
     $stmt = $conn->prepare("
