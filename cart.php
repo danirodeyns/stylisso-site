@@ -3,6 +3,10 @@ session_start();
 include 'db_connect.php';
 include 'csrf.php';
 
+ini_set('display_errors', 0); // niets naar output
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/php-error.log'); // schrijf naar file
+
 header('Content-Type: application/json');
 
 // Controleer of de gebruiker ingelogd is
@@ -15,6 +19,11 @@ $user_id = $_SESSION['user_id'];
 
 // Functie voor CSRF-validatie bij AJAX/fetch POSTs
 function csrf_validate_ajax() {
+    if (!isset($_SESSION['csrf_token'])) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'message' => 'CSRF-token ontbreekt in sessie']);
+        exit;
+    }    
     $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
     if (!hash_equals($_SESSION['csrf_token'], $token)) {
         http_response_code(403);
@@ -54,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // GET: haal cart op
 $stmt = $conn->prepare("
-    SELECT cart.id, products.id AS product_id, products.name, products.price, products.image, cart.quantity, cart.variant
+    SELECT cart.id, products.id AS product_id, products.name, products.price, products.image, cart.quantity
     FROM cart
     JOIN products ON cart.product_id = products.id
     WHERE cart.user_id = ?

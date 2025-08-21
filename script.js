@@ -283,23 +283,22 @@ document.addEventListener('DOMContentLoaded', function () {
     cartItemsContainer.innerHTML = "";
 
     if (cart.length === 0) {
-      let emptyMsg = cartItemsContainer.querySelector('.empty-cart-message');
-      if (!emptyMsg) {
-        emptyMsg = document.createElement('p');
-        emptyMsg.className = 'empty-cart-message';
-        emptyMsg.textContent = 'Je winkelwagen is leeg';
-        cartItemsContainer.appendChild(emptyMsg);
-      }
-      emptyMsg.style.display = "block";
-
-      if (subtotalDisplay) subtotalDisplay.textContent = "€0,00";
+      // Verberg subtotaal en checkout knop
       if (cartSummary) cartSummary.style.display = "none";
+
+      // Maak rechthoek met tekst "Je winkelwagen is leeg"
+      const emptyMsg = document.createElement('p');
+      emptyMsg.className = 'empty-cart-message';
+      emptyMsg.textContent = 'Je winkelwagen is leeg';
+      cartItemsContainer.appendChild(emptyMsg);
+
+      // Subtotaal op nul
+      if (subtotalDisplay) subtotalDisplay.textContent = "€0,00";
+
       return;
     }
 
-    const emptyMsg = cartItemsContainer.querySelector('.empty-cart-message');
-    if (emptyMsg) emptyMsg.style.display = "none";
-
+    // Toon cart summary als er items zijn
     if (cartSummary) cartSummary.style.display = "block";
 
     cart.forEach(item => {
