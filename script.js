@@ -749,9 +749,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const li = document.createElement('li');
         li.innerHTML = `
           <strong>Code:</strong> ${voucher.code} | 
-          <strong>Waarde:</strong> €${Number(voucher.value).toFixed(2)} | 
-          <strong>Status:</strong> ${voucher.is_used ? 'Gebruikt' : 'Beschikbaar'} | 
-          <small>Toegevoegd op: ${voucher.redeemed_at}</small>
+          <strong>Resterende waarde :</strong> €${Number(voucher.value).toFixed(2)} | 
+          <strong>Vervalt op: </strong> ${voucher.expires_at}
         `;
         li.style.color = voucher.is_used ? 'red' : 'green';
         ul.appendChild(li);

@@ -17,7 +17,7 @@ $user_id = $_SESSION['user_id'];
 
 try {
     $stmt = $conn->prepare("
-        SELECT v.code, v.value, v.remaining_value, uv.claimed_at
+        SELECT v.code, v.value, v.remaining_value, v.expires_at, uv.claimed_at
         FROM user_vouchers uv
         JOIN vouchers v ON uv.voucher_id = v.id
         WHERE uv.user_id = ?
@@ -34,7 +34,7 @@ try {
         throw new Exception("Execute mislukt: " . $stmt->error);
     }
 
-    $stmt->bind_result($code, $value, $remaining_value, $claimed_at);
+    $stmt->bind_result($code, $value, $remaining_value, $expires_at, $claimed_at);
     $vouchers = [];
 
     while ($stmt->fetch()) {
@@ -42,7 +42,8 @@ try {
             'code' => $code,
             'value' => $value,
             'is_used' => $remaining_value <= 0 ? 1 : 0,
-            'claimed_at' => $claimed_at
+            'claimed_at' => $claimed_at,
+            'expires_at' => $expires_at
         ];
     }
 
