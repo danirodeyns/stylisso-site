@@ -888,6 +888,60 @@ input[type="number"] {
   margin: 10px 0;
 }
 
+.voucher-section {
+  flex: 1;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.voucher-section h2 {
+  margin-top: 0rem;
+}
+
+.voucher-button {
+  background-color: black;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 0.75rem; /* gelijk aan checkout-form input radius */
+  width: 100%; /* full width zoals de inputvelden */
+  cursor: pointer;
+  margin-top: 0.5rem; /* optioneel iets kleiner */
+  transition: background-color 0.3s ease;
+}
+
+.voucher-button:hover {
+  background-color: #333;
+}
+
+.voucher-section input,
+.voucher-section select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  margin-bottom: 0.5rem;
+  transition: border-color 0.3s ease;
+}
+
+.voucher-section input:focus,
+.voucher-section select:focus {
+  border-color: black;
+  outline: none;
+}
+
+.voucher-form2 label,
+.voucher-section label {
+  display: block;
+  margin: 1rem 0 1rem 0;
+}
+
+.voucher-section hr {
+  margin: 1rem 0 1rem 0;
+}
+
 .contact-container {
   width: 80vw;
   max-width: 1300px;
@@ -1947,6 +2001,31 @@ input[type="number"] {
     background-color: #1f1f1f;
     color: #f0f0f0;
     box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+  }
+
+  .voucher-button {
+    background-color: #fff;
+    color: #000;
+  }
+
+  .voucher-button:hover {
+    background-color: black;
+    color: white;
+    border-color: white;
+  }
+
+  .voucher-section input,
+  .voucher-section select,
+  .voucher-section option {
+    border: 1px solid #888;
+    background-color: #444;
+    color: white;
+  }
+
+  .voucher-section input:focus,
+  .voucher-section select:focus,
+  .voucher-section option:focus {
+    border-color: white;
   }
 
   .btn {
