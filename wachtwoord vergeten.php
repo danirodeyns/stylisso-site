@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt->execute();
 
     // Maak resetlink
-    $resetLink = "https://jouwsite.be/reset_password.php?token=" . $token;
+    $resetLink = "https://stylisso.be/reset_password.php?token=" . $token;
 
     // Stuur e-mail
     $to = $email;

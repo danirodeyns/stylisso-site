@@ -4,9 +4,12 @@ require 'db_connect.php';
 include 'csrf.php';
 csrf_validate(); // stopt script als token fout is
 
+header('Content-Type: application/json'); // JSON response
+
 // Controleer of gebruiker ingelogd is
 if (!isset($_SESSION['user_id'])) {
-    die("Je moet ingelogd zijn om een bon in te wisselen.");
+    echo json_encode(["error" => "Je moet ingelogd zijn om een bon in te wisselen."]);
+    exit;
 }
 
 $user_id = $_SESSION['user_id'];
@@ -14,7 +17,8 @@ $user_id = $_SESSION['user_id'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Controleer of voucher_code aanwezig is
     if (!isset($_POST['voucher_code']) || empty(trim($_POST['voucher_code']))) {
-        die("Voer een geldige boncode in.");
+        echo json_encode(["error" => "Voer een geldige boncode in."]);
+        exit;
     }
 
     $code = strtoupper(trim($_POST['voucher_code']));
@@ -34,7 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
 
     if (!$voucher) {
-        die("Deze boncode bestaat niet, is volledig gebruikt of is verlopen.");
+        echo json_encode(["error" => "Deze boncode bestaat niet, is volledig gebruikt of is verlopen."]);
+        exit;
     }
 
     // Controleer of bon al gekoppeld is aan deze gebruiker
@@ -45,7 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
 
     if ($existing) {
-        die("Deze cadeaubon is al aan jouw account gekoppeld.");
+        echo json_encode(["error" => "Deze cadeaubon is al aan jouw account gekoppeld."]);
+        exit;
     }
 
     // Koppel bon aan gebruiker
@@ -54,6 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute();
     $stmt->close();
 
-    echo "Cadeaubon succesvol gekoppeld aan je account! Waarde: €" . number_format($voucher['remaining_value'], 2, ',', '.');
+    echo json_encode([
+        "success" => "Cadeaubon succesvol gekoppeld aan je account! Waarde: €" . number_format($voucher['remaining_value'], 2, ',', '.')
+    ]);
 }
 ?>

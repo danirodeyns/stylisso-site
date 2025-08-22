@@ -816,3 +816,63 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const voucherForm = document.getElementById('voucherForm');
+  const messageBox = document.getElementById('voucher-message');
+  const voucherList = document.getElementById('voucher-list');
+
+  if (voucherForm) {
+    voucherForm.addEventListener('submit', function(e) {
+      e.preventDefault(); // voorkom standaard submit
+
+      const formData = new FormData(voucherForm);
+
+      fetch('redeem_voucher.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          messageBox.innerHTML = `<p style="color:red;">${data.error}</p>`;
+        } else if (data.success) {
+          messageBox.innerHTML = `<p style="color:green;">${data.success}</p>`;
+
+          // Eventueel lijst met vouchers verversen
+          fetch('get_vouchers.php')
+            .then(res => res.json())
+            .then(vouchers => {
+              if (!Array.isArray(vouchers) || vouchers.length === 0) {
+                voucherList.innerHTML = '<p>Geen cadeaubonnen gekoppeld.</p>';
+                return;
+              }
+
+              const ul = document.createElement('ul');
+              ul.classList.add('voucher-list');
+
+              vouchers.forEach(voucher => {
+                // enkel tonen als waarde > 0 en nog geldig
+                if (voucher.value > 0 && (!voucher.expires_at || new Date(voucher.expires_at) > new Date())) {
+                  const li = document.createElement('li');
+                  li.innerHTML = `
+                    <span class="left"><strong>Code:</strong> ${voucher.code}</span>
+                    <span class="center"><strong>Resterende waarde:</strong> €${Number(voucher.value).toFixed(2)}</span>
+                    <span class="right"><strong>Vervalt op:</strong> ${voucher.expires_at || 'Onbepaald'}</span>
+                  `;
+                  ul.appendChild(li);
+                }
+              });
+
+              voucherList.innerHTML = '';
+              voucherList.appendChild(ul);
+            });
+        }
+      })
+      .catch(err => {
+        console.error('Fout bij claimen voucher:', err);
+        messageBox.innerHTML = `<p style="color:red;">Er ging iets mis bij het koppelen van de bon.</p>`;
+      });
+    });
+  }
+});
