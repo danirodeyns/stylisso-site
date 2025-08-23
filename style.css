@@ -906,7 +906,8 @@ input[type="number"] {
   border-radius: 0.75rem; /* gelijk aan checkout-form input radius */
   width: 100%; /* full width zoals de inputvelden */
   cursor: pointer;
-  margin-top: 0.5rem; /* optioneel iets kleiner */
+  margin-top: 1rem; /* optioneel iets kleiner */
+  margin-bottom: 1.25rem;
   transition: background-color 0.3s ease;
 }
 
@@ -936,10 +937,6 @@ input[type="number"] {
 .voucher-section label {
   display: block;
   margin: 0.25rem 0 1rem 0;
-}
-
-.voucher-section hr {
-  margin: 1rem 0 1rem 0;
 }
 
 .contact-container {
