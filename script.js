@@ -852,9 +852,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (res.error) {
           messageBox.textContent = res.error;
           messageBox.style.color = 'red';
+          messageBox.style.margin = '1rem 0';
         } else if (res.success) {
           messageBox.textContent = res.success;
           messageBox.style.color = 'green';
+          messageBox.style.margin = '1rem 0';
           if (codeInput) codeInput.value = '';
           refreshSavedVouchers(savedSelect);
           refreshVoucherList();
@@ -864,6 +866,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('redeem_voucher error:', err);
         messageBox.textContent = 'Er ging iets mis, probeer opnieuw.';
         messageBox.style.color = 'red';
+        messageBox.style.margin = '1rem 0';
       })
       .finally(() => {
         isSubmitting = false;
@@ -875,15 +878,23 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshSavedVouchers(savedSelect);
     refreshVoucherList();
 
+    // Dropdown gebruiken met dezelfde messageBox logica
     if (applyBtn && savedSelect) {
       applyBtn.addEventListener('click', () => {
         const code = savedSelect.value;
         if (!code) {
-          alert('Kies eerst een cadeaubon.');
+          messageBox.textContent = "Kies eerst een cadeaubon.";
+          messageBox.style.color = "red";
+          messageBox.style.margin = "1rem 0";
           return;
         }
-        alert('Cadeaubon toegepast: ' + code);
-        // hier later logica om totaal aan te passen
+
+        // Succesmelding
+        messageBox.textContent = `Cadeaubon toegepast: ${code}`;
+        messageBox.style.color = "green";
+        messageBox.style.margin = "1rem 0";
+
+        // TODO: hier logica toevoegen om totaal aan te passen
       });
     }
   }
