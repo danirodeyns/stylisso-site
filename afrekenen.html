@@ -70,7 +70,7 @@
         <!-- Redeem form -->
         <form id="voucherForm" action="redeem_voucher.php" method="POST" class="voucher-form2">
           <input type="hidden" name="csrf_token" value="">
-          <label for="voucher_code">Voer boncode in</label>
+          <label for="voucher_code">Voer boncode in:</label>
           <input type="text" id="voucher_code" name="voucher_code" placeholder="Bijv. ABC123" required>
           <button type="submit" class="voucher-button">Toevoegen</button>
         </form>
@@ -80,7 +80,7 @@
         <hr />
 
         <!-- Dropdown bestaande vouchers -->
-        <label for="saved_voucher">Selecteer opgeslagen bon</label>
+        <label for="saved_voucher">Selecteer opgeslagen bon:</label>
         <select id="saved_voucher">
           <option value="">Kies een bon</option>
           <!-- Wordt dynamisch gevuld met get_vouchers.php -->
