@@ -817,62 +817,143 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-  const voucherForm = document.getElementById('voucherForm');
-  const messageBox = document.getElementById('voucher-message');
-  const voucherList = document.getElementById('voucher-list');
+(function () {
+  function onReady() {
+    const voucherForm  = document.getElementById('voucherForm');
+    const messageBox   = document.getElementById('voucher-message');
+    const savedSelect  = document.getElementById('saved_voucher');
+    const applyBtn     = document.getElementById('applyVoucherButton');
+    const codeInput    = document.getElementById('voucher_code');
 
-  if (voucherForm) {
-    voucherForm.addEventListener('submit', function(e) {
-      e.preventDefault(); // voorkom standaard submit
+    if (!voucherForm) return;
+
+    let isSubmitting = false;
+
+    // Enkele, dominante submit-handler
+    voucherForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      e.stopImmediatePropagation(); // blokkeert oude listeners
+      if (isSubmitting) return;
+      isSubmitting = true;
+
+      const submitBtn = voucherForm.querySelector('button[type="submit"]');
+      const prevLabel = submitBtn ? submitBtn.textContent : '';
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Bezig…'; }
 
       const formData = new FormData(voucherForm);
 
       fetch('redeem_voucher.php', {
         method: 'POST',
-        body: formData
+        body: formData,
+        credentials: 'same-origin'
       })
-      .then(res => res.json())
-      .then(data => {
-        if (data.error) {
-          messageBox.innerHTML = `<p style="color:red;">${data.error}</p>`;
-        } else if (data.success) {
-          messageBox.innerHTML = `<p style="color:green;">${data.success}</p>`;
-
-          // Eventueel lijst met vouchers verversen
-          fetch('get_vouchers.php')
-            .then(res => res.json())
-            .then(vouchers => {
-              if (!Array.isArray(vouchers) || vouchers.length === 0) {
-                voucherList.innerHTML = '<p>Geen cadeaubonnen gekoppeld.</p>';
-                return;
-              }
-
-              const ul = document.createElement('ul');
-              ul.classList.add('voucher-list');
-
-              vouchers.forEach(voucher => {
-                // enkel tonen als waarde > 0 en nog geldig
-                if (voucher.value > 0 && (!voucher.expires_at || new Date(voucher.expires_at) > new Date())) {
-                  const li = document.createElement('li');
-                  li.innerHTML = `
-                    <span class="left"><strong>Code:</strong> ${voucher.code}</span>
-                    <span class="center"><strong>Resterende waarde:</strong> €${Number(voucher.value).toFixed(2)}</span>
-                    <span class="right"><strong>Vervalt op:</strong> ${voucher.expires_at || 'Onbepaald'}</span>
-                  `;
-                  ul.appendChild(li);
-                }
-              });
-
-              voucherList.innerHTML = '';
-              voucherList.appendChild(ul);
-            });
+      .then(r => r.json())
+      .then(res => {
+        if (res.error) {
+          messageBox.textContent = res.error;
+          messageBox.style.color = 'red';
+        } else if (res.success) {
+          messageBox.textContent = res.success;
+          messageBox.style.color = 'green';
+          if (codeInput) codeInput.value = '';
+          refreshSavedVouchers(savedSelect);
+          refreshVoucherList();
         }
       })
       .catch(err => {
-        console.error('Fout bij claimen voucher:', err);
-        messageBox.innerHTML = `<p style="color:red;">Er ging iets mis bij het koppelen van de bon.</p>`;
+        console.error('redeem_voucher error:', err);
+        messageBox.textContent = 'Er ging iets mis, probeer opnieuw.';
+        messageBox.style.color = 'red';
+      })
+      .finally(() => {
+        isSubmitting = false;
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = prevLabel; }
       });
-    });
+    }, true); // capture:true => onze handler eerst
+
+    // Init dropdown en lijst
+    refreshSavedVouchers(savedSelect);
+    refreshVoucherList();
+
+    if (applyBtn && savedSelect) {
+      applyBtn.addEventListener('click', () => {
+        const code = savedSelect.value;
+        if (!code) {
+          alert('Kies eerst een cadeaubon.');
+          return;
+        }
+        alert('Cadeaubon toegepast: ' + code);
+        // hier later logica om totaal aan te passen
+      });
+    }
   }
-});
+
+  function refreshSavedVouchers(selectEl) {
+    if (!selectEl) return;
+    fetch('get_vouchers.php', { credentials: 'same-origin' })
+      .then(r => r.json())
+      .then(list => {
+        if (!Array.isArray(list)) return;
+        const now = new Date();
+        const opts = ['<option value="">Kies een bon</option>'];
+        list.forEach(v => {
+          const expires = v.expires_at ? new Date(v.expires_at) : null;
+          if (Number(v.value) > 0 && (!expires || expires >= now)) {
+            opts.push(
+              `<option value="${v.code}">${v.code} — €${Number(v.value).toFixed(2)}${expires ? ' (tot ' + v.expires_at + ')' : ''}</option>`
+            );
+          }
+        });
+        selectEl.innerHTML = opts.join('');
+      })
+      .catch(err => console.error('get_vouchers dropdown error:', err));
+  }
+
+  function refreshVoucherList() {
+    const container = document.getElementById('voucher-list');
+    if (!container) return;
+
+    fetch('get_vouchers.php', { credentials: 'same-origin' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.error || !Array.isArray(data)) {
+          container.innerHTML = `<p>${data.error || 'Geen cadeaubonnen gekoppeld.'}</p>`;
+          return;
+        }
+        const now = new Date();
+        const valid = data.filter(v => {
+          const expires = v.expires_at ? new Date(v.expires_at) : null;
+          return Number(v.value) > 0 && (!expires || expires >= now);
+        });
+        if (!valid.length) {
+          container.innerHTML = '<p>Geen cadeaubonnen gekoppeld.</p>';
+          return;
+        }
+        const ul = document.createElement('ul');
+        ul.className = 'voucher-list';
+        valid.forEach(v => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <span class="left"><strong>Code:</strong> ${v.code}</span>
+            <span class="separator" aria-hidden="true">|</span>
+            <span class="center"><strong>Resterende waarde:</strong> €${Number(v.value).toFixed(2)}</span>
+            <span class="separator" aria-hidden="true">|</span>
+            <span class="right"><strong>Vervalt op:</strong> ${v.expires_at || 'Onbepaald'}</span>
+          `;
+          ul.appendChild(li);
+        });
+        container.innerHTML = '';
+        container.appendChild(ul);
+      })
+      .catch(err => {
+        console.error('get_vouchers list error:', err);
+        container.innerHTML = '<p>Fout bij laden van cadeaubonnen.</p>';
+      });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', onReady);
+  } else {
+    onReady();
+  }
+})();

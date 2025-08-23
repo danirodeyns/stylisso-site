@@ -939,6 +939,10 @@ input[type="number"] {
   margin: 0.25rem 0 1rem 0;
 }
 
+#voucher-message {
+  margin: 1rem 0; /* 1rem boven en onder, 0 aan de zijkanten */
+}
+
 .contact-container {
   width: 80vw;
   max-width: 1300px;
