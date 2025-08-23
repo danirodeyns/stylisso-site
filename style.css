@@ -902,7 +902,7 @@ input[type="number"] {
   background-color: black;
   color: white;
   padding: 0.6rem 1.2rem;
-  border: none;
+  border: 2px solid black;
   border-radius: 0.75rem; /* gelijk aan checkout-form input radius */
   width: 100%; /* full width zoals de inputvelden */
   cursor: pointer;
@@ -2008,7 +2008,7 @@ input[type="number"] {
   .voucher-button:hover {
     background-color: black;
     color: white;
-    border-color: white;
+    border: 2px solid white;
   }
 
   .voucher-section input,
