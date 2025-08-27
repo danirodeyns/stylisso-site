@@ -968,3 +968,45 @@ document.addEventListener('DOMContentLoaded', () => {
     onReady();
   }
 })();
+
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('.auth-form');
+  if (!form) return;
+
+  // Voeg een div toe onder het formulier voor berichten, als die nog niet bestaat
+  let messageBox = document.getElementById('message');
+  if (!messageBox) {
+    messageBox = document.createElement('div');
+    messageBox.id = 'message';
+    messageBox.style.margin = '1rem 0';
+    messageBox.style.color = 'red';
+    form.appendChild(messageBox);
+  }
+
+  // Token en eventuele fout/succes uit de URL halen
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('token');
+  const error = urlParams.get('error');
+  const success = urlParams.get('success');
+
+  const tokenInput = document.getElementById('reset_token');
+
+  if (tokenInput) {
+    if (token) {
+      tokenInput.value = token;
+    } else {
+      messageBox.textContent = "Ongeldige of ontbrekende reset-link.";
+      messageBox.style.color = "red";
+    }
+  }
+
+  if (error) {
+    messageBox.textContent = decodeURIComponent(error);
+    messageBox.style.color = "red";
+  }
+
+  if (success) {
+    messageBox.textContent = decodeURIComponent(success);
+    messageBox.style.color = "green";
+  }
+});
