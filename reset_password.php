@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt->execute();
     $stmt->close();
 
-    header("Location: reset_success.html");
+    header("Location: reset_succes.html");
     exit;
 }
 ?>
