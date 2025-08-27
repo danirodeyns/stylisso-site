@@ -1076,11 +1076,11 @@ input[type="number"] {
 }
 
 .forgot-pasword-section h1 {
-  margin-bottom: 0.5rem; /* minder ruimte tussen titel en intro */
+  margin-bottom: 0.5rem;
 }
 
 .forgot-pasword-section p {
-  margin-bottom: 1.5rem; /* meer ruimte tussen intro en label */
+  margin-bottom: 1.5rem;
 }
 
 .back-link {
@@ -1095,6 +1095,29 @@ input[type="number"] {
 
 .back-link a:hover {
   text-decoration: underline;
+}
+
+.success-container {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1;
+  padding: 2rem;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.success-container h1 {
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+  margin-bottom: 0.5rem;
+}
+
+.success-container p {
+  margin-bottom: 1.5rem;
+}
+
+.success-container a {
+  text-align: center;
+  font-size: 1rem;
 }
 
 .account-container {
