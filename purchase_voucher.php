@@ -18,13 +18,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Ongeldig e-mailadres.");
     }
 
-    // Zet voucher in de sessie-cart
-    if (!isset($_SESSION['cart'])) {
-        $_SESSION['cart'] = [];
+    // Voeg voucher toe aan de cart-tabel in DB
+    $user_id = $_SESSION['user_id'] ?? null;
+    if (!$user_id) {
+        die("Je moet ingelogd zijn om een cadeaubon toe te voegen.");
     }
 
-    $_SESSION['cart'][] = [
-        'type' => 'voucher',
+    $stmt = $conn->prepare("INSERT INTO cart (user_id, product_id, type, quantity, price) VALUES (?, NULL, 'voucher', 1, ?)");
+    $stmt->bind_param("id", $user_id, $amount);
+    $stmt->execute();
+    $stmt->close();
+
+    // Eventueel kan je ook tijdelijk in sessie opslaan, indien nodig
+    if (!isset($_SESSION['cart_vouchers'])) {
+        $_SESSION['cart_vouchers'] = [];
+    }
+    $_SESSION['cart_vouchers'][] = [
         'amount' => $amount,
         'email' => $email
     ];

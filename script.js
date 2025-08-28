@@ -1,254 +1,187 @@
 console.log("Stylisso site loaded.");
 
 document.addEventListener('DOMContentLoaded', function () {
+
   // --- CSRF-token ophalen ---
   fetch('csrf.php')
     .then(res => res.json())
     .then(data => {
       if (!data.csrf_token) throw new Error('Geen CSRF-token ontvangen');
-
       window.csrfToken = data.csrf_token;
-      
-      // Alle forms op de pagina
+
+      // Vul alle forms met CSRF-token
       document.querySelectorAll('form').forEach(form => {
         const csrfInput = form.querySelector('input[name="csrf_token"]');
         if (csrfInput) csrfInput.value = data.csrf_token;
       });
 
-      console.log("CSRF-token ingesteld voor alle formulieren:", data.csrf_token);
+      console.log("CSRF-token ingesteld:", data.csrf_token);
     })
     .catch(err => console.error('CSRF-token kon niet opgehaald worden', err));
 
   // --- Header inladen via fetch ---
-  fetch('header.html')
-    .then(response => {
-      if (!response.ok) throw new Error('Header kon niet geladen worden');
-      return response.text();
+fetch('header.html')
+  .then(res => res.text())
+  .then(html => {
+    const headerContainer = document.getElementById('header-placeholder');
+    if (!headerContainer) return;
+    headerContainer.innerHTML = html;
+
+    // --- Header elementen pas hier selecteren ---
+    const cartDropdown = document.getElementById('cartDropdown');
+
+    // --- Setup user controls ---
+    setupHeaderUserControls(headerContainer);
+
+    // --- Cookie banner initialiseren ---
+    initCookieBanner();
+
+    // --- Cart fetchen voor dropdown en page cart ---
+    fetchCart(cartDropdown);
+  });
+
+// --- fetchCart functie aangepast ---
+function fetchCart(cartDropdown) {
+  fetch('cart.php?action=get_cart')
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        renderCartItems(data.cart);             // grote cart op page
+        renderCartDropdown(data.cart, cartDropdown); // dropdown in header
+      } else {
+        console.error('Fout bij ophalen winkelwagen:', data.message);
+      }
     })
-    .then(html => {
-      const headerContainer = document.getElementById('header-placeholder');
-      if (!headerContainer) {
-        console.warn('Geen container gevonden voor header');
-        return;
-      }
-      headerContainer.innerHTML = html;
-
-      // --- Check ingelogde gebruiker ---
-      fetch('current_user.php')
-        .then(res => res.json())
-        .then(data => {
-          const loginBtn = headerContainer.querySelector('#loginBtn');
-          const registerBtn = headerContainer.querySelector('#registerBtn');
-          const userDisplay = headerContainer.querySelector('#userDisplay');
-          const userDropdown = headerContainer.querySelector('#userDropdown');
-
-          if (data.loggedIn) {
-            if (loginBtn) loginBtn.style.display = 'none';
-            if (registerBtn) registerBtn.style.display = 'none';
-
-            if (userDisplay) {
-              userDisplay.textContent = `Welkom, ${data.userName}`;
-              userDisplay.style.display = 'inline-block';
-              userDisplay.classList.add('user-button');
-            }
-
-            if (userDropdown) {
-              userDropdown.classList.add('user-dropdown');
-            }
-
-            if (userDisplay && userDropdown) {
-              userDisplay.addEventListener('click', function (e) {
-                e.stopPropagation();
-                userDropdown.classList.toggle('open');
-              });
-
-              document.addEventListener('click', function (e) {
-                if (!userDropdown.contains(e.target) && !userDisplay.contains(e.target)) {
-                  userDropdown.classList.remove('open');
-                }
-              });
-            }
-          } else {
-            if (loginBtn) loginBtn.style.display = 'inline-block';
-            if (registerBtn) registerBtn.style.display = 'inline-block';
-            if (userDisplay) userDisplay.style.display = 'none';
-            if (userDropdown) userDropdown.classList.remove('open');
-          }
-        })
-        .catch(err => console.error('Fout bij ophalen huidige gebruiker:', err));
-
-      // --- Logout knop event listener ---
-      const logoutBtn = headerContainer.querySelector('#logoutBtn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function (e) {
-          e.preventDefault();
-
-          fetch('logout.php', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: `csrf_token=${encodeURIComponent(window.csrfToken)}`
-          })
-          .then(res => res.json())
-          .then(data => {
-            if (data.success) {
-              const currentPage = window.location.pathname.split('/').pop();
-              const redirectPages = [
-                'mijn_stylisso.html',
-                'bestellingen.html',
-                'retourneren.html',
-                'gegevens.html',
-                'cadeaubonnen.html',
-                'cart.html'
-              ];
-
-              if (redirectPages.includes(currentPage)) {
-                window.location.href = 'login_registreren.html';
-              } else {
-                window.location.reload();
-              }
-            } else {
-              alert('Uitloggen mislukt');
-            }
-          })
-          .catch(() => alert('Fout bij uitloggen'));
-        });
-      }
-
-      // --- Logout knop linker menu ---
-      const logoutButton = document.getElementById('logoutButton');
-      if (logoutButton) {
-        logoutButton.addEventListener('click', (e) => {
-          e.preventDefault();
-
-          fetch('logout.php', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: `csrf_token=${encodeURIComponent(window.csrfToken)}`
-          })
-          .then(res => res.json())
-          .then(data => {
-            if (data.success) {
-              window.location.href = 'index.html';
-            } else {
-              alert('Uitloggen mislukt.');
-            }
-          })
-          .catch(err => console.error('Fout bij uitloggen:', err));
-        });
+    .catch(err => console.error('Fout bij ophalen cart:', err));
 }
 
-      // --- Taalkeuze vlag dropdown ---
-      const select = headerContainer.querySelector('.custom-lang-select');
-      const dropdown = headerContainer.querySelector('#flagDropdown');
+// --- renderCartDropdown aangepast ---
+function renderCartDropdown(cart, cartDropdown) {
+  if (!cartDropdown) return;  // header dropdown moet beschikbaar zijn
+  cartDropdown.innerHTML = "";
 
-      if (select && dropdown) {
-        select.addEventListener('click', function (e) {
-          e.stopPropagation();
-          select.classList.toggle('open');
-        });
+  if (cart.length === 0) {
+    const emptyMsg = document.createElement('p');
+    emptyMsg.className = 'empty-cart';
+    emptyMsg.textContent = 'Je winkelwagen is leeg';
+    cartDropdown.appendChild(emptyMsg);
+    return;
+  }
 
-        dropdown.addEventListener('click', function (e) {
-          const item = e.target.closest('div[data-value]');
-          if (item) {
-            const targetHref = item.dataset.href;
-            const currentPage = window.location.pathname.split('/').pop();
-            if (targetHref && targetHref !== currentPage) {
-              window.location.href = targetHref;
-            } else {
-              select.classList.remove('open');
-            }
-          }
-        });
+  const ul = document.createElement('ul');
+  ul.classList.add('dropdown-cart-list');
+  cart.forEach(item => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="item-text">${item.name} <span class="item-price">€${parseFloat(item.price).toFixed(2)}</span></span>`;
+    ul.appendChild(li);
+  });
+  cartDropdown.appendChild(ul);
+}
 
-        document.addEventListener('click', function (e) {
-          if (!select.contains(e.target)) {
-            select.classList.remove('open');
-          }
-        });
-      } else {
-        console.warn('Dropdown elementen niet gevonden in de header');
-      }
-      // --- Cookie banner initialiseren ---
-      function initCookieBanner() {
-        const banner = document.getElementById("cookie-banner");
-        const acceptAll = document.getElementById("accept-all");
-        const acceptFunctional = document.getElementById("accept-functional");
-        const cookiesAcceptedField = document.getElementById("cookiesAccepted"); // hidden login field
-
-        if (!banner) return; // Banner bestaat niet, stop
-
-        function setCookie(name, value, days) {
-          const date = new Date();
-          date.setTime(date.getTime() + (days*24*60*60*1000));
-          const expires = "expires=" + date.toUTCString();
-          document.cookie = name + "=" + value + ";" + expires + ";path=/;SameSite=Lax";
-        }
-
-        function getCookie(name) {
-          const cname = name + "=";
-          const decodedCookie = decodeURIComponent(document.cookie);
-          const ca = decodedCookie.split(';');
-          for (let i = 0; i < ca.length; i++) {
-            let c = ca[i].trim();
-            if (c.indexOf(cname) === 0) return c.substring(cname.length, c.length);
-          }
-          return "";
-        }
-
-        const cookieConsent = getCookie("cookieConsent");
-
-        if (cookieConsent && (cookieConsent === "all" || cookieConsent === "functional")) {
-            banner.style.display = "none";
-            if (cookiesAcceptedField) {
-                cookiesAcceptedField.value = "1"; // lange termijn cookie mag
-            }
-        } else {
-            banner.style.display = "block";
-        }
-
-        if (acceptAll) {
-          acceptAll.addEventListener("click", () => {
-            setCookie("cookieConsent", "all", 365);
-            banner.style.display = "none";
-          });
-        }
-
-        if (acceptFunctional) {
-          acceptFunctional.addEventListener("click", () => {
-            setCookie("cookieConsent", "functional", 365);
-            banner.style.display = "none";
-          });
-        }
-      }
-
-      // ✅ Pas hier aanroepen, NA het inladen van de header
-      initCookieBanner();
-    })
-    .catch(error => {
-      console.error('Fout bij laden header:', error);
-    });
-    
   // --- Footer inladen via fetch ---
   fetch('footer.html')
-    .then(response => {
-      if (!response.ok) throw new Error('Footer kon niet geladen worden');
-      return response.text();
-    })
+    .then(res => res.text())
     .then(html => {
       const footerContainer = document.getElementById('footer-placeholder');
-      if (footerContainer) {
-        footerContainer.innerHTML = html;
-      } else {
-        console.warn('Geen container gevonden voor footer');
-      }
+      if (footerContainer) footerContainer.innerHTML = html;
     })
-    .catch(error => {
-      console.error('Fout bij laden footer:', error);
-    });
+    .catch(err => console.error('Fout bij laden footer:', err));
+
+  // --- Functie: Header user controls (login/logout, dropdown) ---
+  function setupHeaderUserControls(headerContainer) {
+    fetch('current_user.php')
+      .then(res => res.json())
+      .then(data => {
+        const loginBtn = headerContainer.querySelector('#loginBtn');
+        const registerBtn = headerContainer.querySelector('#registerBtn');
+        const userDisplay = headerContainer.querySelector('#userDisplay');
+        const userDropdown = headerContainer.querySelector('#userDropdown');
+
+        if (data.loggedIn) {
+          if (loginBtn) loginBtn.style.display = 'none';
+          if (registerBtn) registerBtn.style.display = 'none';
+          if (userDisplay) {
+            userDisplay.textContent = `Welkom, ${data.userName}`;
+            userDisplay.style.display = 'inline-block';
+            userDisplay.classList.add('user-button');
+          }
+
+          if (userDropdown) {
+            userDropdown.classList.add('user-dropdown');
+            userDisplay.addEventListener('click', e => {
+              e.stopPropagation();
+              userDropdown.classList.toggle('open');
+            });
+            document.addEventListener('click', e => {
+              if (!userDropdown.contains(e.target) && !userDisplay.contains(e.target)) {
+                userDropdown.classList.remove('open');
+              }
+            });
+          }
+        } else {
+          if (loginBtn) loginBtn.style.display = 'inline-block';
+          if (registerBtn) registerBtn.style.display = 'inline-block';
+          if (userDisplay) userDisplay.style.display = 'none';
+          if (userDropdown) userDropdown.classList.remove('open');
+        }
+
+        // Logout knop
+        const logoutBtns = headerContainer.querySelectorAll('#logoutBtn, #logoutButton');
+        logoutBtns.forEach(btn => {
+          btn.addEventListener('click', e => {
+            e.preventDefault();
+            fetch('logout.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: `csrf_token=${encodeURIComponent(window.csrfToken)}`
+            })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) window.location.reload();
+              else alert('Uitloggen mislukt');
+            })
+            .catch(err => console.error('Fout bij uitloggen:', err));
+          });
+        });
+      })
+      .catch(err => console.error('Fout bij ophalen huidige gebruiker:', err));
+  }
+
+  // --- Functie: Cookie banner ---
+  function initCookieBanner() {
+    const banner = document.getElementById("cookie-banner");
+    if (!banner) return;
+
+    const acceptAll = document.getElementById("accept-all");
+    const acceptFunctional = document.getElementById("accept-functional");
+
+    function setCookie(name, value, days) {
+      const date = new Date();
+      date.setTime(date.getTime() + (days*24*60*60*1000));
+      document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/;SameSite=Lax`;
+    }
+
+    function getCookie(name) {
+      const cname = name + "=";
+      const decoded = decodeURIComponent(document.cookie);
+      const ca = decoded.split(';');
+      for (let c of ca) {
+        c = c.trim();
+        if (c.indexOf(cname) === 0) return c.substring(cname.length);
+      }
+      return "";
+    }
+
+    const consent = getCookie("cookieConsent");
+    if (consent === "all" || consent === "functional") {
+      banner.style.display = "none";
+    } else {
+      banner.style.display = "block";
+    }
+
+    if (acceptAll) acceptAll.addEventListener("click", () => { setCookie("cookieConsent","all",365); banner.style.display="none"; });
+    if (acceptFunctional) acceptFunctional.addEventListener("click", () => { setCookie("cookieConsent","functional",365); banner.style.display="none"; });
+  }
 
   // --- Winkelwagen beheer ---
   const cartDropdown = document.getElementById('cartDropdown');
@@ -258,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function fetchCart() {
     fetch('cart.php?action=get_cart')
-      .then(response => response.json())
+      .then(res => res.json())
       .then(data => {
         if (data.success) {
           renderCartItems(data.cart);
@@ -267,14 +200,12 @@ document.addEventListener('DOMContentLoaded', function () {
           console.error('Fout bij ophalen winkelwagen:', data.message);
         }
       })
-      .catch(err => {
-        console.error('Fout bij ophalen cart:', err);
-      });
+      .catch(err => console.error('Fout bij ophalen cart:', err));
   }
 
   function calculateSubtotal(cart) {
     if (!subtotalDisplay) return;
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const total = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
     subtotalDisplay.textContent = `€${total.toFixed(2)}`;
   }
 
@@ -283,22 +214,15 @@ document.addEventListener('DOMContentLoaded', function () {
     cartItemsContainer.innerHTML = "";
 
     if (cart.length === 0) {
-      // Verberg subtotaal en checkout knop
       if (cartSummary) cartSummary.style.display = "none";
-
-      // Maak rechthoek met tekst "Je winkelwagen is leeg"
       const emptyMsg = document.createElement('p');
       emptyMsg.className = 'empty-cart-message';
       emptyMsg.textContent = 'Je winkelwagen is leeg';
       cartItemsContainer.appendChild(emptyMsg);
-
-      // Subtotaal op nul
       if (subtotalDisplay) subtotalDisplay.textContent = "€0,00";
-
       return;
     }
 
-    // Toon cart summary als er items zijn
     if (cartSummary) cartSummary.style.display = "block";
 
     cart.forEach(item => {
@@ -309,12 +233,12 @@ document.addEventListener('DOMContentLoaded', function () {
         <div class="item-info">
           <h3>${item.name}</h3>
           <p>${item.variant || ''}</p>
-          <p>Prijs: €${item.price.toFixed(2)}</p>
+          <p>Prijs: €${parseFloat(item.price).toFixed(2)}</p>
           <label>
             Aantal:
-            <input type="number" value="${item.quantity}" min="1" data-id="${item.product_id}" class="quantity-input">
+            <input type="number" value="${item.quantity}" min="1" data-id="${item.id}" data-type="${item.type}" class="quantity-input">
           </label>
-          <button class="remove-item" data-id="${item.product_id}">
+          <button class="remove-item" data-id="${item.id}" data-type="${item.type}">
             <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
             <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
           </button>
@@ -340,66 +264,50 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const ul = document.createElement('ul');
     ul.classList.add('dropdown-cart-list');
-
     cart.forEach(item => {
       const li = document.createElement('li');
-      li.innerHTML = `
-        <span class="item-text">${item.name} <span class="item-price">€${item.price.toFixed(2)}</span></span>
-      `;
+      li.innerHTML = `<span class="item-text">${item.name} <span class="item-price">€${parseFloat(item.price).toFixed(2)}</span></span>`;
       ul.appendChild(li);
     });
-
     cartDropdown.appendChild(ul);
   }
 
-  function updateQuantityOnServer(productId, quantity) {
+  function updateQuantityOnServer(itemId, itemType, quantity) {
     fetch('cart.php?action=update_quantity', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': window.csrfToken // <<< Voeg dit toe
-      },
-      body: JSON.stringify({ product_id: productId, quantity: quantity })
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.csrfToken },
+      body: JSON.stringify({ id: itemId, type: itemType, quantity })
     });
   }
 
-  function removeItemFromServer(productId) {
+  function removeItemFromServer(itemId, itemType) {
     fetch('cart.php?action=remove_item', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': window.csrfToken // <<< Voeg dit toe
-      },
-      body: JSON.stringify({ product_id: productId })
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.csrfToken },
+      body: JSON.stringify({ id: itemId, type: itemType })
     })
-    .then(response => response.json())
+    .then(res => res.json())
     .then(data => {
-      if (data.success) {
-        fetchCart();
-      } else {
-        alert('Fout bij verwijderen item');
-      }
+      if (data.success) fetchCart();
+      else alert('Fout bij verwijderen item');
     });
   }
 
-  document.addEventListener('change', function (e) {
+  document.addEventListener('change', function(e) {
     if (e.target.classList.contains('quantity-input')) {
-      const productId = parseInt(e.target.dataset.id, 10);
+      const id = e.target.dataset.id;
+      const type = e.target.dataset.type;
       const quantity = parseInt(e.target.value, 10);
-      if (!isNaN(quantity) && quantity > 0) {
-        updateQuantityOnServer(productId, quantity);
-      }
+      if (!isNaN(quantity) && quantity > 0) updateQuantityOnServer(id, type, quantity);
     }
   });
 
-  document.addEventListener('click', function (e) {
+  document.addEventListener('click', function(e) {
     if (e.target.closest('.remove-item')) {
-      const productId = parseInt(e.target.closest('.remove-item').dataset.id, 10);
-      removeItemFromServer(productId);
+      const btn = e.target.closest('.remove-item');
+      removeItemFromServer(btn.dataset.id, btn.dataset.type);
     }
   });
-
-  fetchCart();
 
   // ================================
   // CHECKOUT FORM: update profiel + afrekenen
