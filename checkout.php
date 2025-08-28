@@ -17,7 +17,9 @@ $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $current_address = $user['address'] ?? '';
 
-// Winkelwagen ophalen
+// -------------------------
+// Producten uit winkelwagen
+// -------------------------
 $stmt = $conn->prepare("
     SELECT cart.product_id, products.price, cart.quantity, products.name
     FROM cart
@@ -32,16 +34,38 @@ $total = 0;
 $items = [];
 
 while ($row = $result->fetch_assoc()) {
+    $row['type'] = 'product';
     $items[] = $row;
     $total += $row['price'] * $row['quantity'];
 }
 
+// -------------------------
+// Cadeaubonnen uit sessie
+// -------------------------
+if (isset($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $voucher) {
+        if ($voucher['type'] === 'voucher') {
+            $items[] = [
+                'type' => 'voucher',
+                'name' => 'Cadeaubon',
+                'price' => $voucher['amount'],
+                'quantity' => 1,
+                'email' => $voucher['email']
+            ];
+            $total += $voucher['amount'];
+        }
+    }
+}
+
+// Als er echt niets is
 if (empty($items)) {
     echo "Je winkelwagen is leeg.";
     exit;
 }
 
-// Sessiedata klaarmaken voor afrekenen
+// -------------------------
+// Sessiedata klaarmaken
+// -------------------------
 $_SESSION['checkout'] = [
     'user' => $user,
     'cart_items' => $items,

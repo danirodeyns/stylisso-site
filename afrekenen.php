@@ -33,14 +33,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($stmt->execute()) {
         $order_id = $conn->insert_id;
 
-        // Voeg order details toe
-        $stmt_detail = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)");
+        // Order items toevoegen
+        $stmt_detail = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price, type, extra_info) VALUES (?, ?, ?, ?, ?, ?)");
+
         foreach ($checkout['cart_items'] as $item) {
-            $stmt_detail->bind_param("iiid", $order_id, $item['product_id'], $item['quantity'], $item['price']);
-            $stmt_detail->execute();
+            if ($item['type'] === 'product') {
+                // Normaal product
+                $type = 'product';
+                $extra_info = null;
+                $stmt_detail->bind_param("iiidss", $order_id, $item['product_id'], $item['quantity'], $item['price'], $type, $extra_info);
+                $stmt_detail->execute();
+            } elseif ($item['type'] === 'voucher') {
+                // Voucher verwerken
+                $type = 'voucher';
+                $extra_info = $item['email'];
+                $stmt_detail->bind_param("iiidss", $order_id, $null = 0, $qty = 1, $item['price'], $type, $extra_info);
+                $stmt_detail->execute();
+
+                // Voucher code genereren
+                $code = strtoupper(bin2hex(random_bytes(4)));
+                $expires_at = date('Y-m-d H:i:s', strtotime('+1 year'));
+
+                // Opslaan in vouchers tabel
+                $stmt_voucher = $conn->prepare("INSERT INTO vouchers (code, value, remaining_value, expires_at, email) VALUES (?, ?, ?, ?, ?)");
+                $stmt_voucher->bind_param("sddss", $code, $item['price'], $item['price'], $expires_at, $item['email']);
+                $stmt_voucher->execute();
+
+                // E-mail versturen
+                $subject = "Jouw Stylisso cadeaubon";
+                $message = "Bedankt voor je aankoop!\n\n" .
+                           "Je cadeauboncode: $code\n" .
+                           "Waarde: €" . number_format($item['price'], 2) . "\n" .
+                           "Geldig tot: $expires_at\n\n" .
+                           "Veel shopplezier bij Stylisso!";
+                $headers = "From: no-reply@stylisso.com";
+
+                mail($item['email'], $subject, $message, $headers);
+            }
         }
 
-        // Leeg winkelwagen
+        // Leeg winkelwagen in DB
         $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
         $stmt->bind_param("i", $user_id);
         $stmt->execute();

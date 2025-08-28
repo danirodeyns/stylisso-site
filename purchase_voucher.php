@@ -18,26 +18,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Ongeldig e-mailadres.");
     }
 
-    // Genereer unieke boncode (8 karakters)
-    $code = strtoupper(bin2hex(random_bytes(4)));
-
-    // Optioneel: vervaldatum instellen (bijv. 1 jaar geldig)
-    $expires_at = date('Y-m-d H:i:s', strtotime('+1 year'));
-
-    // Voeg toe aan vouchers tabel
-    $stmt = $conn->prepare("INSERT INTO vouchers (code, value, remaining_value, expires_at) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("sdds", $code, $amount, $amount, $expires_at);
-    $stmt->execute();
-
-    // Mail de boncode naar de gebruiker
-    $subject = "Jouw Stylisso cadeaubon";
-    $message = "Bedankt voor je aankoop!\n\nJe cadeauboncode is: $code\nWaarde: €$amount\n\nGeldig tot: $expires_at";
-    $headers = "From: no-reply@stylisso.com";
-
-    if (mail($email, $subject, $message, $headers)) {
-        echo "Cadeaubon aangemaakt en verzonden naar $email!";
-    } else {
-        echo "Cadeaubon aangemaakt, maar er is een probleem met het verzenden van de e-mail.";
+    // Zet voucher in de sessie-cart
+    if (!isset($_SESSION['cart'])) {
+        $_SESSION['cart'] = [];
     }
+
+    $_SESSION['cart'][] = [
+        'type' => 'voucher',
+        'amount' => $amount,
+        'email' => $email
+    ];
+
+    // Redirect terug naar winkelwagen
+    header("Location: cart.html");
+    exit;
 }
 ?>
