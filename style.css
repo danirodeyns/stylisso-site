@@ -1097,6 +1097,15 @@ input[type="number"] {
   text-decoration: underline;
 }
 
+.reset-password-section h1 {
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+  margin-bottom: 0.5rem;
+}
+
+.reset-password-section p {
+  margin-bottom: 1.5rem;
+}
+
 .success-container {
   display: flex;
   flex-wrap: wrap;
