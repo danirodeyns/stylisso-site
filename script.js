@@ -380,24 +380,32 @@ document.addEventListener('DOMContentLoaded', function () {
   // Functie om totaal te berekenen
   function updateTotals() {
     let subtotal = 0;
+    let allVouchers = true; // Start met de veronderstelling dat alles vouchers zijn
+
     cartData.forEach(item => {
         subtotal += parseFloat(item.price) * item.quantity;
+        if (item.type !== 'voucher') {
+            allVouchers = false;
+        }
     });
 
     // Beperk voucherAmount tot subtotal
     const effectiveVoucher = Math.min(voucherAmount, subtotal);
 
     const adjustedSubtotal = subtotal - effectiveVoucher;
-    const shipping = 5.00;
+
+    // Verzendkosten 0 als alles vouchers zijn
+    const shipping = allVouchers ? 0.00 : 5.00;
+
     const vat = adjustedSubtotal * 0.21;
     const total = adjustedSubtotal + shipping;
 
     if (subtotalOrder) subtotalOrder.textContent = `€${adjustedSubtotal.toFixed(2)}`;
     if (redeemVoucherSpan) redeemVoucherSpan.textContent = `€${effectiveVoucher.toFixed(2)}`;
+    if (shippingCost) shippingCost.textContent = `€${shipping.toFixed(2)}`;
     if (taxAmount) taxAmount.textContent = `€${vat.toFixed(2)}`;
     if (totalAmount) totalAmount.textContent = `€${total.toFixed(2)}`;
   }
-
 
   // Event bij klikken op "Gebruiken"
   document.getElementById('applyVoucherButton')?.addEventListener('click', function() {
