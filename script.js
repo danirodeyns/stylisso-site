@@ -342,30 +342,71 @@ document.addEventListener('DOMContentLoaded', function () {
       });
   }
 
+  const subtotalOrder = document.getElementById('subtotalOrder');
+  const redeemVoucherSpan = document.getElementById('redeem_voucher');
+  const savedVoucherDropdown = document.getElementById('saved_voucher');
   const taxAmount = document.getElementById('taxAmount');
   const totalAmount = document.getElementById('totalAmount');
 
-  fetch('cart.php?action=get_cart') // haalt producten + vouchers op
+  let cartData = [];
+  let voucherAmount = 0;
+  let vouchers = [];
+
+  // Haal producten uit cart
+  fetch('cart.php?action=get_cart')
       .then(res => res.json())
       .then(data => {
           if (!data.success) return;
-
-          let subtotal = 0;
-
-          data.cart.forEach(item => {
-              subtotal += parseFloat(item.price) * item.quantity;
-          });
-
-          const subtotalDisplay = subtotal;
-          const shipping = 5.00;
-          const vat = subtotal * 0.21;
-          const total = subtotal + shipping;
-
-          if (subtotalDisplay) subtotalDisplay.textContent = `€${subtotal.toFixed(2)}`;
-          if (taxAmount) taxAmount.textContent = `€${vat.toFixed(2)}`;
-          if (totalAmount) totalAmount.textContent = `€${total.toFixed(2)}`;
+          cartData = data.cart;
+          updateTotals();
       })
-      .catch(err => console.error('Fout bij ophalen cart voor checkout:', err));
+      .catch(err => console.error('Fout bij ophalen cart:', err));
+
+  // Haal vouchers op
+  fetch('get_vouchers.php')
+      .then(res => res.json())
+      .then(data => {
+          vouchers = data.filter(v => !v.is_used); // enkel actieve vouchers
+          // vul dropdown
+          vouchers.forEach(v => {
+              const option = document.createElement('option');
+              option.value = v.code;
+              option.textContent = `${v.code} - €${v.value.toFixed(2)} (${v.is_used ? 'Gebruikt' : 'Beschikbaar'})`;
+              savedVoucherDropdown.appendChild(option);
+          });
+      })
+      .catch(err => console.error('Fout bij ophalen vouchers:', err));
+
+  // Functie om totaal te berekenen
+  function updateTotals() {
+      let subtotal = 0;
+      cartData.forEach(item => {
+          subtotal += parseFloat(item.price) * item.quantity;
+      });
+
+      const adjustedSubtotal = Math.max(subtotal - voucherAmount, 0);
+      const shipping = 5.00;
+      const vat = adjustedSubtotal * 0.21;
+      const total = adjustedSubtotal + shipping;
+
+      if (subtotalOrder) subtotalOrder.textContent = `€${adjustedSubtotal.toFixed(2)}`;
+      if (redeemVoucherSpan) redeemVoucherSpan.textContent = `€${voucherAmount.toFixed(2)}`;
+      if (taxAmount) taxAmount.textContent = `€${vat.toFixed(2)}`;
+      if (totalAmount) totalAmount.textContent = `€${total.toFixed(2)}`;
+  }
+
+  // Event bij klikken op "Gebruiken"
+  document.getElementById('applyVoucherButton')?.addEventListener('click', function() {
+      const selectedCode = savedVoucherDropdown.value;
+      if (!selectedCode) return;
+
+      // zoek de voucher in vouchers-array
+      const voucher = vouchers.find(v => v.code === selectedCode);
+      if (!voucher) return;
+
+      voucherAmount = parseFloat(voucher.value);
+      updateTotals();
+  });
 
   // --- Foutmeldingen en oude waarden uit queryparameters ---
   const params = new URLSearchParams(window.location.search);
