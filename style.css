@@ -456,7 +456,7 @@ footer {
 .item-text {
   flex: 1;
   font-size: 0.95rem;
-  color: inherit;
+  color: #000;
 }
 
 .item-price {
@@ -1831,6 +1831,10 @@ input[type="number"].quantity-input {
     text-align: center;
     color: #888;
     padding: 0rem;
+  }
+
+  .item-text {
+    color: white;
   }
 
   .remove-icon-light {
