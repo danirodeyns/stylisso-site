@@ -20,63 +20,115 @@ document.addEventListener('DOMContentLoaded', function () {
     .catch(err => console.error('CSRF-token kon niet opgehaald worden', err));
 
   // --- Header inladen via fetch ---
-fetch('header.html')
-  .then(res => res.text())
-  .then(html => {
-    const headerContainer = document.getElementById('header-placeholder');
-    if (!headerContainer) return;
-    headerContainer.innerHTML = html;
+  fetch('header.html')
+    .then(res => res.text())
+    .then(html => {
+      const headerContainer = document.getElementById('header-placeholder');
+      if (!headerContainer) return;
+      headerContainer.innerHTML = html;
 
-    // --- Header elementen pas hier selecteren ---
-    const cartDropdown = document.getElementById('cartDropdown');
+      // --- Header elementen pas hier selecteren ---
+      const cartDropdown = document.getElementById('cartDropdown');
 
-    // --- Setup user controls ---
-    setupHeaderUserControls(headerContainer);
+      // --- Setup user controls ---
+      setupHeaderUserControls(headerContainer);
 
-    // --- Cookie banner initialiseren ---
-    initCookieBanner();
+      // --- Cookie banner initialiseren ---
+      initCookieBanner();
 
-    // --- Cart fetchen voor dropdown en page cart ---
-    fetchCart(cartDropdown);
-  });
+      // --- Cart fetchen voor dropdown en page cart ---
+      fetchCart(cartDropdown);
+    });
 
-// --- fetchCart functie aangepast ---
-function fetchCart(cartDropdown) {
-  fetch('cart.php?action=get_cart')
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        renderCartItems(data.cart);             // grote cart op page
-        renderCartDropdown(data.cart, cartDropdown); // dropdown in header
-      } else {
-        console.error('Fout bij ophalen winkelwagen:', data.message);
-      }
-    })
-    .catch(err => console.error('Fout bij ophalen cart:', err));
-}
-
-// --- renderCartDropdown aangepast ---
-function renderCartDropdown(cart, cartDropdown) {
-  if (!cartDropdown) return;  // header dropdown moet beschikbaar zijn
-  cartDropdown.innerHTML = "";
-
-  if (cart.length === 0) {
-    const emptyMsg = document.createElement('p');
-    emptyMsg.className = 'empty-cart';
-    emptyMsg.textContent = 'Je winkelwagen is leeg';
-    cartDropdown.appendChild(emptyMsg);
-    return;
+  // --- fetchCart functie (gecombineerd voor dropdown en grote cart) ---
+  function fetchCart(cartDropdown) {
+    fetch('cart.php?action=get_cart')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          renderCartItems(data.cart);                 // grote cart op page
+          renderCartDropdown(data.cart, cartDropdown); // dropdown in header
+        } else {
+          console.error('Fout bij ophalen winkelwagen:', data.message);
+        }
+      })
+      .catch(err => console.error('Fout bij ophalen cart:', err));
   }
 
-  const ul = document.createElement('ul');
-  ul.classList.add('dropdown-cart-list');
-  cart.forEach(item => {
-    const li = document.createElement('li');
-    li.innerHTML = `<span class="item-text">${item.name} <span class="item-price">€${parseFloat(item.price).toFixed(2)}</span></span>`;
-    ul.appendChild(li);
-  });
-  cartDropdown.appendChild(ul);
-}
+  // --- renderCartItems (grote winkelwagenpagina) ---
+  const cartItemsContainer = document.getElementById('cart-items');
+  const subtotalDisplay = document.getElementById('cart-subtotal');
+  const cartSummary = document.getElementById('cart-summary');
+
+  function calculateSubtotal(cart) {
+    if (!subtotalDisplay) return;
+    const total = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+    subtotalDisplay.textContent = `€${total.toFixed(2)}`;
+  }
+
+  function renderCartItems(cart) {
+    if (!cartItemsContainer) return;
+    cartItemsContainer.innerHTML = "";
+
+    if (cart.length === 0) {
+      if (cartSummary) cartSummary.style.display = "none";
+      const emptyMsg = document.createElement('p');
+      emptyMsg.className = 'empty-cart-message';
+      emptyMsg.textContent = 'Je winkelwagen is leeg';
+      cartItemsContainer.appendChild(emptyMsg);
+      if (subtotalDisplay) subtotalDisplay.textContent = "€0,00";
+      return;
+    }
+
+    if (cartSummary) cartSummary.style.display = "block";
+
+    cart.forEach(item => {
+      const itemDiv = document.createElement('div');
+      itemDiv.classList.add('cart-item');
+      itemDiv.innerHTML = `
+        <img src="${item.image}" alt="${item.name}" class="item-image">
+        <div class="item-info">
+          <h3>${item.name}</h3>
+          <p>${item.variant || ''}</p>
+          <p>Prijs: €${parseFloat(item.price).toFixed(2)}</p>
+          <label>
+            Aantal:
+            <input type="number" value="${item.quantity}" min="1" data-id="${item.id}" data-type="${item.type}" class="quantity-input">
+          </label>
+          <button class="remove-item" data-id="${item.id}" data-type="${item.type}">
+            <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
+            <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
+          </button>
+        </div>
+      `;
+      cartItemsContainer.appendChild(itemDiv);
+    });
+
+    calculateSubtotal(cart);
+  }
+
+  // --- renderCartDropdown (header dropdown) ---
+  function renderCartDropdown(cart, cartDropdown) {
+    if (!cartDropdown) return;
+    cartDropdown.innerHTML = "";
+
+    if (cart.length === 0) {
+      const emptyMsg = document.createElement('p');
+      emptyMsg.className = 'empty-cart';
+      emptyMsg.textContent = 'Je winkelwagen is leeg';
+      cartDropdown.appendChild(emptyMsg);
+      return;
+    }
+
+    const ul = document.createElement('ul');
+    ul.classList.add('dropdown-cart-list');
+    cart.forEach(item => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="item-text">${item.name} <span class="item-price">€${parseFloat(item.price).toFixed(2)}</span></span>`;
+      ul.appendChild(li);
+    });
+    cartDropdown.appendChild(ul);
+  }
 
   // --- Footer inladen via fetch ---
   fetch('footer.html')
@@ -183,95 +235,7 @@ function renderCartDropdown(cart, cartDropdown) {
     if (acceptFunctional) acceptFunctional.addEventListener("click", () => { setCookie("cookieConsent","functional",365); banner.style.display="none"; });
   }
 
-  // --- Winkelwagen beheer ---
-  const cartDropdown = document.getElementById('cartDropdown');
-  const cartItemsContainer = document.getElementById('cart-items');
-  const subtotalDisplay = document.getElementById('cart-subtotal');
-  const cartSummary = document.getElementById('cart-summary');
-
-  function fetchCart() {
-    fetch('cart.php?action=get_cart')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          renderCartItems(data.cart);
-          renderCartDropdown(data.cart);
-        } else {
-          console.error('Fout bij ophalen winkelwagen:', data.message);
-        }
-      })
-      .catch(err => console.error('Fout bij ophalen cart:', err));
-  }
-
-  function calculateSubtotal(cart) {
-    if (!subtotalDisplay) return;
-    const total = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
-    subtotalDisplay.textContent = `€${total.toFixed(2)}`;
-  }
-
-  function renderCartItems(cart) {
-    if (!cartItemsContainer) return;
-    cartItemsContainer.innerHTML = "";
-
-    if (cart.length === 0) {
-      if (cartSummary) cartSummary.style.display = "none";
-      const emptyMsg = document.createElement('p');
-      emptyMsg.className = 'empty-cart-message';
-      emptyMsg.textContent = 'Je winkelwagen is leeg';
-      cartItemsContainer.appendChild(emptyMsg);
-      if (subtotalDisplay) subtotalDisplay.textContent = "€0,00";
-      return;
-    }
-
-    if (cartSummary) cartSummary.style.display = "block";
-
-    cart.forEach(item => {
-      const itemDiv = document.createElement('div');
-      itemDiv.classList.add('cart-item');
-      itemDiv.innerHTML = `
-        <img src="${item.image}" alt="${item.name}" class="item-image">
-        <div class="item-info">
-          <h3>${item.name}</h3>
-          <p>${item.variant || ''}</p>
-          <p>Prijs: €${parseFloat(item.price).toFixed(2)}</p>
-          <label>
-            Aantal:
-            <input type="number" value="${item.quantity}" min="1" data-id="${item.id}" data-type="${item.type}" class="quantity-input">
-          </label>
-          <button class="remove-item" data-id="${item.id}" data-type="${item.type}">
-            <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
-            <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
-          </button>
-        </div>
-      `;
-      cartItemsContainer.appendChild(itemDiv);
-    });
-
-    calculateSubtotal(cart);
-  }
-
-  function renderCartDropdown(cart) {
-    if (!cartDropdown) return;
-    cartDropdown.innerHTML = "";
-
-    if (cart.length === 0) {
-      const emptyMsg = document.createElement('p');
-      emptyMsg.className = 'empty-cart';
-      emptyMsg.textContent = 'Je winkelwagen is leeg';
-      cartDropdown.appendChild(emptyMsg);
-      return;
-    }
-
-    const ul = document.createElement('ul');
-    ul.classList.add('dropdown-cart-list');
-    cart.forEach(item => {
-      const li = document.createElement('li');
-      li.innerHTML = `<span class="item-text">${item.name} <span class="item-price">€${parseFloat(item.price).toFixed(2)}</span></span>`;
-      ul.appendChild(li);
-    });
-    cartDropdown.appendChild(ul);
-  }
-
+  // --- Functies voor update & remove items ---
   function updateQuantityOnServer(itemId, itemType, quantity) {
     fetch('cart.php?action=update_quantity', {
       method: 'POST',
@@ -288,11 +252,12 @@ function renderCartDropdown(cart, cartDropdown) {
     })
     .then(res => res.json())
     .then(data => {
-      if (data.success) fetchCart();
+      if (data.success) fetchCart(document.getElementById('cartDropdown'));
       else alert('Fout bij verwijderen item');
     });
   }
 
+  // --- Event listeners voor quantity & remove ---
   document.addEventListener('change', function(e) {
     if (e.target.classList.contains('quantity-input')) {
       const id = e.target.dataset.id;
