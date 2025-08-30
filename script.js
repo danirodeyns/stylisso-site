@@ -699,7 +699,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
   const voucherList = document.getElementById('voucher-list');
-
   if (!voucherList) return;
 
   fetch('get_vouchers.php')
@@ -724,8 +723,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Filter alleen geldige vouchers
       const validVouchers = data.filter(voucher => {
+        const remaining = Number(voucher.remaining_value ?? 0);
         const expiresAt = voucher.expires_at ? new Date(voucher.expires_at) : null;
-        return voucher.remaining_value > 0 && (!expiresAt || expiresAt >= now);
+        return remaining > 0 && (!expiresAt || expiresAt >= now);
       });
 
       if (validVouchers.length === 0) {
@@ -738,12 +738,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
       validVouchers.forEach(voucher => {
         const li = document.createElement('li');
+
+        const remainingValue = Number(voucher.remaining_value ?? 0).toFixed(2);
+
+        let expireDate = 'Onbepaald';
+        if (voucher.expires_at) {
+          const dateObj = new Date(voucher.expires_at);
+          if (!isNaN(dateObj)) {
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const year = dateObj.getFullYear();
+            expireDate = `${day}-${month}-${year}`;
+          }
+        }
+
         li.innerHTML = `
           <span class="left"><strong>Code:</strong> ${voucher.code}</span>
           <span class="separator">|</span>
-          <span class="center"><strong>Resterende waarde:</strong> €${Number(voucher.remaining_value).toFixed(2)}</span>
+          <span class="center"><strong>Resterende waarde:</strong> €${remainingValue}</span>
           <span class="separator">|</span>
-          <span class="right"><strong>Vervalt op:</strong> ${voucher.expires_at || 'Onbepaald'}</span>
+          <span class="right"><strong>Vervalt op:</strong> ${expireDate}</span>
         `;
         ul.appendChild(li);
       });
@@ -889,9 +903,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const opts = ['<option value="">Kies een bon</option>'];
         list.forEach(v => {
           const expires = v.expires_at ? new Date(v.expires_at) : null;
-          if (Number(v.value) > 0 && (!expires || expires >= now)) {
+          const remaining = Number(v.remaining_value ?? 0);
+          if (remaining > 0 && (!expires || expires >= now)) {
+            const expireDate = expires 
+              ? `${String(expires.getDate()).padStart(2,'0')}-${String(expires.getMonth()+1).padStart(2,'0')}-${expires.getFullYear()}` 
+              : '';
             opts.push(
-              `<option value="${v.code}">${v.code} — €${Number(v.value).toFixed(2)}${expires ? ' (tot ' + v.expires_at + ')' : ''}</option>`
+              `<option value="${v.code}">${v.code} — €${remaining.toFixed(2)}${expireDate ? ' (tot ' + expireDate + ')' : ''}</option>`
             );
           }
         });
@@ -914,7 +932,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         const valid = data.filter(v => {
           const expires = v.expires_at ? new Date(v.expires_at) : null;
-          return Number(v.value) > 0 && (!expires || expires >= now);
+          const remaining = Number(v.remaining_value ?? 0);
+          return remaining > 0 && (!expires || expires >= now);
         });
         if (!valid.length) {
           container.innerHTML = '<p>Geen cadeaubonnen gekoppeld.</p>';
@@ -923,13 +942,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const ul = document.createElement('ul');
         ul.className = 'voucher-list';
         valid.forEach(v => {
-          const li = document.createElement('li');
+          const expires = v.expires_at ? new Date(v.expires_at) : null;
+          const expireDate = expires
+            ? `${String(expires.getDate()).padStart(2,'0')}-${String(expires.getMonth()+1).padStart(2,'0')}-${expires.getFullYear()}`
+            : 'Onbepaald';
+          li = document.createElement('li');
           li.innerHTML = `
             <span class="left"><strong>Code:</strong> ${v.code}</span>
             <span class="separator" aria-hidden="true">|</span>
-            <span class="center"><strong>Resterende waarde:</strong> €${Number(v.value).toFixed(2)}</span>
+            <span class="center"><strong>Resterende waarde:</strong> €${Number(v.remaining_value ?? 0).toFixed(2)}</span>
             <span class="separator" aria-hidden="true">|</span>
-            <span class="right"><strong>Vervalt op:</strong> ${v.expires_at || 'Onbepaald'}</span>
+            <span class="right"><strong>Vervalt op:</strong> ${expireDate}</span>
           `;
           ul.appendChild(li);
         });
