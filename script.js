@@ -321,32 +321,42 @@ document.addEventListener('DOMContentLoaded', function () {
   const checkoutForm = document.getElementById('checkoutForm');
   if (checkoutForm) {
       checkoutForm.addEventListener('submit', function(e) {
-          e.preventDefault();
+          e.preventDefault(); // voorkomt standaard form submit
+
+          // Voeg voucher toe aan hidden input als die nog niet bestaat
+          let usedVoucherInput = document.getElementById('used_voucher_input');
+          if (!usedVoucherInput) {
+              usedVoucherInput = document.createElement('input');
+              usedVoucherInput.type = 'hidden';
+              usedVoucherInput.name = 'used_voucher';
+              usedVoucherInput.id = 'used_voucher_input';
+              checkoutForm.appendChild(usedVoucherInput);
+          }
+
+          // Zet huidige voucher data
+          usedVoucherInput.value = JSON.stringify({
+              code: window.voucherCode || '',
+              amount: window.voucherAmount || 0
+          });
 
           const formData = new FormData(checkoutForm);
 
-          // Stap 1: profiel updaten
-          fetch('update_profile.php', {
+          fetch('afrekenen.php', {
               method: 'POST',
               body: formData
           })
           .then(response => response.text())
           .then(data => {
-              // Stap 2: voucher info meesturen naar sessie
-              const usedVoucher = document.getElementById('used_voucher_input').value;
-
-              return fetch('set_used_voucher.php', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                  body: 'used_voucher=' + encodeURIComponent(usedVoucher)
-              });
-          })
-          .then(() => {
-              // Stap 3: redirect naar afrekenen
-              window.location.href = 'afrekenen.php';
+              if (data.trim() === "success") {
+                  // Redirect naar index.html bij succes
+                  window.location.href = 'index.html';
+              } else {
+                  console.error('Server response:', data);
+                  alert('Er is iets misgegaan bij het verwerken van je bestelling.');
+              }
           })
           .catch(err => {
-              console.error('Fout bij checkout:', err);
+              console.error('Fout bij afrekenen:', err);
               alert('Er is iets misgegaan bij het verwerken van je bestelling.');
           });
       });
