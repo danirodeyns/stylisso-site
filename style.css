@@ -737,7 +737,8 @@ footer {
 
 .cart-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;          /* alles netjes verticaal gecentreerd */
+  justify-content: space-between; /* item-info links, vuilbak rechts */
   gap: 1.5rem;
   border-bottom: 1px solid #ddd;
   padding-bottom: 1rem;
@@ -749,8 +750,19 @@ footer {
   border-radius: 4px;
 }
 
+/* --- Aantal input zonder pijltjes --- */
+.quantity-input::-webkit-inner-spin-button, 
+.quantity-input::-webkit-outer-spin-button {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+/* Item info */
 .item-info {
   flex: 1;
+  position: relative;
 }
 
 .item-info h3 {
@@ -766,11 +778,29 @@ footer {
   margin-top: 0.5rem;
 }
 
-input[type="number"] {
+/* Input styling */
+input[type="number"].quantity-input {
   width: 60px;
   padding: 0.3rem;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+/* --- Vuilbak knop rechts --- */
+.remove-item {
+  margin-left: auto; /* duwt hem helemaal naar rechts */
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.remove-item img {
+  width: 2rem;
 }
 
 /* Verwijderknop */
