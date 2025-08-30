@@ -379,21 +379,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Functie om totaal te berekenen
   function updateTotals() {
-      let subtotal = 0;
-      cartData.forEach(item => {
-          subtotal += parseFloat(item.price) * item.quantity;
-      });
+    let subtotal = 0;
+    cartData.forEach(item => {
+        subtotal += parseFloat(item.price) * item.quantity;
+    });
 
-      const adjustedSubtotal = Math.max(subtotal - voucherAmount, 0);
-      const shipping = 5.00;
-      const vat = adjustedSubtotal * 0.21;
-      const total = adjustedSubtotal + shipping;
+    // Beperk voucherAmount tot subtotal
+    const effectiveVoucher = Math.min(voucherAmount, subtotal);
 
-      if (subtotalOrder) subtotalOrder.textContent = `€${adjustedSubtotal.toFixed(2)}`;
-      if (redeemVoucherSpan) redeemVoucherSpan.textContent = `€${voucherAmount.toFixed(2)}`;
-      if (taxAmount) taxAmount.textContent = `€${vat.toFixed(2)}`;
-      if (totalAmount) totalAmount.textContent = `€${total.toFixed(2)}`;
+    const adjustedSubtotal = subtotal - effectiveVoucher;
+    const shipping = 5.00;
+    const vat = adjustedSubtotal * 0.21;
+    const total = adjustedSubtotal + shipping;
+
+    if (subtotalOrder) subtotalOrder.textContent = `€${adjustedSubtotal.toFixed(2)}`;
+    if (redeemVoucherSpan) redeemVoucherSpan.textContent = `€${effectiveVoucher.toFixed(2)}`;
+    if (taxAmount) taxAmount.textContent = `€${vat.toFixed(2)}`;
+    if (totalAmount) totalAmount.textContent = `€${total.toFixed(2)}`;
   }
+
 
   // Event bij klikken op "Gebruiken"
   document.getElementById('applyVoucherButton')?.addEventListener('click', function() {
