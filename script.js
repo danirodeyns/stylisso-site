@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const voucher = vouchers.find(v => v.code === selectedCode);
       if (!voucher) return;
 
-      voucherAmount = parseFloat(voucher.value);
+      voucherAmount = parseFloat(voucher.remaining_value);
       updateTotals();
   });
 
@@ -725,7 +725,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Filter alleen geldige vouchers
       const validVouchers = data.filter(voucher => {
         const expiresAt = voucher.expires_at ? new Date(voucher.expires_at) : null;
-        return voucher.value > 0 && (!expiresAt || expiresAt >= now);
+        return voucher.remaining_value > 0 && (!expiresAt || expiresAt >= now);
       });
 
       if (validVouchers.length === 0) {
@@ -741,7 +741,7 @@ document.addEventListener('DOMContentLoaded', () => {
         li.innerHTML = `
           <span class="left"><strong>Code:</strong> ${voucher.code}</span>
           <span class="separator">|</span>
-          <span class="center"><strong>Resterende waarde:</strong> €${Number(voucher.value).toFixed(2)}</span>
+          <span class="center"><strong>Resterende waarde:</strong> €${Number(voucher.remaining_value).toFixed(2)}</span>
           <span class="separator">|</span>
           <span class="right"><strong>Vervalt op:</strong> ${voucher.expires_at || 'Onbepaald'}</span>
         `;

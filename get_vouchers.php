@@ -41,6 +41,7 @@ try {
         $vouchers[] = [
             'code' => $code,
             'value' => $value,
+            'remaining_value' => $remaining_value,
             'is_used' => $remaining_value <= 0 ? 1 : 0,
             'claimed_at' => $claimed_at,
             'expires_at' => $expires_at
