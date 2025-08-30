@@ -104,7 +104,7 @@ $cart = [];
 $stmt = $conn->prepare("
     SELECT c.id, c.product_id, c.type, c.quantity, c.price, 
            COALESCE(p.name, 'Cadeaubon') AS name,
-           COALESCE(p.image, 'images/voucher.png') AS image
+           COALESCE(p.image, 'cadeaubon/voucher.png') AS image
     FROM cart c
     LEFT JOIN products p ON c.product_id = p.id
     WHERE c.user_id = ?
