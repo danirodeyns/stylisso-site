@@ -21,10 +21,10 @@ $current_address = $user['address'] ?? '';
 // Producten uit winkelwagen
 // -------------------------
 $stmt = $conn->prepare("
-    SELECT cart.product_id, products.price, cart.quantity, products.name
-    FROM cart
-    JOIN products ON cart.product_id = products.id
-    WHERE cart.user_id = ?
+    SELECT c.product_id, c.type, COALESCE(p.price, c.price) AS price, c.quantity, COALESCE(p.name, 'Cadeaubon') AS name
+    FROM cart c
+    LEFT JOIN products p ON c.product_id = p.id
+    WHERE c.user_id = ?
 ");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -34,7 +34,6 @@ $total = 0;
 $items = [];
 
 while ($row = $result->fetch_assoc()) {
-    $row['type'] = 'product';
     $items[] = $row;
     $total += $row['price'] * $row['quantity'];
 }
