@@ -3,9 +3,8 @@ session_start();
 include 'db_connect.php';
 include 'csrf.php';
 
-$usedVoucher = isset($_SESSION['used_voucher']) 
-    ? json_decode($_SESSION['used_voucher'], true) 
-    : null;
+// Haal gebruikte voucher uit sessie
+$used_voucher = $_SESSION['used_voucher'] ?? null;
 
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['checkout'])) {
     header('Location: cart.html');
@@ -30,15 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Totaalprijs
     $total = $checkout['total'];
 
-    // === Gebruikte voucher inlezen ===
-    $used_voucher = null;
-    if (!empty($_POST['used_voucher'])) {
-        $decoded = json_decode($_POST['used_voucher'], true);
-        if (is_array($decoded) && !empty($decoded['code']) && isset($decoded['amount'])) {
-            $used_voucher = $decoded;
-        }
-    }
-
     // Voeg order toe aan orders tabel
     $stmt = $conn->prepare("INSERT INTO orders (user_id, total_price, payment_method) VALUES (?, ?, ?)");
     $stmt->bind_param("ids", $user_id, $total, $payment_method);
@@ -47,10 +37,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $order_id = $conn->insert_id;
 
         // Order items toevoegen
-        $stmt_detail = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price, type, extra_info) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt_detail = $conn->prepare(
+            "INSERT INTO order_items (order_id, product_id, quantity, price, type, extra_info) VALUES (?, ?, ?, ?, ?, ?)"
+        );
 
         foreach ($checkout['cart_items'] as $item) {
             if ($item['type'] === 'product') {
+                // Normaal product
                 $type = 'product';
                 $extra_info = null;
                 $stmt_detail->bind_param("iiidss", $order_id, $item['product_id'], $item['quantity'], $item['price'], $type, $extra_info);
@@ -67,7 +60,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $expires_at = date('Y-m-d H:i:s', strtotime('+1 year'));
 
                 // Opslaan in vouchers tabel
-                $stmt_voucher = $conn->prepare("INSERT INTO vouchers (code, value, remaining_value, expires_at, email) VALUES (?, ?, ?, ?, ?)");
+                $stmt_voucher = $conn->prepare(
+                    "INSERT INTO vouchers (code, value, remaining_value, expires_at, email) VALUES (?, ?, ?, ?, ?)"
+                );
                 $stmt_voucher->bind_param("sddss", $code, $item['price'], $item['price'], $expires_at, $item['email']);
                 $stmt_voucher->execute();
 
@@ -92,6 +87,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ");
             $stmt_update->bind_param("ds", $used_voucher['amount'], $used_voucher['code']);
             $stmt_update->execute();
+
+            // Voucher uit sessie verwijderen
+            unset($_SESSION['used_voucher']);
         }
 
         // Leeg winkelwagen in DB
