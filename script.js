@@ -325,19 +325,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
           const formData = new FormData(checkoutForm);
 
+          // Stap 1: profiel updaten
           fetch('update_profile.php', {
               method: 'POST',
               body: formData
           })
           .then(response => response.text())
           .then(data => {
-              // Optioneel: check success via GET-param in redirect of response
-              // Redirect naar afrekenen.php
+              // Stap 2: voucher info meesturen naar sessie
+              const usedVoucher = document.getElementById('used_voucher_input').value;
+
+              return fetch('set_used_voucher.php', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                  body: 'used_voucher=' + encodeURIComponent(usedVoucher)
+              });
+          })
+          .then(() => {
+              // Stap 3: redirect naar afrekenen
               window.location.href = 'afrekenen.php';
           })
           .catch(err => {
-              console.error('Fout bij updaten profiel:', err);
-              alert('Er is iets misgegaan bij het updaten van je gegevens.');
+              console.error('Fout bij checkout:', err);
+              alert('Er is iets misgegaan bij het verwerken van je bestelling.');
           });
       });
   }
@@ -418,6 +428,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
       voucherAmount = parseFloat(voucher.remaining_value);
       updateTotals();
+
+      // Zet gekozen bon in hidden input (JSON formaat)
+      const voucherData = {
+          code: voucher.code,
+          amount: voucherAmount
+      };
+      document.getElementById('used_voucher_input').value = JSON.stringify(voucherData);
   });
 
   // --- Foutmeldingen en oude waarden uit queryparameters ---
