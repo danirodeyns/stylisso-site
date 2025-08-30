@@ -342,6 +342,31 @@ document.addEventListener('DOMContentLoaded', function () {
       });
   }
 
+  const taxAmount = document.getElementById('taxAmount');
+  const totalAmount = document.getElementById('totalAmount');
+
+  fetch('cart.php?action=get_cart') // haalt producten + vouchers op
+      .then(res => res.json())
+      .then(data => {
+          if (!data.success) return;
+
+          let subtotal = 0;
+
+          data.cart.forEach(item => {
+              subtotal += parseFloat(item.price) * item.quantity;
+          });
+
+          const subtotalDisplay = subtotal;
+          const shipping = 5.00;
+          const vat = subtotal * 0.21;
+          const total = subtotal + shipping;
+
+          if (subtotalDisplay) subtotalDisplay.textContent = `€${subtotal.toFixed(2)}`;
+          if (taxAmount) taxAmount.textContent = `€${vat.toFixed(2)}`;
+          if (totalAmount) totalAmount.textContent = `€${total.toFixed(2)}`;
+      })
+      .catch(err => console.error('Fout bij ophalen cart voor checkout:', err));
+
   // --- Foutmeldingen en oude waarden uit queryparameters ---
   const params = new URLSearchParams(window.location.search);
 

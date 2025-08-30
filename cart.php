@@ -118,7 +118,6 @@ FROM cart c
 LEFT JOIN products p ON c.product_id = p.id
 WHERE c.user_id = ?
 ");
-
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();

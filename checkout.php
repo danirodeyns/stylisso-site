@@ -71,7 +71,7 @@ $_SESSION['checkout'] = [
     'subtotal' => $total,
     'vat' => $total * 0.21, // 21% BTW
     'shipping' => 5.00,     // vaste verzendkosten
-    'total' => $total * 1.21 + 5.00
+    'total' => $total * 1.00 + 5.00
 ];
 
 // Redirect naar afrekenen.html
