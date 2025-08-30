@@ -102,13 +102,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // GET: producten + vouchers ophalen
 $cart = [];
 $stmt = $conn->prepare("
-    SELECT c.id, c.product_id, c.type, c.quantity, c.price, 
-           COALESCE(p.name, 'Cadeaubon') AS name,
-           COALESCE(p.image, 'cadeaubon/voucher.png') AS image
-    FROM cart c
-    LEFT JOIN products p ON c.product_id = p.id
-    WHERE c.user_id = ?
+    SELECT 
+    c.id, 
+    c.product_id, 
+    c.type, 
+    c.quantity, 
+    c.price, 
+    COALESCE(p.name, 'Cadeaubon') AS name,
+    COALESCE(p.image, 'cadeaubon/voucher.png') AS image,
+    CASE
+        WHEN c.type = 'voucher' THEN 'cadeaubon/voucher (dark mode).png'
+        ELSE NULL
+    END AS dark_image
+FROM cart c
+LEFT JOIN products p ON c.product_id = p.id
+WHERE c.user_id = ?
 ");
+
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();

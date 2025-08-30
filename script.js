@@ -83,10 +83,16 @@ document.addEventListener('DOMContentLoaded', function () {
     if (cartSummary) cartSummary.style.display = "block";
 
     cart.forEach(item => {
-      const itemDiv = document.createElement('div');
-      itemDiv.classList.add('cart-item');
+    const itemDiv = document.createElement('div');
+    itemDiv.classList.add('cart-item');
+
+    if (item.type === 'voucher') {
+      // Twee afbeeldingen voor light/dark mode
       itemDiv.innerHTML = `
-        <img src="${item.image}" alt="${item.name}" class="item-image">
+        <div class="item-image-wrapper">
+          <img src="cadeaubon/voucher.png" alt="${item.name}" class="item-image item-image-light"/>
+          <img src="cadeaubon/voucher (dark mode).png" alt="${item.name}" class="item-image item-image-dark"/>
+        </div>
         <div class="item-info">
           <h3>${item.name}</h3>
           <p>${item.variant || ''}</p>
@@ -101,8 +107,28 @@ document.addEventListener('DOMContentLoaded', function () {
           </button>
         </div>
       `;
-      cartItemsContainer.appendChild(itemDiv);
-    });
+    } else {
+      // Normale producten: enkel afbeelding
+      itemDiv.innerHTML = `
+        <img src="${item.image}" alt="${item.name}" class="item-image"/>
+        <div class="item-info">
+          <h3>${item.name}</h3>
+          <p>${item.variant || ''}</p>
+          <p>Prijs: €${parseFloat(item.price).toFixed(2)}</p>
+          <label>
+            Aantal:
+            <input type="number" value="${item.quantity}" min="1" data-id="${item.id}" data-type="${item.type}" class="quantity-input">
+          </label>
+          <button class="remove-item" data-id="${item.id}" data-type="${item.type}">
+            <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
+            <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
+          </button>
+        </div>
+      `;
+    }
+
+    cartItemsContainer.appendChild(itemDiv);
+  });
 
     calculateSubtotal(cart);
   }
@@ -122,11 +148,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const ul = document.createElement('ul');
     ul.classList.add('dropdown-cart-list');
+
     cart.forEach(item => {
       const li = document.createElement('li');
-      li.innerHTML = `<span class="item-text">${item.name} <span class="item-price">€${parseFloat(item.price).toFixed(2)}</span></span>`;
+      if (item.type === 'voucher') {
+        li.innerHTML = `
+          <div class="dropdown-item-image-wrapper">
+            <img src="cadeaubon/voucher.png" alt="${item.name}" class="dropdown-item-image dropdown-item-image-light"/>
+            <img src="cadeaubon/voucher (dark mode).png" alt="${item.name}" class="dropdown-item-image dropdown-item-image-dark"/>
+          </div>
+          <span class="item-text">${item.name} <span class="item-price">€${parseFloat(item.price).toFixed(2)}</span></span>
+        `;
+      } else {
+        li.innerHTML = `
+          <img src="${item.image}" alt="${item.name}" class="dropdown-item-image"/>
+          <span class="item-text">${item.name} <span class="item-price">€${parseFloat(item.price).toFixed(2)}</span></span>
+        `;
+      }
       ul.appendChild(li);
     });
+
     cartDropdown.appendChild(ul);
   }
 

@@ -438,6 +438,29 @@ footer {
   padding: 0.5rem 0;
 }
 
+.dropdown-item-image {
+  width: 40px;
+  height: auto;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+.dropdown-item-image-light {
+  display: block;
+}
+
+.dropdown-item-image-dark {
+  display: none;
+}
+
+.item-image-light {
+  display: block;
+}
+
+.item-image-dark {
+  display: none;
+}
+
 .main-nav {
   display: flex;
   align-items: center;
@@ -1743,7 +1766,7 @@ input[type="number"].quantity-input {
   }
 
   .user-dropdown a:hover {
-  background: #333;
+    background: #333;
   }
 
   .nav-link:hover {
@@ -1831,6 +1854,20 @@ input[type="number"].quantity-input {
     text-align: center;
     color: #888;
     padding: 0rem;
+  }
+
+  .dropdown-item-image-light {
+    display: none;
+  }
+  .dropdown-item-image-dark {
+    display: block;
+  }
+
+  .item-image-light {
+    display: none;
+  }
+  .item-image-dark {
+    display: block;
   }
 
   .item-text {
