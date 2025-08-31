@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!headerContainer) return;
       headerContainer.innerHTML = html;
 
-      // --- Header elementen pas hier selecteren ---
       const cartDropdown = document.getElementById('cartDropdown');
 
       // --- Setup user controls ---
@@ -36,18 +35,18 @@ document.addEventListener('DOMContentLoaded', function () {
       // --- Cookie banner initialiseren ---
       initCookieBanner();
 
-      // --- Cart fetchen voor dropdown en page cart ---
+      // --- Cart fetchen ---
       fetchCart(cartDropdown);
     });
 
-  // --- fetchCart functie (gecombineerd voor dropdown en grote cart) ---
+  // --- fetchCart functie (gecombineerd) ---
   function fetchCart(cartDropdown) {
     fetch('cart.php?action=get_cart')
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          renderCartItems(data.cart);                 // grote cart op page
-          renderCartDropdown(data.cart, cartDropdown); // dropdown in header
+          renderCartItems(data.cart);
+          renderCartDropdown(data.cart, cartDropdown);
         } else {
           console.error('Fout bij ophalen winkelwagen:', data.message);
         }
@@ -82,58 +81,59 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (cartSummary) cartSummary.style.display = "block";
 
-    cart.forEach(item => {
-    const itemDiv = document.createElement('div');
-    itemDiv.classList.add('cart-item');
+    cart.forEach((item, index) => {
+      const itemDiv = document.createElement('div');
+      itemDiv.classList.add('cart-item');
 
-    if (item.type === 'voucher') {
-      // Twee afbeeldingen voor light/dark mode
-      itemDiv.innerHTML = `
-        <div class="item-image-wrapper">
-          <img src="cadeaubon/voucher.png" alt="${item.name}" class="item-image item-image-light"/>
-          <img src="cadeaubon/voucher (dark mode).png" alt="${item.name}" class="item-image item-image-dark"/>
-        </div>
-        <div class="item-info">
-          <h3>${item.name}</h3>
-          <p>${item.variant || ''}</p>
-          <p>Prijs: €${parseFloat(item.price).toFixed(2)}</p>
-          <label>
-            Aantal:
-            <input type="number" value="${item.quantity}" min="1" data-id="${item.id}" data-type="${item.type}" class="quantity-input">
-          </label>
-          <button class="remove-item" data-id="${item.id}" data-type="${item.type}">
-            <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
-            <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
-          </button>
-        </div>
-      `;
-    } else {
-      // Normale producten: enkel afbeelding
-      itemDiv.innerHTML = `
-        <img src="${item.image}" alt="${item.name}" class="item-image"/>
-        <div class="item-info">
-          <h3>${item.name}</h3>
-          <p>${item.variant || ''}</p>
-          <p>Prijs: €${parseFloat(item.price).toFixed(2)}</p>
-          <label>
-            Aantal:
-            <input type="number" value="${item.quantity}" min="1" data-id="${item.id}" data-type="${item.type}" class="quantity-input">
-          </label>
-          <button class="remove-item" data-id="${item.id}" data-type="${item.type}">
-            <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
-            <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
-          </button>
-        </div>
-      `;
-    }
+      // Dynamische attributen: id voor DB, index voor sessie
+      const idAttr = item.id ? `data-id="${item.id}"` : `data-index="${index}"`;
 
-    cartItemsContainer.appendChild(itemDiv);
-  });
+      if (item.type === 'voucher') {
+        itemDiv.innerHTML = `
+          <div class="item-image-wrapper">
+            <img src="cadeaubon/voucher.png" alt="${item.name}" class="item-image item-image-light"/>
+            <img src="cadeaubon/voucher (dark mode).png" alt="${item.name}" class="item-image item-image-dark"/>
+          </div>
+          <div class="item-info">
+            <h3>${item.name}</h3>
+            <p>${item.variant || ''}</p>
+            <p>Prijs: €${parseFloat(item.price).toFixed(2)}</p>
+            <label>
+              Aantal:
+              <input type="number" value="${item.quantity}" min="1" ${idAttr} data-type="${item.type}" class="quantity-input">
+            </label>
+            <button class="remove-item" ${idAttr} data-type="${item.type}">
+              <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
+              <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
+            </button>
+          </div>
+        `;
+      } else {
+        itemDiv.innerHTML = `
+          <img src="${item.image}" alt="${item.name}" class="item-image"/>
+          <div class="item-info">
+            <h3>${item.name}</h3>
+            <p>${item.variant || ''}</p>
+            <p>Prijs: €${parseFloat(item.price).toFixed(2)}</p>
+            <label>
+              Aantal:
+              <input type="number" value="${item.quantity}" min="1" ${idAttr} data-type="${item.type}" class="quantity-input">
+            </label>
+            <button class="remove-item" ${idAttr} data-type="${item.type}">
+              <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
+              <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
+            </button>
+          </div>
+        `;
+      }
+
+      cartItemsContainer.appendChild(itemDiv);
+    });
 
     calculateSubtotal(cart);
   }
 
-  // --- renderCartDropdown (header dropdown) ---
+  // --- renderCartDropdown ---
   function renderCartDropdown(cart, cartDropdown) {
     if (!cartDropdown) return;
     cartDropdown.innerHTML = "";
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function () {
     cartDropdown.appendChild(ul);
   }
 
-  // --- Footer inladen via fetch ---
+  // --- Footer inladen ---
   fetch('footer.html')
     .then(res => res.text())
     .then(html => {
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function () {
     })
     .catch(err => console.error('Fout bij laden footer:', err));
 
-  // --- Functie: Header user controls (login/logout, dropdown) ---
+  // --- Header user controls ---
   function setupHeaderUserControls(headerContainer) {
     fetch('current_user.php')
       .then(res => res.json())
@@ -218,7 +218,6 @@ document.addEventListener('DOMContentLoaded', function () {
           if (userDropdown) userDropdown.classList.remove('open');
         }
 
-        // Logout knop
         const logoutBtns = headerContainer.querySelectorAll('#logoutBtn, #logoutButton');
         logoutBtns.forEach(btn => {
           btn.addEventListener('click', e => {
@@ -240,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .catch(err => console.error('Fout bij ophalen huidige gebruiker:', err));
   }
 
-  // --- Functie: Cookie banner ---
+  // --- Cookie banner ---
   function initCookieBanner() {
     const banner = document.getElementById("cookie-banner");
     if (!banner) return;
@@ -277,19 +276,27 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // --- Functies voor update & remove items ---
-  function updateQuantityOnServer(itemId, itemType, quantity) {
+  function updateQuantityOnServer(itemId, itemType, quantity, itemIndex = null) {
+    const payload = { type: itemType, quantity };
+    if (itemId) payload.id = itemId;
+    if (itemIndex !== null) payload.index = itemIndex;
+
     fetch('cart.php?action=update_quantity', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.csrfToken },
-      body: JSON.stringify({ id: itemId, type: itemType, quantity })
+      body: JSON.stringify(payload)
     });
   }
 
-  function removeItemFromServer(itemId, itemType) {
+  function removeItemFromServer(itemId, itemType, itemIndex = null) {
+    const payload = { type: itemType };
+    if (itemId) payload.id = itemId;       // DB-item
+    if (itemIndex !== null) payload.index = itemIndex; // Sessie-item
+
     fetch('cart.php?action=remove_item', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.csrfToken },
-      body: JSON.stringify({ id: itemId, type: itemType })
+      body: JSON.stringify(payload)
     })
     .then(res => res.json())
     .then(data => {
@@ -298,20 +305,14 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // --- Event listeners voor quantity & remove ---
-  document.addEventListener('change', function(e) {
-    if (e.target.classList.contains('quantity-input')) {
-      const id = e.target.dataset.id;
-      const type = e.target.dataset.type;
-      const quantity = parseInt(e.target.value, 10);
-      if (!isNaN(quantity) && quantity > 0) updateQuantityOnServer(id, type, quantity);
-    }
-  });
-
+  // --- Event listener ---
   document.addEventListener('click', function(e) {
     if (e.target.closest('.remove-item')) {
       const btn = e.target.closest('.remove-item');
-      removeItemFromServer(btn.dataset.id, btn.dataset.type);
+      const type = btn.dataset.type;
+      const id = btn.dataset.id ?? null;
+      const index = btn.dataset.index ?? null;
+      removeItemFromServer(id, type, index);
     }
   });
 

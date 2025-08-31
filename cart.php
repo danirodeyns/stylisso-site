@@ -26,12 +26,37 @@ function csrf_validate_ajax() {
 
 $user_id = $_SESSION['user_id'] ?? null;
 
-// POST-handling
+// --- POST-handling ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_validate_ajax();
 
     $data = json_decode(file_get_contents('php://input'), true);
     $action = $_GET['action'] ?? '';
+
+    // --- REMOVE ITEM: moet zowel met als zonder user_id werken ---
+    if ($action === 'remove_item') {
+        $cart_id = $data['id'] ?? null;
+        $cart_index = $data['index'] ?? null;
+        $type = $data['type'] ?? null;
+
+        if ($user_id && $cart_id) {
+            // DB-item verwijderen
+            $stmt = $conn->prepare("DELETE FROM cart WHERE id = ? AND user_id = ?");
+            $stmt->bind_param("ii", $cart_id, $user_id);
+            $stmt->execute();
+        } else {
+            // Sessie-item verwijderen
+            if ($type === 'voucher' && isset($_SESSION['cart_vouchers'][$cart_index])) {
+                array_splice($_SESSION['cart_vouchers'], $cart_index, 1);
+            } elseif ($type === 'product' && isset($_SESSION['cart_products'][$cart_index])) {
+                array_splice($_SESSION['cart_products'], $cart_index, 1);
+            }
+        }
+
+        echo json_encode(['success' => true]);
+        exit;
+    }
+}
 
     // --- Alleen ingelogd: DB acties ---
     if ($user_id) {
@@ -51,38 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode(['success' => true]);
             exit;
         }
-
-        if ($action === 'remove_item') {
-            $cart_id = $data['id'] ?? null;
-
-            if ($user_id) {
-                // Ingelogd -> DB verwijderen
-                if (!$cart_id) {
-                    echo json_encode(['success' => false, 'message' => 'Ongeldige data.']);
-                    exit;
-                }
-                $stmt = $conn->prepare("DELETE FROM cart WHERE id = ? AND user_id = ?");
-                $stmt->bind_param("ii", $cart_id, $user_id);
-                $stmt->execute();
-            } else {
-                // Niet ingelogd -> sessie verwijderen
-                $index = $data['index'] ?? null;
-                $type = $data['type'] ?? null;
-
-                if ($type === 'product' && isset($_SESSION['cart_products'][$index])) {
-                    unset($_SESSION['cart_products'][$index]);
-                } elseif ($type === 'voucher' && isset($_SESSION['cart_vouchers'][$index])) {
-                    unset($_SESSION['cart_vouchers'][$index]);
-                } else {
-                    echo json_encode(['success' => false, 'message' => 'Item niet gevonden in sessie.']);
-                    exit;
-                }
-            }
-
-            echo json_encode(['success' => true]);
-            exit;
-        }
-    }
 
     // --- Product/voucher toevoegen ---
     $product_id = isset($data['product_id']) ? (int)$data['product_id'] : null;
@@ -164,30 +157,32 @@ if ($user_id) {
 } else {
     // Haal alles uit sessie
     if (!empty($_SESSION['cart_products'])) {
-        foreach ($_SESSION['cart_products'] as $p) {
+        foreach ($_SESSION['cart_products'] as $i => $p) {
             $cart[] = [
                 'id' => null,
                 'product_id' => $p['product_id'],
                 'type' => 'product',
                 'quantity' => $p['quantity'],
                 'price' => $p['price'],
-                'name' => 'Product #' . $p['product_id'], // Optioneel later vervangen door query
+                'name' => 'Product #' . $p['product_id'],
                 'image' => 'placeholder.png',
-                'dark_image' => null
+                'dark_image' => null,
+                'index' => $i
             ];
         }
     }
     if (!empty($_SESSION['cart_vouchers'])) {
-        foreach ($_SESSION['cart_vouchers'] as $v) {
+        foreach ($_SESSION['cart_vouchers'] as $i => $v) {
             $cart[] = [
                 'id' => null,
                 'product_id' => null,
                 'type' => 'voucher',
                 'quantity' => $v['quantity'],
-                'price' => $v['amount'],
+                'price' => $v['price'],
                 'name' => 'Cadeaubon',
                 'image' => 'cadeaubon/voucher.png',
-                'dark_image' => 'cadeaubon/voucher (dark mode).png'
+                'dark_image' => 'cadeaubon/voucher (dark mode).png',
+                'index' => $i
             ];
         }
     }

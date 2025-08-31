@@ -26,7 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['cart_vouchers'] = [];
         }
         $_SESSION['cart_vouchers'][] = [
-            'amount' => $amount
+            'type' => 'voucher',
+            'name' => 'Cadeaubon',
+            'price' => $amount,
+            'quantity' => 1
         ];
     }
 
