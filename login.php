@@ -23,6 +23,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['name'];
 
+            // --- Migreer sessie-cart naar database ---
+            if (!empty($_SESSION['cart_products'])) {
+                foreach ($_SESSION['cart_products'] as $p) {
+                    $product_id = (int)$p['product_id'];
+                    $quantity   = (int)$p['quantity'];
+                    $price      = (float)$p['price'];
+
+                    // Check of product al in DB-cart bestaat → update quantity
+                    $stmt = $conn->prepare("UPDATE cart SET quantity = quantity + ? 
+                                            WHERE user_id = ? AND product_id = ? AND type = 'product'");
+                    $stmt->bind_param("iii", $quantity, $user['id'], $product_id);
+                    $stmt->execute();
+
+                    if ($stmt->affected_rows === 0) {
+                        // Bestond nog niet, dus nieuw record
+                        $stmt = $conn->prepare("INSERT INTO cart (user_id, product_id, type, quantity, price) 
+                                                VALUES (?, ?, 'product', ?, ?)");
+                        $stmt->bind_param("iiid", $user['id'], $product_id, $quantity, $price);
+                        $stmt->execute();
+                    }
+                }
+                unset($_SESSION['cart_products']); // sessie leegmaken
+            }
+
+            if (!empty($_SESSION['cart_vouchers'])) {
+                foreach ($_SESSION['cart_vouchers'] as $v) {
+                    $quantity = (int)$v['quantity'];
+                    $amount   = (float)$v['amount'];
+
+                    // Voor vouchers gebruiken we product_id = NULL
+                    $stmt = $conn->prepare("INSERT INTO cart (user_id, product_id, type, quantity, price) 
+                                            VALUES (?, NULL, 'voucher', ?, ?)");
+                    $stmt->bind_param("iid", $user['id'], $quantity, $amount);
+                    $stmt->execute();
+                }
+                unset($_SESSION['cart_vouchers']); // sessie leegmaken
+            }
+
             // Zet langdurige cookie enkel als banner geaccepteerd
             if ($cookiesAccepted === "1") {
                 // Genereer token
