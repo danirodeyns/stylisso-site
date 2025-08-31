@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
       itemDiv.classList.add('cart-item');
 
       // Dynamische attributen: id voor DB, index voor sessie
-      const idAttr = item.id ? `data-id="${item.id}"` : `data-index="${index}"`;
+      const idAttr = item.id ? `data-id="${item.id}"` : (item.index !== undefined ? `data-index="${item.index}"` : '');
 
       if (item.type === 'voucher') {
         itemDiv.innerHTML = `
@@ -289,19 +289,35 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function removeItemFromServer(itemId, itemType, itemIndex = null) {
-    const payload = { type: itemType };
-    if (itemId) payload.id = itemId;       // DB-item
-    if (itemIndex !== null) payload.index = itemIndex; // Sessie-item
+    const formData = new FormData();
+    formData.append('type', itemType);
+    if (itemId) formData.append('id', itemId);
+    if (itemIndex !== null) formData.append('index', itemIndex);
+    formData.append('csrf_token', window.csrfToken);
+
+    console.log('Verstuurd FormData:', {
+      type: itemType,
+      id: itemId,
+      index: itemIndex,
+      csrf_token: window.csrfToken
+    });
 
     fetch('cart.php?action=remove_item', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.csrfToken },
-      body: JSON.stringify(payload)
+      body: formData
     })
-    .then(res => res.json())
-    .then(data => {
+    .then(res => res.text())
+    .then(text => {
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        console.error('Geen geldige JSON van server:', text);
+        alert('Er ging iets mis bij het verwijderen.');
+        return;
+      }
       if (data.success) fetchCart(document.getElementById('cartDropdown'));
-      else alert('Fout bij verwijderen item');
+      else alert(data.message || 'Fout bij verwijderen item');
     });
   }
 
@@ -310,8 +326,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (e.target.closest('.remove-item')) {
       const btn = e.target.closest('.remove-item');
       const type = btn.dataset.type;
-      const id = btn.dataset.id ?? null;
-      const index = btn.dataset.index ?? null;
+      const id = btn.dataset.id ? parseInt(btn.dataset.id) : null;
+      const index = btn.dataset.index ? parseInt(btn.dataset.index) : null;
+      console.log('Verwijder:', {type, id, index});
       removeItemFromServer(id, type, index);
     }
   });
@@ -366,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const subtotalOrder = document.getElementById('subtotalOrder');
   const redeemVoucherSpan = document.getElementById('redeem_voucher');
   const savedVoucherDropdown = document.getElementById('saved_voucher');
-  const taxAmount = document.getElementById('taxAmount');
+  const taxAmount = document.getElementById('totalAmount');
   const totalAmount = document.getElementById('totalAmount');
 
   let cartData = [];

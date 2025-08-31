@@ -9,43 +9,40 @@ ini_set('error_log', __DIR__ . '/php-error.log');
 
 header('Content-Type: application/json');
 
-// CSRF-validatie voor AJAX POST
-function csrf_validate_ajax() {
-    if (!isset($_SESSION['csrf_token'])) {
-        http_response_code(403);
-        echo json_encode(['success' => false, 'message' => 'CSRF-token ontbreekt in sessie']);
-        exit;
-    }
-    $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
-    if (!hash_equals($_SESSION['csrf_token'], $token)) {
-        http_response_code(403);
-        echo json_encode(['success' => false, 'message' => 'Ongeldig CSRF-token']);
-        exit;
-    }
-}
-
 $user_id = $_SESSION['user_id'] ?? null;
 
 // --- POST-handling ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    csrf_validate_ajax();
+    csrf_validate(); // alleen bij POST
 
-    $data = json_decode(file_get_contents('php://input'), true);
+    // Probeer JSON te lezen
+    $raw_data = file_get_contents('php://input');
+    $data = json_decode($raw_data, true);
+
+    // Als JSON leeg is, fallback naar $_POST (FormData)
+    if (!$data) {
+        $data = $_POST;
+    }
+
     $action = $_GET['action'] ?? '';
 
-    // --- REMOVE ITEM: moet zowel met als zonder user_id werken ---
+    // --- REMOVE ITEM ---
     if ($action === 'remove_item') {
-        $cart_id = $data['id'] ?? null;
-        $cart_index = $data['index'] ?? null;
+        $cart_id = isset($data['id']) && is_numeric($data['id']) ? (int)$data['id'] : null;
+        $cart_index = isset($data['index']) && is_numeric($data['index']) ? (int)$data['index'] : null;
         $type = $data['type'] ?? null;
 
+        // alleen verwijderen als id of index geldig is
+        if (!$cart_id && $cart_index === null) {
+            echo json_encode(['success' => false, 'message' => 'Ongeldige verwijderdata']);
+            exit;
+        }
+
         if ($user_id && $cart_id) {
-            // DB-item verwijderen
             $stmt = $conn->prepare("DELETE FROM cart WHERE id = ? AND user_id = ?");
             $stmt->bind_param("ii", $cart_id, $user_id);
             $stmt->execute();
         } else {
-            // Sessie-item verwijderen
             if ($type === 'voucher' && isset($_SESSION['cart_vouchers'][$cart_index])) {
                 array_splice($_SESSION['cart_vouchers'], $cart_index, 1);
             } elseif ($type === 'product' && isset($_SESSION['cart_products'][$cart_index])) {
@@ -53,31 +50,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
+        error_log('Remove item: type=' . $type . ', cart_id=' . $cart_id . ', index=' . $cart_index);
         echo json_encode(['success' => true]);
         exit;
     }
-}
 
-    // --- Alleen ingelogd: DB acties ---
-    if ($user_id) {
-        if ($action === 'update_quantity') {
-            $cart_id = $data['id'] ?? null;
-            $quantity = isset($data['quantity']) ? (int)$data['quantity'] : null;
+    // --- UPDATE QUANTITY ---
+    if ($action === 'update_quantity') {
+        $cart_id = $data['id'] ?? null;
+        $quantity = isset($data['quantity']) ? (int)$data['quantity'] : null;
+        $itemType = $data['type'] ?? null;
+        $index = $data['index'] ?? null;
 
-            if (!$cart_id || !$quantity || $quantity < 1) {
+        if ($user_id && $cart_id) {
+            if (!$quantity || $quantity < 1) {
                 echo json_encode(['success' => false, 'message' => 'Ongeldige data.']);
                 exit;
             }
-
             $stmt = $conn->prepare("UPDATE cart SET quantity = ? WHERE id = ? AND user_id = ?");
             $stmt->bind_param("iii", $quantity, $cart_id, $user_id);
             $stmt->execute();
-
-            echo json_encode(['success' => true]);
-            exit;
+        } elseif (!$user_id && $index !== null) {
+            if ($itemType === 'voucher' && !empty($_SESSION['cart_vouchers']) && isset($_SESSION['cart_vouchers'][$index])) {
+                $_SESSION['cart_vouchers'][$index]['quantity'] = $quantity;
+            } elseif ($itemType === 'product' && !empty($_SESSION['cart_products']) && isset($_SESSION['cart_products'][$index])) {
+                $_SESSION['cart_products'][$index]['quantity'] = $quantity;
+            }
         }
 
-    // --- Product/voucher toevoegen ---
+        echo json_encode(['success' => true]);
+        exit;
+    }
+
+    // --- ADD ITEM ---
     $product_id = isset($data['product_id']) ? (int)$data['product_id'] : null;
     $type = $data['type'] ?? 'product';
     $quantity = isset($data['quantity']) ? (int)$data['quantity'] : 1;
@@ -89,7 +94,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($user_id) {
-        // Opslaan in DB
         $stmt = $conn->prepare("UPDATE cart SET quantity = quantity + ? WHERE user_id = ? AND product_id <=> ? AND type = ?");
         $stmt->bind_param("iiss", $quantity, $user_id, $product_id, $type);
         $stmt->execute();
@@ -100,24 +104,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute();
         }
     } else {
-        // Opslaan in sessie
         if ($type === 'voucher') {
-            if (!isset($_SESSION['cart_vouchers'])) {
-                $_SESSION['cart_vouchers'] = [];
-            }
-            $_SESSION['cart_vouchers'][] = [
-                'price' => $price,
-                'quantity' => $quantity
-            ];
+            if (!isset($_SESSION['cart_vouchers'])) $_SESSION['cart_vouchers'] = [];
+            $_SESSION['cart_vouchers'][] = ['price' => $price, 'quantity' => $quantity];
         } else {
-            if (!isset($_SESSION['cart_products'])) {
-                $_SESSION['cart_products'] = [];
-            }
-            $_SESSION['cart_products'][] = [
-                'product_id' => $product_id,
-                'quantity' => $quantity,
-                'price' => $price
-            ];
+            if (!isset($_SESSION['cart_products'])) $_SESSION['cart_products'] = [];
+            $_SESSION['cart_products'][] = ['product_id' => $product_id, 'quantity' => $quantity, 'price' => $price];
         }
     }
 
@@ -129,7 +121,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $cart = [];
 
 if ($user_id) {
-    // Haal alles uit DB
     $stmt = $conn->prepare("
         SELECT 
             c.id, 
@@ -139,10 +130,7 @@ if ($user_id) {
             c.price, 
             COALESCE(p.name, 'Cadeaubon') AS name,
             COALESCE(p.image, 'cadeaubon/voucher.png') AS image,
-            CASE
-                WHEN c.type = 'voucher' THEN 'cadeaubon/voucher (dark mode).png'
-                ELSE NULL
-            END AS dark_image
+            CASE WHEN c.type = 'voucher' THEN 'cadeaubon/voucher (dark mode).png' ELSE NULL END AS dark_image
         FROM cart c
         LEFT JOIN products p ON c.product_id = p.id
         WHERE c.user_id = ?
@@ -150,12 +138,8 @@ if ($user_id) {
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
-
-    while ($row = $result->fetch_assoc()) {
-        $cart[] = $row;
-    }
+    while ($row = $result->fetch_assoc()) $cart[] = $row;
 } else {
-    // Haal alles uit sessie
     if (!empty($_SESSION['cart_products'])) {
         foreach ($_SESSION['cart_products'] as $i => $p) {
             $cart[] = [
@@ -189,4 +173,5 @@ if ($user_id) {
 }
 
 echo json_encode(['success' => true, 'cart' => $cart]);
+error_log('POST remove_item ontvangen: ' . file_get_contents('php://input'));
 ?>
