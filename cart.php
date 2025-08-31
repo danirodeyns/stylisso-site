@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['cart_vouchers'] = [];
             }
             $_SESSION['cart_vouchers'][] = [
-                'amount' => $price,
+                'price' => $price,
                 'quantity' => $quantity
             ];
         } else {
