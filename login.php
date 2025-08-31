@@ -50,12 +50,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!empty($_SESSION['cart_vouchers'])) {
                 foreach ($_SESSION['cart_vouchers'] as $v) {
                     $quantity = (int)$v['quantity'];
-                    $amount   = (float)$v['amount'];
+                    $price   = (float)$v['price'];
 
                     // Voor vouchers gebruiken we product_id = NULL
                     $stmt = $conn->prepare("INSERT INTO cart (user_id, product_id, type, quantity, price) 
                                             VALUES (?, NULL, 'voucher', ?, ?)");
-                    $stmt->bind_param("iid", $user['id'], $quantity, $amount);
+                    $stmt->bind_param("iid", $user['id'], $quantity, $price);
                     $stmt->execute();
                 }
                 unset($_SESSION['cart_vouchers']); // sessie leegmaken
