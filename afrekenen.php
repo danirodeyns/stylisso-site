@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $used_voucher = null;
     if (!empty($_POST['used_voucher'])) {
         $decoded = json_decode($_POST['used_voucher'], true);
-        if (is_array($decoded) && !empty($decoded['code']) && isset($decoded['amount'])) {
+        if (is_array($decoded) && !empty($decoded['code']) && isset($decoded['price'])) {
             $used_voucher = $decoded;
         }
     }
@@ -95,9 +95,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt_update = $conn->prepare(
                 "UPDATE vouchers SET remaining_value = GREATEST(remaining_value - ?, 0) WHERE code = ?"
             );
-            $amount = $used_voucher['amount'];
+            $price = $used_voucher['price'];
             $code = $used_voucher['code'];
-            $stmt_update->bind_param("ds", $amount, $code);
+            $stmt_update->bind_param("ds", $price, $code);
             $stmt_update->execute();
         }
 
