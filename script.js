@@ -479,7 +479,7 @@ document.addEventListener('DOMContentLoaded', function () {
       errorMsg.textContent = message;
       errorMsg.className = 'input-error';
       errorMsg.style.color = "red";
-      errorMsg.style.fontSize = "0.9em";
+      errorMsg.style.fontSize = "0.9rem";
       errorMsg.style.marginTop = "4px";
       input.insertAdjacentElement('afterend', errorMsg);
     }

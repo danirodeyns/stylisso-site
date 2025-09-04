@@ -62,6 +62,18 @@ if (empty($items)) {
     exit;
 }
 
+// Bepaal of alles vouchers zijn
+$allVouchers = true;
+foreach ($items as $i) {
+    if ($i['type'] !== 'voucher') {
+        $allVouchers = false;
+        break;
+    }
+}
+
+// Dynamische verzendkosten
+$shipping = $allVouchers ? 0.00 : 5.00;
+
 // -------------------------
 // Sessiedata klaarmaken
 // -------------------------
@@ -70,8 +82,9 @@ $_SESSION['checkout'] = [
     'cart_items' => $items,
     'subtotal' => $total,
     'vat' => $total * 0.21, // 21% BTW
-    'shipping' => 5.00,     // vaste verzendkosten
-    'total' => $total * 1.00 + 5.00
+    'shipping' => $shipping,
+    'total' => $total + $shipping, 
+    'voucher_discount' => 0 // placeholder
 ];
 
 // Redirect naar afrekenen.html

@@ -3,9 +3,8 @@ session_start();
 include 'db_connect.php';
 include 'csrf.php';
 
-// Controleer of gebruiker en checkout aanwezig zijn
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['checkout'])) {
-    header('Location: cart.html');
+    echo "Geen gebruiker of checkout sessie";
     exit;
 }
 
@@ -15,107 +14,91 @@ $checkout = $_SESSION['checkout'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_validate();
 
-    // Adres en betaalmethode uit formulier
     $address = trim($_POST['address']);
     $payment_method = $_POST['payment_method'] ?? '';
+    $email = $_POST['email'] ?? '';
 
-    // Profiel updaten
+    // Profiel bijwerken
     $stmt = $conn->prepare("UPDATE users SET address = ? WHERE id = ?");
     $stmt->bind_param("si", $address, $user_id);
     $stmt->execute();
 
-    // Totaalprijs
-    $total = $checkout['total'];
-
-    // Gebruikte voucher uit hidden input
+    // Gebruikte voucher
     $used_voucher = null;
     if (!empty($_POST['used_voucher'])) {
         $decoded = json_decode($_POST['used_voucher'], true);
-        if (is_array($decoded) && !empty($decoded['code']) && isset($decoded['price'])) {
+        if (is_array($decoded) && !empty($decoded['code']) && isset($decoded['amount'])) {
             $used_voucher = $decoded;
         }
     }
 
-    // Voeg order toe aan orders tabel
-    $stmt = $conn->prepare("INSERT INTO orders (user_id, total_price, payment_method) VALUES (?, ?, ?)");
-    $stmt->bind_param("ids", $user_id, $total, $payment_method);
+    $voucher_discount = $used_voucher['amount'] ?? 0;
+    $total_order = max(0, floatval($checkout['total']) - floatval($voucher_discount));
 
-    if ($stmt->execute()) {
-        $order_id = $conn->insert_id;
+    // Order toevoegen
+    $stmt_order = $conn->prepare("INSERT INTO orders (user_id, total_price, payment_method) VALUES (?, ?, ?)");
+    if (!$stmt_order) { echo "Prepare order fout: ".$conn->error; exit; }
+    $stmt_order->bind_param("ids", $user_id, $total_order, $payment_method);
+    if (!$stmt_order->execute()) { echo "Execute order fout: ".$stmt_order->error; exit; }
+    $order_id = $conn->insert_id;
 
-        // Order items toevoegen
-        $stmt_detail = $conn->prepare(
-            "INSERT INTO order_items (order_id, product_id, quantity, price, type) VALUES (?, ?, ?, ?, ?)"
-        );
+    // Order items toevoegen
+    $stmt_item = $conn->prepare(
+        "INSERT INTO order_items (order_id, product_id, quantity, price, type) VALUES (?, ?, ?, ?, ?)"
+    );
 
-        foreach ($checkout['cart_items'] as $item) {
-            $type = $item['type'];
-            $price = $item['price'];
+    foreach ($checkout['cart_items'] as $item) {
+        $type = $item['type'];
+        $price = floatval($item['price']);
+        $qty = intval($item['quantity']);
+        $prod_id = $item['type'] === 'product' ? intval($item['product_id']) : null;
 
-            if ($type === 'product') {
-                $prod_id = $item['product_id'];
-                $qty = $item['quantity'];
-                $stmt_detail->bind_param("iiids", $order_id, $prod_id, $qty, $price, $type);
-                $stmt_detail->execute();
-            } elseif ($type === 'voucher') {
-                // Nieuwe voucher toevoegen aan order_items
-                $prod_id = null; // NULL voor vouchers
-                $qty = 1;
-                $stmt_detail->bind_param("iiids", $order_id, $prod_id, $qty, $price, $type);
-                $stmt_detail->execute();
+        // Bind_param ondersteunt NULL voor i niet; gebruik s + converteer
+        $stmt_item->bind_param("iiids", $order_id, $prod_id, $qty, $price, $type);
+        $stmt_item->execute();
 
-                // Voucher code genereren
-                $code = strtoupper(bin2hex(random_bytes(4)));
-                $expires_at = date('Y-m-d H:i:s', strtotime('+1 year'));
+        // Nieuwe vouchers genereren bij voucher-items
+        if ($type === 'voucher') {
+            $code = strtoupper(bin2hex(random_bytes(4)));
+            $expires_at = date('Y-m-d H:i:s', strtotime('+1 year'));
 
-                // Opslaan in vouchers tabel (zonder email)
-                $stmt_voucher = $conn->prepare(
-                    "INSERT INTO vouchers (code, value, remaining_value, expires_at) VALUES (?, ?, ?, ?)"
-                );
-                $stmt_voucher->bind_param("sdds", $code, $price, $price, $expires_at);
-                $stmt_voucher->execute();
+            $stmt_v = $conn->prepare(
+                "INSERT INTO vouchers (code, value, remaining_value, expires_at) VALUES (?, ?, ?, ?)"
+            );
+            $stmt_v->bind_param("sdds", $code, $price, $price, $expires_at);
+            $stmt_v->execute();
 
-                // E-mail uit POST halen
-                $email = $_POST['email'] ?? null;
-                if ($email) {
-                    $subject = "Jouw Stylisso cadeaubon";
-                    $message = "Bedankt voor je aankoop!\n\n" .
-                               "Je cadeauboncode: $code\n" .
-                               "Waarde: €" . number_format($price, 2) . "\n" .
-                               "Geldig tot: $expires_at\n\n" .
-                               "Veel shopplezier bij Stylisso!";
-                    $headers = "From: no-reply@stylisso.com";
-                    mail($email, $subject, $message, $headers);
-                }
+            // Mailen
+            if ($email) {
+                $subject = "Jouw Stylisso cadeaubon";
+                $message = "Bedankt voor je aankoop!\n\n" .
+                           "Je cadeauboncode: $code\n" .
+                           "Waarde: €".number_format($price,2)."\n" .
+                           "Geldig tot: $expires_at\n\n" .
+                           "Veel shopplezier bij Stylisso!";
+                mail($email, $subject, $message, "From: no-reply@stylisso.com");
             }
         }
-
-        // Gebruikte voucher bijwerken
-        if ($used_voucher) {
-            $stmt_update = $conn->prepare(
-                "UPDATE vouchers SET remaining_value = GREATEST(remaining_value - ?, 0) WHERE code = ?"
-            );
-            $price = $used_voucher['price'];
-            $code = $used_voucher['code'];
-            $stmt_update->bind_param("ds", $price, $code);
-            $stmt_update->execute();
-        }
-
-        // Winkelwagen leegmaken
-        $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
-        $stmt->bind_param("i", $user_id);
-        $stmt->execute();
-
-        // Checkout sessie leegmaken
-        unset($_SESSION['checkout']);
-        unset($_SESSION['used_voucher']);
-
-        // Response naar JS
-        echo "success";
-        exit;
-    } else {
-        echo "Fout bij plaatsen bestelling: " . $conn->error;
-        exit;
     }
+
+    // Gebruikte voucher bijwerken
+    if ($used_voucher) {
+        $stmt_uv = $conn->prepare(
+            "UPDATE vouchers SET remaining_value = GREATEST(remaining_value - ?, 0) WHERE code = ?"
+        );
+        $stmt_uv->bind_param("ds", $voucher_discount, $used_voucher['code']);
+        $stmt_uv->execute();
+    }
+
+    // Winkelwagen leegmaken
+    $stmt_cart = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
+    $stmt_cart->bind_param("i", $user_id);
+    $stmt_cart->execute();
+
+    unset($_SESSION['checkout']);
+    unset($_SESSION['used_voucher']);
+
+    echo "success";
+    exit;
 }
 ?>
