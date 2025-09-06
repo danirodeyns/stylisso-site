@@ -1073,3 +1073,64 @@ document.addEventListener('DOMContentLoaded', () => {
     messageBox.style.color = "green";
   }
 });
+
+async function loadWishlist() {
+  try {
+    const response = await fetch("wishlist.php");
+    const data = await response.json();
+
+    const container = document.getElementById("wishlist-container");
+    container.innerHTML = "";
+
+    // --- leeg lijstje ---
+    if (data.error || data.length === 0) {
+      const emptyBox = document.createElement("div");
+      emptyBox.className = "empty-wishlist-box"; // zelf stylen in style.css
+      emptyBox.textContent = "Je verlanglijstje is leeg";
+      container.appendChild(emptyBox);
+      return;
+    }
+
+    // --- wishlist items ---
+    const grid = document.createElement("div");
+    grid.className = "wishlist-grid";
+
+    data.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "wishlist-card";
+
+      card.innerHTML = `
+        <img src="${item.image}" alt="${item.name}" class="wishlist-image"/>
+        <div class="wishlist-info">
+          <h3>${item.name}</h3>
+          <p>€${parseFloat(item.price).toFixed(2)}</p>
+          <button class="add-to-cart" data-id="${item.id}">Toevoegen aan winkelwagen</button>
+          <button class="remove-from-wishlist" data-id="${item.id}">Verwijderen</button>
+        </div>
+      `;
+
+      grid.appendChild(card);
+    });
+
+    container.appendChild(grid);
+
+    // --- event handlers ---
+    document.querySelectorAll(".remove-from-wishlist").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        const productId = e.target.dataset.id;
+        await fetch("wishlist_remove.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `product_id=${productId}`
+        });
+        loadWishlist(); // opnieuw laden
+      });
+    });
+
+  } catch (err) {
+    document.getElementById("wishlist-container").innerHTML =
+      "<p>Fout bij laden van wishlist.</p>";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadWishlist);
