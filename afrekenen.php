@@ -70,7 +70,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt_v->bind_param("sdds", $code, $price, $price, $expires_at);
             $stmt_v->execute();
 
-            
+            // Mailen
+            if ($email) {
+                $subject = "Jouw Stylisso cadeaubon";
+                $message = "Bedankt voor je aankoop!\n\n" .
+                           "Je cadeauboncode: $code\n" .
+                           "Waarde: €".number_format($price,2)."\n" .
+                           "Geldig tot: $expires_at\n\n" .
+                           "Veel shopplezier bij Stylisso!";
+                mail($email, $subject, $message, "From: no-reply@stylisso.com");
+            }
         }
     }
 
