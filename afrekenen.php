@@ -32,8 +32,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    $voucher_discount = $used_voucher['amount'] ?? 0;
-    $total_order = max(0, floatval($checkout['total']) - floatval($voucher_discount));
+    $voucher_discount = isset($used_voucher['amount']) ? floatval($used_voucher['amount']) : 0;
+    $order_subtotal = floatval($checkout['subtotal'] ?? 0); // of $checkout['total'] vóór korting
+    $used_amount = min($voucher_discount, $order_subtotal); // Dit is wat je écht gebruikt
+    $total_order = max(0, floatval($checkout['total']) - $used_amount);
 
     // Order toevoegen
     $stmt_order = $conn->prepare("INSERT INTO orders (user_id, total_price, payment_method) VALUES (?, ?, ?)");
@@ -68,16 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt_v->bind_param("sdds", $code, $price, $price, $expires_at);
             $stmt_v->execute();
 
-            // Mailen
-            if ($email) {
-                $subject = "Jouw Stylisso cadeaubon";
-                $message = "Bedankt voor je aankoop!\n\n" .
-                           "Je cadeauboncode: $code\n" .
-                           "Waarde: €".number_format($price,2)."\n" .
-                           "Geldig tot: $expires_at\n\n" .
-                           "Veel shopplezier bij Stylisso!";
-                mail($email, $subject, $message, "From: no-reply@stylisso.com");
-            }
+            
         }
     }
 
@@ -86,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt_uv = $conn->prepare(
             "UPDATE vouchers SET remaining_value = GREATEST(remaining_value - ?, 0) WHERE code = ?"
         );
-        $stmt_uv->bind_param("ds", $voucher_discount, $used_voucher['code']);
+        $stmt_uv->bind_param("ds", $used_amount, $used_voucher['code']);
         $stmt_uv->execute();
     }
 

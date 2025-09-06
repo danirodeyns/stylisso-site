@@ -354,7 +354,7 @@ document.addEventListener('DOMContentLoaded', function () {
           // Zet huidige voucher data
           usedVoucherInput.value = JSON.stringify({
               code: window.voucherCode || '',
-              amount: window.voucherAmount || 0
+              amount: Number(window.voucherAmount) || 0 // <-- fix!
           });
 
           const formData = new FormData(checkoutForm);
@@ -456,6 +456,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
       voucherAmount = parseFloat(voucher.remaining_value);
       updateTotals();
+
+      window.voucherCode = voucher.code;
+      window.voucherAmount = parseFloat(voucher.remaining_value); // <-- fix!
 
       // Zet gekozen bon in hidden input (JSON formaat)
       const voucherData = {
