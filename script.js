@@ -612,6 +612,17 @@ fetch('get_user_data.php')
   });
 
 // ---------------------------
+// Helperfunctie om datum te formatteren
+// ---------------------------
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // maanden zijn 0-index
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+}
+
+// ---------------------------
 // Bestellingen laden op bestellingen.html
 // ---------------------------
 async function loadOrders() {
@@ -659,7 +670,7 @@ async function loadOrders() {
       html += `
         <tr>
           <td>${order.order_id}</td>
-          <td>${order.created_at}</td>
+          <td>${formatDate(order.created_at)}</td>
           <td>${productList || '<em>Geen producten</em>'}</td>
           <td>€${parseFloat(order.total_price).toFixed(2)}</td>
           <td>${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</td>
@@ -694,12 +705,12 @@ async function loadLastOrder() {
 
     // Alleen producten tonen (vouchers uitgesloten)
     const productList = order.products && order.products.length
-      ? order.products.map(p => `${p.name} x${p.quantity}`).join(', ')
+      ? order.products.map(p => `${p.quantity} x ${p.name}`).join(', ')
       : '<em>Geen producten</em>';
 
     container.innerHTML = `
-      <strong>Order #${order.id}</strong><br>
-      Datum: ${order.created_at}<br>
+      Ordernummer: ${order.id}<br>
+      Datum: ${formatDate(order.created_at)}<br>
       Producten: ${productList}<br>
       Totaalprijs: €${parseFloat(order.total_price).toFixed(2)}<br>
       Status: ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}

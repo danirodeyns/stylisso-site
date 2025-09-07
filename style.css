@@ -1286,6 +1286,50 @@ input[type="number"].quantity-input {
   border-color: black;
 }
 
+/* Algemene stijl voor de bestellingen-tabel */
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+}
+
+/* Header stijl */
+.orders-table thead tr {
+  background-color: #f2f2f2; /* lichte grijze achtergrond */
+}
+
+.orders-table th {
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  border-bottom: 1px solid #ccc;
+}
+
+/* Rijen in de tabel */
+.orders-table td {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+/* Wisselende rijkleuren voor betere leesbaarheid */
+.orders-table tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.orders-table tbody tr:nth-child(odd) {
+  background-color: #fff; /* iets lichter voor contrast */
+}
+
+/* Hover-effect voor rijen */
+.orders-table tbody tr:hover {
+  background-color: #f0f0f0;
+}
+
+/* Kleine aanpassing voor producten in divs */
+.orders-table td div {
+  margin-bottom: 4px;
+}
+
 .summary-section {
   background-color: #f9f9f9;
   border-radius: 0.75rem;
@@ -2234,6 +2278,30 @@ input[type="number"].quantity-input {
     background-color: black;
     color: white;
     border-color: white;
+  }
+
+  .orders-table thead tr {
+    background-color: #222;
+  }
+
+  .orders-table th {
+    border-bottom: 1px solid #444;
+  }
+
+  .orders-table td {
+    border-bottom: 1px solid #444;
+  }
+
+  .orders-table tbody tr:nth-child(even) {
+    background-color: #1f1f1f;
+  }
+
+  .orders-table tbody tr:nth-child(odd) {
+    background-color: #111; /* iets lichter voor contrast */
+  }
+
+  .orders-table tbody tr:hover {
+    background-color: #333;
   }
 
   .summary-section {
