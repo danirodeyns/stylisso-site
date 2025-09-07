@@ -367,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function () {
           .then(data => {
               if (data.trim() === "success") {
                   // Redirect naar index.html bij succes
-                  window.location.href = 'index.html';
+                  window.location.href = 'bedankt.html';
               } else {
                   console.error('Server response:', data);
                   alert('Er is iets misgegaan bij het verwerken van je bestelling.');
@@ -754,6 +754,75 @@ window.addEventListener('DOMContentLoaded', () => {
   // Laatste bestelling laden als container aanwezig is
   if (document.getElementById('last-order')) {
     loadLastOrder();
+  }
+});
+
+// ==========================
+// Helperfunctie om datum te formatteren (YYYY-MM-DD -> DD-MM-YYYY)
+// ==========================
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // maand is 0-index
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+}
+
+// ==========================
+// Toon laatste bestelling (detailweergave) op bedankt.html
+// ==========================
+async function loadLastOrderDetails() {
+  const container = document.getElementById("order-details");
+  if (!container) return; // alleen uitvoeren op bedankt.html
+
+  try {
+    const res = await fetch("get_last_order.php");
+    const data = await res.json();
+
+    if (!data || data.error) {
+      container.innerHTML = data.error || "Geen bestelling gevonden.";
+      return;
+    }
+
+    let html = `
+      <h2>Order ${data.id}</h2>
+      <p><strong>Datum:</strong> ${formatDate(data.created_at)}</p>
+      <table class="bedankt-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Aantal</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    data.products.forEach(item => {
+      html += `
+        <tr>
+          <td>${item.name}</td>
+          <td>${item.quantity}</td>
+        </tr>
+      `;
+    });
+
+    html += `
+        </tbody>
+      </table>
+      <h3>Totaal: €${parseFloat(data.total_price).toFixed(2)}</h3>
+    `;
+
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = "Er is iets misgegaan bij het laden van je bestelling.";
+    console.error(err);
+  }
+}
+
+// Auto uitvoeren alleen op bedankt.html
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("order-details")) {
+    loadLastOrderDetails();
   }
 });
 
