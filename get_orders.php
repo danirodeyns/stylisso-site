@@ -8,30 +8,52 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 include 'db_connect.php';
-
 $userId = $_SESSION['user_id'];
 
-// Alleen items met product_id ophalen
-$query = "
-    SELECT o.id AS order_id, o.total_price, o.status, o.created_at,
-           GROUP_CONCAT(CONCAT(p.name, ' x', oi.quantity) SEPARATOR ', ') AS products
-    FROM orders o
-    JOIN order_items oi ON o.id = oi.order_id
-    JOIN products p ON oi.product_id = p.id
-    WHERE o.user_id = ? AND oi.product_id IS NOT NULL
-    GROUP BY o.id
-    HAVING products IS NOT NULL
-    ORDER BY o.created_at DESC
-";
-
+// Haal alle orders op
+$query = "SELECT id, total_price, status, created_at FROM orders WHERE user_id=? ORDER BY created_at DESC";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $userId);
 $stmt->execute();
 $result = $stmt->get_result();
 
 $orders = [];
-while ($row = $result->fetch_assoc()) {
-    $orders[] = $row;
+
+while ($order = $result->fetch_assoc()) {
+    $orderId = $order['id'];
+    $items = [];
+
+    // Gewone producten ophalen
+    $stmtProd = $conn->prepare("
+        SELECT p.name, oi.quantity, oi.price
+        FROM order_items oi
+        JOIN products p ON oi.product_id = p.id
+        WHERE oi.order_id=? AND oi.product_id IS NOT NULL
+    ");
+    $stmtProd->bind_param("i", $orderId);
+    $stmtProd->execute();
+    $resProd = $stmtProd->get_result();
+    while ($row = $resProd->fetch_assoc()) {
+        $items[] = $row['quantity'] . ' x ' . $row['name'];
+    }
+
+    // Vouchers ophalen via voucher_id
+    $stmtVoucher = $conn->prepare("
+        SELECT v.code, oi.price
+        FROM order_items oi
+        JOIN vouchers v ON oi.voucher_id = v.id
+        WHERE oi.order_id=? AND oi.type='voucher'
+        ORDER BY v.created_at ASC
+    ");
+    $stmtVoucher->bind_param("i", $orderId);
+    $stmtVoucher->execute();
+    $resVoucher = $stmtVoucher->get_result();
+    while ($row = $resVoucher->fetch_assoc()) {
+        $items[] = 'Cadeaubon: ' . "€" . number_format($row['price'], 2);
+    }
+
+    $order['products'] = $items;
+    $orders[] = $order;
 }
 
 echo json_encode($orders);

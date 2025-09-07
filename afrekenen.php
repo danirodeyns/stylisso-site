@@ -33,8 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $voucher_discount = isset($used_voucher['amount']) ? floatval($used_voucher['amount']) : 0;
-    $order_subtotal = floatval($checkout['subtotal'] ?? 0); // of $checkout['total'] vóór korting
-    $used_amount = min($voucher_discount, $order_subtotal); // Dit is wat je écht gebruikt
+    $order_subtotal = floatval($checkout['subtotal'] ?? 0);
+    $used_amount = min($voucher_discount, $order_subtotal);
     $total_order = max(0, floatval($checkout['total']) - $used_amount);
 
     // Order toevoegen
@@ -45,27 +45,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $order_id = $conn->insert_id;
 
     // ============================
-    // --- NIEUW: PDF factuur genereren ---
+    // PDF factuur genereren
     // ============================
-    $order_date = date('Y-m-d'); // datum van de bestelling
+    $order_date = date('Y-m-d');
     include 'create_invoice.php';
     create_invoice($order_id, $order_date, $conn);
-    // ====================================
+    // ============================
 
     // Order items toevoegen
-    $stmt_item = $conn->prepare(
-        "INSERT INTO order_items (order_id, product_id, quantity, price, type) VALUES (?, ?, ?, ?, ?)"
-    );
-
     foreach ($checkout['cart_items'] as $item) {
         $type = $item['type'];
         $price = floatval($item['price']);
         $qty = intval($item['quantity']);
-        $prod_id = $item['type'] === 'product' ? intval($item['product_id']) : null;
-
-        // Bind_param ondersteunt NULL voor i niet; gebruik s + converteer
-        $stmt_item->bind_param("iiids", $order_id, $prod_id, $qty, $price, $type);
-        $stmt_item->execute();
+        $prod_id = $type === 'product' ? intval($item['product_id']) : null;
+        $voucher_id = null;
 
         // Nieuwe vouchers genereren bij voucher-items
         if ($type === 'voucher') {
@@ -78,6 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt_v->bind_param("sdds", $code, $price, $price, $expires_at);
             $stmt_v->execute();
 
+            $voucher_id = $conn->insert_id;
+
             // Mailen
             if ($email) {
                 $subject = "Jouw Stylisso cadeaubon";
@@ -89,6 +84,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 mail($email, $subject, $message, "From: no-reply@stylisso.com");
             }
         }
+
+        // Order item invoegen
+        $stmt_item = $conn->prepare(
+            "INSERT INTO order_items (order_id, product_id, voucher_id, quantity, price, type) VALUES (?, ?, ?, ?, ?, ?)"
+        );
+        $stmt_item->bind_param(
+            "iiiids",
+            $order_id,
+            $prod_id,
+            $voucher_id,
+            $qty,
+            $price,
+            $type
+        );
+        $stmt_item->execute();
     }
 
     // Gebruikte voucher bijwerken

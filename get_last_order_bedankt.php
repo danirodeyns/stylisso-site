@@ -12,7 +12,13 @@ if (!isset($_SESSION['user_id'])) {
 $userId = $_SESSION['user_id'];
 
 // Laatste order ophalen
-$stmt = $conn->prepare("SELECT id, total_price, status, created_at FROM orders WHERE user_id=? ORDER BY created_at DESC LIMIT 1");
+$stmt = $conn->prepare("
+    SELECT id, total_price, status, created_at 
+    FROM orders 
+    WHERE user_id=? 
+    ORDER BY created_at DESC 
+    LIMIT 1
+");
 $stmt->bind_param("i", $userId);
 $stmt->execute();
 $orderResult = $stmt->get_result();
@@ -23,6 +29,8 @@ if (!$order) {
     exit;
 }
 
+$orderId = $order['id'];
+
 // Producten ophalen
 $stmt2 = $conn->prepare("
     SELECT p.name, oi.quantity, oi.price
@@ -30,7 +38,7 @@ $stmt2 = $conn->prepare("
     JOIN products p ON oi.product_id = p.id
     WHERE oi.order_id=? AND oi.product_id IS NOT NULL
 ");
-$stmt2->bind_param("i", $order['id']);
+$stmt2->bind_param("i", $orderId);
 $stmt2->execute();
 $res2 = $stmt2->get_result();
 
@@ -43,20 +51,15 @@ while ($row = $res2->fetch_assoc()) {
     ];
 }
 
-$orderCreated = $order['created_at'];
-
-// Vouchers ophalen van deze order
+// Vouchers ophalen van deze order via voucher_id
 $stmt3 = $conn->prepare("
     SELECT v.code, oi.price
     FROM order_items oi
-    JOIN vouchers v ON v.value = oi.price
-    WHERE oi.order_id=? 
-      AND oi.type='voucher'
-      AND v.created_at >= ? 
-      AND v.created_at <= NOW()
-    ORDER BY v.created_at ASC
+    JOIN vouchers v ON v.id = oi.voucher_id
+    WHERE oi.order_id=? AND oi.type='voucher'
+    ORDER BY oi.id ASC
 ");
-$stmt3->bind_param("is", $order['id'], $orderCreated);
+$stmt3->bind_param("i", $orderId);
 $stmt3->execute();
 $res3 = $stmt3->get_result();
 

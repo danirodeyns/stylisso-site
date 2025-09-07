@@ -658,23 +658,26 @@ async function loadOrders() {
     `;
 
     orders.forEach(order => {
-      // Alleen producten tonen, vouchers (product_id=null) negeren
-      const productList = order.products 
-        ? order.products
-            .split(', ')
-            .filter(p => !p.includes('voucher'))
-            .map(p => {
-              const [name, qtyPart] = p.split(' x'); // splits product en aantal
-              return `<div>${qtyPart} x ${name}</div>`; // Aantal x Product
-            })
-            .join('')
-        : '';
+      const items = order.products || []; // al een array
+
+      let productHtml = '';
+      items.forEach(item => {
+        if (item.toLowerCase().includes('cadeaubon')) {
+          // Voucher apart weergeven
+          productHtml += `<div>${item}</div>`;
+        } else {
+          // Normaal product: "Aantal x Product"
+          const [qtyPart, ...nameParts] = item.split(' x');
+          const name = nameParts.join(' x'); // voor namen met 'x' erin
+          productHtml += `<div>${qtyPart} x ${name}</div>`;
+        }
+      });
 
       html += `
         <tr>
-          <td>${order.order_id}</td>
+          <td>${order.id}</td>
           <td>${formatDate(order.created_at)}</td>
-          <td>${productList || '<em>Geen producten</em>'}</td>
+          <td>${productHtml || '<em>Geen producten</em>'}</td>
           <td>€${parseFloat(order.total_price).toFixed(2)}</td>
           <td>${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</td>
         </tr>
