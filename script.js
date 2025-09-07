@@ -1354,3 +1354,62 @@ async function loadWishlist() {
 }
 
 document.addEventListener("DOMContentLoaded", loadWishlist);
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const titleEl = document.getElementById('product-title');
+  const imageEl = document.getElementById('product-image');
+  const descEl = document.getElementById('product-description');
+  const priceEl = document.getElementById('product-price');
+  const quantityEl = document.getElementById('product-quantity');
+  const addBtn = document.getElementById('add-to-cart');
+  const errorEl = document.getElementById('product-error');
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+
+  if (!id) {
+    errorEl.textContent = "Geen product geselecteerd.";
+    return;
+  }
+
+  try {
+    const response = await fetch(`get_product.php?id=${id}`);
+    const product = await response.json();
+
+    if (product.error) {
+      errorEl.textContent = product.error;
+      return;
+    }
+
+    titleEl.textContent = product.name;
+    imageEl.src = product.image;
+    imageEl.alt = product.name;
+    descEl.innerHTML = product.description.replace(/\n/g, "<br>");
+    priceEl.textContent = `€${parseFloat(product.price).toFixed(2)}`;
+
+    addBtn.addEventListener('click', async () => {
+      const quantity = parseInt(quantityEl.value);
+      if (quantity < 1) return;
+
+      const formData = new FormData();
+      formData.append('product_id', product.id);
+      formData.append('quantity', quantity);
+
+      try {
+        const addResp = await fetch('add_to_cart.php', {
+          method: 'POST',
+          body: formData
+        });
+        const result = await addResp.text();
+        alert(result === 'success' ? 'Product toegevoegd aan winkelwagen!' : result);
+      } catch (err) {
+        alert('Fout bij toevoegen aan winkelwagen.');
+        console.error(err);
+      }
+    });
+
+  } catch (err) {
+    errorEl.textContent = "Fout bij het laden van het product.";
+    console.error(err);
+  }
+});

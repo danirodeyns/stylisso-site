@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Productpagina</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  
+  <div id="header-placeholder"></div>
+
+  <div class="product-page-container">
+    <!-- Titel bovenaan -->
+    <h1 id="product-title" class="product-title"></h1>
+
+    <div class="product-main">
+      <!-- Links: afbeelding -->
+      <div class="product-left">
+        <img id="product-image" class="product-image" src="" alt="Product afbeelding">
+      </div>
+
+      <!-- Rechts: details -->
+      <div class="product-right">
+        <p id="product-description" class="product-description"></p>
+        <p class="product-price" id="product-price"></p>
+
+        <div class="product-action">
+          <label>
+            Aantal:
+            <input type="number" id="product-quantity" class="productpage-quantity" value="1" min="1">
+          </label>
+          <button id="add-to-cart" class="productpage-add-btn">Toevoegen aan winkelwagen</button>
+        </div>
+      </div>
+    </div>
+    
+    <div id="product-error" class="product-error"></div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

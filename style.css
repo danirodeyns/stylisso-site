@@ -1968,6 +1968,114 @@ input[type="number"].quantity-input {
   display: block;
 }
 
+/* ---------- Container ---------- */
+.product-page-container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ---------- Titel ---------- */
+.product-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: var(--primary-color, #222);
+}
+
+/* ---------- Hoofdsectie: afbeelding + details ---------- */
+.product-main {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+/* Links: afbeelding ---------- */
+.product-left {
+  flex: 1 1 400px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.product-image {
+  max-width: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid var(--card-border, #ccc);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* Rechts: details ---------- */
+.product-right {
+  flex: 1 1 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Beschrijving ---------- */
+.product-description {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--secondary-color, #555);
+}
+
+/* Prijs ---------- */
+.product-price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary-color, #222);
+}
+
+/* Aantal en knop ---------- */
+.product-action {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Quantity input ---------- */
+.productpage-quantity {
+  width: 80px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* --- Aantal input zonder pijltjes --- */
+.productpage-quantity::-webkit-inner-spin-button, 
+.productpage-quantity::-webkit-outer-spin-button {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+/* Toevoegen knop ---------- */
+.productpage-add-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 2px solid black;
+  background-color: black;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.productpage-add-btn:hover {
+  background-color: white;
+  color: black;
+  border-color: black;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
