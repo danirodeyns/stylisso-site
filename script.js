@@ -1074,6 +1074,22 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+let csrfToken = null;
+
+// Functie om CSRF-token op te halen
+async function getCsrfToken() {
+  if (csrfToken) return csrfToken; // cache token
+  try {
+    const res = await fetch('./csrf.php');
+    const data = await res.json();
+    csrfToken = data.csrf_token;
+    return csrfToken;
+  } catch (err) {
+    console.error('Fout bij ophalen CSRF-token:', err);
+    throw err;
+  }
+}
+
 async function loadWishlist() {
   try {
     const response = await fetch("wishlist.php");
@@ -1103,12 +1119,18 @@ async function loadWishlist() {
         <img src="${item.image}" alt="${item.name}" class="item-image"/>
         <div class="wishlist-info">
           <h3>${item.name}</h3>
-          <p>${item.variant || ''}</p>
+          ${item.variant ? `<p>${item.variant}</p>` : ""}
           <p>Prijs: €${parseFloat(item.price).toFixed(2)}</p>
-          <button class="remove-from-wishlist" data-id="${item.id}" data-type="${item.type}">
-            <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
-            <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
-          </button>
+          <div class="wishlist-actions">
+            <button class="add-to-cart" data-id="${item.id}">
+              <img src="shopping bag/shopping bag.png" alt="Toevoegen aan winkelwagen" class="cart-icon cart-icon-light" />
+              <img src="shopping bag/shopping bag (dark mode).png" alt="Toevoegen aan winkelwagen" class="cart-icon cart-icon-dark" />
+            </button>
+            <button class="remove-from-wishlist" data-id="${item.id}" data-type="${item.type}">
+              <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
+              <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
+            </button>
+          </div>
         </div>
       `;
 
@@ -1117,26 +1139,47 @@ async function loadWishlist() {
 
     container.appendChild(grid);
 
-    // --- event handlers ---
+    const token = await getCsrfToken(); // CSRF-token ophalen
+
+    // --- remove-from-wishlist event handlers ---
     document.querySelectorAll(".remove-from-wishlist").forEach(btn => {
       btn.addEventListener("click", async (e) => {
-        const productId = e.currentTarget.dataset.id; // altijd de <button>
+        const productId = e.currentTarget.dataset.id;
         if (!productId) {
           console.error("Geen productId gevonden!");
           return;
         }
+
         await fetch("./wishlist_remove.php", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: `product_id=${productId}`
+          body: `product_id=${productId}&csrf_token=${encodeURIComponent(token)}`
         });
+
         loadWishlist(); // opnieuw laden
+      });
+    });
+
+    // --- add-to-cart event handlers ---
+    document.querySelectorAll(".add-to-cart").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        const productId = e.currentTarget.dataset.id;
+        if (!productId) return;
+
+        await fetch("./wishlist_cart_add.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `product_id=${productId}&quantity=1&csrf_token=${encodeURIComponent(token)}`
+        });
+
+        console.log(`Product ${productId} toegevoegd aan winkelwagen`);
       });
     });
 
   } catch (err) {
     document.getElementById("wishlist-container").innerHTML =
       "<p>Fout bij laden van wishlist.</p>";
+    console.error(err);
   }
 }
 
