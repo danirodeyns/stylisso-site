@@ -2396,6 +2396,49 @@ main.bedankt p {
     background-color: #333;
   }
 
+  main.bedankt {
+    color: #ddd;
+  }
+
+  main.bedankt p {
+    color: #aaa;
+  }
+
+  #order-details h2 {
+    color: #eee;
+  }
+
+  #order-details h3 {
+    color: #fff;
+  }
+
+  .bedankt-table {
+    background-color: #1e1e1e;
+    box-shadow: 0 0 10px rgba(255,255,255,0.05), 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  .bedankt-table thead {
+    background-color: #333;
+  }
+
+  .bedankt-table th {
+    color: #fff;
+    border-bottom: 1px solid #444;
+  }
+
+  .bedankt-table td {
+    color: #ddd;
+    border-bottom: 1px solid #333;
+  }
+
+  .bedankt-table tbody tr:nth-child(even) {
+    background-color: #2a2a2a;
+  }
+
+  .bedankt-table tbody tr:nth-child(odd) {
+    background-color: #1e1e1e;
+  }
+
   .summary-section {
     background-color: #1f1f1f;
     color: #f0f0f0;
