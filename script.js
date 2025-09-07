@@ -1100,12 +1100,15 @@ async function loadWishlist() {
       card.className = "wishlist-card";
 
       card.innerHTML = `
-        <img src="${item.image}" alt="${item.name}" class="wishlist-image"/>
+        <img src="${item.image}" alt="${item.name}" class="item-image"/>
         <div class="wishlist-info">
           <h3>${item.name}</h3>
-          <p>€${parseFloat(item.price).toFixed(2)}</p>
-          <button class="add-to-cart" data-id="${item.id}">Toevoegen aan winkelwagen</button>
-          <button class="remove-from-wishlist" data-id="${item.id}">Verwijderen</button>
+          <p>${item.variant || ''}</p>
+          <p>Prijs: €${parseFloat(item.price).toFixed(2)}</p>
+          <button class="remove-from-wishlist" data-id="${item.id}" data-type="${item.type}">
+            <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
+            <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
+          </button>
         </div>
       `;
 
@@ -1117,8 +1120,12 @@ async function loadWishlist() {
     // --- event handlers ---
     document.querySelectorAll(".remove-from-wishlist").forEach(btn => {
       btn.addEventListener("click", async (e) => {
-        const productId = e.target.dataset.id;
-        await fetch("wishlist_remove.php", {
+        const productId = e.currentTarget.dataset.id; // altijd de <button>
+        if (!productId) {
+          console.error("Geen productId gevonden!");
+          return;
+        }
+        await fetch("./wishlist_remove.php", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: `product_id=${productId}`
