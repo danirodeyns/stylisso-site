@@ -647,7 +647,7 @@ async function loadOrders() {
     html += `
       <thead>
         <tr>
-          <th>Order ID</th>
+          <th>Ordernummer</th>
           <th>Datum</th>
           <th>Producten</th>
           <th>Totaalprijs</th>
@@ -663,7 +663,10 @@ async function loadOrders() {
         ? order.products
             .split(', ')
             .filter(p => !p.includes('voucher'))
-            .map(p => `<div>${p}</div>`)
+            .map(p => {
+              const [name, qtyPart] = p.split(' x'); // splits product en aantal
+              return `<div>${qtyPart} x ${name}</div>`; // Aantal x Product
+            })
             .join('')
         : '';
 

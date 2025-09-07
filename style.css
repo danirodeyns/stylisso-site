@@ -1298,6 +1298,10 @@ input[type="number"].quantity-input {
   background-color: #f2f2f2; /* lichte grijze achtergrond */
 }
 
+.orders-table tr {
+  border: 1px solid #ccc;
+}
+
 .orders-table th {
   padding: 10px;
   text-align: center;
@@ -2284,6 +2288,10 @@ input[type="number"].quantity-input {
     background-color: #222;
   }
 
+  .orders-table tr {
+    border: 1px solid #444;
+  }
+
   .orders-table th {
     border-bottom: 1px solid #444;
   }
@@ -2297,7 +2305,7 @@ input[type="number"].quantity-input {
   }
 
   .orders-table tbody tr:nth-child(odd) {
-    background-color: #111; /* iets lichter voor contrast */
+    background-color: #000; /* iets lichter voor contrast */
   }
 
   .orders-table tbody tr:hover {
