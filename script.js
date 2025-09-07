@@ -776,7 +776,7 @@ async function loadLastOrderDetails() {
   if (!container) return; // alleen uitvoeren op bedankt.html
 
   try {
-    const res = await fetch("get_last_order.php");
+    const res = await fetch("get_last_order_bedankt.php");
     const data = await res.json();
 
     if (!data || data.error) {
@@ -792,6 +792,8 @@ async function loadLastOrderDetails() {
           <tr>
             <th>Product</th>
             <th>Aantal</th>
+            <th>Eenheidsprijs</th>
+            <th>Prijs</th>
           </tr>
         </thead>
         <tbody>
@@ -802,6 +804,8 @@ async function loadLastOrderDetails() {
         <tr>
           <td>${item.name}</td>
           <td>${item.quantity}</td>
+          <td>€${parseFloat(item.price).toFixed(2)}</td>
+          <td>€${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
         </tr>
       `;
     });

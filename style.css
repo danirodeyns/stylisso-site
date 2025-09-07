@@ -1334,6 +1334,90 @@ input[type="number"].quantity-input {
   margin-bottom: 4px;
 }
 
+/* Container voor de bedankt-sectie */
+main.bedankt {
+  margin: 2rem;
+  text-align: center;
+}
+
+main.bedankt h1 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+main.bedankt p {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* Order details */
+#order-details {
+  max-width: 80vw;
+  margin: 0 auto 40px;
+  padding: 20px;
+}
+
+/* Order titel en totaal */
+#order-details h2 {
+  margin-bottom: 0.25rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+#order-details h3 {
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Bedankt pagina - Tabel stijl */
+.bedankt-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden; /* rondingen toepassen */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Header */
+.bedankt-table thead {
+  background-color: #f2f2f2;
+}
+
+.bedankt-table th {
+  padding: 12px;
+  text-align: center;
+  font-weight: bold;
+  border-bottom: 1px solid #ccc;
+}
+
+/* Cellen */
+.bedankt-table td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+/* Wisselende rij kleuren */
+.bedankt-table tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.bedankt-table tbody tr:nth-child(odd) {
+  background-color: #fff;
+}
+
+/* Alleen de eerste kolom in de body links uitlijnen */
+.bedankt-table tbody td:first-child {
+  text-align: left;
+}
+
 .summary-section {
   background-color: #f9f9f9;
   border-radius: 0.75rem;
