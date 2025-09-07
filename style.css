@@ -1704,11 +1704,12 @@ input[type="number"].quantity-input {
 
 /* ---------- Wishlist Section ---------- */
 .wishlist-section {
-  width: 80vw;
-  max-width: 1300px;
-  margin: 2rem auto;
   padding: 2rem;
-  background: none;               /* geen extra achtergrond */
+}
+
+.wishlist-section h1 {
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+  margin-bottom: 1rem;
 }
 
 /* ---------- Grid ---------- */
@@ -1773,13 +1774,22 @@ button.remove-from-wishlist:hover {
 }
 
 .empty-wishlist-box {
-  border: 2px dashed #ccc;
-  border-radius: 8px;
-  padding: 2rem;
   text-align: center;
-  font-size: 1.1rem;
-  color: #666;
-  background: #fafafa;
+  font-weight: 500;
+  color: #444;
+  background: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 0.75rem;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  margin: 0;
+  width: calc(100% - 1rem); /* 2rem links + 2rem rechts */
+  max-width: 100%; /* voorkom overschrijden */
+  box-sizing: border-box;
+  font-size: 1.25rem;
+  height: calc(80vh - 20rem);
+  min-height: 2rem;
+  max-height: 80vh;
+  line-height: clamp(2rem, calc(80vh - 20rem), 80vh);
 }
 
 /* Dark mode */
