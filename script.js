@@ -612,11 +612,11 @@ fetch('get_user_data.php')
   });
 
 // ---------------------------
-// Nieuwe functie: Bestellingen laden
+// Bestellingen laden op bestellingen.html
 // ---------------------------
 async function loadOrders() {
   const container = document.getElementById('orders-container');
-  if (!container) return; // Alleen uitvoeren als container aanwezig is
+  if (!container) return;
 
   try {
     const response = await fetch('get_orders.php');
@@ -647,12 +647,21 @@ async function loadOrders() {
     `;
 
     orders.forEach(order => {
+      // Alleen producten tonen, vouchers (product_id=null) negeren
+      const productList = order.products 
+        ? order.products
+            .split(', ')
+            .filter(p => !p.includes('voucher'))
+            .map(p => `<div>${p}</div>`)
+            .join('')
+        : '';
+
       html += `
         <tr>
           <td>${order.order_id}</td>
           <td>${order.created_at}</td>
-          <td>${order.products}</td>
-          <td>€${order.total_price}</td>
+          <td>${productList || '<em>Geen producten</em>'}</td>
+          <td>€${parseFloat(order.total_price).toFixed(2)}</td>
           <td>${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</td>
         </tr>
       `;
@@ -665,23 +674,55 @@ async function loadOrders() {
     container.innerHTML = `<p>Fout bij laden van bestellingen.</p>`;
     console.error(err);
   }
+}
 
-  // Alleen aanroepen op mijn_stylisso.html
-  if (document.getElementById('last-order')) {
-    loadLastOrder();
+// ---------------------------
+// Laatste bestelling laden op mijn_stylisso.html
+// ---------------------------
+async function loadLastOrder() {
+  const container = document.getElementById('last-order');
+  if (!container) return;
+
+  try {
+    const response = await fetch('get_last_order.php');
+    const order = await response.json();
+
+    if (order.error) {
+      container.innerHTML = `<p>${order.error}</p>`;
+      return;
+    }
+
+    // Alleen producten tonen (vouchers uitgesloten)
+    const productList = order.products && order.products.length
+      ? order.products.map(p => `${p.name} x${p.quantity}`).join(', ')
+      : '<em>Geen producten</em>';
+
+    container.innerHTML = `
+      <strong>Order #${order.id}</strong><br>
+      Datum: ${order.created_at}<br>
+      Producten: ${productList}<br>
+      Totaalprijs: €${parseFloat(order.total_price).toFixed(2)}<br>
+      Status: ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+    `;
+
+  } catch (err) {
+    container.innerHTML = `<p>Fout bij laden van laatste bestelling.</p>`;
+    console.error(err);
   }
 }
 
 // ---------------------------
-// Event listener bij DOM load
+// DOMContentLoaded event
 // ---------------------------
 window.addEventListener('DOMContentLoaded', () => {
-  // Bestaande initialisaties
-  initHeaderFooter(); // voorbeeld
-
-  // Alleen bestellingen laden op bestellingen.html
+  // Bestellingen laden als container aanwezig is
   if (document.getElementById('orders-container')) {
     loadOrders();
+  }
+
+  // Laatste bestelling laden als container aanwezig is
+  if (document.getElementById('last-order')) {
+    loadLastOrder();
   }
 });
 
