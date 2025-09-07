@@ -684,6 +684,15 @@ async function loadOrders() {
     html += '</tbody></table>';
     container.innerHTML = html;
 
+    // Maak rijen klikbaar om factuur te openen
+    container.querySelectorAll('tbody tr').forEach(row => {
+      row.style.cursor = 'pointer';
+      row.addEventListener('click', () => {
+        const orderId = row.querySelector('td').textContent; // eerste kolom = order_id
+        openInvoicePDF(orderId);
+      });
+    });
+
   } catch (err) {
     container.innerHTML = `<p>Fout bij laden van bestellingen.</p>`;
     console.error(err);
@@ -723,6 +732,14 @@ async function loadLastOrder() {
     container.innerHTML = `<p>Fout bij laden van laatste bestelling.</p>`;
     console.error(err);
   }
+}
+
+// ---------------------------
+// Functie om factuur PDF op te halen
+// ---------------------------
+function openInvoice(orderId, orderDate) {
+  const url = `get_invoice.php?order_id=${orderId}&date=${orderDate}`;
+  window.open(url, '_blank');
 }
 
 // ---------------------------

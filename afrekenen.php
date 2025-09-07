@@ -44,6 +44,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$stmt_order->execute()) { echo "Execute order fout: ".$stmt_order->error; exit; }
     $order_id = $conn->insert_id;
 
+    // ============================
+    // --- NIEUW: PDF factuur genereren ---
+    // ============================
+    $order_date = date('Y-m-d'); // datum van de bestelling
+    include 'create_invoice.php';
+    create_invoice($order_id, $order_date, $conn);
+    // ====================================
+
     // Order items toevoegen
     $stmt_item = $conn->prepare(
         "INSERT INTO order_items (order_id, product_id, quantity, price, type) VALUES (?, ?, ?, ?, ?)"
