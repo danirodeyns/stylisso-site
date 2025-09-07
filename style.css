@@ -1968,7 +1968,7 @@ input[type="number"].quantity-input {
   display: block;
 }
 
-/* ---------- Container ---------- */
+/* Container */
 .product-page-container {
   max-width: 1100px;
   margin: 40px auto;
@@ -1979,7 +1979,7 @@ input[type="number"].quantity-input {
   gap: 20px;
 }
 
-/* ---------- Titel ---------- */
+/* Titel */
 .product-title {
   font-size: 2rem;
   font-weight: bold;
@@ -1987,14 +1987,14 @@ input[type="number"].quantity-input {
   color: var(--primary-color, #222);
 }
 
-/* ---------- Hoofdsectie: afbeelding + details ---------- */
+/* Hoofdsectie: afbeelding + details */
 .product-main {
   display: flex;
   gap: 30px;
   flex-wrap: wrap;
 }
 
-/* Links: afbeelding ---------- */
+/* Links: afbeelding */
 .product-left {
   flex: 1 1 400px;
   display: flex;
@@ -2010,7 +2010,7 @@ input[type="number"].quantity-input {
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
-/* Rechts: details ---------- */
+/* Rechts: details */
 .product-right {
   flex: 1 1 400px;
   display: flex;
@@ -2018,28 +2018,28 @@ input[type="number"].quantity-input {
   gap: 15px;
 }
 
-/* Beschrijving ---------- */
+/* Beschrijving */
 .product-description {
   font-size: 1rem;
   line-height: 1.6;
   color: var(--secondary-color, #555);
 }
 
-/* Prijs ---------- */
+/* Prijs */
 .product-price {
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--primary-color, #222);
 }
 
-/* Aantal en knop ---------- */
+/* Aantal en knop */
 .product-action {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-/* Quantity input ---------- */
+/* Quantity input */
 .productpage-quantity {
   width: 80px;
   padding: 6px 10px;
@@ -2049,7 +2049,7 @@ input[type="number"].quantity-input {
   text-align: center;
 }
 
-/* --- Aantal input zonder pijltjes --- */
+/* Aantal input zonder pijltjes */
 .productpage-quantity::-webkit-inner-spin-button, 
 .productpage-quantity::-webkit-outer-spin-button {
   -moz-appearance: none;
@@ -2058,7 +2058,7 @@ input[type="number"].quantity-input {
   margin: 0;
 }
 
-/* Toevoegen knop ---------- */
+/* Toevoegen knop */
 .productpage-add-btn {
   padding: 10px 20px;
   border-radius: 8px;
@@ -2759,5 +2759,44 @@ input[type="number"].quantity-input {
     text-align: center;
     color: #888;
     padding: 0rem;
+  }
+
+  .product-page-container {
+    color: #e0e0e0;
+  }
+
+  .product-title {
+    color: #ffffff;
+  }
+
+  .product-image {
+    border: 1px solid #444;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  }
+
+  .product-description {
+    color: #cccccc;
+  }
+
+  .product-price {
+    color: #ffffff;
+  }
+
+  .productpage-quantity {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border: 1px solid #555;
+  }
+
+  .productpage-add-btn {
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px solid #ffffff;
+  }
+
+  .productpage-add-btn:hover {
+    background-color: #000000;
+    color: #ffffff;
+    border-color: #ffffff;
   }
 }
