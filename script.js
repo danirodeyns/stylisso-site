@@ -1271,13 +1271,15 @@ async function loadWishlist() {
     // --- leeg lijstje ---
     if (data.error || data.length === 0) {
       const emptyBox = document.createElement("div");
-      emptyBox.className = "empty-wishlist-box"; // zelf stylen in style.css
+      emptyBox.className = "empty-wishlist-box";
       emptyBox.textContent = "Je verlanglijstje is leeg";
       container.appendChild(emptyBox);
       return;
     }
 
-    // --- wishlist items ---
+    // --- CSRF-token ophalen voordat we event listeners aanmaken ---
+    const token = await getCsrfToken();
+
     const grid = document.createElement("div");
     grid.className = "wishlist-grid";
 
@@ -1304,35 +1306,14 @@ async function loadWishlist() {
         </div>
       `;
 
-      grid.appendChild(card);
-    });
-
-    container.appendChild(grid);
-
-    const token = await getCsrfToken(); // CSRF-token ophalen
-
-    // --- remove-from-wishlist event handlers ---
-    document.querySelectorAll(".remove-from-wishlist").forEach(btn => {
-      btn.addEventListener("click", async (e) => {
-        const productId = e.currentTarget.dataset.id;
-        if (!productId) {
-          console.error("Geen productId gevonden!");
-          return;
-        }
-
-        await fetch("./wishlist_remove.php", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: `product_id=${productId}&csrf_token=${encodeURIComponent(token)}`
-        });
-
-        loadWishlist(); // opnieuw laden
+      // --- klik op de card → naar productpagina ---
+      card.addEventListener("click", () => {
+        window.location.href = `productpagina.html?id=${item.id}`;
       });
-    });
 
-    // --- add-to-cart event handlers ---
-    document.querySelectorAll(".add-to-cart").forEach(btn => {
-      btn.addEventListener("click", async (e) => {
+      // --- add-to-cart knop ---
+      card.querySelector(".add-to-cart").addEventListener("click", async (e) => {
+        e.stopPropagation();
         const productId = e.currentTarget.dataset.id;
         if (!productId) return;
 
@@ -1342,9 +1323,30 @@ async function loadWishlist() {
           body: `product_id=${productId}&quantity=1&csrf_token=${encodeURIComponent(token)}`
         });
 
-        console.log(`Product ${productId} toegevoegd aan winkelwagen`);
+        // navigeer naar winkelwagen
+        window.location.href = "cart.html";
       });
+
+      // --- remove-from-wishlist knop ---
+      card.querySelector(".remove-from-wishlist").addEventListener("click", async (e) => {
+        e.stopPropagation();
+        const productId = e.currentTarget.dataset.id;
+        if (!productId) return;
+
+        await fetch("./wishlist_remove.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `product_id=${productId}&csrf_token=${encodeURIComponent(token)}`
+        });
+
+        // herlaad wishlist
+        loadWishlist();
+      });
+
+      grid.appendChild(card);
     });
+
+    container.appendChild(grid);
 
   } catch (err) {
     document.getElementById("wishlist-container").innerHTML =
