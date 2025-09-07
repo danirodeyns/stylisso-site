@@ -353,19 +353,11 @@ footer {
 .cart-button {
   display: inline-block;
   padding: 0;
-  margin: 0 0.25rem;
   background: none;
   border: none;
   outline: none;
   text-decoration: none;
   position: relative;
-}
-
-.cart-icon {
-  width: 2rem;
-  height: 2rem;
-  display: none;
-  pointer-events: none;
 }
 
 .cart-icon-light {
@@ -1730,10 +1722,8 @@ input[type="number"].quantity-input {
   padding-bottom: 1rem;
 }
 
-.wishlist-card img.wishlist-image {
+.wishlist-item-image {
   max-width: 100%;
-  border-radius: 8px;
-  margin-bottom: 0.8rem;
 }
 
 .wishlist-info {
@@ -1742,7 +1732,7 @@ input[type="number"].quantity-input {
 }
 
 .wishlist-info h3 {
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.25rem;
 }
 
 .wishlist-info p {
@@ -1762,10 +1752,22 @@ input[type="number"].quantity-input {
   right: 0;
 }
 
+.add-to-cart {
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.remove-from-wishlist {
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
 .add-to-cart img {
-  margin: 0.25rem;
-  width: 2.5rem;
-  height: 2.5rem;
+  margin: 0.3rem;
+  width: 2.4rem;
+  height: 2.4rem;
 }
 
 .remove-from-wishlist img {
@@ -1790,6 +1792,49 @@ input[type="number"].quantity-input {
   min-height: 2rem;
   max-height: 80vh;
   line-height: clamp(2rem, calc(80vh - 20rem), 80vh);
+}
+
+/* Verlanglijstje knop */
+.wishlist-button {
+  display: inline-block;
+  padding: 0;
+  background: none;
+  border: none;
+  outline: none;
+  text-decoration: none;
+  position: relative;
+}
+
+.wishlist-icon-light {
+  display: block;
+}
+
+.wishlist-icon-dark {
+  display: none;
+}
+
+.wishlist-icon-wrapper {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.wishlist-button:hover .wishlist-icon-wrapper {
+  background-color: #f4f4f4;
+}
+
+.wishlist-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  pointer-events: none;
+}
+
+.wishlist-button:hover .wishlist-dropdown {
+  display: block;
 }
 
 /* Dark mode */
@@ -2376,5 +2421,33 @@ input[type="number"].quantity-input {
     color: #888;
     background: #222;
     border: 1px solid #444;
+  }
+
+  .wishlist-icon-light {
+    display: none;
+  }
+
+  .wishlist-icon-dark {
+    display: block;
+  }
+
+  .wishlist-button:hover .wishlist-icon-wrapper {
+    background-color: #333;
+  }
+
+  .wishlist-dropdown {
+    background: #222;
+    border: 1px solid #444;
+    color: #eee;
+  }
+
+  .wishlist-dropdown p {
+    color: #888;
+  }
+
+  .wishlist-dropdown .empty-wishlist {
+    text-align: center;
+    color: #888;
+    padding: 0rem;
   }
 }

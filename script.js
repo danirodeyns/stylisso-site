@@ -1116,7 +1116,7 @@ async function loadWishlist() {
       card.className = "wishlist-card";
 
       card.innerHTML = `
-        <img src="${item.image}" alt="${item.name}" class="item-image"/>
+        <img src="${item.image}" alt="${item.name}" class="wishlist-item-image"/>
         <div class="wishlist-info">
           <h3>${item.name}</h3>
           ${item.variant ? `<p>${item.variant}</p>` : ""}
