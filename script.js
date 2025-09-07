@@ -98,10 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <h3>${item.name}</h3>
             <p>${item.variant || ''}</p>
             <p>Prijs: €${parseFloat(item.price).toFixed(2)}</p>
-            <label>
-              Aantal:
-              <input type="number" value="${item.quantity}" min="1" ${idAttr} data-type="${item.type}" class="quantity-input">
-            </label>
+            <input type="hidden" value="${item.quantity}" min="1" ${idAttr} data-type="${item.type}" class="quantity-input">
             <button class="remove-item" ${idAttr} data-type="${item.type}">
               <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
               <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
@@ -718,15 +715,38 @@ async function loadLastOrder() {
       return;
     }
 
-    // Alleen producten tonen (vouchers uitgesloten)
-    const productList = order.products && order.products.length
-      ? order.products.map(p => `${p.quantity} x ${p.name}`).join(', ')
-      : '<em>Cadeaubon(nen)</em>';
+    let products = [];
+    let vouchers = [];
+
+    if (order.products && order.products.length) {
+      order.products.forEach(item => {
+        if (item.name.toLowerCase().includes('cadeaubon')) {
+          vouchers.push(item);
+        } else {
+          products.push(item);
+        }
+      });
+    }
+
+    let productList = '';
+
+    if (products.length > 0) {
+      // Normale producten
+      productList += products.map(p => `${p.quantity} x ${p.name}`).join(', ');
+    }
+
+    if (vouchers.length > 0) {
+      // Voeg vouchers toe
+      if (productList) productList += ', ';
+      productList += vouchers.length === 1
+        ? `${vouchers[0].name.replace(/Cadeaubon: /, '')}`
+        : 'Cadeaubon(nen)';
+    }
 
     container.innerHTML = `
       Ordernummer: ${order.id}<br>
       Datum: ${formatDate(order.created_at)}<br>
-      Producten: ${productList}<br>
+      Producten: ${productList || '<em>Geen producten</em>'}<br>
       Totaalprijs: €${parseFloat(order.total_price).toFixed(2)}<br>
       Status: ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
     `;

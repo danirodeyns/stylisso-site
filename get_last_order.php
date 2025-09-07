@@ -23,26 +23,48 @@ if (!$order) {
     exit;
 }
 
-// Producten van deze order ophalen (geen vouchers)
-$stmt2 = $conn->prepare("
+$orderId = $order['id'];
+$items = [];
+
+// Gewone producten ophalen
+$stmtProd = $conn->prepare("
     SELECT p.name, oi.quantity
     FROM order_items oi
     JOIN products p ON oi.product_id = p.id
     WHERE oi.order_id=? AND oi.product_id IS NOT NULL
 ");
-$stmt2->bind_param("i", $order['id']);
-$stmt2->execute();
-$res2 = $stmt2->get_result();
-
-$products = [];
-while ($row = $res2->fetch_assoc()) {
-    $products[] = [
+$stmtProd->bind_param("i", $orderId);
+$stmtProd->execute();
+$resProd = $stmtProd->get_result();
+while ($row = $resProd->fetch_assoc()) {
+    $items[] = [
         'name' => $row['name'],
-        'quantity' => $row['quantity']
+        'quantity' => $row['quantity'],
+        'type' => 'product'
     ];
 }
 
-$order['products'] = $products;
+// Controleren of er vouchers zijn
+$stmtVoucher = $conn->prepare("
+    SELECT COUNT(*) AS voucher_count
+    FROM order_items
+    WHERE order_id=? AND type='voucher'
+");
+$stmtVoucher->bind_param("i", $orderId);
+$stmtVoucher->execute();
+$resVoucher = $stmtVoucher->get_result();
+$rowVoucher = $resVoucher->fetch_assoc();
+
+if ($rowVoucher['voucher_count'] > 0) {
+    // Voeg één item toe voor alle vouchers
+    $items[] = [
+        'name' => "Cadeaubon(nen)",
+        'quantity' => 1,
+        'type' => 'voucher'
+    ];
+}
+
+$order['products'] = $items;
 
 echo json_encode($order);
 ?>
