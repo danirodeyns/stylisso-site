@@ -1335,17 +1335,17 @@ input[type="number"].quantity-input {
 }
 
 /* Container voor de bedankt-sectie */
-main.bedankt {
+.bedankt {
   margin: 2rem;
   text-align: center;
 }
 
-main.bedankt h1 {
+.bedankt h1 {
   font-size: 28px;
   margin-bottom: 10px;
 }
 
-main.bedankt p {
+.bedankt p {
   font-size: 16px;
   color: #555;
   margin-bottom: 20px;
@@ -1355,7 +1355,6 @@ main.bedankt p {
 #order-details {
   max-width: 80vw;
   margin: 0 auto 40px;
-  padding: 20px;
 }
 
 /* Order titel en totaal */
@@ -2396,11 +2395,11 @@ main.bedankt p {
     background-color: #333;
   }
 
-  main.bedankt {
+  .bedankt {
     color: #ddd;
   }
 
-  main.bedankt p {
+  .bedankt p {
     color: #aaa;
   }
 
