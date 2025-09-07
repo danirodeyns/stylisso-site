@@ -23,7 +23,7 @@ if (!$order) {
     exit;
 }
 
-// Producten van deze order ophalen (geen vouchers)
+// Producten ophalen
 $stmt2 = $conn->prepare("
     SELECT p.name, oi.quantity, oi.price
     FROM order_items oi
@@ -34,16 +34,41 @@ $stmt2->bind_param("i", $order['id']);
 $stmt2->execute();
 $res2 = $stmt2->get_result();
 
-$products = [];
+$items = [];
 while ($row = $res2->fetch_assoc()) {
-    $products[] = [
+    $items[] = [
         'name' => $row['name'],
         'quantity' => (int)$row['quantity'],
-        'price' => (float)$row['price'] // eenheidsprijs
+        'price' => (float)$row['price']
     ];
 }
 
-$order['products'] = $products;
+$orderCreated = $order['created_at'];
+
+// Vouchers ophalen van deze order
+$stmt3 = $conn->prepare("
+    SELECT v.code, oi.price
+    FROM order_items oi
+    JOIN vouchers v ON v.value = oi.price
+    WHERE oi.order_id=? 
+      AND oi.type='voucher'
+      AND v.created_at >= ? 
+      AND v.created_at <= NOW()
+    ORDER BY v.created_at ASC
+");
+$stmt3->bind_param("is", $order['id'], $orderCreated);
+$stmt3->execute();
+$res3 = $stmt3->get_result();
+
+while ($row = $res3->fetch_assoc()) {
+    $items[] = [
+        'name' => "Cadeaubon: " . $row['code'],
+        'quantity' => 1,
+        'price' => (float)$row['price']
+    ];
+}
+
+$order['products'] = $items;
 
 echo json_encode($order);
 ?>

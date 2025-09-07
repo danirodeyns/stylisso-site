@@ -718,7 +718,7 @@ async function loadLastOrder() {
     // Alleen producten tonen (vouchers uitgesloten)
     const productList = order.products && order.products.length
       ? order.products.map(p => `${p.quantity} x ${p.name}`).join(', ')
-      : '<em>Geen producten</em>';
+      : '<em>Cadeaubon(nen)</em>';
 
     container.innerHTML = `
       Ordernummer: ${order.id}<br>
@@ -769,7 +769,7 @@ function formatDate(dateString) {
 }
 
 // ==========================
-// Toon laatste bestelling (detailweergave) op bedankt.html
+// Toon laatste bestelling (detailweergave) op bedankt.html, inclusief vouchers
 // ==========================
 async function loadLastOrderDetails() {
   const container = document.getElementById("order-details");
@@ -800,10 +800,12 @@ async function loadLastOrderDetails() {
     `;
 
     data.products.forEach(item => {
+      // Optioneel: herken vouchers aan "Voucher:" in de naam
+      const isVoucher = item.name.toLowerCase().includes("voucher");
       html += `
-        <tr>
+        <tr${isVoucher ? ' class="voucher-row"' : ''}>
           <td>${item.name}</td>
-          <td>${item.quantity}</td>
+          <td>1</td>
           <td>€${parseFloat(item.price).toFixed(2)}</td>
           <td>€${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
         </tr>
