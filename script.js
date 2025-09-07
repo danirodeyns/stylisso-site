@@ -1362,6 +1362,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const priceEl = document.getElementById('product-price');
   const quantityEl = document.getElementById('product-quantity');
   const addBtn = document.getElementById('add-to-cart');
+  const csrfTokenEl = document.getElementById('csrf_token'); // hidden input
   const errorEl = document.getElementById('product-error');
 
   const params = new URLSearchParams(window.location.search);
@@ -1372,7 +1373,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+  // --- Haal CSRF-token op via fetch ---
+try {
+  const csrfResp = await fetch('csrf.php');
+  const csrfData = await csrfResp.json();
+  csrfTokenEl.value = csrfData.csrf_token; // vul hidden input
+} catch (err) {
+  errorEl.textContent = "Fout bij ophalen van beveiligingstoken.";
+  console.error(err);
+  return;
+}
+
   try {
+    // Product ophalen via PHP JSON
     const response = await fetch(`get_product.php?id=${id}`);
     const product = await response.json();
 
@@ -1381,12 +1394,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
+    // Vul HTML
     titleEl.textContent = product.name;
     imageEl.src = product.image;
     imageEl.alt = product.name;
     descEl.innerHTML = product.description.replace(/\n/g, "<br>");
     priceEl.textContent = `€${parseFloat(product.price).toFixed(2)}`;
 
+    // Add to cart knop
     addBtn.addEventListener('click', async () => {
       const quantity = parseInt(quantityEl.value);
       if (quantity < 1) return;
@@ -1394,14 +1409,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       const formData = new FormData();
       formData.append('product_id', product.id);
       formData.append('quantity', quantity);
+      formData.append('csrf_token', csrfTokenEl.value); // CSRF-token meesturen
 
       try {
         const addResp = await fetch('add_to_cart.php', {
           method: 'POST',
           body: formData
         });
-        const result = await addResp.text();
-        alert(result === 'success' ? 'Product toegevoegd aan winkelwagen!' : result);
+        const result = await addResp.json(); // JSON verwacht
+        if(result.success){
+          window.location.href = 'cart.html';
+        } else {
+          alert(result.error || 'Fout bij toevoegen aan winkelwagen.');
+        }
       } catch (err) {
         alert('Fout bij toevoegen aan winkelwagen.');
         console.error(err);
