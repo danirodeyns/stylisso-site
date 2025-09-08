@@ -858,73 +858,86 @@ document.addEventListener("DOMContentLoaded", () => {
 // ---------------------------
 // Nieuwe functie: Retourneren
 // ---------------------------
-
 document.addEventListener('DOMContentLoaded', () => {
-    fetch('csrf.php')
-    .then(res => res.json())
-    .then(data => {
-        if (data.csrf_token) {
-            document.querySelectorAll('input[name="csrf_token"]').forEach(input => {
-                input.value = data.csrf_token;
-            });
-        }
-    });
-  
-    const orderSelect = document.getElementById('orderSelect');
-    const productSelect = document.getElementById('productSelect');
-    const returnForm = document.getElementById('returnForm');
-    const messageDiv = document.getElementById('return-message');
-    let orderItemsData = {};
+    const returnCardsContainer = document.getElementById('return-cards');
 
-    // Haal bestellingen op
-    fetch('get_returns.php')
-        .then(res => res.json())
+    fetch('retourneren.php')
+        .then(response => response.json())
         .then(data => {
-            if (data.orders) {
-                data.orders.forEach(order => {
-                    const option = document.createElement('option');
-                    option.value = order.id;
-                    option.textContent = `Order #${order.id} - ${order.created_at}`;
-                    orderSelect.appendChild(option);
-                });
-                orderItemsData = data.orderItems;
-
-                // vul producten van eerste order
-                if (data.orders[0]) fillProducts(data.orders[0].id);
+            if (data.error) {
+                returnCardsContainer.innerHTML = `<p>${data.error}</p>`;
+                return;
             }
-        });
 
-    function fillProducts(orderId) {
-        productSelect.innerHTML = '<option value="">-- Kies een product --</option>';
-        if (orderItemsData[orderId]) {
-            orderItemsData[orderId].forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.product_id;
-                option.textContent = `${item.name} (Aantal: ${item.quantity})`;
-                productSelect.appendChild(option);
+            // Groepeer order_items per order_id
+            const orders = {};
+            data.forEach(item => {
+                if (!orders[item.order_id]) {
+                    orders[item.order_id] = {
+                        order_date: item.order_date,
+                        items: []
+                    };
+                }
+                orders[item.order_id].items.push(item);
             });
-        }
-    }
 
-    orderSelect.addEventListener('change', function() {
-        fillProducts(this.value);
-    });
+            returnCardsContainer.innerHTML = '';
 
-    returnForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(returnForm);
+            // Sorteer de order_ids op datum (nieuwste eerst)
+            const sortedOrderIds = Object.keys(orders).sort((a, b) => {
+                const dateA = new Date(orders[a].order_date);
+                const dateB = new Date(orders[b].order_date);
+                return dateB - dateA; // aflopend
+            });
 
-        fetch('submit_return.php', {
-            method: 'POST',
-            body: formData
+            // Maak retour-cards per order in aflopende volgorde
+            sortedOrderIds.forEach(orderId => {
+                const order = orders[orderId];
+
+                const orderDiv = document.createElement('div');
+                orderDiv.className = 'return-card';
+
+                // Datum formatteren naar DD-MM-YYYY
+                const dateObj = new Date(order.order_date);
+                const day = String(dateObj.getDate()).padStart(2, '0');
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const year = dateObj.getFullYear();
+                const formattedDate = `${day}-${month}-${year}`;
+
+                const orderHeader = document.createElement('h3');
+                orderHeader.textContent = `Order ${orderId} - Aankoopdatum: ${formattedDate}`;
+                orderDiv.appendChild(orderHeader);
+
+                order.items.forEach(product => {
+                    const productDiv = document.createElement('div');
+                    productDiv.className = 'return-product';
+
+                    const img = document.createElement('img');
+                    img.src = product.product_image;
+                    img.alt = product.product_name;
+                    img.className = 'return-product-img';
+
+                    const name = document.createElement('p');
+                    name.textContent = product.product_name;
+
+                    const returnLink = document.createElement('a');
+                    returnLink.href = `submit_return.php?order_item_id=${product.order_item_id}`;
+                    returnLink.textContent = 'Retour starten';
+                    returnLink.className = 'return-link';
+
+                    productDiv.appendChild(img);
+                    productDiv.appendChild(name);
+                    productDiv.appendChild(returnLink);
+
+                    orderDiv.appendChild(productDiv);
+                });
+
+                returnCardsContainer.appendChild(orderDiv);
+            });
         })
-        .then(res => res.json())
-        .then(resp => {
-            messageDiv.textContent = resp.success || resp.error;
-            messageDiv.style.color = resp.success ? 'green' : 'red';
-            if (resp.success) returnForm.reset();
+        .catch(err => {
+            returnCardsContainer.innerHTML = `<p>Er is een fout opgetreden: ${err}</p>`;
         });
-    });
 });
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -10,45 +10,34 @@
 
   <div id="header-placeholder"></div>
 
-    <main class="account-container">
+  <main class="account-container">
 
-        <!-- Linker menu -->
-        <nav class="account-menu">
-            <ul>
-            <li><a href="mijn_stylisso.html">Mijn Stylisso</a></li>
-            <li><a href="bestellingen.html">Bestellingen & Facturen</a></li>
-            <li><a href="retourneren.html" class="active">Retourneren</a></li>
-            <li><a href="gegevens.html">Gegevens & Voorkeuren</a></li>
-            <li><a href="cadeaubonnen.html">Cadeaubonnen</a></li>
-            <li><a href="#" id="logoutButton">Uitloggen</a></li>
-            </ul>
-        </nav>
-     
-        <!-- Rechter content -->
-        <section class="account-content">
-            <h1>Retourneren</h1>
-            <p>Gebruik dit formulier om een product terug te sturen. Selecteer eerst de bestelling.</p>
+    <!-- Linker menu -->
+    <nav class="account-menu">
+      <ul>
+        <li><a href="mijn_stylisso.html">Mijn Stylisso</a></li>
+        <li><a href="bestellingen.html">Bestellingen & Facturen</a></li>
+        <li><a href="retourneren.html" class="active">Retourneren</a></li>
+        <li><a href="gegevens.html">Gegevens & Voorkeuren</a></li>
+        <li><a href="cadeaubonnen.html">Cadeaubonnen</a></li>
+        <li><a href="#" id="logoutButton">Uitloggen</a></li>
+      </ul>
+    </nav>
 
-            <div id="return-message"></div>
+    <!-- Rechter content -->
+    <section class="account-content">
+      <h1>Retourneren</h1>
+      <p>Gebruik dit formulier om een product terug te sturen.</p>
 
-            <form id="returnForm">
-                <input type="hidden" name="csrf_token" value="">
-                  
-                <label for="order_id">Kies bestelling:</label>
-                <select name="order_id" id="orderSelect" required>
-                    <option value="">Kies een bestelling</option>
-                </select>
+      <div id="return-message"></div>
 
-                <label for="product_id">Kies product:</label>
-                <select name="product_id" id="productSelect" required>
-                    <option value="">Kies een product</option>
-                </select>
+      <div id="return-cards">
+        <!-- Retour cards worden hier dynamisch toegevoegd via JS -->
+      </div>
 
-                <button type="submit">Retour aanvragen</button>
-            </form>
-        </section>
+    </section>
 
-    </main>
+  </main>
 
   <div id="footer-placeholder"></div>
 
