@@ -861,48 +861,43 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener('DOMContentLoaded', () => {
     const returnCardsContainer = document.getElementById('return-cards');
 
+    // Haal CSRF-token op
+    let csrfToken = '';
+    fetch('csrf.php')
+        .then(res => res.json())
+        .then(data => { csrfToken = data.csrf_token; })
+        .catch(err => console.error('Fout bij ophalen CSRF-token:', err));
+
+    // Haal bestellingen op
     fetch('retourneren.php')
-        .then(response => response.json())
+        .then(res => res.json())
         .then(data => {
             if (data.error) {
                 returnCardsContainer.innerHTML = `<p>${data.error}</p>`;
                 return;
             }
 
-            // Groepeer order_items per order_id
             const orders = {};
             data.forEach(item => {
                 if (!orders[item.order_id]) {
-                    orders[item.order_id] = {
-                        order_date: item.order_date,
-                        items: []
-                    };
+                    orders[item.order_id] = { order_date: item.order_date, items: [] };
                 }
                 orders[item.order_id].items.push(item);
             });
 
             returnCardsContainer.innerHTML = '';
 
-            // Sorteer de order_ids op datum (nieuwste eerst)
-            const sortedOrderIds = Object.keys(orders).sort((a, b) => {
-                const dateA = new Date(orders[a].order_date);
-                const dateB = new Date(orders[b].order_date);
-                return dateB - dateA; // aflopend
-            });
+            const sortedOrderIds = Object.keys(orders).sort((a,b) => 
+                new Date(orders[b].order_date) - new Date(orders[a].order_date)
+            );
 
-            // Maak retour-cards per order in aflopende volgorde
             sortedOrderIds.forEach(orderId => {
                 const order = orders[orderId];
-
                 const orderDiv = document.createElement('div');
                 orderDiv.className = 'return-card';
 
-                // Datum formatteren naar DD-MM-YYYY
                 const dateObj = new Date(order.order_date);
-                const day = String(dateObj.getDate()).padStart(2, '0');
-                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                const year = dateObj.getFullYear();
-                const formattedDate = `${day}-${month}-${year}`;
+                const formattedDate = `${String(dateObj.getDate()).padStart(2,'0')}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${dateObj.getFullYear()}`;
 
                 const orderHeader = document.createElement('h3');
                 orderHeader.textContent = `Order ${orderId} - Aankoopdatum: ${formattedDate}`;
@@ -921,14 +916,60 @@ document.addEventListener('DOMContentLoaded', () => {
                     name.textContent = product.product_name;
 
                     const returnLink = document.createElement('a');
-                    returnLink.href = `submit_return.php?order_item_id=${product.order_item_id}`;
-                    returnLink.textContent = 'Retour starten';
+                    returnLink.href = '#';
                     returnLink.className = 'return-link';
+
+                    // Bepaal knoptekst op basis van return_status
+                    switch(product.return_status) {
+                        case 'requested':
+                            returnLink.textContent = 'Retour aangevraagd';
+                            returnLink.style.pointerEvents = 'none';
+                            returnLink.classList.add('return-requested');
+                            break;
+                        case 'approved':
+                            returnLink.textContent = 'Retour goedgekeurd';
+                            returnLink.style.pointerEvents = 'none';
+                            returnLink.classList.add('return-approved');
+                            break;
+                        case 'processed':
+                            returnLink.textContent = 'Retour verwerkt';
+                            returnLink.style.pointerEvents = 'none';
+                            returnLink.classList.add('return-processed');
+                            break;
+                        case 'rejected':
+                            returnLink.textContent = 'Retour afgekeurd';
+                            returnLink.style.pointerEvents = 'none';
+                            returnLink.classList.add('return-rejected');
+                            break;
+                        default:
+                            returnLink.textContent = 'Retour starten';
+                            // Klik event
+                            returnLink.addEventListener('click', e => {
+                                e.preventDefault();
+                                if (!csrfToken) { alert('CSRF-token niet geladen.'); return; }
+
+                                fetch('submit_returns.php', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type':'application/x-www-form-urlencoded' },
+                                    body: `order_item_id=${product.order_item_id}&reason=Retour+verzoek&csrf_token=${csrfToken}`
+                                })
+                                .then(res => res.json())
+                                .then(resp => {
+                                    if (resp.success) {
+                                        returnLink.textContent = 'Retour aangevraagd';
+                                        returnLink.style.pointerEvents = 'none';
+                                        returnLink.classList.add('return-requested');
+                                    } else {
+                                        alert(resp.error || 'Er is iets misgegaan.');
+                                    }
+                                })
+                                .catch(err => alert('Fout bij verwerken retour: '+err));
+                            });
+                    }
 
                     productDiv.appendChild(img);
                     productDiv.appendChild(name);
                     productDiv.appendChild(returnLink);
-
                     orderDiv.appendChild(productDiv);
                 });
 
