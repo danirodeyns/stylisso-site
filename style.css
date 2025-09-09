@@ -1286,6 +1286,10 @@ input[type="number"].quantity-input {
   border-color: black;
 }
 
+.delete-account-link {
+  color: black;
+}
+
 /* Algemene stijl voor de bestellingen-tabel */
 .orders-table {
   width: 100%;
@@ -2544,6 +2548,10 @@ input[type="number"].quantity-input {
     background-color: black;
     color: white;
     border-color: white;
+  }
+
+  .delete-account-link {
+    color: #ddd;
   }
 
   .orders-table thead tr {
