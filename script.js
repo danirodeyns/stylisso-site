@@ -1489,3 +1489,54 @@ try {
     console.error(err);
   }
 });
+
+// --- Redirect als gebruiker niet ingelogd ---
+document.addEventListener('DOMContentLoaded', () => {
+    const privatePages = [
+        'gegevens.html', 'retourneren.html', 'cadeaubonnen.html','afrekenen.html',
+        'bestellingen.html','mijn_stylisso.html','bedankt.html','afrekenen.php',
+        'create_invoice.php','get_invoice.php','get_last_order_bedankt.php',
+        'get_last_order.php','get_orders.php','get_returns.php','get_user_data.php',
+        'get_vouchers.php','logout.php','redeem_voucher.php','retourneren.php',
+        'submit_returns.php','update_profile.php','delete_account.php'
+    ]; // pagina's alleen voor ingelogde gebruikers
+    const loginPage = 'login_registreren.html';
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+
+    fetch('check_login.php')
+        .then(res => res.json())
+        .then(data => {
+            const loggedIn = data.logged_in;
+
+            if (!loggedIn && privatePages.includes(currentPage)) {
+                // Redirect altijd naar login_registreren.html
+                window.location.href = loginPage;
+            }
+        })
+        .catch(err => {
+            console.error('Fout bij login check:', err);
+            // Optioneel: redirect ook bij fout
+            window.location.href = loginPage;
+        });
+});
+
+// --- Redirect ingelogde gebruiker weg van "guest-only" pagina's ---
+document.addEventListener('DOMContentLoaded', () => {
+    const guestPages = ['login_registreren.html','reset_password.html','reset_success.html','wachtwoord vergeten.html','login.php','register.php','reset_password.php','wachtwoord vergeten.php']; // pagina's alleen voor niet-ingelogde gebruikers
+    const homePage = 'index.html';
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+
+    fetch('check_login.php')
+        .then(res => res.json())
+        .then(data => {
+            const loggedIn = data.logged_in;
+
+            if (loggedIn && guestPages.includes(currentPage)) {
+                // Als ingelogd en op een gastpagina → redirect naar home
+                window.location.href = homePage;
+            }
+        })
+        .catch(err => {
+            console.error('Fout bij login check:', err);
+        });
+});
