@@ -59,8 +59,22 @@
             </label>
 
             <button type="submit">Updaten</button>
-            <a href="delete_account.php" class="delete-account-link">Account verwijderen</a>
+            <button type="button" id="deleteBtn" class="delete-account-link">Account verwijderen</button>
           </form>
+          <!-- Pop-up modal -->
+            <div id="confirmModal" class="modal">
+              <div class="modal-content">
+                <h2>Account verwijderen</h2>
+                <p>Weet je zeker dat je je account permanent wilt verwijderen? 
+                  Dit kan niet ongedaan worden gemaakt.</p>
+                <div class="modal-actions">
+                  <form id="deleteForm" action="delete_account.php" method="POST">
+                    <button type="submit" class="confirm-btn">Ja, verwijderen</button>
+                  </form>
+                  <button type="button" id="cancelDelete" class="cancel-btn">Annuleren</button>
+                </div>
+              </div>
+            </div>
       </section>
 
     </main>

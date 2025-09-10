@@ -1540,3 +1540,26 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Fout bij login check:', err);
         });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("confirmModal");
+  const deleteBtn = document.getElementById("deleteBtn");
+  const cancelBtn = document.getElementById("cancelDelete");
+
+  if (deleteBtn && modal && cancelBtn) {
+    deleteBtn.addEventListener("click", () => {
+      modal.style.display = "flex";
+    });
+
+    cancelBtn.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    // Optioneel: klik buiten modal sluit hem ook
+    window.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+  }
+});

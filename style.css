@@ -2151,6 +2151,53 @@ input[type="number"].quantity-input {
   color: black;
 }
 
+/* Modal achtergrond */
+.modal {
+  display: none; /* standaard onzichtbaar */
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal venster */
+.modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Knoppen */
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;          /* ruimte tussen knoppen */
+  margin-top: 1.5rem;
+}
+
+.confirm-btn {
+  background: #d9534f;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
@@ -2916,5 +2963,19 @@ input[type="number"].quantity-input {
   .return-link:hover {
     background-color: #1a1a1a;
     color: white;
+  }
+
+  .modal-content {
+    background: #1e1e1e;
+  }
+
+  .confirm-btn {
+    background: #d9534f;
+    color: white;
+  }
+
+  .cancel-btn {
+    background: #444;
+    color: #eee;
   }
 }
