@@ -23,16 +23,18 @@
     <section class="products">
       <div class="products-header">
         <h1 id="category-title">Categorie</h1>
-        <p id="product-count">0 producten gevonden</p>
-        <select id="sort-products">
-          <option value="populariteit">Sorteer op: Populariteit</option>
-          <option value="prijs-oplopend">Prijs: Laag → Hoog</option>
-          <option value="prijs-aflopend">Prijs: Hoog → Laag</option>
-          <option value="nieuw">Nieuwste</option>
-        </select>
+        <div class="sort-wrapper">
+          <span class="sort-icon">⇅</span>
+          <select id="sort-products">
+            <option value="populariteit">Populariteit</option>
+            <option value="prijs-oplopend">Prijs: Laag → Hoog</option>
+            <option value="prijs-aflopend">Prijs: Hoog → Laag</option>
+            <option value="nieuw">Nieuwste</option>
+          </select>
+        </div>
       </div>
 
-      <div id="product-grid" class="product-grid"></div>
+      <div id="product-grid2" class="product-grid2"></div>
     </section>
   </main>
 

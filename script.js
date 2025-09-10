@@ -1566,7 +1566,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   const filtersContainer = document.getElementById("filters-container");
-  const productGrid = document.getElementById("product-grid");
+  const productGrid = document.getElementById("product-grid2");
   const productCount = document.getElementById("product-count");
   const sortSelect = document.getElementById("sort-products");
   const resetBtn = document.getElementById("reset-filters");
@@ -1647,8 +1647,6 @@ fetch(`categorie.php?cat=${categoryId}&sub=${subcategoryId}`)
       return true;
     });
 
-    productCount.textContent = `${filtered.length} producten gevonden`;
-
     // Sorteren
     const sortVal = sortSelect.value;
     if (sortVal === 'prijs-oplopend') filtered.sort((a, b) => a.price - b.price);
@@ -1659,7 +1657,7 @@ fetch(`categorie.php?cat=${categoryId}&sub=${subcategoryId}`)
     productGrid.innerHTML = '';
     filtered.forEach(p => {
       const card = document.createElement('div');
-      card.className = 'product-card';
+      card.className = 'product-card2';
       card.innerHTML = `
         <img src="${p.image}" alt="${p.name}">
         <h3>${p.name}</h3>
