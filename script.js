@@ -1563,3 +1563,119 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const filtersContainer = document.getElementById("filters-container");
+  const productGrid = document.getElementById("product-grid");
+  const productCount = document.getElementById("product-count");
+  const sortSelect = document.getElementById("sort-products");
+  const resetBtn = document.getElementById("reset-filters");
+  const categoryTitle = document.getElementById("category-title");
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const categoryId = urlParams.get('cat') || 0;
+  const subcategoryId = urlParams.get('sub') || 0;
+
+  let products = [];
+  let activeFilters = {};
+
+  // --- Titel ophalen via categorie.php ---
+fetch(`categorie.php?cat=${categoryId}&sub=${subcategoryId}`)
+  .then(res => res.json())
+  .then(data => {
+    let title = '';
+
+    // Als subcategorie is geselecteerd, toon die
+    if(data.selected.subcategory){
+      title = data.selected.subcategory;
+    }
+    // Anders toon hoofdcategorie
+    else if(data.selected.category){
+      title = data.selected.category;
+    }
+    // fallback
+    else {
+      title = "Categorie";
+    }
+
+    categoryTitle.textContent = title;
+  });
+
+  // --- Filters ophalen ---
+  fetch(`filters.php?cat=${categoryId}&sub=${subcategoryId}`)
+    .then(res => res.json())
+    .then(filters => {
+      for (let key in filters) {
+        const group = document.createElement('div');
+        group.className = 'filter-group';
+        group.innerHTML = `<h3>${key.charAt(0).toUpperCase() + key.slice(1)}</h3>`;
+        filters[key].forEach(value => {
+          const label = document.createElement('label');
+          label.innerHTML = `<input type="checkbox" name="${key}" value="${value}"> ${value}`;
+          group.appendChild(label);
+        });
+        filtersContainer.appendChild(group);
+      }
+
+      // Event listeners voor filters
+      document.querySelectorAll('.filter-group input[type=checkbox]').forEach(cb => {
+        cb.addEventListener('change', () => {
+          activeFilters = {};
+          document.querySelectorAll('.filter-group input[type=checkbox]:checked').forEach(chk => {
+            if (!activeFilters[chk.name]) activeFilters[chk.name] = [];
+            activeFilters[chk.name].push(chk.value);
+          });
+          renderProducts();
+        });
+      });
+    });
+
+  // --- Producten ophalen ---
+  fetch(`fetch_products.php?cat=${categoryId}&sub=${subcategoryId}`)
+    .then(res => res.json())
+    .then(data => {
+      products = data;
+      renderProducts();
+    });
+
+  // --- Render producten ---
+  function renderProducts() {
+    let filtered = products.filter(p => {
+      for (let key in activeFilters) {
+        if (!activeFilters[key].includes(p[key])) return false;
+      }
+      return true;
+    });
+
+    productCount.textContent = `${filtered.length} producten gevonden`;
+
+    // Sorteren
+    const sortVal = sortSelect.value;
+    if (sortVal === 'prijs-oplopend') filtered.sort((a, b) => a.price - b.price);
+    else if (sortVal === 'prijs-aflopend') filtered.sort((a, b) => b.price - a.price);
+    else if (sortVal === 'nieuw') filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    // Productgrid vullen
+    productGrid.innerHTML = '';
+    filtered.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      card.innerHTML = `
+        <img src="${p.image}" alt="${p.name}">
+        <h3>${p.name}</h3>
+        <p>€${parseFloat(p.price).toFixed(2)}</p>
+      `;
+      productGrid.appendChild(card);
+    });
+  }
+
+  // --- Reset filters ---
+  resetBtn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-group input[type=checkbox]').forEach(cb => cb.checked = false);
+    activeFilters = {};
+    renderProducts();
+  });
+
+  // --- Sorteren bij selectie ---
+  sortSelect.addEventListener('change', renderProducts);
+});
