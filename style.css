@@ -139,14 +139,14 @@ header {
   padding: 2rem;
 }
 
-.product-grid {
+.product-grid-index {
   display: flex;
   gap: 2rem;
   flex-wrap: wrap;
   margin-top: 1rem;
 }
 
-.product-card {
+.product-card-index {
   border: 1px solid #ccc;
   padding: 1rem;
   flex: 1 1 250px;
@@ -2216,9 +2216,9 @@ input[type="number"].quantity-input {
 /* 🔹 Filters */
 .filters {
   flex: 1;
+  min-width: 130px;
   max-width: 250px;
   background: #fff;
-  border: 1px solid #ddd;
   border-radius: 8px;
   padding: 1rem;
   color: #222;
@@ -2252,19 +2252,21 @@ input[type="number"].quantity-input {
 
 .reset-btn {
   display: inline-block;
-  padding: 0.5rem 1rem;
-  background: #e74c3c;
-  border: none;
+  padding: 0.5rem;
+  background: black;
+  border: 2px solid black;
   border-radius: 4px;
-  color: #fff;
+  color: white;
   font-size: 0.9rem;
   cursor: pointer;
-  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
   transition: background 0.2s;
 }
 
 .reset-btn:hover {
-  background: #c0392b;
+  background: white;
+  color: black;
 }
 
 /* 🔹 Producten */
@@ -2325,12 +2327,13 @@ input[type="number"].quantity-input {
 /* 🔹 Product grid */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
   gap: 1.5rem;
 }
 
 /* Product card */
 .product-card2 {
+  width: 100%;
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -2339,6 +2342,7 @@ input[type="number"].quantity-input {
   padding: 1rem;
   transition: transform 0.2s, box-shadow 0.2s;
   color: #222;
+  margin-bottom: 0.5rem;
 }
 
 .product-card2 img {
@@ -2357,7 +2361,7 @@ input[type="number"].quantity-input {
 
 .product-card2 p {
   font-size: 1rem;
-  color: #27ae60;
+  color: #222;
   font-weight: bold;
 }
 
@@ -2385,7 +2389,7 @@ input[type="number"].quantity-input {
     border-top: 1px solid #333;
   }
 
-  .hero, .product-card {
+  .hero, .product-card-index {
     background-color: #222;
     color: white;
   }
@@ -3147,8 +3151,7 @@ input[type="number"].quantity-input {
   }
   
   .filters {
-    background: #222;
-    border: 1px solid #444;
+    background: black;
     color: #eee;
   }
 
@@ -3166,13 +3169,14 @@ input[type="number"].quantity-input {
   }
 
   .reset-btn {
-    background: #c0392b;
-    color: #fff;
+    background: white;
+    color: black;
+    border-color: white;
   }
 
   .reset-btn:hover {
-    background: #e74c3c;
-    color: #fff;
+    background: black;
+    color: white;
   }
 
   .products-header h1 {
@@ -3204,6 +3208,6 @@ input[type="number"].quantity-input {
   }
 
   .product-card2 p {
-    color: #27ae60;
+    color: #fff;
   }
 }
