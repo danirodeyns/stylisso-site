@@ -616,14 +616,18 @@ footer {
   max-width: 1300px;
   margin: 2rem auto;
   margin-bottom: 2rem;
+  text-align: justify;
 }
 
 .algemene-voorwaarden h2 {
-  margin-top: 2rem;
+  margin-top: 1rem;
+}
+
+.algemene-voorwaarden h3 {
+  margin-top: 0.5rem;
 }
 
 .algemene-voorwaarden p {
-  margin-bottom: 1.5rem;
   line-height: 1.6;
 }
 
@@ -740,6 +744,7 @@ footer {
   max-width: 1300px;
   margin: 2rem auto;
   margin-bottom: 2rem;
+  text-align: justify;
 }
 
 .cookiebeleid h1 {
@@ -1676,6 +1681,7 @@ input[type="number"].quantity-input {
   color: #333;
   background-color: #fff;
   margin-bottom: 2rem;
+  text-align: justify;
 }
 
 .privacybeleid-container h1,
