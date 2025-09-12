@@ -627,6 +627,11 @@ footer {
   line-height: 1.6;
 }
 
+.algemene-voorwaarden a {
+  color: #333;
+  text-decoration: underline;
+}
+
 .bestelstatus {
   width: 80vw;
   max-width: 1300px;
@@ -728,6 +733,41 @@ footer {
 .category-hero h1 {
   font-size: 2rem;
   margin-bottom: 1rem;
+}
+
+.cookiebeleid {
+  width: 80vw;
+  max-width: 1300px;
+  margin: 2rem auto;
+  margin-bottom: 2rem;
+}
+
+.cookiebeleid h1 {
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+  margin-bottom: 1rem;
+}
+
+.cookiebeleid h2 {
+  margin-top: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.cookiebeleid p {
+  line-height: 1.6;
+}
+
+.cookiebeleid a {
+  color: #333;
+  text-decoration: underline;
+}
+
+.cookiebeleid ul {
+  padding-left: 0.5rem; /* iets meer ruimte tussen rand container en bullets */
+  line-height: 1.6;
+}
+
+.cookiebeleid li {
+  margin-left: 0.5rem; /* extra marge tussen bullet en tekst */
 }
 
 /* Winkelwagen container */
@@ -2491,6 +2531,10 @@ input[type="number"].quantity-input {
     background-color: #333;
   }
 
+  .cookiebeleid a {
+    color: white;
+  }
+
   .cart-icon-light {
     display: none;
   }
@@ -2565,6 +2609,10 @@ input[type="number"].quantity-input {
 
   .header-dropdown a:hover {
     background: #333;
+  }
+
+  .algemene-voorwaarden a {
+    color: white;
   }
 
   .bestelstatus h1 {
