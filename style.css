@@ -1721,6 +1721,7 @@ input[type="number"].quantity-input {
   color: #333;
   background-color: #fff;
   margin-bottom: 2rem;
+  text-align: justify;
 }
 
 .retourzendingen-container h1,
@@ -1853,6 +1854,7 @@ input[type="number"].quantity-input {
   color: #333;
   background-color: #fff;
   margin-bottom: 2rem;
+  text-align: justify;
 }
 
 .verzending-en-levering-container h1,
