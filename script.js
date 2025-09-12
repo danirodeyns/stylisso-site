@@ -37,7 +37,42 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // --- Cart fetchen ---
       fetchCart(cartDropdown);
+
+      // --- Taal dropdown activeren ---
+      setupLanguageDropdown(headerContainer);
     });
+
+  // --- Functie voor taal dropdown ---
+  function setupLanguageDropdown(headerContainer) {
+    const langSelect = headerContainer.querySelector('.custom-lang-select');
+    const selectedFlag = headerContainer.querySelector('#selectedFlag');
+    const flagDropdown = headerContainer.querySelector('#flagDropdown');
+    if (!langSelect || !selectedFlag || !flagDropdown) return;
+
+    // Klik op de geselecteerde vlag opent/sluit de dropdown
+    selectedFlag.addEventListener('click', e => {
+      e.stopPropagation();
+      langSelect.classList.toggle('open'); // ✅ togglet op ouder
+    });
+
+    // Klik op een vlag kiest taal
+    flagDropdown.querySelectorAll('div[data-value]').forEach(div => {
+      div.addEventListener('click', () => {
+        const lang = div.dataset.value;
+        document.cookie = `siteLanguage=${lang};path=/;SameSite=Lax;max-age=${365*24*60*60}`;
+        console.log("Taal opgeslagen:", lang);
+        langSelect.classList.remove('open'); // ✅ sluit dropdown
+        // hier vertaalfunctie toepassen
+      });
+    });
+
+    // Klik buiten sluit dropdown
+    document.addEventListener('click', e => {
+      if (!langSelect.contains(e.target)) {
+        langSelect.classList.remove('open');
+      }
+    });
+  }
 
   // --- fetchCart functie (gecombineerd) ---
   function fetchCart(cartDropdown) {
@@ -262,6 +297,16 @@ document.addEventListener('DOMContentLoaded', function () {
       return "";
     }
 
+    // --- Functie voor functionele cookie: taal onthouden ---
+    function setLanguage(lang) {
+      setCookie("siteLanguage", lang, 365);
+      console.log("Taal opgeslagen als:", lang);
+    }
+
+    function getLanguage() {
+      return getCookie("siteLanguage") || "nl"; // fallback naar Nederlands
+    }
+
     // --- Controleer bestaande consent ---
     const consentCookie = getCookie("cookieConsent");
     let consent = null;
@@ -279,14 +324,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Laad Google Analytics als toegestaan ---
     function loadAnalytics() {
-      // Hier je GA code invoegen, bijvoorbeeld:
-      // gtag.js of analytics.js
       console.log("Google Analytics geladen");
+      // hier GA code invoegen
     }
 
-    if (consent && consent.analytics) {
-      loadAnalytics();
-    }
+    if (consent && consent.analytics) loadAnalytics();
 
     // --- Event listeners ---
     if (acceptAll) acceptAll.addEventListener("click", () => {
@@ -308,6 +350,11 @@ document.addEventListener('DOMContentLoaded', function () {
       setCookie("cookieConsent", JSON.stringify(obj), 365);
       banner.style.display = "none";
     });
+
+    // --- Pas taal toe bij elke load ---
+    const userLang = getLanguage();
+    console.log("Huidige taal:", userLang);
+    // hier kan je je pagina vertalen of aanpassen op basis van userLang
   }
 
   document.addEventListener("DOMContentLoaded", initCookieBanner);
