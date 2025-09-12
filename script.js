@@ -325,7 +325,18 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Laad Google Analytics als toegestaan ---
     function loadAnalytics() {
       console.log("Google Analytics geladen");
-      // hier GA code invoegen
+
+      // --- Google tag (gtag.js) dynamisch laden ---
+      const gaScript = document.createElement('script');
+      gaScript.async = true;
+      gaScript.src = "https://www.googletagmanager.com/gtag/js?id=G-33YQ0QLLQS";
+      document.head.appendChild(gaScript);
+
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag; // zodat je gtag overal kunt gebruiken
+      gtag('js', new Date());
+      gtag('config', 'G-33YQ0QLLQS');
     }
 
     if (consent && consent.analytics) loadAnalytics();
