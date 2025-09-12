@@ -242,6 +242,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!banner) return;
 
     const acceptAll = document.getElementById("accept-all");
+    const acceptAnalytics = document.getElementById("accept-functional-analytics");
     const acceptFunctional = document.getElementById("accept-functional");
 
     function setCookie(name, value, days) {
@@ -261,16 +262,55 @@ document.addEventListener('DOMContentLoaded', function () {
       return "";
     }
 
-    const consent = getCookie("cookieConsent");
-    if (consent === "all" || consent === "functional") {
-      banner.style.display = "none";
+    // --- Controleer bestaande consent ---
+    const consentCookie = getCookie("cookieConsent");
+    let consent = null;
+    if (consentCookie) {
+      try {
+        consent = JSON.parse(consentCookie);
+        banner.style.display = "none";
+      } catch(e) {
+        consent = null;
+        banner.style.display = "block";
+      }
     } else {
       banner.style.display = "block";
     }
 
-    if (acceptAll) acceptAll.addEventListener("click", () => { setCookie("cookieConsent","all",365); banner.style.display="none"; });
-    if (acceptFunctional) acceptFunctional.addEventListener("click", () => { setCookie("cookieConsent","functional",365); banner.style.display="none"; });
+    // --- Laad Google Analytics als toegestaan ---
+    function loadAnalytics() {
+      // Hier je GA code invoegen, bijvoorbeeld:
+      // gtag.js of analytics.js
+      console.log("Google Analytics geladen");
+    }
+
+    if (consent && consent.analytics) {
+      loadAnalytics();
+    }
+
+    // --- Event listeners ---
+    if (acceptAll) acceptAll.addEventListener("click", () => {
+      const obj = { functional: true, analytics: true, marketing: true };
+      setCookie("cookieConsent", JSON.stringify(obj), 365);
+      banner.style.display = "none";
+      loadAnalytics();
+    });
+
+    if (acceptAnalytics) acceptAnalytics.addEventListener("click", () => {
+      const obj = { functional: true, analytics: true, marketing: false };
+      setCookie("cookieConsent", JSON.stringify(obj), 365);
+      banner.style.display = "none";
+      loadAnalytics();
+    });
+
+    if (acceptFunctional) acceptFunctional.addEventListener("click", () => {
+      const obj = { functional: true, analytics: false, marketing: false };
+      setCookie("cookieConsent", JSON.stringify(obj), 365);
+      banner.style.display = "none";
+    });
   }
+
+  document.addEventListener("DOMContentLoaded", initCookieBanner);
 
   // --- Functies voor update & remove items ---
   function updateQuantityOnServer(itemId, itemType, quantity, itemIndex = null) {
