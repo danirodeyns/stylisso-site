@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .catch(err => console.error('Fout bij ophalen huidige gebruiker:', err));
   }
 
-  // --- Cookie banner ---
+  // --- Cookie banner + GA & Ads ---
   function initCookieBanner() {
     const banner = document.getElementById("cookie-banner");
     if (!banner) return;
@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function setCookie(name, value, days) {
       const date = new Date();
       date.setTime(date.getTime() + (days*24*60*60*1000));
-      document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/;SameSite=Lax`;
+      document.cookie = `${name}=${encodeURIComponent(value)};expires=${date.toUTCString()};path=/;SameSite=Lax`;
     }
 
     function getCookie(name) {
@@ -322,44 +322,52 @@ document.addEventListener('DOMContentLoaded', function () {
       banner.style.display = "block";
     }
 
-    // --- Laad Google Analytics als toegestaan ---
-    function loadAnalytics() {
-      console.log("Google Analytics geladen");
+    // --- Functie om gtag.js te laden en config te doen ---
+    function loadGTAG() {
+      console.log("gtag.js geladen");
 
-      // --- Google tag (gtag.js) dynamisch laden ---
-      const gaScript = document.createElement('script');
-      gaScript.async = true;
-      gaScript.src = "https://www.googletagmanager.com/gtag/js?id=G-33YQ0QLLQS";
-      document.head.appendChild(gaScript);
+      const gtagScript = document.createElement('script');
+      gtagScript.async = true;
+      gtagScript.src = "https://www.googletagmanager.com/gtag/js?id=G-33YQ0QLLQS";
+      document.head.appendChild(gtagScript);
 
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      window.gtag = gtag; // zodat je gtag overal kunt gebruiken
+      window.gtag = gtag;
+
       gtag('js', new Date());
-      gtag('config', 'G-33YQ0QLLQS');
+
+      if (consent && consent.analytics) gtag('config', 'G-33YQ0QLLQS');
+      if (consent && consent.marketing) gtag('config', 'AW-XXXXXXXXX'); // vul je Google Ads ID in
     }
 
-    if (consent && consent.analytics) loadAnalytics();
+    // --- Bij bestaande consent direct laden ---
+    if (consent && (consent.analytics || consent.marketing)) {
+      loadGTAG();
+    }
 
     // --- Event listeners ---
     if (acceptAll) acceptAll.addEventListener("click", () => {
       const obj = { functional: true, analytics: true, marketing: true };
       setCookie("cookieConsent", JSON.stringify(obj), 365);
       banner.style.display = "none";
-      loadAnalytics();
+      consent = obj;
+      loadGTAG();
     });
 
     if (acceptAnalytics) acceptAnalytics.addEventListener("click", () => {
       const obj = { functional: true, analytics: true, marketing: false };
       setCookie("cookieConsent", JSON.stringify(obj), 365);
       banner.style.display = "none";
-      loadAnalytics();
+      consent = obj;
+      loadGTAG();
     });
 
     if (acceptFunctional) acceptFunctional.addEventListener("click", () => {
       const obj = { functional: true, analytics: false, marketing: false };
       setCookie("cookieConsent", JSON.stringify(obj), 365);
       banner.style.display = "none";
+      consent = obj;
     });
 
     // --- Pas taal toe bij elke load ---
