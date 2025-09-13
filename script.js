@@ -983,6 +983,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            // ✅ Check of er geen bestellingen zijn
+            if (!data || data.length === 0) {
+                returnCardsContainer.innerHTML = `<p class="no-orders">Je hebt nog geen bestellingen geplaatst.</p>`;
+                return;
+            }
+
             const orders = {};
             data.forEach(item => {
                 if (!orders[item.order_id]) {
@@ -1010,74 +1016,87 @@ document.addEventListener('DOMContentLoaded', () => {
                 orderDiv.appendChild(orderHeader);
 
                 order.items.forEach(product => {
-                    const productDiv = document.createElement('div');
-                    productDiv.className = 'return-product';
+                  const productDiv = document.createElement('div');
+                  productDiv.className = 'return-product';
 
-                    const img = document.createElement('img');
-                    img.src = product.product_image;
-                    img.alt = product.product_name;
-                    img.className = 'return-product-img';
+                  const img = document.createElement('img');
+                  img.src = product.product_image;
+                  img.alt = product.product_name;
+                  img.className = 'return-product-img';
 
-                    const name = document.createElement('p');
-                    name.textContent = product.product_name;
+                  const name = document.createElement('p');
+                  name.textContent = product.product_name;
 
-                    const returnLink = document.createElement('a');
-                    returnLink.href = '#';
-                    returnLink.className = 'return-link';
+                  const returnLink = document.createElement('a');
+                  returnLink.href = '#';
+                  returnLink.className = 'return-link';
 
-                    // Bepaal knoptekst op basis van return_status
-                    switch(product.return_status) {
-                        case 'requested':
-                            returnLink.textContent = 'Retour aangevraagd';
-                            returnLink.style.pointerEvents = 'none';
-                            returnLink.classList.add('return-requested');
-                            break;
-                        case 'approved':
-                            returnLink.textContent = 'Retour goedgekeurd';
-                            returnLink.style.pointerEvents = 'none';
-                            returnLink.classList.add('return-approved');
-                            break;
-                        case 'processed':
-                            returnLink.textContent = 'Retour verwerkt';
-                            returnLink.style.pointerEvents = 'none';
-                            returnLink.classList.add('return-processed');
-                            break;
-                        case 'rejected':
-                            returnLink.textContent = 'Retour afgekeurd';
-                            returnLink.style.pointerEvents = 'none';
-                            returnLink.classList.add('return-rejected');
-                            break;
-                        default:
-                            returnLink.textContent = 'Retour starten';
-                            // Klik event
-                            returnLink.addEventListener('click', e => {
-                                e.preventDefault();
-                                if (!csrfToken) { alert('CSRF-token niet geladen.'); return; }
+                  // Bereken verschil in dagen tussen nu en aankoopdatum
+                  const today = new Date();
+                  const orderDate = new Date(order.order_date);
+                  const diffTime = today - orderDate;
+                  const diffDays = diffTime / (1000 * 60 * 60 * 24);
 
-                                fetch('submit_returns.php', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type':'application/x-www-form-urlencoded' },
-                                    body: `order_item_id=${product.order_item_id}&reason=Retour+verzoek&csrf_token=${csrfToken}`
-                                })
-                                .then(res => res.json())
-                                .then(resp => {
-                                    if (resp.success) {
-                                        returnLink.textContent = 'Retour aangevraagd';
-                                        returnLink.style.pointerEvents = 'none';
-                                        returnLink.classList.add('return-requested');
-                                    } else {
-                                        alert(resp.error || 'Er is iets misgegaan.');
-                                    }
-                                })
-                                .catch(err => alert('Fout bij verwerken retour: '+err));
-                            });
-                    }
+                  // Als ouder dan 30 dagen → retour onmogelijk
+                  if (diffDays > 30) {
+                      returnLink.textContent = 'Retourperiode verlopen';
+                      returnLink.style.pointerEvents = 'none';
+                      returnLink.classList.add('return-expired');
+                  } else {
+                      // Bepaal knoptekst op basis van return_status
+                      switch(product.return_status) {
+                          case 'requested':
+                              returnLink.textContent = 'Retour aangevraagd';
+                              returnLink.style.pointerEvents = 'none';
+                              returnLink.classList.add('return-requested');
+                              break;
+                          case 'approved':
+                              returnLink.textContent = 'Retour goedgekeurd';
+                              returnLink.style.pointerEvents = 'none';
+                              returnLink.classList.add('return-approved');
+                              break;
+                          case 'processed':
+                              returnLink.textContent = 'Retour verwerkt';
+                              returnLink.style.pointerEvents = 'none';
+                              returnLink.classList.add('return-processed');
+                              break;
+                          case 'rejected':
+                              returnLink.textContent = 'Retour afgekeurd';
+                              returnLink.style.pointerEvents = 'none';
+                              returnLink.classList.add('return-rejected');
+                              break;
+                          default:
+                              returnLink.textContent = 'Retour starten';
+                              // Klik event
+                              returnLink.addEventListener('click', e => {
+                                  e.preventDefault();
+                                  if (!csrfToken) { alert('CSRF-token niet geladen.'); return; }
 
-                    productDiv.appendChild(img);
-                    productDiv.appendChild(name);
-                    productDiv.appendChild(returnLink);
-                    orderDiv.appendChild(productDiv);
-                });
+                                  fetch('submit_returns.php', {
+                                      method: 'POST',
+                                      headers: { 'Content-Type':'application/x-www-form-urlencoded' },
+                                      body: `order_item_id=${product.order_item_id}&reason=Retour+verzoek&csrf_token=${csrfToken}`
+                                  })
+                                  .then(res => res.json())
+                                  .then(resp => {
+                                      if (resp.success) {
+                                          returnLink.textContent = 'Retour aangevraagd';
+                                          returnLink.style.pointerEvents = 'none';
+                                          returnLink.classList.add('return-requested');
+                                      } else {
+                                          alert(resp.error || 'Er is iets misgegaan.');
+                                      }
+                                  })
+                                  .catch(err => alert('Fout bij verwerken retour: '+err));
+                              });
+                      }
+                  }
+
+                  productDiv.appendChild(img);
+                  productDiv.appendChild(name);
+                  productDiv.appendChild(returnLink);
+                  orderDiv.appendChild(productDiv);
+              });
 
                 returnCardsContainer.appendChild(orderDiv);
             });

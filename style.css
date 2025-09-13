@@ -1335,6 +1335,10 @@ input[type="number"].quantity-input {
   color: black;
 }
 
+.no-orders {
+  text-align: center;
+}
+
 /* Algemene stijl voor de bestellingen-tabel */
 .orders-table {
   width: 100%;
