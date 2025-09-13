@@ -746,56 +746,95 @@ async function loadOrders() {
       return;
     }
 
-    let html = '<table class="orders-table">';
-    html += `
-      <thead>
-        <tr>
-          <th>Ordernummer</th>
-          <th>Datum</th>
-          <th>Producten</th>
-          <th>Totaalprijs</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-    `;
-
+    let html = '';
     orders.forEach(order => {
-      const items = order.products || []; // al een array
-
+      const items = order.products || [];
       let productHtml = '';
+
       items.forEach(item => {
-        if (item.toLowerCase().includes('cadeaubon')) {
-          // Voucher apart weergeven
-          productHtml += `<div>${item}</div>`;
-        } else {
-          // Normaal product: "Aantal x Product"
-          const [qtyPart, ...nameParts] = item.split(' x');
-          const name = nameParts.join(' x'); // voor namen met 'x' erin
-          productHtml += `<div>${qtyPart} x ${name}</div>`;
+        if (typeof item === 'string') {
+          // Voucher: standaard afbeelding, geen aantal, naam = 'Cadeaubon', klikbaar
+          productHtml += `
+            <div class="order-product-row voucher-row" style="cursor:pointer;">
+              <div class="order-product-info">
+                <img src="cadeaubon/voucher.png" alt="Cadeaubon" class="order-product-img order-product-img-light"/>
+                <img src="cadeaubon/voucher (dark mode).png" alt="Cadeaubon" class="order-product-img order-product-img-dark"/>
+                <span class="order-product-name">Cadeaubon</span>
+              </div>
+              <div class="order-product-details">
+                <span class="order-product-price">${item.replace(/Cadeaubon:\s*/i, '')}</span>
+              </div>
+            </div>
+          `;
+        } else if (typeof item === 'object') {
+          // Gewone producten: klikbaar naar productpagina
+          productHtml += `
+            <div class="order-product-row" data-product-id="${item.id}" style="cursor:pointer;">
+              <div class="order-product-info">
+                <img src="${item.image}" alt="${item.name}" class="order-product-img">
+                <span class="order-product-name">${item.name}</span>
+              </div>
+              <div class="order-product-details">
+                <span class="order-product-qty">Aantal: ${item.quantity}</span>
+                <span class="order-product-price">€${parseFloat(item.price).toFixed(2)}</span>
+              </div>
+            </div>
+          `;
         }
       });
 
       html += `
-        <tr>
-          <td>${order.id}</td>
-          <td>${formatDate(order.created_at)}</td>
-          <td>${productHtml || '<em>Geen producten</em>'}</td>
-          <td>€${parseFloat(order.total_price).toFixed(2)}</td>
-          <td>${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</td>
-        </tr>
+        <div class="order-card" data-order-id="${order.id}">
+          <div class="order-card-header">
+            <div class="order-card-title">
+              <span>Order ${order.id} - Aankoopdatum: ${formatDate(order.created_at)}</span>
+            </div>
+            <button class="invoice-btn" title="Factuur bekijken" onclick="event.stopPropagation(); openInvoicePDF(${order.id});">
+              <img src="factuursymbool/factuursymbool.png" alt="Factuur" class="invoice-icon invoice-icon-light" />
+              <img src="factuursymbool/factuursymbool (dark mode).png" alt="Factuur" class="invoice-icon invoice-icon-dark" />
+            </button>
+          </div>
+          <div class="order-products-list">
+            ${productHtml}
+          </div>
+          <div class="order-detail-row">
+            <span class="order-detail-label">Totaalprijs:</span>
+            <span class="order-detail-value">€${parseFloat(order.total_price).toFixed(2)}</span>
+          </div>
+          <div class="order-detail-row">
+            <span class="order-detail-label">Status:</span>
+            <span class="order-detail-value">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>
+          </div>
+        </div>
       `;
     });
 
-    html += '</tbody></table>';
     container.innerHTML = html;
 
-    // Maak rijen klikbaar om factuur te openen
-    container.querySelectorAll('tbody tr').forEach(row => {
-      row.style.cursor = 'pointer';
-      row.addEventListener('click', () => {
-        const orderId = row.querySelector('td').textContent; // eerste kolom = order_id
+    // Alleen factuurknop klikbaar maken
+    container.querySelectorAll('.invoice-btn').forEach(button => {
+      button.style.cursor = 'pointer';
+      button.addEventListener('click', (event) => {
+        event.stopPropagation(); // voorkomt dat andere events op parent triggert
+        const orderCard = button.closest('.order-card');
+        if (!orderCard) return;
+        const orderId = orderCard.getAttribute('data-order-id');
         openInvoicePDF(orderId);
+      });
+    });
+
+    // Maak gewone producten klikbaar naar productpagina
+    container.querySelectorAll('.order-product-row[data-product-id]').forEach(row => {
+      row.addEventListener('click', () => {
+        const productId = row.getAttribute('data-product-id');
+        window.location.href = `productpagina.html?id=${productId}`;
+      });
+    });
+
+    // Maak vouchers klikbaar naar cadeaubonnen_kopen.html
+    container.querySelectorAll('.voucher-row').forEach(row => {
+      row.addEventListener('click', () => {
+        window.location.href = 'cadeaubonnen_kopen.html';
       });
     });
 

@@ -25,7 +25,7 @@ while ($order = $result->fetch_assoc()) {
 
     // Gewone producten ophalen
     $stmtProd = $conn->prepare("
-        SELECT p.name, oi.quantity, oi.price
+        SELECT oi.product_id, p.name, p.image, oi.quantity, oi.price
         FROM order_items oi
         JOIN products p ON oi.product_id = p.id
         WHERE oi.order_id=? AND oi.product_id IS NOT NULL
@@ -34,7 +34,13 @@ while ($order = $result->fetch_assoc()) {
     $stmtProd->execute();
     $resProd = $stmtProd->get_result();
     while ($row = $resProd->fetch_assoc()) {
-        $items[] = $row['quantity'] . ' x ' . $row['name'];
+        $items[] = [
+            'id'       => (int)$row['product_id'],
+            'name'     => $row['name'],
+            'quantity' => (int)$row['quantity'],
+            'price'    => (float)$row['price'],
+            'image'    => $row['image'] ? $row['image'] : 'placeholder.jpg'
+        ];
     }
 
     // Vouchers ophalen via voucher_id
@@ -49,7 +55,8 @@ while ($order = $result->fetch_assoc()) {
     $stmtVoucher->execute();
     $resVoucher = $stmtVoucher->get_result();
     while ($row = $resVoucher->fetch_assoc()) {
-        $items[] = 'Cadeaubon: ' . "€" . number_format($row['price'], 2);
+        // Alleen prijs meesturen, de naam/afbeelding wordt in JS bepaald
+        $items[] = "€" . number_format($row['price'], 2);
     }
 
     $order['products'] = $items;

@@ -116,6 +116,7 @@ header {
   transition: background 0.2s;
   text-decoration: none;
   text-align: right;
+  color: black;
 }
 
 .user-dropdown a:hover {
@@ -1339,52 +1340,162 @@ input[type="number"].quantity-input {
   text-align: center;
 }
 
-/* Algemene stijl voor de bestellingen-tabel */
-.orders-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: Arial, sans-serif;
-}
-
-/* Header stijl */
-.orders-table thead tr {
-  background-color: #f2f2f2; /* lichte grijze achtergrond */
-}
-
-.orders-table tr {
-  border: 1px solid #ccc;
-}
-
-.orders-table th {
-  padding: 10px;
-  text-align: center;
-  font-weight: bold;
-  border-bottom: 1px solid #ccc;
-}
-
-/* Rijen in de tabel */
-.orders-table td {
-  padding: 10px;
-  border-bottom: 1px solid #ccc;
-}
-
-/* Wisselende rijkleuren voor betere leesbaarheid */
-.orders-table tbody tr:nth-child(even) {
+/* Bestellingen als kaarten (zelfde look als retour-card) */
+.order-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 18px 22px 18px 22px;
+  margin-bottom: 24px;
   background-color: #fafafa;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s;
+  position: relative;
 }
 
-.orders-table tbody tr:nth-child(odd) {
-  background-color: #fff; /* iets lichter voor contrast */
+.order-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
 }
 
-/* Hover-effect voor rijen */
-.orders-table tbody tr:hover {
-  background-color: #f0f0f0;
+.order-card-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
 }
 
-/* Kleine aanpassing voor producten in divs */
-.orders-table td div {
+/* knop: position relative zodat child absolute kan centreren */
+.invoice-btn {
+  position: relative;       /* nodig voor absolute centrering van <img> */
+  width: 3rem;
+  height: 3rem;
+  max-width: 3rem;
+  max-height: 3rem;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #eee !important;
+  border: 2px solid #eee !important;
+  cursor: pointer;
+  box-sizing: border-box;
+  overflow: hidden;         /* voorkomt overlap van grote img */
+  line-height: 0;           /* voorkomt baseline-issues */
+}
+
+.invoice-btn:hover {
+  border-color: #ddd !important;
+}
+
+/* Forceer img exact in center */
+.invoice-btn .invoice-icon {
+  position: absolute !important;   /* absoluut tov knop */
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important; /* center */
+  width: 2rem !important;
+  height: 2rem !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  float: none !important;
+  object-fit: contain !important;
+}
+
+.invoice-icon-light {
+  display: block;
+}
+
+.invoice-icon-dark {
+  display: none;
+}
+
+.order-products-list {
+  margin-bottom: 12px;
+}
+
+.order-product-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding: 8px 0;
+}
+
+.order-product-row:last-child {
+  border-bottom: none;
+}
+
+.order-product-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.order-product-img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #fff;
+}
+
+.order-product-img-light {
+  display: block;
+}
+
+.order-product-img-dark {
+  display: none;
+}
+
+.order-product-name {
+  font-size: 1rem;
+  color: #333;
+}
+
+.order-product-details {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.order-product-qty {
+  font-size: 1rem;
+  color: #555;
+  min-width: 70px;
+  text-align: right;
+}
+
+.order-product-price {
+  font-size: 1rem;
+  color: #222;
+  font-weight: bold;
+  min-width: 70px;
+  text-align: right;
+}
+
+.order-detail-row {
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 4px;
+}
+
+.order-detail-label {
+  font-weight: bold;
+  color: #555;
+}
+
+.order-detail-value {
+  color: #222;
 }
 
 /* Container voor de bedankt-sectie */
@@ -2828,32 +2939,72 @@ input[type="number"].quantity-input {
     color: #ddd;
   }
 
-  .orders-table thead tr {
-    background-color: #222;
-  }
-
-  .orders-table tr {
+  .order-card {
+    background-color: #1a1a1a;
     border: 1px solid #444;
+    color: #eee;
   }
 
-  .orders-table th {
-    border-bottom: 1px solid #444;
+  .order-card-title {
+    color: #eee;
   }
 
-  .orders-table td {
-    border-bottom: 1px solid #444;
+  .order-date {
+    color: #aaa;
   }
 
-  .orders-table tbody tr:nth-child(even) {
-    background-color: #1f1f1f;
+  .invoice-btn {
+    background: #333 !important;
+    border-color: #333 !important;
   }
 
-  .orders-table tbody tr:nth-child(odd) {
-    background-color: #000; /* iets lichter voor contrast */
+  .invoice-btn:hover {
+    border-color: #444 !important;
   }
 
-  .orders-table tbody tr:hover {
-    background-color: #333;
+  .invoice-icon-light {
+    display: none;
+  }
+
+  .invoice-icon-dark {
+    display: block;
+  }
+
+  .order-product-row {
+    border-bottom: 1px solid #333;
+  }
+
+  .order-product-img {
+    border: 1px solid #444;
+    background: #222;
+  }
+
+  .order-product-img-light {
+    display: none;
+  }
+
+  .order-product-img-dark {
+    display: block;
+  }
+
+  .order-product-name {
+    color: #eee;
+  }
+
+  .order-product-qty {
+    color: #bbb;
+  }
+
+  .order-product-price {
+    color: #fff;
+  }
+
+  .order-detail-label {
+    color: #bbb;
+  }
+
+  .order-detail-value {
+    color: #fff;
   }
 
   .bedankt {
