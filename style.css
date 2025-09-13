@@ -559,6 +559,13 @@ footer {
   color: inherit;
 }
 
+.hero-text h4 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  color: inherit;
+}
+
 .header-item {
   position: relative;
 }
@@ -2585,10 +2592,13 @@ input[type="number"].quantity-input {
     border-color: white;
   }
 
-  .user-dropdown {
+   .user-dropdown {
     background: #222;
     border: 1px solid #444;
-    color: #eee;
+  }
+
+  .user-dropdown a {
+    color: white;
   }
 
   .user-dropdown a:hover {
