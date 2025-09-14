@@ -42,35 +42,95 @@ document.addEventListener('DOMContentLoaded', function () {
       setupLanguageDropdown(headerContainer);
     });
 
-  // --- Functie voor taal dropdown ---
-  function setupLanguageDropdown(headerContainer) {
+  // ==========================
+  // --- Functie: taal dropdown ---
+  // ==========================
+  async function setupLanguageDropdown(headerContainer) {
     const langSelect = headerContainer.querySelector('.custom-lang-select');
     const selectedFlag = headerContainer.querySelector('#selectedFlag');
     const flagDropdown = headerContainer.querySelector('#flagDropdown');
     if (!langSelect || !selectedFlag || !flagDropdown) return;
 
-    // Klik op de geselecteerde vlag opent/sluit de dropdown
+    // --- Cookie helpers ---
+    function setCookie(name, value, days) {
+      const date = new Date();
+      date.setTime(date.getTime() + days*24*60*60*1000);
+      document.cookie = `${name}=${encodeURIComponent(value)};expires=${date.toUTCString()};path=/;SameSite=Lax`;
+    }
+    function getCookie(name) {
+      const cname = name + "=";
+      const decoded = decodeURIComponent(document.cookie);
+      const ca = decoded.split(';');
+      for (let c of ca) {
+        c = c.trim();
+        if (c.indexOf(cname) === 0) return c.substring(cname.length);
+      }
+      return "";
+    }
+
+    // --- Functie: vlag updaten ---
+    function applyLanguage(lang) {
+      selectedFlag.dataset.value = lang;
+      const img = selectedFlag.querySelector('img');
+      if (!img) return;
+      const map = {
+        'be-nl':'flags/be.png','be-fr':'flags/be.png','be-en':'flags/be.png',
+        'nl-nl':'flags/nl.png','nl-en':'flags/nl.png',
+        'fr-fr':'flags/fr.png','fr-en':'flags/fr.png',
+        'de-de':'flags/de.png','de-en':'flags/de.png',
+        'lu-fr':'flags/lu.png','lu-de':'flags/lu.png','lu-lb':'flags/lu.png','lu-en':'flags/lu.png'
+      };
+      img.src = map[lang] || 'flags/be.png';
+    }
+
+    // --- Initiële taal bepalen ---
+    let lang = getCookie('siteLanguage');
+    if (!lang) {
+      try {
+        // land ophalen via PHP (IP detectie)
+        const res = await fetch('detect_country.php');
+        const data = await res.json();
+        const country = data.country || 'be'; // fallback
+
+        // browsertaal ophalen
+        const browserLang = navigator.language || navigator.userLanguage; // bv. "nl-BE"
+        let langPart = browserLang.split('-')[0].toLowerCase();
+
+        // combineer land + taal
+        lang = `${country}-${langPart}`;
+
+        // valideer tegen beschikbare combinaties
+        const validCombinations = ['be-nl','be-fr','be-en','nl-nl','nl-en','fr-fr','fr-en','de-de','de-en','lu-fr','lu-de','lu-lb','lu-en'];
+        if (!validCombinations.includes(lang)) {
+          lang = country === 'be' ? 'be-nl' : country+'-en'; // fallback
+        }
+
+        setCookie('siteLanguage', lang, 365);
+      } catch(err) {
+        console.error('Kan taal + land niet automatisch detecteren:', err);
+        lang = 'be-nl';
+      }
+    }
+    applyLanguage(lang);
+
+    // --- Event listeners ---
     selectedFlag.addEventListener('click', e => {
       e.stopPropagation();
-      langSelect.classList.toggle('open'); // ✅ togglet op ouder
+      langSelect.classList.toggle('open');
     });
 
-    // Klik op een vlag kiest taal
     flagDropdown.querySelectorAll('div[data-value]').forEach(div => {
       div.addEventListener('click', () => {
-        const lang = div.dataset.value;
-        document.cookie = `siteLanguage=${lang};path=/;SameSite=Lax;max-age=${365*24*60*60}`;
-        console.log("Taal opgeslagen:", lang);
-        langSelect.classList.remove('open'); // ✅ sluit dropdown
-        // hier vertaalfunctie toepassen
+        const newLang = div.dataset.value;
+        setCookie('siteLanguage', newLang, 365);
+        applyLanguage(newLang);
+        langSelect.classList.remove('open');
+        if (div.dataset.href) window.location.href = div.dataset.href;
       });
     });
 
-    // Klik buiten sluit dropdown
     document.addEventListener('click', e => {
-      if (!langSelect.contains(e.target)) {
-        langSelect.classList.remove('open');
-      }
+      if (!langSelect.contains(e.target)) langSelect.classList.remove('open');
     });
   }
 
