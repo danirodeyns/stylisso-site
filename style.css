@@ -1518,7 +1518,6 @@ input[type="number"].quantity-input {
 
 .bedankt p {
   font-size: 16px;
-  color: #555;
   margin-bottom: 20px;
 }
 
@@ -3018,11 +3017,11 @@ input[type="number"].quantity-input {
   }
 
   .bedankt {
-    color: #ddd;
+    color: #eee;
   }
 
   .bedankt p {
-    color: #aaa;
+    color: #eee;
   }
 
   #order-details h2 {

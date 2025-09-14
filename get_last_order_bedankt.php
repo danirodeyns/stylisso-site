@@ -30,44 +30,48 @@ if (!$order) {
 }
 
 $orderId = $order['id'];
+$items   = [];
 
-// Producten ophalen
-$stmt2 = $conn->prepare("
-    SELECT p.name, oi.quantity, oi.price
+// Gewone producten ophalen
+$stmtProd = $conn->prepare("
+    SELECT oi.product_id, p.name, p.image, oi.quantity, oi.price
     FROM order_items oi
     JOIN products p ON oi.product_id = p.id
     WHERE oi.order_id=? AND oi.product_id IS NOT NULL
 ");
-$stmt2->bind_param("i", $orderId);
-$stmt2->execute();
-$res2 = $stmt2->get_result();
-
-$items = [];
-while ($row = $res2->fetch_assoc()) {
+$stmtProd->bind_param("i", $orderId);
+$stmtProd->execute();
+$resProd = $stmtProd->get_result();
+while ($row = $resProd->fetch_assoc()) {
     $items[] = [
-        'name' => $row['name'],
+        'id'       => (int)$row['product_id'],
+        'name'     => $row['name'],
         'quantity' => (int)$row['quantity'],
-        'price' => (float)$row['price']
+        'price'    => (float)$row['price'],
+        'image'    => $row['image'] ? $row['image'] : 'placeholder.jpg',
+        'type'     => 'product'                // of 'voucher'
     ];
 }
 
-// Vouchers ophalen van deze order via voucher_id
-$stmt3 = $conn->prepare("
+// Vouchers ophalen
+$stmtVoucher = $conn->prepare("
     SELECT v.code, oi.price
     FROM order_items oi
-    JOIN vouchers v ON v.id = oi.voucher_id
+    JOIN vouchers v ON oi.voucher_id = v.id
     WHERE oi.order_id=? AND oi.type='voucher'
-    ORDER BY oi.id ASC
+    ORDER BY v.created_at ASC
 ");
-$stmt3->bind_param("i", $orderId);
-$stmt3->execute();
-$res3 = $stmt3->get_result();
-
-while ($row = $res3->fetch_assoc()) {
+$stmtVoucher->bind_param("i", $orderId);
+$stmtVoucher->execute();
+$resVoucher = $stmtVoucher->get_result();
+while ($row = $resVoucher->fetch_assoc()) {
     $items[] = [
-        'name' => "Cadeaubon: " . $row['code'],
+        'id'       => null,
+        'name'     => "Cadeaubon: " . $row['code'],
         'quantity' => 1,
-        'price' => (float)$row['price']
+        'price'    => (float)$row['price'],
+        'image'    => null,
+        'type'     => 'voucher'
     ];
 }
 

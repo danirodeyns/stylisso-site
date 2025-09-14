@@ -968,12 +968,31 @@ async function loadLastOrderDetails() {
     `;
 
     data.products.forEach(item => {
-      // Optioneel: herken vouchers aan "Voucher:" in de naam
-      const isVoucher = item.name.toLowerCase().includes("voucher");
+      let productHtml = "";
+
+      if (item.type === "voucher") {
+        productHtml = `
+          <div style="display:flex; align-items:center; gap:8px;">
+            <img src="cadeaubon/voucher.png" alt="Cadeaubon" class="order-product-img order-product-img-light" style="width:40px; height:40px; object-fit:cover;">
+            <img src="cadeaubon/voucher (dark mode).png" alt="Cadeaubon" class="order-product-img order-product-img-dark" style="width:40px; height:40px; object-fit:cover;">
+            <span>Cadeaubon</span>
+          </div>
+        `;
+      } else {
+        productHtml = `
+          <div style="display:flex; align-items:center; gap:8px;">
+            <img src="${item.image || 'placeholder.jpg'}" 
+                 alt="${item.name}" 
+                 style="width:40px; height:40px; object-fit:cover; border-radius:6px; border:1px solid #ddd;">
+            <span>${item.name}</span>
+          </div>
+        `;
+      }
+
       html += `
-        <tr${isVoucher ? ' class="voucher-row"' : ''}>
-          <td>${item.name}</td>
-          <td>1</td>
+        <tr class="${item.type === 'voucher' ? 'voucher-row' : ''}">
+          <td>${productHtml}</td>
+          <td>${item.quantity}</td>
           <td>€${parseFloat(item.price).toFixed(2)}</td>
           <td>€${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
         </tr>
