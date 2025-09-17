@@ -3,86 +3,88 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Profielinstellingen - Stylisso</title>
+  <title data-i18n="profile_title_page">Profielinstellingen - Stylisso</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
   <div id="header-placeholder"></div>
 
-    <main class="account-container">
+  <main class="account-container">
 
-      <!-- Linker menu -->
-      <nav class="account-menu">
-        <ul>
-          <li><a href="mijn_stylisso.html">Mijn Stylisso</a></li>
-          <li><a href="bestellingen.html">Bestellingen & Facturen</a></li>
-          <li><a href="retourneren.html">Retourneren</a></li>
-          <li><a href="gegevens.html" class="active">Gegevens & Voorkeuren</a></li>
-          <li><a href="cadeaubonnen.html">Cadeaubonnen</a></li>
-          <li><a href="#" id="logoutButton">Uitloggen</a></li>
-        </ul>
-      </nav>
+    <!-- Linker menu -->
+    <nav class="account-menu">
+      <ul>
+        <li><a href="mijn_stylisso.html" data-i18n="menu_mijn_stylisso">Mijn Stylisso</a></li>
+        <li><a href="bestellingen.html" data-i18n="menu_bestellingen">Bestellingen & Facturen</a></li>
+        <li><a href="retourneren.html" data-i18n="menu_retour">Retourneren</a></li>
+        <li><a href="gegevens.html" class="active" data-i18n="menu_gegevens">Gegevens & Voorkeuren</a></li>
+        <li><a href="cadeaubonnen.html" data-i18n="menu_cadeaubonnen">Cadeaubonnen</a></li>
+        <li><a href="#" id="logoutButton" data-i18n="menu_logout">Uitloggen</a></li>
+      </ul>
+    </nav>
 
-      <!-- Rechter content -->
-      <section class="account-content">
-          <h1>Gegevens & Voorkeuren</h1>
-          <p>Hier kun je je persoonlijke gegevens bekijken en aanpassen, en je voorkeuren voor communicatie beheren.</p>
-          <form id="profileForm" action="update_profile.php" method="POST">
-            <!-- Voeg dit direct na de <form> tag toe -->
-            <input type="hidden" name="csrf_token" id="csrf_token" value="" />
+    <!-- Rechter content -->
+    <section class="account-content">
+      <h1 data-i18n="profile_header">Gegevens & Voorkeuren</h1>
+      <p data-i18n="profile_intro">Hier kun je je persoonlijke gegevens bekijken en aanpassen, en je voorkeuren voor communicatie beheren.</p>
+      
+      <form id="profileForm" action="update_profile.php" method="POST">
+        <input type="hidden" name="csrf_token" id="csrf_token" value="" />
+
+        <label for="name" data-i18n="profile_name_label">Naam</label>
+        <input type="text" id="name" name="name" placeholder="Jouw naam" />
+
+        <label for="address" data-i18n="profile_address_label">Adres</label>
+        <input type="text" id="address" name="address" placeholder="Straat + Nr, Postcode + Stad" />
+
+        <label for="company_name" data-i18n="profile_company_label">Bedrijfsnaam</label>
+        <input type="text" id="company_name" name="company_name" placeholder="Bedrijf (Optioneel)" />
+
+        <label for="vat_number" data-i18n="profile_vat_label">BTW-nummer</label>
+        <input type="text" id="vat_number" name="vat_number" placeholder="BTW-nummer (Optioneel)" />
+
+        <label for="email" data-i18n="profile_email_label">E-mailadres</label>
+        <input type="email" id="email" name="email" placeholder="jouw@email.com" />
             
-            <label for="name">Naam</label>
-            <input type="text" id="name" name="name" placeholder="Jouw naam" />
+        <label for="password" data-i18n="profile_password_label">Nieuw wachtwoord</label>
+        <input type="password" id="password" name="password" placeholder="Laat leeg om te behouden" />
+          
+        <label for="passwordConfirm" data-i18n="profile_password_confirm_label">Bevestig nieuw wachtwoord</label>
+        <input type="password" id="passwordConfirm" name="passwordConfirm" placeholder="Nogmaals wachtwoord" />
 
-            <label for="address">Adres</label>
-            <input type="text" id="address" name="address" placeholder="Straat + Nr, Postcode + Stad" />
+        <label for="newsletter">
+          <input type="checkbox" id="newsletter" name="newsletter" value="1" />
+          <span data-i18n="profile_newsletter">Ik wil commerciële e-mails ontvangen.</span>
+        </label>
 
-            <label for="company_name">Bedrijfsnaam</label>
-            <input type="text" id="company_name" name="company_name" placeholder="Bedrijf (Optioneel)" />
+        <button type="submit" data-i18n="profile_update_btn">Updaten</button>
+        <button type="button" id="deleteBtn" class="delete-account-link" data-i18n="profile_delete_btn">Account verwijderen</button>
+      </form>
 
-            <label for="vat_number">BTW-nummer</label>
-            <input type="text" id="vat_number" name="vat_number" placeholder="BTW-nummer (Optioneel)" />
+      <!-- Pop-up modal -->
+      <div id="confirmModal" class="modal">
+        <div class="modal-content">
+          <h2 data-i18n="modal_delete_header">Account verwijderen</h2>
+          <p data-i18n="modal_delete_text">Weet je zeker dat je je account permanent wilt verwijderen? Dit kan niet ongedaan worden gemaakt.</p>
+          <div class="modal-actions">
+            <form id="deleteForm" action="delete_account.php" method="POST">
+              <button type="submit" class="confirm-btn" data-i18n="modal_delete_confirm">Ja, verwijderen</button>
+            </form>
+            <button type="button" id="cancelDelete" class="cancel-btn" data-i18n="modal_delete_cancel">Annuleren</button>
+          </div>
+        </div>
+      </div>
 
-            <label for="email">E-mailadres</label>
-            <input type="email" id="email" name="email" placeholder="jouw@email.com" />
-                
-            <label for="password">Nieuw wachtwoord</label>
-            <input type="password" id="password" name="password" placeholder="Laat leeg om te behouden" />
-              
-            <label for="passwordConfirm">Bevestig nieuw wachtwoord</label>
-            <input type="password" id="passwordConfirm" name="passwordConfirm" placeholder="Nogmaals wachtwoord" />
+    </section>
 
-            <label for="newsletter">
-              <input type="checkbox" id="newsletter" name="newsletter" value="1" />
-              Ik wil commerciële e-mails ontvangen.
-            </label>
-
-            <button type="submit">Updaten</button>
-            <button type="button" id="deleteBtn" class="delete-account-link">Account verwijderen</button>
-          </form>
-          <!-- Pop-up modal -->
-            <div id="confirmModal" class="modal">
-              <div class="modal-content">
-                <h2>Account verwijderen</h2>
-                <p>Weet je zeker dat je je account permanent wilt verwijderen? 
-                  Dit kan niet ongedaan worden gemaakt.</p>
-                <div class="modal-actions">
-                  <form id="deleteForm" action="delete_account.php" method="POST">
-                    <button type="submit" class="confirm-btn">Ja, verwijderen</button>
-                  </form>
-                  <button type="button" id="cancelDelete" class="cancel-btn">Annuleren</button>
-                </div>
-              </div>
-            </div>
-      </section>
-
-    </main>
+  </main>
 
   <div id="footer-placeholder"></div>
 
   <script src="GA.js"></script>
   <script src="marketing.js"></script>
+  <script src="translations.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

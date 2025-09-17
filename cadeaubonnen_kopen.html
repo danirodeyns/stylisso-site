@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cadeaubonnen - Stylisso</title>
+  <title data-i18n="voucher_title">Cadeaubonnen - Stylisso</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -12,24 +12,23 @@
 
   <main class="voucher-container">
     <section class="voucher-titel">
-      <h1>🛍️ Cadeaubon kopen</h1>
-      <p>Kies het bedrag van je cadeaubon en ontvang de code per e-mail.</p>
+      <h1 data-i18n="voucher_heading">🛍️ Cadeaubon kopen</h1>
+      <p data-i18n="voucher_text">Kies het bedrag van je cadeaubon en ontvang de code per e-mail.</p>
     </section>
 
     <form action="purchase_voucher.php" method="POST" class="voucher-form">
-      <!-- Voeg dit direct na de <form> tag toe -->
       <input type="hidden" name="csrf_token" id="csrf_token" value="" />
-      <label>Bedrag:</label>
+      <label data-i18n="voucher_label_amount">Bedrag:</label>
       <div class="amount-buttons">
-        <button type="button" data-amount="15">€15</button>
-        <button type="button" data-amount="25">€25</button>
-        <button type="button" data-amount="50">€50</button>
-        <button type="button" data-amount="100">€100</button>
-        <button type="button" data-amount="custom" id="custom-button">Aangepast</button>
+        <button type="button" data-amount="15" data-i18n="voucher_amount_15">€15</button>
+        <button type="button" data-amount="25" data-i18n="voucher_amount_25">€25</button>
+        <button type="button" data-amount="50" data-i18n="voucher_amount_50">€50</button>
+        <button type="button" data-amount="100" data-i18n="voucher_amount_100">€100</button>
+        <button type="button" data-amount="custom" id="custom-button" data-i18n="voucher_amount_custom">Aangepast</button>
       </div>
       <input type="number" id="custom-amount" name="amount" min="5" step="1" placeholder="Voer bedrag in" required>
 
-      <button type="submit">Cadeaubon kopen</button>
+      <button type="submit" data-i18n="voucher_button_buy">Cadeaubon kopen</button>
     </form> 
   </main>
 
@@ -37,6 +36,7 @@
 
   <script src="GA.js"></script>
   <script src="marketing.js"></script>
+  <script src="translations.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

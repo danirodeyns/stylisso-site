@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mijn Stylisso - Overzicht</title>
+  <title data-i18n="page_title">Mijn Stylisso - Overzicht</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -15,48 +15,45 @@
     <!-- Linker menu -->
     <nav class="account-menu">
       <ul>
-        <li><a href="mijn_stylisso.html" class="active">Mijn Stylisso</a></li>
-        <li><a href="bestellingen.html">Bestellingen & Facturen</a></li>
-        <li><a href="retourneren.html">Retourneren</a></li>
-        <li><a href="gegevens.html">Gegevens & Voorkeuren</a></li>
-        <li><a href="cadeaubonnen.html">Cadeaubonnen</a></li>
-        <li><a href="#" id="logoutButton">Uitloggen</a></li>
+        <li><a href="mijn_stylisso.html" class="active" data-i18n="menu_mijn_stylisso">Mijn Stylisso</a></li>
+        <li><a href="bestellingen.html" data-i18n="menu_bestellingen">Bestellingen & Facturen</a></li>
+        <li><a href="retourneren.html" data-i18n="menu_retour">Retourneren</a></li>
+        <li><a href="gegevens.html" data-i18n="menu_gegevens">Gegevens & Voorkeuren</a></li>
+        <li><a href="cadeaubonnen.html" data-i18n="menu_cadeaubonnen">Cadeaubonnen</a></li>
+        <li><a href="#" id="logoutButton" data-i18n="menu_logout">Uitloggen</a></li>
       </ul>
     </nav>
 
     <!-- Rechter content -->
     <section class="account-content">
-      <h1>Welkom bij Mijn Stylisso</h1>
-      <p>Overzicht van je gegevens, bestelling en cadeaubonnen.</p>
+      <h1 data-i18n="welcome_header">Welkom bij Mijn Stylisso</h1>
+      <p data-i18n="welcome_subheader">Overzicht van je gegevens, bestelling en cadeaubonnen.</p>
 
       <!-- Sectie 1: Mijn Gegevens -->
       <div class="summary-section">
-        <h2>Mijn Gegevens</h2>
+        <h2 data-i18n="section_my_data">Mijn Gegevens</h2>
         <p id="user-info">
-          Naam: <span id="user-name">jouwnaam</span><br>
-          Email: <span id="user-email">jouwnaam@example.com</span><br>
-          <span id="user-address-line" style="display:none;">Adres: <span id="user-address"></span><br></span>
-          <span id="user-company-line" style="display:none;">Bedrijfsnaam: <span id="user-company"></span><br></span>
-          <span id="user-vat-line" style="display:none;">BTW-nummer: <span id="user-vat"></span></span>
+          <span data-i18n="label_name">Naam:</span> <span id="user-name">jouwnaam</span><br>
+          <span data-i18n="label_email">Email:</span> <span id="user-email">jouwnaam@example.com</span><br>
+          <span id="user-address-line" style="display:none;"><span data-i18n="label_address">Adres:</span> <span id="user-address"></span><br></span>
+          <span id="user-company-line" style="display:none;"><span data-i18n="label_company">Bedrijfsnaam:</span> <span id="user-company"></span><br></span>
+          <span id="user-vat-line" style="display:none;"><span data-i18n="label_vat">BTW-nummer:</span> <span id="user-vat"></span></span>
         </p>
-        <a href="gegevens.html" class="btn">Gegevens aanpassen</a>
+        <a href="gegevens.html" class="btn" data-i18n="btn_edit_data">Gegevens aanpassen</a>
       </div>
 
       <!-- Sectie 2: Laatste bestelling -->
       <div class="summary-section">
-        <h2>Laatste bestelling</h2>
-        <!-- Hier komt de dynamische inhoud -->
-        <p id="last-order">Nog geen bestellingen om weer te geven.</p>
-        <a href="bestellingen.html" class="btn">Bekijk bestellingen</a>
+        <h2 data-i18n="section_last_order">Laatste bestelling</h2>
+        <p id="last-order" data-i18n="text_no_orders">Nog geen bestellingen om weer te geven.</p>
+        <a href="bestellingen.html" class="btn" data-i18n="btn_view_orders">Bekijk bestellingen</a>
       </div>
-
 
       <!-- Sectie 3: Laatste cadeaubon -->
       <div class="summary-section">
-        <h2>Laatste cadeaubon</h2>
-        <!-- Hier komt de dynamische inhoud -->
-        <p id="voucher-list">Nog geen cadeaubonnen om weer te geven.</p>
-        <a href="cadeaubonnen.html" class="btn">Bekijk cadeaubonnen</a>
+        <h2 data-i18n="section_last_voucher">Laatste cadeaubon</h2>
+        <p id="voucher-list" data-i18n="text_no_vouchers">Nog geen cadeaubonnen om weer te geven.</p>
+        <a href="cadeaubonnen.html" class="btn" data-i18n="btn_view_vouchers">Bekijk cadeaubonnen</a>
       </div>
 
     </section>
@@ -67,6 +64,7 @@
 
   <script src="GA.js"></script>
   <script src="marketing.js"></script>
+  <script src="translations.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

@@ -40,6 +40,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // --- Taal dropdown activeren ---
       setupLanguageDropdown(headerContainer);
+
+      applyTranslations(); // vertalingen toepassen
     });
 
   // ==========================
@@ -112,6 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
     applyLanguage(lang);
+    applyTranslations(); // vertalingen toepassen
 
     // --- Event listeners ---
     selectedFlag.addEventListener('click', e => {
@@ -125,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
         setCookie('siteLanguage', newLang, 365);
         applyLanguage(newLang);
         langSelect.classList.remove('open');
-        if (div.dataset.href) window.location.href = div.dataset.href;
+        applyTranslations(); // vertalingen toepassen
       });
     });
 
@@ -269,6 +272,7 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(html => {
       const footerContainer = document.getElementById('footer-placeholder');
       if (footerContainer) footerContainer.innerHTML = html;
+      applyTranslations(); // vertalingen toepassen
     })
     .catch(err => console.error('Fout bij laden footer:', err));
 
@@ -1919,4 +1923,25 @@ fetch(`categorie.php?cat=${categoryId}&sub=${subcategoryId}`)
 
   // --- Sorteren bij selectie ---
   sortSelect.addEventListener('change', renderProducts);
+});
+
+function applyTranslations() {
+  // 1. Cookie uitlezen
+  const cookieMatch = document.cookie.match(/(?:^|;\s*)siteLanguage=([^;]+)/);
+  const lang = cookieMatch ? decodeURIComponent(cookieMatch[1]) : "be-nl"; // fallback
+
+  // 2. Vertaling kiezen
+  const dict = translations[lang] || translations["be-nl"];
+
+  // 3. Alle elementen vervangen
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.getAttribute("data-i18n");
+    if (dict[key]) {
+      el.textContent = dict[key];
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  applyTranslations();
 });
