@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n="page_title">Klantreviews | Stylisso</title>
+  <title data-i18n="reviews_page_title">Klantreviews | Stylisso</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -11,43 +11,43 @@
   <div id="header-placeholder"></div>
 
   <main class="reviews-container">
-    <h1 data-i18n="header">Klantreviews</h1>
+    <h1 data-i18n="reviews_header">Klantreviews</h1>
 
     <section>
-      <p data-i18n="intro">Hieronder vind je enkele ervaringen van klanten die bij Stylisso hebben besteld.</p>
+      <p data-i18n="reviews_intro">Hieronder vind je enkele ervaringen van klanten die bij Stylisso hebben besteld.</p>
     </section>
 
     <section class="reviews-list">
       <article class="review">
         <h2>Johan D.</h2>
-        <p><strong data-i18n="rating_label">Beoordeling:</strong> ★★★★★</p>
-        <p data-i18n="review1">De producten zijn van uitstekende kwaliteit en werden snel geleverd. Ik ben erg tevreden!</p>
+        <p><strong data-i18n="reviews_rating_label">Beoordeling:</strong> ★★★★★</p>
+        <p data-i18n="reviews_review1">De producten zijn van uitstekende kwaliteit en werden snel geleverd. Ik ben erg tevreden!</p>
       </article>
 
       <article class="review">
         <h2>Marieke V.</h2>
-        <p><strong data-i18n="rating_label">Beoordeling:</strong> ★★★★☆</p>
-        <p data-i18n="review2">Goede service en mooie collectie. De verzending duurde iets langer dan verwacht.</p>
+        <p><strong data-i18n="reviews_rating_label">Beoordeling:</strong> ★★★★☆</p>
+        <p data-i18n="reviews_review2">Goede service en mooie collectie. De verzending duurde iets langer dan verwacht.</p>
       </article>
 
       <article class="review">
         <h2>Ahmed K.</h2>
-        <p><strong data-i18n="rating_label">Beoordeling:</strong> ★★★★★</p>
-        <p data-i18n="review3">Heel tevreden over de klantenservice en de kwaliteit van de sportkleding. Zeker een aanrader!</p>
+        <p><strong data-i18n="reviews_rating_label">Beoordeling:</strong> ★★★★★</p>
+        <p data-i18n="reviews_review3">Heel tevreden over de klantenservice en de kwaliteit van de sportkleding. Zeker een aanrader!</p>
       </article>
     </section>
 
     <section class="review-form">
-      <h2 data-i18n="form_header">Laat ook een review achter</h2>
+      <h2 data-i18n="reviews_form_header">Laat ook een review achter</h2>
       <form action="reviews-mailing.php" method="POST">
         <input type="hidden" name="csrf_token" id="csrf_token" value="" />
 
-        <label for="name" data-i18n="form_name_label">Naam:</label><br />
+        <label for="name" data-i18n="reviews_form_name_label">Naam:</label><br />
         <input type="text" id="name" name="name" placeholder="Naam" required /><br /><br />
 
-        <label for="beoordeling" data-i18n="form_rating_label">Beoordeling:</label><br />
+        <label for="beoordeling" data-i18n="reviews_form_rating_label">Beoordeling:</label><br />
         <select id="beoordeling" name="beoordeling" required>
-          <option value="" data-i18n="form_rating_placeholder">Kies een beoordeling</option>
+          <option value="" data-i18n="reviews_form_rating_placeholder">Kies een beoordeling</option>
           <option value="5">★★★★★ (5 sterren)</option>
           <option value="4">★★★★☆ (4 sterren)</option>
           <option value="3">★★★☆☆ (3 sterren)</option>
@@ -55,10 +55,10 @@
           <option value="1">★☆☆☆☆ (1 ster)</option>
         </select><br /><br />
 
-        <label for="review" data-i18n="form_review_label">Review:</label><br />
+        <label for="review" data-i18n="reviews_form_review_label">Review:</label><br />
         <textarea id="review" name="review" rows="4" required></textarea><br /><br />
 
-        <button type="submit" data-i18n="form_submit">Verstuur review</button>
+        <button type="submit" data-i18n="reviews_form_submit">Verstuur review</button>
       </form>
     </section>
   </main>

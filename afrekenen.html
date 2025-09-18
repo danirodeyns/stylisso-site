@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n="checkout_title">Stylisso - Afrekenen</title>
+  <title data-i18n="afrekenen_checkout_title">Stylisso - Afrekenen</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -16,77 +16,77 @@
       <input type="hidden" name="csrf_token" value="">
       <input type="hidden" name="used_voucher" id="used_voucher_input">
       
-      <label for="name" data-i18n="label_name">Naam</label>
-      <input type="text" id="name" name="name" placeholder="Naam" required data-i18n-placeholder="placeholder_name" />
+      <label for="name" data-i18n="afrekenen_label_name">Naam</label>
+      <input type="text" id="name" name="name" placeholder="Naam" required data-i18n-placeholder="afrekenen_placeholder_name" />
 
-      <label for="address" data-i18n="label_address">Adres</label>
-      <input type="text" id="address" name="address" placeholder="Straat + Nr, Postcode + Stad" required data-i18n-placeholder="placeholder_address" />
+      <label for="address" data-i18n="afrekenen_label_address">Adres</label>
+      <input type="text" id="address" name="address" placeholder="Straat + Nr, Postcode + Stad" required data-i18n-placeholder="afrekenen_placeholder_address" />
 
-      <label for="company_name" data-i18n="label_company">Bedrijfsnaam</label>
-      <input type="text" id="company_name" name="company_name" placeholder="Bedrijf (Optioneel)" data-i18n-placeholder="placeholder_company" />
+      <label for="company_name" data-i18n="afrekenen_label_company">Bedrijfsnaam</label>
+      <input type="text" id="company_name" name="company_name" placeholder="Bedrijf (Optioneel)" data-i18n-placeholder="afrekenen_placeholder_company" />
 
-      <label for="vat_number" data-i18n="label_vat">BTW-nummer</label>
-      <input type="text" id="vat_number" name="vat_number" placeholder="BTW-nummer (Optioneel)" data-i18n-placeholder="placeholder_vat" />
+      <label for="vat_number" data-i18n="afrekenen_label_vat">BTW-nummer</label>
+      <input type="text" id="vat_number" name="vat_number" placeholder="BTW-nummer (Optioneel)" data-i18n-placeholder="afrekenen_placeholder_vat" />
 
       <input type="hidden" id="email" name="email" placeholder="jouw@email.com" required />
 
-      <label for="payment_method" data-i18n="label_payment">Betaalmethode</label>
+      <label for="payment_method" data-i18n="afrekenen_label_payment">Betaalmethode</label>
       <select id="payment_method" name="payment_method" required>
-        <option value="" data-i18n="payment_choose">Kies een optie</option>
-        <option value="ideal" data-i18n="payment_ideal">iDEAL</option>
-        <option value="creditcard" data-i18n="payment_creditcard">Creditcard</option>
+        <option value="" data-i18n="afrekenen_payment_choose">Kies een optie</option>
+        <option value="ideal" data-i18n="afrekenen_payment_ideal">iDEAL</option>
+        <option value="creditcard" data-i18n="afrekenen_payment_creditcard">Creditcard</option>
       </select>
 
-      <button type="submit" class="checkout-button" data-i18n="button_pay">Betalen</button>
+      <button type="submit" class="checkout-button" data-i18n="afrekenen_button_pay">Betalen</button>
     </form>
 
     <!-- Rechts: samenvatting -->
     <div class="summary-column">
       <div class="summary-box">
-        <h2 data-i18n="order_summary">Orderoverzicht</h2>
+        <h2 data-i18n="afrekenen_order_summary">Orderoverzicht</h2>
         <div class="summary-row">
-          <span data-i18n="subtotal">Subtotaal:</span>
+          <span data-i18n="afrekenen_subtotal">Subtotaal:</span>
           <span id="subtotalOrder">€0,00</span>
         </div>
         <div class="summary-row">
-          <span data-i18n="voucher">Cadeaubon:</span>
+          <span data-i18n="afrekenen_voucher">Cadeaubon:</span>
           <span id="redeem_voucher">€0,00</span>
         </div>
         <div class="summary-row">
-          <span data-i18n="shipping">Verzendkosten:</span>
+          <span data-i18n="afrekenen_shipping">Verzendkosten:</span>
           <span id="shippingCost">€5,00</span>
         </div>
         <div class="summary-row">
-          <span data-i18n="tax">BTW (21%):</span>
+          <span data-i18n="afrekenen_tax">BTW (21%):</span>
           <span id="taxAmount">€0,00</span>
         </div>
         <hr />
         <div class="summary-row">
-          <strong data-i18n="total">Totaal:</strong>
+          <strong data-i18n="afrekenen_total">Totaal:</strong>
           <strong id="totalAmount">€0,00</strong>
         </div>
       </div>
 
       <!-- Nieuwe sectie: cadeaubonnen -->
       <div class="voucher-section">
-        <h2 data-i18n="voucher_use">Cadeaubon gebruiken</h2>
+        <h2 data-i18n="afrekenen_voucher_use">Cadeaubon gebruiken</h2>
 
         <!-- Redeem form -->
         <form id="voucherForm" action="redeem_voucher.php" method="POST" class="voucher-form2">
           <input type="hidden" name="csrf_token" value="">
-          <label for="voucher_code" data-i18n="voucher_code_label">Voer boncode in:</label>
-          <input type="text" id="voucher_code" name="voucher_code" placeholder="Bijv. ABC123" required data-i18n-placeholder="voucher_code_placeholder" />
-          <button type="submit" class="voucher-button" data-i18n="voucher_add">Toevoegen</button>
+          <label for="voucher_code" data-i18n="afrekenen_voucher_code_label">Voer boncode in:</label>
+          <input type="text" id="voucher_code" name="voucher_code" placeholder="Bijv. ABC123" required data-i18n-placeholder="afrekenen_voucher_code_placeholder" />
+          <button type="submit" class="voucher-button" data-i18n="afrekenen_voucher_add">Toevoegen</button>
         </form>
 
         <div id="voucher-message"></div>
 
         <!-- Dropdown bestaande vouchers -->
-        <label for="saved_voucher" data-i18n="voucher_select_label">Selecteer opgeslagen bon:</label>
+        <label for="saved_voucher" data-i18n="afrekenen_voucher_select_label">Selecteer opgeslagen bon:</label>
         <select id="saved_voucher">
-          <option value="" data-i18n="voucher_select">Kies een bon</option>
+          <option value="" data-i18n="afrekenen_voucher_select">Kies een bon</option>
         </select>
-        <button id="applyVoucherButton" type="button" class="voucher-button" data-i18n="voucher_apply">Gebruiken</button>
+        <button id="applyVoucherButton" type="button" class="voucher-button" data-i18n="afrekenen_voucher_apply">Gebruiken</button>
       </div>
     </div>
   </main>

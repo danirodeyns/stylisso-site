@@ -1772,7 +1772,7 @@ input[type="number"].quantity-input {
 
 .over-ons-container h2 {
   font-size: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.25rem;
   font-weight: 500;
   text-align: justify;
   color: #333;
@@ -1788,10 +1788,13 @@ input[type="number"].quantity-input {
 
 .over-ons-container ul {
   padding-left: 0.5rem; /* iets meer ruimte tussen rand container en bullets */
+  margin-bottom: 1rem;
 }
 
 .over-ons-container li {
   margin-left: 0.5rem; /* extra marge tussen bullet en tekst */
+  font-size: 1rem;
+  color: #333;
 }
 
 .privacybeleid-container {
@@ -3147,11 +3150,15 @@ input[type="number"].quantity-input {
     color: white;
   }
 
+  .over-ons-container h2 {
+    color: #fff;
+  }
+  
   .over-ons-container p {
     color: #fff;
   }
 
-  .over-ons-container h2 {
+  .over-ons-container li {
     color: #fff;
   }
 

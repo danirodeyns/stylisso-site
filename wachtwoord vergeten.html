@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n="page_title">Stylisso – Wachtwoord vergeten</title>
+  <title data-i18n="wachtwoord vergeten_page_title">Stylisso – Wachtwoord vergeten</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -13,20 +13,20 @@
   <main class="auth-container">
     <section class="auth-section">
         <section class="forgot-password-section">
-            <h1 data-i18n="header">Wachtwoord vergeten</h1>
-            <p class="intro-text" data-i18n="intro">Vul hieronder je e-mailadres in. We sturen je een link om je wachtwoord te resetten.</p>
+            <h1 data-i18n="wachtwoord vergeten_header">Wachtwoord vergeten</h1>
+            <p class="intro-text" data-i18n="wachtwoord vergeten_intro">Vul hieronder je e-mailadres in. We sturen je een link om je wachtwoord te resetten.</p>
             
             <form class="auth-form" action="wachtwoord_vergeten.php" method="POST">
                 <input type="hidden" name="csrf_token" id="csrf_token" value="" />
               
-                <label for="email" data-i18n="email_label">E-mailadres</label>
-                <input type="email" id="email" name="email" placeholder="" data-i18n="[placeholder]email_placeholder" required>
+                <label for="email" data-i18n="wachtwoord vergeten_email_label">E-mailadres</label>
+                <input type="email" id="email" name="email" placeholder="" data-i18n="[placeholder]wachtwoord vergeten_email_placeholder" required>
 
-                <button type="submit" class="cta-button" data-i18n="submit_button">Verzend</button>
+                <button type="submit" class="cta-button" data-i18n="wachtwoord vergeten_submit_button">Verzend</button>
             </form>
 
             <p class="back-link">
-                <a href="login_registreren.html" data-i18n="back_link">Terug naar inloggen</a>
+                <a href="login_registreren.html" data-i18n="wachtwoord vergeten_back_link">Terug naar inloggen</a>
             </p>
         </section>
     </section>    

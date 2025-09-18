@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-i18n="page_title">Productpagina</title>
+  <title data-i18n="productpagina_page_title">Productpagina</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,31 +12,31 @@
 
   <div class="product-page-container">
     <!-- Titel bovenaan -->
-    <h1 id="product-title" class="product-title" data-i18n="product_title"></h1>
+    <h1 id="product-title" class="product-title" data-i18n="productpagina_product_title"></h1>
 
     <div class="product-main">
       <!-- Links: afbeelding -->
       <div class="product-left">
-        <img id="product-image" class="product-image" src="" alt="" data-i18n-alt="product_image_alt">
+        <img id="product-image" class="product-image" src="" alt="" data-i18n-alt="productpagina_product_image_alt">
       </div>
 
       <!-- Rechts: details -->
       <div class="product-right">
-        <p id="product-description" class="product-description" data-i18n="product_description"></p>
-        <p class="product-price" id="product-price" data-i18n="product_price"></p>
+        <p id="product-description" class="product-description" data-i18n="productpagina_product_description"></p>
+        <p class="product-price" id="product-price" data-i18n="productpagina_product_price"></p>
 
         <div class="product-action">
           <input type="hidden" id="csrf_token" value="">
-          <label data-i18n="product_quantity_label">
+          <label data-i18n="productpagina_product_quantity_label">
             Aantal:
             <input type="number" id="product-quantity" class="productpage-quantity" value="1" min="1">
           </label>
-          <button id="add-to-cart" class="productpage-add-btn" data-i18n="add_to_cart_button">Toevoegen aan winkelwagen</button>
+          <button id="add-to-cart" class="productpage-add-btn" data-i18n="productpagina_add_to_cart_button">Toevoegen aan winkelwagen</button>
         </div>
       </div>
     </div>
     
-    <div id="product-error" class="product-error" data-i18n="product_error"></div>
+    <div id="product-error" class="product-error" data-i18n="productpagina_product_error"></div>
   </div>
 
   <div id="footer-placeholder"></div>

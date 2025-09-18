@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n="account_vouchers_title">Profielinstellingen - Stylisso</title>
+  <title data-i18n="cadeaubonnen_account_vouchers_title">Profielinstellingen - Stylisso</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -26,23 +26,23 @@
    
     <!-- Rechter content -->
     <section class="account-content">
-      <h1 data-i18n="account_vouchers_heading">🛍️ Cadeaubonnen</h1>
-      <p data-i18n="account_vouchers_text">Voeg hier een cadeauboncode toe om deze aan je account te koppelen en te gebruiken bij je volgende bestelling.</p>
+      <h1 data-i18n="cadeaubonnen_account_vouchers_heading">🛍️ Cadeaubonnen</h1>
+      <p data-i18n="cadeaubonnen_account_vouchers_text">Voeg hier een cadeauboncode toe om deze aan je account te koppelen en te gebruiken bij je volgende bestelling.</p>
 
       <div id="voucher-message"></div>
 
       <!-- Cadeaubon formulier -->
       <form id="voucherForm" action="redeem_voucher.php" method="POST">
         <input type="hidden" name="csrf_token" id="csrf_token" value="" />
-        <label for="voucher_code" data-i18n="account_vouchers_label">Cadeauboncode</label>
+        <label for="voucher_code" data-i18n="cadeaubonnen_account_vouchers_label">Cadeauboncode</label>
         <input type="text" id="voucher_code" name="voucher_code" placeholder="Voer je cadeauboncode in" data-i18n-placeholder="account_vouchers_placeholder" required />
-        <button type="submit" data-i18n="account_vouchers_button">Opslaan</button>
+        <button type="submit" data-i18n="cadeaubonnen_account_vouchers_button">Opslaan</button>
       </form>
 
       <!-- Overzicht gekoppelde bonnen -->
-      <h2 data-i18n="account_vouchers_list_heading">Mijn gekoppelde cadeaubonnen</h2>
+      <h2 data-i18n="cadeaubonnen_account_vouchers_list_heading">Mijn gekoppelde cadeaubonnen</h2>
       <div id="voucher-list">
-        <p data-i18n="account_vouchers_list_empty">Geen cadeaubonnen gekoppeld.</p>
+        <p data-i18n="cadeaubonnen_account_vouchers_list_empty">Geen cadeaubonnen gekoppeld.</p>
       </div>
     </section>
 
