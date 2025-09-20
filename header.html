@@ -1,158 +1,163 @@
 <div id="cookie-banner" class="cookie-banner">
   <p>
-    Deze website gebruikt cookies. Hier vind je ons <a href="cookiebeleid.html">cookiebeleid</a>. Wil je alle cookies toestaan of enkel de functionele?
+    <span data-i18n="header_cookie_text">Deze website gebruikt cookies. Hier vind je ons </span>
+    <a href="cookiebeleid.html" data-i18n="header_cookie_link">cookiebeleid</a>.
+    <span data-i18n="header_cookie_question"> Wil je alle cookies toestaan of enkel de functionele?</span>
   </p>
   <div class="cookie-buttons">
-    <button id="accept-all">Alle cookies toestaan</button>
-    <button id="accept-functional-analytics">Alleen analytische en functionele cookies</button>
-    <button id="accept-functional">Alleen functionele cookies</button>
+    <button id="accept-all" data-i18n="header_cookie_accept_all">Alle cookies toestaan</button>
+    <button id="accept-functional-analytics" data-i18n="header_cookie_accept_functional_analytics">Alleen analytische en functionele cookies</button>
+    <button id="accept-functional" data-i18n="header_cookie_accept_functional">Alleen functionele cookies</button>
   </div>
 </div>
+
 <header class="site-header">
-    <div class="logo-search-wrapper">
-      <a href="index.html" class="logo">
-        <span class="logo-icon-wrapper">
-          <img src="logo/logo.png" alt="logo" class="logo-icon logo-icon-light"/>
-          <img src="logo/logo (dark mode).png" alt="logo" class="logo-icon logo-icon-dark"/>
-        </span>
-      </a>
-      <form class="search-bar" action="#" method="get">
-        <input type="text" placeholder="Zoeken" name="q" />
-      </form>
-    </div>
-    <div class="header-center">
-      <!-- Mannen -->
-      <div class="header-item">
-        <a href="categorie.html?cat=1" class="nav-link">Mannen</a>
-        <div class="header-dropdown align-left">
-          <a href="categorie.html?cat=1&sub=1">Shirts</a>
-          <a href="categorie.html?cat=1&sub=2">Truien</a>
-          <a href="categorie.html?cat=1&sub=3">Hemden</a>
-          <a href="categorie.html?cat=1&sub=4">Riemen</a>
-          <a href="categorie.html?cat=1&sub=5">Broeken</a>
-          <a href="categorie.html?cat=1&sub=6">Leggings</a>
-          <a href="categorie.html?cat=1&sub=7">Joggingbroeken</a>
-          <a href="categorie.html?cat=1&sub=8">Trainingsbroeken</a>
-          <a href="categorie.html?cat=1&sub=9">Trainingspakken</a>
-          <a href="categorie.html?cat=1&sub=10">Sokken</a>
-          <a href="categorie.html?cat=1&sub=11">Schoenen</a>
-          <a href="categorie.html?cat=1&sub=12">Brillen</a>
-        </div>
-      </div>
+  <div class="logo-search-wrapper">
+    <a href="index.html" class="logo">
+      <span class="logo-icon-wrapper">
+        <img src="logo/logo.png" alt="logo" class="logo-icon logo-icon-light"/>
+        <img src="logo/logo (dark mode).png" alt="logo" class="logo-icon logo-icon-dark"/>
+      </span>
+    </a>
+    <form class="search-bar" action="#" method="get">
+      <input type="text" placeholder="Zoeken" name="q" data-i18n-placeholder="search_placeholder"/>
+    </form>
+  </div>
 
-      <!-- Vrouwen -->
-      <div class="header-item">
-        <a href="categorie.html?cat=2" class="nav-link">Vrouwen</a>
-        <div class="header-dropdown align-center">
-          <a href="categorie.html?cat=2&sub=13">Shirts</a>
-          <a href="categorie.html?cat=2&sub=14">Topjes</a>
-          <a href="categorie.html?cat=2&sub=15">Truien</a>
-          <a href="categorie.html?cat=2&sub=16">Kleedjes</a>
-          <a href="categorie.html?cat=2&sub=17">Rokjes</a>
-          <a href="categorie.html?cat=2&sub=18">Riemen</a>
-          <a href="categorie.html?cat=2&sub=19">Broeken</a>
-          <a href="categorie.html?cat=2&sub=20">Leggings</a>
-          <a href="categorie.html?cat=2&sub=21">Joggingbroeken</a>
-          <a href="categorie.html?cat=2&sub=22">Trainingsbroeken</a>
-          <a href="categorie.html?cat=2&sub=23">Trainingspakken</a>
-          <a href="categorie.html?cat=2&sub=24">Sokken</a>
-          <a href="categorie.html?cat=2&sub=25">Schoenen</a>
-          <a href="categorie.html?cat=2&sub=26">Brillen</a>
-        </div>
-      </div>
-
-      <!-- Producten -->
-      <div class="header-item">
-        <a href="categorie.html?cat=3" class="nav-link">Producten</a>
-        <div class="header-dropdown align-right">
-          <a href="categorie.html?cat=3&sub=27">Stretchbanden</a>
-          <a href="categorie.html?cat=3&sub=28">Voorarmknijpers</a>
-          <a href="categorie.html?cat=3&sub=29">Springtouwen</a>
-          <a href="categorie.html?cat=3&sub=30">Foamrollers</a>
-          <a href="categorie.html?cat=3&sub=31">Gewichthefriemen</a>
-          <a href="categorie.html?cat=3&sub=32">Handdoeken</a>
-          <a href="categorie.html?cat=3&sub=33">Zweetbanden</a>
-          <a href="categorie.html?cat=3&sub=34">Grip handschoenen</a>
-          <a href="categorie.html?cat=3&sub=35">Shakers</a>
-          <a href="categorie.html?cat=3&sub=36">Proteïnen</a>
-          <a href="cadeaubonnen_kopen.html">Cadeaubonnen</a>            
-        </div>
+  <div class="header-center">
+    <!-- Mannen -->
+    <div class="header-item">
+      <a href="categorie.html?cat=1" class="nav-link" data-i18n="header_nav_men">Mannen</a>
+      <div class="header-dropdown align-left">
+        <a href="categorie.html?cat=1&sub=1" data-i18n="header_nav_men_shirts">Shirts</a>
+        <a href="categorie.html?cat=1&sub=2" data-i18n="header_nav_men_sweaters">Truien</a>
+        <a href="categorie.html?cat=1&sub=3" data-i18n="header_nav_men_shirts_dress">Hemden</a>
+        <a href="categorie.html?cat=1&sub=4" data-i18n="header_nav_men_belts">Riemen</a>
+        <a href="categorie.html?cat=1&sub=5" data-i18n="header_nav_men_pants">Broeken</a>
+        <a href="categorie.html?cat=1&sub=6" data-i18n="header_nav_men_leggings">Leggings</a>
+        <a href="categorie.html?cat=1&sub=7" data-i18n="header_nav_men_joggers">Joggingbroeken</a>
+        <a href="categorie.html?cat=1&sub=8" data-i18n="header_nav_men_trainpants">Trainingsbroeken</a>
+        <a href="categorie.html?cat=1&sub=9" data-i18n="header_nav_men_tracksuits">Trainingspakken</a>
+        <a href="categorie.html?cat=1&sub=10" data-i18n="header_nav_men_socks">Sokken</a>
+        <a href="categorie.html?cat=1&sub=11" data-i18n="header_nav_men_shoes">Schoenen</a>
+        <a href="categorie.html?cat=1&sub=12" data-i18n="header_nav_men_glasses">Brillen</a>
       </div>
     </div>
-    <nav class="main-nav">
-      <a href="wishlist_login.php" class="wishlist-button" aria-label="Verlanglijstje">  
-       <span class="wishlist-icon-wrapper">
-          <img src="wishlist/wishlist.png" alt="Cart" class="wishlist-icon wishlist-icon-light" />
-          <img src="wishlist/wishlist (dark mode).png" alt="Cart" class="wishlist-icon wishlist-icon-dark" />
-        </span>
-      </a>
-      <a href="cart.html" class="cart-button" aria-label="Winkelwagen">
-        <span class="cart-icon-wrapper">
-          <img src="shopping bag/shopping bag.png" alt="Cart" class="cart-icon cart-icon-light" />
-          <img src="shopping bag/shopping bag (dark mode).png" alt="Cart" class="cart-icon cart-icon-dark" />
-        </span>
-        <div class="cart-dropdown" id="cartDropdown">
-          <p class="empty-cart">Je winkelwagen is leeg</p>
-        </div>
-      </a>
-      <a href="login_registreren.html" class="cta-button" id="loginBtn">Login</a>
-      <a href="login_registreren.html" class="cta-button-alt" id="registerBtn">Registreren</a>
-      <div class="header-item user-menu">
-        <span id="userDisplay" class="user-button"></span>
-          <div id="userDropdown" class="user-dropdown">
-            <a href="mijn_stylisso.html">Mijn Stylisso</a>
-            <a href="bestellingen.html">Bestellingen & Facturen</a>
-            <a href="retourneren.html">Retourneren</a>
-            <a href="gegevens.html">Gegevens & Voorkeuren</a>
-            <a href="cadeaubonnen.html">Cadeaubonnen</a>
-            <a id="logoutBtn">Uitloggen</a>
-          </div>
+
+    <!-- Vrouwen -->
+    <div class="header-item">
+      <a href="categorie.html?cat=2" class="nav-link" data-i18n="header_nav_women">Vrouwen</a>
+      <div class="header-dropdown align-center">
+        <a href="categorie.html?cat=2&sub=13" data-i18n="header_nav_women_shirts">Shirts</a>
+        <a href="categorie.html?cat=2&sub=14" data-i18n="header_nav_women_tops">Topjes</a>
+        <a href="categorie.html?cat=2&sub=15" data-i18n="header_nav_women_sweaters">Truien</a>
+        <a href="categorie.html?cat=2&sub=16" data-i18n="header_nav_women_dresses">Kleedjes</a>
+        <a href="categorie.html?cat=2&sub=17" data-i18n="header_nav_women_skirts">Rokjes</a>
+        <a href="categorie.html?cat=2&sub=18" data-i18n="header_nav_women_belts">Riemen</a>
+        <a href="categorie.html?cat=2&sub=19" data-i18n="header_nav_women_pants">Broeken</a>
+        <a href="categorie.html?cat=2&sub=20" data-i18n="header_nav_women_leggings">Leggings</a>
+        <a href="categorie.html?cat=2&sub=21" data-i18n="header_nav_women_joggers">Joggingbroeken</a>
+        <a href="categorie.html?cat=2&sub=22" data-i18n="header_nav_women_trainpants">Trainingsbroeken</a>
+        <a href="categorie.html?cat=2&sub=23" data-i18n="header_nav_women_tracksuits">Trainingspakken</a>
+        <a href="categorie.html?cat=2&sub=24" data-i18n="header_nav_women_socks">Sokken</a>
+        <a href="categorie.html?cat=2&sub=25" data-i18n="header_nav_women_shoes">Schoenen</a>
+        <a href="categorie.html?cat=2&sub=26" data-i18n="header_nav_women_glasses">Brillen</a>
       </div>
-      <div class="custom-lang-select" tabindex="0">
-        <span class="selected-flag" id="selectedFlag" data-value="be-nl">
-          <img src="flags/be.png" alt="België" class="flag-icon" />
-        </span>
-        <div class="flag-dropdown" id="flagDropdown">
-          <div data-value="be-nl">
-            <img src="flags/be.png" alt="België" class="flag-icon" /> België (Nederlands)
-          </div>
-          <div data-value="be-fr">
-            <img src="flags/be.png" alt="België" class="flag-icon" /> Belgique (Français)
-          </div>
-          <div data-value="be-en">
-            <img src="flags/be.png" alt="België" class="flag-icon" /> Belgium (English)
-          </div>
-          <div data-value="nl-nl">
-            <img src="flags/nl.png" alt="Nederland" class="flag-icon" /> Nederland (Nederlands)
-          </div>
-          <div data-value="nl-en">
-            <img src="flags/nl.png" alt="Nederland" class="flag-icon" /> Netherlands (English)
-          </div>
-          <div data-value="fr-fr">
-            <img src="flags/fr.png" alt="Frankrijk" class="flag-icon" /> France (Français)
-          </div>
-          <div data-value="fr-en">
-            <img src="flags/fr.png" alt="Frankrijk" class="flag-icon" /> France (English)
-          </div>
-          <div data-value="de-de">
-            <img src="flags/de.png" alt="Duitsland" class="flag-icon" /> Deutschland (Deutsch)
-          </div>
-          <div data-value="de-en">
-            <img src="flags/de.png" alt="Duitsland" class="flag-icon" /> Germany (English)
-          </div>      
-          <div data-value="lu-fr">
-            <img src="flags/lu.png" alt="Luxemburg" class="flag-icon" /> Luxembourg (Français)
-          </div>
-          <div data-value="lu-de">
-            <img src="flags/lu.png" alt="Luxemburg" class="flag-icon" /> Luxemburg (Deutsch)
-          </div>
-          <div data-value="lu-lb">
-            <img src="flags/lu.png" alt="Luxemburg" class="flag-icon" /> Lëtzebuerg (Lëtzebuergesch)
-          </div>
-          <div data-value="lu-en">
-            <img src="flags/lu.png" alt="Luxemburg" class="flag-icon" /> Luxembourg (English)
-          </div>
+    </div>
+
+    <!-- Producten -->
+    <div class="header-item">
+      <a href="categorie.html?cat=3" class="nav-link" data-i18n="header_nav_products">Producten</a>
+      <div class="header-dropdown align-right">
+        <a href="categorie.html?cat=3&sub=27" data-i18n="header_nav_products_bands">Stretchbanden</a>
+        <a href="categorie.html?cat=3&sub=28" data-i18n="header_nav_products_grips">Voorarmknijpers</a>
+        <a href="categorie.html?cat=3&sub=29" data-i18n="header_nav_products_ropes">Springtouwen</a>
+        <a href="categorie.html?cat=3&sub=30" data-i18n="header_nav_products_foam">Foamrollers</a>
+        <a href="categorie.html?cat=3&sub=31" data-i18n="header_nav_products_belts">Gewichthefriemen</a>
+        <a href="categorie.html?cat=3&sub=32" data-i18n="header_nav_products_towels">Handdoeken</a>
+        <a href="categorie.html?cat=3&sub=33" data-i18n="header_nav_products_sweatbands">Zweetbanden</a>
+        <a href="categorie.html?cat=3&sub=34" data-i18n="header_nav_products_gloves">Grip handschoenen</a>
+        <a href="categorie.html?cat=3&sub=35" data-i18n="header_nav_products_shakers">Shakers</a>
+        <a href="categorie.html?cat=3&sub=36" data-i18n="header_nav_products_protein">Proteïnen</a>
+        <a href="cadeaubonnen_kopen.html" data-i18n="header_nav_giftcards">Cadeaubonnen</a>
+      </div>
+    </div>
+  </div>
+
+  <nav class="main-nav">
+    <a href="wishlist_login.php" class="wishlist-button" aria-label="Verlanglijstje" data-i18n-aria="wishlist_aria">
+      <span class="wishlist-icon-wrapper">
+        <img src="wishlist/wishlist.png" alt="Cart" class="wishlist-icon wishlist-icon-light" />
+        <img src="wishlist/wishlist (dark mode).png" alt="Cart" class="wishlist-icon wishlist-icon-dark" />
+      </span>
+    </a>
+    <a href="cart.html" class="cart-button" aria-label="Winkelwagen" data-i18n-aria="cart_aria">
+      <span class="cart-icon-wrapper">
+        <img src="shopping bag/shopping bag.png" alt="Cart" class="cart-icon cart-icon-light" />
+        <img src="shopping bag/shopping bag (dark mode).png" alt="Cart" class="cart-icon cart-icon-dark" />
+      </span>
+      <div class="cart-dropdown" id="cartDropdown">
+        <p class="empty-cart" data-i18n="header_cart_empty">Je winkelwagen is leeg</p>
+      </div>
+    </a>
+    <a href="login_registreren.html" class="cta-button" id="loginBtn" data-i18n="header_nav_login">Login</a>
+    <a href="login_registreren.html" class="cta-button-alt" id="registerBtn" data-i18n="header_nav_register">Registreren</a>
+    <div class="header-item user-menu">
+      <span id="userDisplay" class="user-button"></span>
+      <div id="userDropdown" class="user-dropdown">
+        <a href="mijn_stylisso.html" data-i18n="header_nav_my_stylisso">Mijn Stylisso</a>
+        <a href="bestellingen.html" data-i18n="header_nav_orders">Bestellingen & Facturen</a>
+        <a href="retourneren.html" data-i18n="header_nav_returns">Retourneren</a>
+        <a href="gegevens.html" data-i18n="header_nav_preferences">Gegevens & Voorkeuren</a>
+        <a href="cadeaubonnen.html" data-i18n="header_nav_giftcards">Cadeaubonnen</a>
+        <a id="logoutBtn" data-i18n="header_nav_logout">Uitloggen</a>
+      </div>
+    </div>
+    <div class="custom-lang-select" tabindex="0">
+      <span class="selected-flag" id="selectedFlag" data-value="be-nl">
+        <img src="flags/be.png" alt="België" class="flag-icon" />
+      </span>
+      <div class="flag-dropdown" id="flagDropdown">
+        <div data-value="be-nl">
+          <img src="flags/be.png" alt="België" class="flag-icon" /> België (Nederlands)
+        </div>
+        <div data-value="be-fr">
+          <img src="flags/be.png" alt="België" class="flag-icon" /> Belgique (Français)
+        </div>
+        <div data-value="be-en">
+          <img src="flags/be.png" alt="België" class="flag-icon" /> Belgium (English)
+        </div>
+        <div data-value="nl-nl">
+          <img src="flags/nl.png" alt="Nederland" class="flag-icon" /> Nederland (Nederlands)
+        </div>
+        <div data-value="nl-en">
+          <img src="flags/nl.png" alt="Nederland" class="flag-icon" /> Netherlands (English)
+        </div>
+        <div data-value="fr-fr">
+          <img src="flags/fr.png" alt="Frankrijk" class="flag-icon" /> France (Français)
+        </div>
+        <div data-value="fr-en">
+          <img src="flags/fr.png" alt="Frankrijk" class="flag-icon" /> France (English)
+        </div>
+        <div data-value="de-de">
+          <img src="flags/de.png" alt="Duitsland" class="flag-icon" /> Deutschland (Deutsch)
+        </div>
+        <div data-value="de-en">
+          <img src="flags/de.png" alt="Duitsland" class="flag-icon" /> Germany (English)
+        </div>      
+        <div data-value="lu-fr">
+          <img src="flags/lu.png" alt="Luxemburg" class="flag-icon" /> Luxembourg (Français)
+        </div>
+        <div data-value="lu-de">
+          <img src="flags/lu.png" alt="Luxemburg" class="flag-icon" /> Luxemburg (Deutsch)
+        </div>
+        <div data-value="lu-lb">
+          <img src="flags/lu.png" alt="Luxemburg" class="flag-icon" /> Lëtzebuerg (Lëtzebuergesch)
+        </div>
+        <div data-value="lu-en">
+          <img src="flags/lu.png" alt="Luxemburg" class="flag-icon" /> Luxembourg (English)
         </div>
       </div>
-    </nav>
-  </header>
+    </div>
+  </nav>
+</header>
