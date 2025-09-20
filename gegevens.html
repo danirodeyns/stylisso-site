@@ -15,11 +15,11 @@
     <!-- Linker menu -->
     <nav class="account-menu">
       <ul>
-        <li><a href="mijn_stylisso.html" data-i18n="menu_mijn_stylisso">Mijn Stylisso</a></li>
-        <li><a href="bestellingen.html" data-i18n="menu_bestellingen">Bestellingen & Facturen</a></li>
-        <li><a href="retourneren.html" data-i18n="menu_retour">Retourneren</a></li>
-        <li><a href="gegevens.html" class="active" data-i18n="menu_gegevens">Gegevens & Voorkeuren</a></li>
-        <li><a href="cadeaubonnen.html" data-i18n="menu_cadeaubonnen">Cadeaubonnen</a></li>
+        <li><a href="mijn_stylisso.html" data-i18n="menu_my_stylisso">Mijn Stylisso</a></li>
+        <li><a href="bestellingen.html" data-i18n="menu_orders">Bestellingen & Facturen</a></li>
+        <li><a href="retourneren.html" data-i18n="menu_returns">Retourneren</a></li>
+        <li><a href="gegevens.html" class="active" data-i18n="menu_data">Gegevens & Voorkeuren</a></li>
+        <li><a href="cadeaubonnen.html" data-i18n="menu_vouchers">Cadeaubonnen</a></li>
         <li><a href="#" id="logoutButton" data-i18n="menu_logout">Uitloggen</a></li>
       </ul>
     </nav>
@@ -33,25 +33,25 @@
         <input type="hidden" name="csrf_token" id="csrf_token" value="" />
 
         <label for="name" data-i18n="profile_name_label">Naam</label>
-        <input type="text" id="name" name="name" placeholder="Jouw naam" />
+        <input type="text" id="name" name="name" placeholder="Jouw naam" data-i18n-placeholder="gegevens_placeholder_name" />
 
         <label for="address" data-i18n="profile_address_label">Adres</label>
-        <input type="text" id="address" name="address" placeholder="Straat + Nr, Postcode + Stad" />
+        <input type="text" id="address" name="address" placeholder="Straat + Nr, Postcode + Stad" data-i18n-placeholder="gegevens_placeholder_address" />
 
         <label for="company_name" data-i18n="profile_company_label">Bedrijfsnaam</label>
-        <input type="text" id="company_name" name="company_name" placeholder="Bedrijf (Optioneel)" />
+        <input type="text" id="company_name" name="company_name" placeholder="Bedrijf (Optioneel)" data-i18n-placeholder="gegevens_placeholder_company" />
 
         <label for="vat_number" data-i18n="profile_vat_label">BTW-nummer</label>
-        <input type="text" id="vat_number" name="vat_number" placeholder="BTW-nummer (Optioneel)" />
+        <input type="text" id="vat_number" name="vat_number" placeholder="BTW-nummer (Optioneel)" data-i18n-placeholder="gegevens_placeholder_vat" />
 
         <label for="email" data-i18n="profile_email_label">E-mailadres</label>
-        <input type="email" id="email" name="email" placeholder="jouw@email.com" />
+        <input type="email" id="email" name="email" placeholder="jouw@email.com" data-i18n-placeholder="gegevens_placeholder_email" />
             
         <label for="password" data-i18n="profile_password_label">Nieuw wachtwoord</label>
-        <input type="password" id="password" name="password" placeholder="Laat leeg om te behouden" />
+        <input type="password" id="password" name="password" placeholder="Laat leeg om te behouden" data-i18n-placeholder="gegevens_placeholder_password" />
           
         <label for="passwordConfirm" data-i18n="profile_password_confirm_label">Bevestig nieuw wachtwoord</label>
-        <input type="password" id="passwordConfirm" name="passwordConfirm" placeholder="Nogmaals wachtwoord" />
+        <input type="password" id="passwordConfirm" name="passwordConfirm" placeholder="Nogmaals wachtwoord" data-i18n-placeholder="gegevens_placeholder_confirm_password" />
 
         <label for="newsletter">
           <input type="checkbox" id="newsletter" name="newsletter" value="1" />

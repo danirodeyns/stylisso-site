@@ -171,8 +171,9 @@ document.addEventListener('DOMContentLoaded', function () {
       if (cartSummary) cartSummary.style.display = "none";
       const emptyMsg = document.createElement('p');
       emptyMsg.className = 'empty-cart-message';
-      emptyMsg.textContent = 'Je winkelwagen is leeg';
+      emptyMsg.setAttribute('data-i18n', 'script_cart_empty');
       cartItemsContainer.appendChild(emptyMsg);
+      applyTranslations();
       if (subtotalDisplay) subtotalDisplay.textContent = "€0,00";
       return;
     }
@@ -195,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function () {
           <div class="item-info">
             <h3>${item.name}</h3>
             <p>${item.variant || ''}</p>
-            <p>Prijs: €${parseFloat(item.price).toFixed(2)}</p>
+            <p><span data-i18n="script_cart_price">Prijs</span>: €${parseFloat(item.price).toFixed(2)}</p>
             <input type="hidden" value="${item.quantity}" min="1" ${idAttr} data-type="${item.type}" class="quantity-input">
             <button class="remove-item" ${idAttr} data-type="${item.type}">
               <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
@@ -209,9 +210,9 @@ document.addEventListener('DOMContentLoaded', function () {
           <div class="item-info">
             <h3>${item.name}</h3>
             <p>${item.variant || ''}</p>
-            <p>Prijs: €${parseFloat(item.price).toFixed(2)}</p>
+            <p><span data-i18n="script_cart_price">Prijs</span>: €${parseFloat(item.price).toFixed(2)}</p>
             <label>
-              Aantal:
+              <span data-i18n="script_cart_amount">Aantal</span>:
               <input type="number" value="${item.quantity}" min="1" ${idAttr} data-type="${item.type}" class="quantity-input">
             </label>
             <button class="remove-item" ${idAttr} data-type="${item.type}">
@@ -236,8 +237,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (cart.length === 0) {
       const emptyMsg = document.createElement('p');
       emptyMsg.className = 'empty-cart';
-      emptyMsg.textContent = 'Je winkelwagen is leeg';
+      emptyMsg.setAttribute('data-i18n', 'script_cart_empty');
       cartDropdown.appendChild(emptyMsg);
+      applyTranslations();
       return;
     }
 
@@ -276,11 +278,30 @@ document.addEventListener('DOMContentLoaded', function () {
     })
     .catch(err => console.error('Fout bij laden footer:', err));
 
-  // --- Header user controls ---
+  // Plaats dit bovenaan, binnen DOMContentLoaded, maar buiten andere functies
+  function setCookie(name, value, days) {
+    const date = new Date();
+    date.setTime(date.getTime() + days*24*60*60*1000);
+    document.cookie = `${name}=${encodeURIComponent(value)};expires=${date.toUTCString()};path=/;SameSite=Lax`;
+  }
+
+  function getCookie(name) {
+    const cname = name + "=";
+    const decoded = decodeURIComponent(document.cookie);
+    const ca = decoded.split(';');
+    for (let c of ca) {
+      c = c.trim();
+      if (c.indexOf(cname) === 0) return c.substring(cname.length);
+    }
+    return "";
+  }
+  
+    // --- Header user controls ---
   function setupHeaderUserControls(headerContainer) {
     fetch('current_user.php')
       .then(res => res.json())
       .then(data => {
+        let currentLang = getCookie('siteLanguage') || 'be-nl';
         const loginBtn = headerContainer.querySelector('#loginBtn');
         const registerBtn = headerContainer.querySelector('#registerBtn');
         const userDisplay = headerContainer.querySelector('#userDisplay');
@@ -290,7 +311,9 @@ document.addEventListener('DOMContentLoaded', function () {
           if (loginBtn) loginBtn.style.display = 'none';
           if (registerBtn) registerBtn.style.display = 'none';
           if (userDisplay) {
-            userDisplay.textContent = `Welkom, ${data.userName}`;
+            userDisplay.setAttribute('data-i18n', 'script_welcome');
+            userDisplay.dataset.extraText = data.userName;
+            userDisplay.textContent = `${translations[currentLang]?.script_welcome || 'Welkom'}, ${data.userName}`;
             userDisplay.style.display = 'inline-block';
             userDisplay.classList.add('user-button');
           }
@@ -480,11 +503,15 @@ document.addEventListener('DOMContentLoaded', function () {
         data = JSON.parse(text);
       } catch (err) {
         console.error('Geen geldige JSON van server:', text);
-        alert('Er ging iets mis bij het verwijderen.');
+        const msg = translations[lang]?.script_remove_item_error || 'Er ging iets mis bij het verwijderen.';
+        alert(msg);
         return;
       }
       if (data.success) fetchCart(document.getElementById('cartDropdown'));
-      else alert(data.message || 'Fout bij verwijderen item');
+      else {
+        const msg = data.message || translations[lang]?.script_remove_item_failed || 'Fout bij verwijderen item';
+        alert(msg);
+      }
     });
   }
 
@@ -537,12 +564,22 @@ document.addEventListener('DOMContentLoaded', function () {
                   window.location.href = 'bedankt.html';
               } else {
                   console.error('Server response:', data);
-                  alert('Er is iets misgegaan bij het verwerken van je bestelling.');
+                  const msgBox = document.createElement("div");
+                  msgBox.setAttribute("data-i18n", "script_checkout_error");
+                  document.body.appendChild(msgBox);
+                  applyTranslations(msgBox);
+                  alert(msgBox.textContent);
+                  msgBox.remove();
               }
           })
           .catch(err => {
               console.error('Fout bij afrekenen:', err);
-              alert('Er is iets misgegaan bij het verwerken van je bestelling.');
+              const msgBox = document.createElement("div");
+              msgBox.setAttribute("data-i18n", "script_checkout_error");
+              document.body.appendChild(msgBox);
+              applyTranslations(msgBox);
+              alert(msgBox.textContent);
+              msgBox.remove();
           });
       });
   }
@@ -576,7 +613,10 @@ document.addEventListener('DOMContentLoaded', function () {
           vouchers.forEach(v => {
               const option = document.createElement('option');
               option.value = v.code;
-              option.textContent = `${v.code} - €${v.value.toFixed(2)} (${v.is_used ? 'Gebruikt' : 'Beschikbaar'})`;
+              const statusSpan = document.createElement('span');
+              statusSpan.setAttribute('data-i18n', v.is_used ? 'script_voucher_used' : 'script_voucher_available');
+              applyTranslations(statusSpan);
+              option.textContent = `${v.code} - €${v.value.toFixed(2)} (${statusSpan.textContent})`;
               savedVoucherDropdown.appendChild(option);
           });
       })
@@ -657,10 +697,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Toon foutmeldingen
   if (params.get('error_email') === 'exists') {
-    showError('register-email', 'E-mail bestaat al');
+    const span = document.createElement('span');
+    span.setAttribute('data-i18n', 'script_register_email_exists');
+    applyTranslations(span);
+    showError('register-email', span.textContent);
   }
+
   if (params.get('error_password2') === 'nomatch') {
-    showError('register-password', 'Wachtwoorden komen niet overeen');
+    const span = document.createElement('span');
+    span.setAttribute('data-i18n', 'script_register_password_nomatch');
+    applyTranslations(span);
+    showError('register-password', span.textContent);
   }
 
   // Oude waarden terugzetten in formulier
@@ -678,11 +725,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Login fouten tonen via query params
   if (params.get('error') === 'wrong_password') {
-    showError('login-password', 'Foutief wachtwoord');
+    const span = document.createElement('span');
+    span.setAttribute('data-i18n', 'script_login_wrong_password');
+    applyTranslations(span);
+    showError('login-password', span.textContent);
   }
 
   if (params.get('error') === 'email_not_found') {
-    showError('login-email', 'E-mail niet gevonden');
+    const span = document.createElement('span');
+    span.setAttribute('data-i18n', 'script_login_email_not_found');
+    applyTranslations(span);
+    showError('login-email', span.textContent);
   }
 
   // Oude waarde e-mail terugzetten bij loginformulier
@@ -698,18 +751,45 @@ document.addEventListener('DOMContentLoaded', function () {
   if (params.get("error")) {
     const errors = params.get("error").split(",");
     errors.forEach(err => {
-      if (err === "name_empty") showError("name", "Naam is verplicht.");
-      if (err === "address_empty") showError("address", "Adres is verplicht.");
-      if (err === "email_invalid") showError("email", "Ongeldig e-mailadres.");
-      if (err === "email_exists") showError("email", "E-mailadres is al in gebruik.");
-      if (err === "password_mismatch") showError("passwordConfirm", "Wachtwoorden komen niet overeen.");
-      if (err === "password_same") showError("password", "Nieuw wachtwoord mag niet gelijk zijn aan het huidige.");
+      let span = document.createElement('span');
+      switch(err) {
+        case "name_empty":
+          span.setAttribute('data-i18n', 'script_name_required');
+          break;
+        case "address_empty":
+          span.setAttribute('data-i18n', 'script_address_required');
+          break;
+        case "email_invalid":
+          span.setAttribute('data-i18n', 'script_email_invalid');
+          break;
+        case "email_exists":
+          span.setAttribute('data-i18n', 'script_email_exists');
+          break;
+        case "password_mismatch":
+          span.setAttribute('data-i18n', 'script_password_mismatch');
+          break;
+        case "password_same":
+          span.setAttribute('data-i18n', 'script_password_same');
+          break;
+        default:
+          return; // onbekende error, niks doen
+      }
+      applyTranslations(span);
+      showError(
+        err === "name_empty" ? "name" :
+        err === "address_empty" ? "address" :
+        err === "email_invalid" || err === "email_exists" ? "email" :
+        err === "password_mismatch" ? "passwordConfirm" :
+        "password", 
+        span.textContent
+      );
     });
   }
 
   if (params.get("success") === "1") {
     const successEl = document.createElement("p");
-    successEl.textContent = "Profiel succesvol bijgewerkt!";
+    successEl.setAttribute('data-i18n', 'script_profile_update_success');
+    applyTranslations(successEl);
     successEl.style.color = "green";
     successEl.style.marginTop = "1rem";
     form.appendChild(successEl);
@@ -806,7 +886,11 @@ async function loadOrders() {
     }
 
     if (orders.length === 0) {
-      container.innerHTML = `<p>Je hebt nog geen bestellingen geplaatst.</p>`;
+      const p = document.createElement('p');
+      p.setAttribute('data-i18n', 'script_order_no_orders');
+      container.innerHTML = '';
+      container.appendChild(p);
+      applyTranslations(p);
       return;
     }
 
@@ -823,13 +907,14 @@ async function loadOrders() {
               <div class="order-product-info">
                 <img src="cadeaubon/voucher.png" alt="Cadeaubon" class="order-product-img order-product-img-light"/>
                 <img src="cadeaubon/voucher (dark mode).png" alt="Cadeaubon" class="order-product-img order-product-img-dark"/>
-                <span class="order-product-name">Cadeaubon</span>
+                <span class="order-product-name" data-i18n="script_order_voucher">Cadeaubon</span>
               </div>
               <div class="order-product-details">
                 <span class="order-product-price">${item.replace(/Cadeaubon:\s*/i, '')}</span>
               </div>
             </div>
           `;
+          applyTranslations();
         } else if (typeof item === 'object') {
           // Gewone producten: klikbaar naar productpagina
           productHtml += `
@@ -839,7 +924,7 @@ async function loadOrders() {
                 <span class="order-product-name">${item.name}</span>
               </div>
               <div class="order-product-details">
-                <span class="order-product-qty">Aantal: ${item.quantity}</span>
+                <span class="order-product-qty"><span data-i18n="script_order_amount">Aantal</span>: ${item.quantity}</span>
                 <span class="order-product-price">€${parseFloat(item.price).toFixed(2)}</span>
               </div>
             </div>
@@ -851,7 +936,7 @@ async function loadOrders() {
         <div class="order-card" data-order-id="${order.id}">
           <div class="order-card-header">
             <div class="order-card-title">
-              <span>Order ${order.id} - Aankoopdatum: ${formatDate(order.created_at)}</span>
+              <span><span data-i18n="script_order_number">Order</span> ${order.id} - <span data-i18n="script_order_date">Aankoopdatum</span>: ${formatDate(order.created_at)}</span>
             </div>
             <button class="invoice-btn" title="Factuur bekijken" onclick="event.stopPropagation(); openInvoicePDF(${order.id});">
               <img src="factuursymbool/factuursymbool.png" alt="Factuur" class="invoice-icon invoice-icon-light" />
@@ -862,11 +947,11 @@ async function loadOrders() {
             ${productHtml}
           </div>
           <div class="order-detail-row">
-            <span class="order-detail-label">Totaalprijs:</span>
+            <span class="order-detail-label" data-i18n="script_order_total_label"></span>
             <span class="order-detail-value">€${parseFloat(order.total_price).toFixed(2)}</span>
           </div>
           <div class="order-detail-row">
-            <span class="order-detail-label">Status:</span>
+            <span class="order-detail-label" data-i18n="script_order_status_label"></span>
             <span class="order-detail-value">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>
           </div>
         </div>
@@ -874,6 +959,7 @@ async function loadOrders() {
     });
 
     container.innerHTML = html;
+    applyTranslations();
 
     // Alleen factuurknop klikbaar maken
     container.querySelectorAll('.invoice-btn').forEach(button => {
@@ -920,7 +1006,8 @@ async function loadLastOrder() {
     const order = await response.json();
 
     if (order.error) {
-      container.innerHTML = `<p>${order.error}</p>`;
+      container.innerHTML = `<p data-i18n="script_last_order_error"></p>`;
+      applyTranslations(container);
       return;
     }
 
@@ -940,12 +1027,10 @@ async function loadLastOrder() {
     let productList = '';
 
     if (products.length > 0) {
-      // Normale producten
       productList += products.map(p => `${p.quantity} x ${p.name}`).join(', ');
     }
 
     if (vouchers.length > 0) {
-      // Voeg vouchers toe
       if (productList) productList += ', ';
       productList += vouchers.length === 1
         ? `${vouchers[0].name.replace(/Cadeaubon: /, '')}`
@@ -953,15 +1038,17 @@ async function loadLastOrder() {
     }
 
     container.innerHTML = `
-      Ordernummer: ${order.id}<br>
-      Datum: ${formatDate(order.created_at)}<br>
-      Producten: ${productList || '<em>Geen producten</em>'}<br>
-      Totaalprijs: €${parseFloat(order.total_price).toFixed(2)}<br>
-      Status: ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+      <span><span data-i18n="script_order_number"></span>: ${order.id}</span><br>
+      <span><span data-i18n="script_order_date"></span>: ${formatDate(order.created_at)}</span><br>
+      <span><span data-i18n="script_order_products"></span>: ${productList || `<em data-i18n="script_no_products"></em>`}</span><br>
+      <span><span data-i18n="script_order_total_label"></span> €${parseFloat(order.total_price).toFixed(2)}</span><br>
+      <span><span data-i18n="script_order_status_label"></span> ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>
     `;
+    applyTranslations(container);
 
   } catch (err) {
-    container.innerHTML = `<p>Fout bij laden van laatste bestelling.</p>`;
+    container.innerHTML = `<p data-i18n="script_last_order_load_error"></p>`;
+    applyTranslations(container);
     console.error(err);
   }
 }
@@ -1012,20 +1099,30 @@ async function loadLastOrderDetails() {
     const data = await res.json();
 
     if (!data || data.error) {
-      container.innerHTML = data.error || "Geen bestelling gevonden.";
+      container.innerHTML = ''; // eerst leegmaken
+
+      const p = document.createElement('p');
+      if (data && data.error) {
+        p.textContent = data.error; // serverfout tonen
+      } else {
+        p.setAttribute('data-i18n', 'script_no_order_found'); // vertaling gebruiken
+        applyTranslations(p);
+      }
+
+      container.appendChild(p);
       return;
     }
 
     let html = `
-      <h2>Order ${data.id}</h2>
-      <p><strong>Datum:</strong> ${formatDate(data.created_at)}</p>
+      <h2><span data-i18n="script_bedankt_title">Order</span> ${data.id}</h2>
+      <p><strong data-i18n="script_bedankt_date">Datum:</strong> ${formatDate(data.created_at)}</p>
       <table class="bedankt-table">
         <thead>
           <tr>
-            <th>Product</th>
-            <th>Aantal</th>
-            <th>Eenheidsprijs</th>
-            <th>Prijs</th>
+            <th data-i18n="script_bedankt_product">Product</th>
+            <th data-i18n="script_bedankt_amount">Aantal</th>
+            <th data-i18n="script_bedankt_unit_price">Eenheidsprijs</th>
+            <th data-i18n="script_bedankt_price">Prijs</th>
           </tr>
         </thead>
         <tbody>
@@ -1039,7 +1136,7 @@ async function loadLastOrderDetails() {
           <div style="display:flex; align-items:center; gap:8px;">
             <img src="cadeaubon/voucher.png" alt="Cadeaubon" class="order-product-img order-product-img-light" style="width:40px; height:40px; object-fit:cover;">
             <img src="cadeaubon/voucher (dark mode).png" alt="Cadeaubon" class="order-product-img order-product-img-dark" style="width:40px; height:40px; object-fit:cover;">
-            <span>Cadeaubon</span>
+            <span data-i18n="script_voucher_name"></span>
           </div>
         `;
       } else {
@@ -1066,12 +1163,17 @@ async function loadLastOrderDetails() {
     html += `
         </tbody>
       </table>
-      <h3>Totaal: €${parseFloat(data.total_price).toFixed(2)}</h3>
+      <h3><span data-i18n="script_order_total_label"></span> €${parseFloat(data.total_price).toFixed(2)}</h3>
     `;
 
     container.innerHTML = html;
+    applyTranslations(container);
   } catch (err) {
-    container.innerHTML = "Er is iets misgegaan bij het laden van je bestelling.";
+    container.innerHTML = '';
+    const p = document.createElement('p');
+    p.setAttribute('data-i18n', 'script_order_load_failed');
+    applyTranslations(p);
+    container.appendChild(p);
     console.error(err);
   }
 }
@@ -1098,208 +1200,253 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Haal bestellingen op
     fetch('retourneren.php')
-        .then(res => res.json())
-        .then(data => {
-            if (data.error) {
-                returnCardsContainer.innerHTML = `<p>${data.error}</p>`;
-                return;
-            }
+      .then(res => res.json())
+      .then(data => {
+        returnCardsContainer.innerHTML = ''; // eerst leegmaken
 
-            // ✅ Check of er geen bestellingen zijn
-            if (!data || data.length === 0) {
-                returnCardsContainer.innerHTML = `<p class="no-orders">Je hebt nog geen bestellingen geplaatst.</p>`;
-                return;
-            }
+        if (data.error) {
+          const p = document.createElement('p');
+          p.setAttribute('data-i18n', 'script_returns_error');
+          returnCardsContainer.appendChild(p);
+          applyTranslations(returnCardsContainer);
+          return;
+        }
 
-            const orders = {};
-            data.forEach(item => {
-                if (!orders[item.order_id]) {
-                    orders[item.order_id] = { order_date: item.order_date, items: [] };
-                }
-                orders[item.order_id].items.push(item);
-            });
+        if (!data || data.length === 0) {
+          const p = document.createElement('p');
+          p.className = 'no-orders';
+          p.setAttribute('data-i18n', 'script_no_orders_yet');
+          returnCardsContainer.appendChild(p);
+          applyTranslations(returnCardsContainer);
+          return;
+        }
 
-            returnCardsContainer.innerHTML = '';
-
-            const sortedOrderIds = Object.keys(orders).sort((a,b) => 
-                new Date(orders[b].order_date) - new Date(orders[a].order_date)
-            );
-
-            sortedOrderIds.forEach(orderId => {
-                const order = orders[orderId];
-                const orderDiv = document.createElement('div');
-                orderDiv.className = 'return-card';
-
-                const dateObj = new Date(order.order_date);
-                const formattedDate = `${String(dateObj.getDate()).padStart(2,'0')}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${dateObj.getFullYear()}`;
-
-                const orderHeader = document.createElement('h3');
-                orderHeader.textContent = `Order ${orderId} - Aankoopdatum: ${formattedDate}`;
-                orderDiv.appendChild(orderHeader);
-
-                order.items.forEach(product => {
-                  const productDiv = document.createElement('div');
-                  productDiv.className = 'return-product';
-
-                  const img = document.createElement('img');
-                  img.src = product.product_image;
-                  img.alt = product.product_name;
-                  img.className = 'return-product-img';
-
-                  const name = document.createElement('p');
-                  name.textContent = product.product_name;
-
-                  const returnLink = document.createElement('a');
-                  returnLink.href = '#';
-                  returnLink.className = 'return-link';
-
-                  // Bereken verschil in dagen tussen nu en aankoopdatum
-                  const today = new Date();
-                  const orderDate = new Date(order.order_date);
-                  const diffTime = today - orderDate;
-                  const diffDays = diffTime / (1000 * 60 * 60 * 24);
-
-                  // Als ouder dan 30 dagen → retour onmogelijk
-                  if (diffDays > 30) {
-                      returnLink.textContent = 'Retourperiode verlopen';
-                      returnLink.style.pointerEvents = 'none';
-                      returnLink.classList.add('return-expired');
-                  } else {
-                      // Bepaal knoptekst op basis van return_status
-                      switch(product.return_status) {
-                          case 'requested':
-                              returnLink.textContent = 'Retour aangevraagd';
-                              returnLink.style.pointerEvents = 'none';
-                              returnLink.classList.add('return-requested');
-                              break;
-                          case 'approved':
-                              returnLink.textContent = 'Retour goedgekeurd';
-                              returnLink.style.pointerEvents = 'none';
-                              returnLink.classList.add('return-approved');
-                              break;
-                          case 'processed':
-                              returnLink.textContent = 'Retour verwerkt';
-                              returnLink.style.pointerEvents = 'none';
-                              returnLink.classList.add('return-processed');
-                              break;
-                          case 'rejected':
-                              returnLink.textContent = 'Retour afgekeurd';
-                              returnLink.style.pointerEvents = 'none';
-                              returnLink.classList.add('return-rejected');
-                              break;
-                          default:
-                              returnLink.textContent = 'Retour starten';
-                              // Klik event
-                              returnLink.addEventListener('click', e => {
-                                  e.preventDefault();
-                                  if (!csrfToken) { alert('CSRF-token niet geladen.'); return; }
-
-                                  fetch('submit_returns.php', {
-                                      method: 'POST',
-                                      headers: { 'Content-Type':'application/x-www-form-urlencoded' },
-                                      body: `order_item_id=${product.order_item_id}&reason=Retour+verzoek&csrf_token=${csrfToken}`
-                                  })
-                                  .then(res => res.json())
-                                  .then(resp => {
-                                      if (resp.success) {
-                                          returnLink.textContent = 'Retour aangevraagd';
-                                          returnLink.style.pointerEvents = 'none';
-                                          returnLink.classList.add('return-requested');
-                                      } else {
-                                          alert(resp.error || 'Er is iets misgegaan.');
-                                      }
-                                  })
-                                  .catch(err => alert('Fout bij verwerken retour: '+err));
-                              });
-                      }
-                  }
-
-                  productDiv.appendChild(img);
-                  productDiv.appendChild(name);
-                  productDiv.appendChild(returnLink);
-                  orderDiv.appendChild(productDiv);
-              });
-
-                returnCardsContainer.appendChild(orderDiv);
-            });
-        })
-        .catch(err => {
-            returnCardsContainer.innerHTML = `<p>Er is een fout opgetreden: ${err}</p>`;
+        const orders = {};
+        data.forEach(item => {
+          if (!orders[item.order_id]) {
+            orders[item.order_id] = { order_date: item.order_date, items: [] };
+          }
+          orders[item.order_id].items.push(item);
         });
+
+        const sortedOrderIds = Object.keys(orders).sort((a,b) => 
+          new Date(orders[b].order_date) - new Date(orders[a].order_date)
+        );
+
+        sortedOrderIds.forEach(orderId => {
+          const order = orders[orderId];
+          const orderDiv = document.createElement('div');
+          orderDiv.className = 'return-card';
+
+          const dateObj = new Date(order.order_date);
+          const formattedDate = `${String(dateObj.getDate()).padStart(2,'0')}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${dateObj.getFullYear()}`;
+
+          const orderHeader = document.createElement('h3');
+          orderHeader.innerHTML = `<span data-i18n="script_order_number"></span> ${orderId} - <span data-i18n="script_order_date"></span>: ${formattedDate}`;
+          orderDiv.appendChild(orderHeader);
+
+          order.items.forEach(product => {
+            const productDiv = document.createElement('div');
+            productDiv.className = 'return-product';
+
+            const img = document.createElement('img');
+            img.src = product.product_image;
+            img.alt = product.product_name;
+            img.className = 'return-product-img';
+
+            const name = document.createElement('p');
+            name.textContent = product.product_name;
+
+            const returnLink = document.createElement('a');
+            returnLink.href = '#';
+            returnLink.className = 'return-link';
+
+            const today = new Date();
+            const orderDate = new Date(order.order_date);
+            const diffTime = today - orderDate;
+            const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+            if (diffDays > 30) {
+              returnLink.setAttribute('data-i18n', 'script_order_status_expired');
+              returnLink.style.pointerEvents = 'none';
+              returnLink.classList.add('return-expired');
+            } else {
+              switch(product.return_status) {
+                case 'requested':
+                  returnLink.setAttribute('data-i18n', 'script_order_status_requested');
+                  returnLink.style.pointerEvents = 'none';
+                  returnLink.classList.add('return-requested');
+                  break;
+                case 'approved':
+                  returnLink.setAttribute('data-i18n', 'script_order_status_approved');
+                  returnLink.style.pointerEvents = 'none';
+                  returnLink.classList.add('return-approved');
+                  break;
+                case 'processed':
+                  returnLink.setAttribute('data-i18n', 'script_order_status_processed');
+                  returnLink.style.pointerEvents = 'none';
+                  returnLink.classList.add('return-processed');
+                  break;
+                case 'rejected':
+                  returnLink.setAttribute('data-i18n', 'script_order_status_rejected');
+                  returnLink.style.pointerEvents = 'none';
+                  returnLink.classList.add('return-rejected');
+                  break;
+                default:
+                  returnLink.setAttribute('data-i18n', 'script_order_status_start');
+                  returnLink.addEventListener('click', e => {
+                    e.preventDefault();
+                    if (!csrfToken) {
+                      alert(document.querySelector('[data-i18n="script_csrf_not_loaded"]').textContent);
+                      return;
+                    }
+
+                    fetch('submit_returns.php', {
+                      method: 'POST',
+                      headers: { 'Content-Type':'application/x-www-form-urlencoded' },
+                      body: `order_item_id=${product.order_item_id}&reason=Retour+verzoek&csrf_token=${csrfToken}`
+                    })
+                    .then(res => res.json())
+                    .then(resp => {
+                      if (resp.success) {
+                        returnLink.setAttribute('data-i18n', 'script_return_request_succes');
+                        returnLink.style.pointerEvents = 'none';
+                        returnLink.classList.add('return-requested');
+                        applyTranslations(returnLink);
+                      } else {
+                        alert(resp.error || document.querySelector('[data-i18n="script_return_request_error"]').textContent);
+                      }
+                    })
+                    .catch(err => alert(document.querySelector('[data-i18n="script_return_request_error"]').textContent + ': ' + err));
+                  });
+              }
+            }
+
+            productDiv.appendChild(img);
+            productDiv.appendChild(name);
+            productDiv.appendChild(returnLink);
+            orderDiv.appendChild(productDiv);
+          });
+
+          returnCardsContainer.appendChild(orderDiv);
+        });
+
+        applyTranslations(returnCardsContainer);
+      })
+      .catch(err => {
+        const p = document.createElement('p');
+        p.setAttribute('data-i18n', 'script_return_request_error');
+        returnCardsContainer.innerHTML = '';
+        returnCardsContainer.appendChild(p);
+        applyTranslations(returnCardsContainer);
+        console.error(err);
+    });
 });
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const voucherList = document.getElementById('voucher-list');
   if (!voucherList) return;
 
-  fetch('get_vouchers.php')
-    .then(res => {
-      if (!res.ok) throw new Error(`HTTP fout! status: ${res.status}`);
-      return res.json();
-    })
-    .then(data => {
-      console.log('Voucher data:', data);
-
-      if (data.error) {
-        voucherList.innerHTML = `<p>${data.error}</p>`;
-        return;
-      }
-
-      if (!Array.isArray(data) || data.length === 0) {
-        voucherList.innerHTML = `<p>Geen cadeaubonnen gekoppeld.</p>`;
-        return;
-      }
-
-      const now = new Date();
-
-      // Filter alleen geldige vouchers
-      const validVouchers = data.filter(voucher => {
-        const remaining = Number(voucher.remaining_value ?? 0);
-        const expiresAt = voucher.expires_at ? new Date(voucher.expires_at) : null;
-        return remaining > 0 && (!expiresAt || expiresAt >= now);
-      });
-
-      if (validVouchers.length === 0) {
-        voucherList.innerHTML = `<p>Geen cadeaubonnen gekoppeld.</p>`;
-        return;
-      }
-
-      const ul = document.createElement('ul');
-      ul.classList.add('voucher-list');
-
-      validVouchers.forEach(voucher => {
-        const li = document.createElement('li');
-
-        const remainingValue = Number(voucher.remaining_value ?? 0).toFixed(2);
-
-        let expireDate = 'Onbepaald';
-        if (voucher.expires_at) {
-          const dateObj = new Date(voucher.expires_at);
-          if (!isNaN(dateObj)) {
-            const day = String(dateObj.getDate()).padStart(2, '0');
-            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-            const year = dateObj.getFullYear();
-            expireDate = `${day}-${month}-${year}`;
+  // --- Wacht tot vertalingen beschikbaar zijn ---
+  async function waitForTranslations() {
+    return new Promise(resolve => {
+      if (typeof translations !== 'undefined' && typeof currentLang !== 'undefined') {
+        resolve();
+      } else {
+        const interval = setInterval(() => {
+          if (typeof translations !== 'undefined' && typeof currentLang !== 'undefined') {
+            clearInterval(interval);
+            resolve();
           }
-        }
-
-        li.innerHTML = `
-          <span class="left"><strong>Code:</strong> ${voucher.code}</span>
-          <span class="separator">|</span>
-          <span class="center"><strong>Resterende waarde:</strong> €${remainingValue}</span>
-          <span class="separator">|</span>
-          <span class="right"><strong>Vervalt op:</strong> ${expireDate}</span>
-        `;
-        ul.appendChild(li);
-      });
-
-      voucherList.innerHTML = '';
-      voucherList.appendChild(ul);
-    })
-    .catch(err => {
-      voucherList.innerHTML = `<p>Fout bij laden van cadeaubonnen. Controleer console.</p>`;
-      console.error('Fout bij ophalen vouchers:', err);
+        }, 50);
+      }
     });
+  }
+
+  await waitForTranslations();
+
+  // --- Functie om boodschap te tonen ---
+  function showMessage(container, key) {
+    container.innerHTML = '';
+    const p = document.createElement('p');
+    p.setAttribute('data-i18n', key);
+    container.appendChild(p);
+    applyTranslations(container);
+  }
+
+  // --- Haal vouchers op ---
+  try {
+    const res = await fetch('get_vouchers.php', { credentials: 'same-origin' });
+    if (!res.ok) throw new Error(`HTTP fout! status: ${res.status}`);
+    const data = await res.json();
+
+    console.log('Voucher data:', data);
+
+    voucherList.innerHTML = ''; // altijd leegmaken
+
+    // --- Controleer op server error ---
+    if (data.error) {
+      showMessage(voucherList, 'script_voucher_error');
+      return;
+    }
+
+    // --- Controleer of er vouchers zijn ---
+    if (!Array.isArray(data) || data.length === 0) {
+      showMessage(voucherList, 'script_no_vouchers');
+      return;
+    }
+
+    const now = new Date();
+
+    // --- Filter alleen geldige vouchers ---
+    const validVouchers = data.filter(voucher => {
+      const remaining = Number(voucher.remaining_value ?? 0);
+      const expiresAt = voucher.expires_at ? new Date(voucher.expires_at) : null;
+      return remaining > 0 && (!expiresAt || expiresAt >= now);
+    });
+
+    // --- Als geen geldige vouchers ---
+    if (validVouchers.length === 0) {
+      showMessage(voucherList, 'script_no_vouchers');
+      return;
+    }
+
+    // --- Render vouchers ---
+    const ul = document.createElement('ul');
+    ul.classList.add('voucher-list');
+
+    validVouchers.forEach(voucher => {
+      const li = document.createElement('li');
+      const remainingValue = Number(voucher.remaining_value ?? 0).toFixed(2);
+
+      let expireDate = 'Onbepaald';
+      if (voucher.expires_at) {
+        const dateObj = new Date(voucher.expires_at);
+        if (!isNaN(dateObj)) {
+          const day = String(dateObj.getDate()).padStart(2, '0');
+          const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+          const year = dateObj.getFullYear();
+          expireDate = `${day}-${month}-${year}`;
+        }
+      }
+
+      li.innerHTML = `
+        <span class="left"><strong data-i18n="script_voucher_code">Code:</strong> ${voucher.code}</span>
+        <span class="separator">|</span>
+        <span class="center"><strong data-i18n="script_voucher_remaining_value">Resterende waarde:</strong> €${remainingValue}</span>
+        <span class="separator">|</span>
+        <span class="right"><strong data-i18n="script_voucher_expiry">Vervalt op:</strong> ${expireDate}</span>
+      `;
+      ul.appendChild(li);
+    });
+
+    voucherList.appendChild(ul);
+    applyTranslations(voucherList);
+
+  } catch (err) {
+    console.error('Fout bij ophalen vouchers:', err);
+    showMessage(voucherList, 'script_voucher_load_error');
+  }
 });
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1334,12 +1481,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Optioneel: bij submit checken dat bedrag minimaal 5 is
     const form = document.querySelector('.voucher-form');
     form.addEventListener('submit', e => {
-        const amount = parseFloat(customAmountInput.value);
-        if (!customAmountInput.disabled && amount < 5) {
-            e.preventDefault();
-            alert('Voer een bedrag van minimaal €5 in.');
-        }
-    });
+      const amount = parseFloat(customAmountInput.value);
+      if (!customAmountInput.disabled && amount < 5) {
+          e.preventDefault();
+          const dict = translations[lang] || translations["be-nl"];
+          alert(dict["script_voucher_min_amount"]);
+      }
+  });
 });
 
 (function () {
@@ -1389,7 +1537,7 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .catch(err => {
         console.error('redeem_voucher error:', err);
-        messageBox.textContent = 'Er ging iets mis, probeer opnieuw.';
+        messageBox.textContent = dict["script_voucher_redeem_error"];
         messageBox.style.color = 'red';
         messageBox.style.margin = '1rem 0';
       })
@@ -1408,16 +1556,18 @@ document.addEventListener('DOMContentLoaded', () => {
       applyBtn.addEventListener('click', () => {
         const code = savedSelect.value;
         if (!code) {
-          messageBox.textContent = "Kies eerst een cadeaubon.";
+          messageBox.setAttribute('data-i18n', 'script_select_voucher_first');
+          applyTranslations(messageBox);
           messageBox.style.color = "red";
           messageBox.style.margin = "1rem 0";
           return;
         }
 
         // Succesmelding
-        messageBox.textContent = `Cadeaubon toegepast: ${code}`;
+        messageBox.innerHTML = `<span data-i18n="script_voucher_applied"></span>: <span class="voucher-code">${code}</span>`;
         messageBox.style.color = "green";
         messageBox.style.margin = "1rem 0";
+        applyTranslations(messageBox);
 
         // TODO: hier logica toevoegen om totaal aan te passen
       });
@@ -1431,7 +1581,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(list => {
         if (!Array.isArray(list)) return;
         const now = new Date();
-        const opts = ['<option value="">Kies een bon</option>'];
+        const opts = ['<option value="" data-i18n="script_select_voucher">Kies een bon</option>'];
         list.forEach(v => {
           const expires = v.expires_at ? new Date(v.expires_at) : null;
           const remaining = Number(v.remaining_value ?? 0);
@@ -1440,7 +1590,7 @@ document.addEventListener('DOMContentLoaded', () => {
               ? `${String(expires.getDate()).padStart(2,'0')}-${String(expires.getMonth()+1).padStart(2,'0')}-${expires.getFullYear()}` 
               : '';
             opts.push(
-              `<option value="${v.code}">${v.code} — €${remaining.toFixed(2)}${expireDate ? ' (tot ' + expireDate + ')' : ''}</option>`
+              `<option value="${v.code}">${v.code} — €${remaining.toFixed(2)}${expireDate ? ' (<span data-i18n="script_until">tot</span> ' + expireDate + ')' : ''}</option>`
             );
           }
         });
@@ -1456,8 +1606,11 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('get_vouchers.php', { credentials: 'same-origin' })
       .then(r => r.json())
       .then(data => {
+        const cookieMatch = document.cookie.match(/(?:^|;\s*)siteLanguage=([^;]+)/);
+        const lang = cookieMatch ? decodeURIComponent(cookieMatch[1]) : "be-nl"; // fallback
+        const dict = translations[lang] || translations["be-nl"];
         if (data.error || !Array.isArray(data)) {
-          container.innerHTML = `<p>${data.error || 'Geen cadeaubonnen gekoppeld.'}</p>`;
+          container.innerHTML = `<p>${data.error || dict["script_no_vouchers"]}</p>`;
           return;
         }
         const now = new Date();
@@ -1467,7 +1620,7 @@ document.addEventListener('DOMContentLoaded', () => {
           return remaining > 0 && (!expires || expires >= now);
         });
         if (!valid.length) {
-          container.innerHTML = '<p>Geen cadeaubonnen gekoppeld.</p>';
+          container.innerHTML = `<p data-i18n="script_no_vouchers"></p>`;
           return;
         }
         const ul = document.createElement('ul');
@@ -1479,11 +1632,11 @@ document.addEventListener('DOMContentLoaded', () => {
             : 'Onbepaald';
           li = document.createElement('li');
           li.innerHTML = `
-            <span class="left"><strong>Code:</strong> ${v.code}</span>
+            <span class="left"><strong data-i18n="script_voucher_code">Code:</strong> ${v.code}</span>
             <span class="separator" aria-hidden="true">|</span>
-            <span class="center"><strong>Resterende waarde:</strong> €${Number(v.remaining_value ?? 0).toFixed(2)}</span>
+            <span class="center"><strong data-i18n="script_voucher_remaining_value">Resterende waarde:</strong> €${Number(v.remaining_value ?? 0).toFixed(2)}</span>
             <span class="separator" aria-hidden="true">|</span>
-            <span class="right"><strong>Vervalt op:</strong> ${expireDate}</span>
+            <span class="right"><strong data-i18n="script_voucher_expiry">Vervalt op:</strong> ${expireDate}</span>
           `;
           ul.appendChild(li);
         });
@@ -1491,9 +1644,13 @@ document.addEventListener('DOMContentLoaded', () => {
         container.appendChild(ul);
       })
       .catch(err => {
-        console.error('get_vouchers list error:', err);
-        container.innerHTML = '<p>Fout bij laden van cadeaubonnen.</p>';
-      });
+    console.error('get_vouchers list error:', err);
+        const p = document.createElement('p');
+        p.setAttribute('data-i18n', 'script_voucher_load_error');
+        container.innerHTML = '';
+        container.appendChild(p);
+        applyTranslations(container);
+    });
   }
 
   if (document.readyState === 'loading') {
@@ -1529,8 +1686,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (token) {
       tokenInput.value = token;
     } else {
-      messageBox.textContent = "Ongeldige of ontbrekende reset-link.";
+      messageBox.textContent = '';
+      messageBox.setAttribute('data-i18n', 'script_invalid_reset_link');
       messageBox.style.color = "red";
+      applyTranslations(messageBox);
     }
   }
 
@@ -1573,7 +1732,8 @@ async function loadWishlist() {
     if (data.error || data.length === 0) {
       const emptyBox = document.createElement("div");
       emptyBox.className = "empty-wishlist-box";
-      emptyBox.textContent = "Je verlanglijstje is leeg";
+      emptyBox.setAttribute("data-i18n", "script_wishlist_empty");
+      applyTranslations(emptyBox);
       container.appendChild(emptyBox);
       return;
     }
@@ -1593,7 +1753,7 @@ async function loadWishlist() {
         <div class="wishlist-info">
           <h3>${item.name}</h3>
           ${item.variant ? `<p>${item.variant}</p>` : ""}
-          <p>Prijs: €${parseFloat(item.price).toFixed(2)}</p>
+          <p><span data-i18n="script_cart_price">Prijs</span>: €${parseFloat(item.price).toFixed(2)}</p>
           <div class="wishlist-actions">
             <button class="add-to-cart" data-id="${item.id}">
               <img src="shopping bag/shopping bag.png" alt="Toevoegen aan winkelwagen" class="cart-icon cart-icon-light" />
@@ -1650,8 +1810,12 @@ async function loadWishlist() {
     container.appendChild(grid);
 
   } catch (err) {
-    document.getElementById("wishlist-container").innerHTML =
-      "<p>Fout bij laden van wishlist.</p>";
+    const container = document.getElementById("wishlist-container");
+    container.innerHTML = '';
+    const p = document.createElement('p');
+    p.setAttribute('data-i18n', 'script_wishlist_load_error');
+    container.appendChild(p);
+    applyTranslations(container);
     console.error(err);
   }
 }
@@ -1672,20 +1836,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   const id = params.get('id');
 
   if (!id) {
-    errorEl.textContent = "Geen product geselecteerd.";
+    errorEl.textContent = '';
+    errorEl.setAttribute('data-i18n', 'script_no_product_selected');
+    applyTranslations(errorEl);
     return;
   }
 
   // --- Haal CSRF-token op via fetch ---
-try {
-  const csrfResp = await fetch('csrf.php');
-  const csrfData = await csrfResp.json();
-  csrfTokenEl.value = csrfData.csrf_token; // vul hidden input
-} catch (err) {
-  errorEl.textContent = "Fout bij ophalen van beveiligingstoken.";
-  console.error(err);
-  return;
-}
+  try {
+    const csrfResp = await fetch('csrf.php');
+    const csrfData = await csrfResp.json();
+    csrfTokenEl.value = csrfData.csrf_token;
+  } catch (err) {
+    errorEl.textContent = '';
+    errorEl.setAttribute('data-i18n', 'script_csrf_load_error');
+    applyTranslations(errorEl);
+    console.error(err);
+    return;
+  }
 
   try {
     // Product ophalen via PHP JSON
@@ -1706,33 +1874,40 @@ try {
 
     // Add to cart knop
     addBtn.addEventListener('click', async () => {
-      const quantity = parseInt(quantityEl.value);
-      if (quantity < 1) return;
+    const quantity = parseInt(quantityEl.value);
+    if (quantity < 1) return;
 
-      const formData = new FormData();
-      formData.append('product_id', product.id);
-      formData.append('quantity', quantity);
-      formData.append('csrf_token', csrfTokenEl.value); // CSRF-token meesturen
+    const formData = new FormData();
+    formData.append('product_id', product.id);
+    formData.append('quantity', quantity);
+    formData.append('csrf_token', csrfTokenEl.value); // CSRF-token meesturen
 
-      try {
-        const addResp = await fetch('add_to_cart.php', {
-          method: 'POST',
-          body: formData
-        });
-        const result = await addResp.json(); // JSON verwacht
-        if(result.success){
-          window.location.href = 'cart.html';
-        } else {
-          alert(result.error || 'Fout bij toevoegen aan winkelwagen.');
-        }
-      } catch (err) {
-        alert('Fout bij toevoegen aan winkelwagen.');
-        console.error(err);
+    try {
+      const addResp = await fetch('add_to_cart.php', {
+        method: 'POST',
+        body: formData
+      });
+      const result = await addResp.json(); // JSON verwacht
+      if(result.success){
+        window.location.href = 'cart.html';
+      } else {
+        const temp = document.createElement('span');
+        temp.setAttribute('data-i18n', 'script_add_to_cart_error');
+        applyTranslations(temp);
+        alert(result.error || temp.textContent);
       }
-    });
+    } catch (err) {
+      const temp = document.createElement('span');
+      temp.setAttribute('data-i18n', 'script_add_to_cart_error');
+      applyTranslations(temp);
+      alert(temp.textContent);
+      console.error(err);
+    }
+  });
 
   } catch (err) {
-    errorEl.textContent = "Fout bij het laden van het product.";
+    errorEl.setAttribute('data-i18n', 'script_product_load_error');
+    applyTranslations(errorEl);
     console.error(err);
   }
 });
@@ -1769,7 +1944,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- Redirect ingelogde gebruiker weg van "guest-only" pagina's ---
 document.addEventListener('DOMContentLoaded', () => {
-    const guestPages = ['login_registreren.html','reset_password.html','reset_success.html','wachtwoord vergeten.html','login.php','register.php','reset_password.php','wachtwoord vergeten.php']; // pagina's alleen voor niet-ingelogde gebruikers
+    const guestPages = [
+      'login_registreren.html','reset_password.html','reset_success.html',
+      'wachtwoord vergeten.html','login.php','register.php','reset_password.php',
+      'wachtwoord vergeten.php'
+    ]; // pagina's alleen voor niet-ingelogde gebruikers
     const homePage = 'index.html';
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
 
@@ -1936,8 +2115,18 @@ function applyTranslations() {
   // 3. Alle elementen vervangen
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.getAttribute("data-i18n");
+    if (el.dataset.extraText) {
+        el.textContent = `${dict[key]}, ${el.dataset.extraText}`;
+    } else {
+        el.textContent = dict[key];
+    }
+  });
+
+  // Vertaal placeholders
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
     if (dict[key]) {
-      el.textContent = dict[key];
+      el.setAttribute('placeholder', dict[key]);
     }
   });
 }
