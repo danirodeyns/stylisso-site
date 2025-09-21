@@ -1592,9 +1592,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Succesmelding
-        messageBox.innerHTML = `<span data-i18n="script_voucher_applied"></span>: <span class="voucher-code">${code}</span>`;
-        messageBox.style.color = "green";
-        messageBox.style.margin = "1rem 0";
+        messageBox.innerHTML = ''; // eerst leegmaken
+
+        const spanText = document.createElement('span');
+        spanText.setAttribute('data-i18n', 'script_voucher_applied');
+
+        const spanCode = document.createElement('span');
+        spanCode.className = 'voucher-code';
+        spanCode.textContent = code;
+
+        // Voeg beide toe in messageBox
+        messageBox.appendChild(spanText);
+        messageBox.appendChild(document.createTextNode(': ')); // dubbele punt tussen tekst en code
+        messageBox.appendChild(spanCode);
+
+        // Stijl
+        messageBox.style.color = 'green';
+        messageBox.style.margin = '1rem 0';
+
+        // Vertalingen toepassen
         applyTranslations(messageBox);
 
         // TODO: hier logica toevoegen om totaal aan te passen
