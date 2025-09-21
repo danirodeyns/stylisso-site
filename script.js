@@ -679,6 +679,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const params = new URLSearchParams(window.location.search);
 
   function showError(inputId, message) {
+    console.log("showError aangeroepen:", { inputId, message }); // ✅ debug
+
     const input = document.getElementById(inputId);
     if (input) {
       // Verwijder bestaande foutmelding als die er is
@@ -692,6 +694,8 @@ document.addEventListener('DOMContentLoaded', function () {
       errorMsg.style.fontSize = "0.9rem";
       errorMsg.style.marginTop = "4px";
       input.insertAdjacentElement('afterend', errorMsg);
+    } else {
+      console.warn("showError: input niet gevonden:", inputId); // ✅ debug
     }
   }
 
@@ -699,15 +703,21 @@ document.addEventListener('DOMContentLoaded', function () {
   if (params.get('error_email') === 'exists') {
     const span = document.createElement('span');
     span.setAttribute('data-i18n', 'script_register_email_exists');
-    applyTranslations(span);
-    showError('register-email', span.textContent);
+    document.body.appendChild(span);
+    applyTranslations();
+    const message = span.textContent; 
+    span.remove();
+    showError('register-email', message);
   }
 
   if (params.get('error_password2') === 'nomatch') {
     const span = document.createElement('span');
     span.setAttribute('data-i18n', 'script_register_password_nomatch');
-    applyTranslations(span);
-    showError('register-password', span.textContent);
+    document.body.appendChild(span);
+    applyTranslations();
+    const message = span.textContent;
+    span.remove();
+    showError('register-password', message);
   }
 
   // Oude waarden terugzetten in formulier
@@ -727,15 +737,21 @@ document.addEventListener('DOMContentLoaded', function () {
   if (params.get('error') === 'wrong_password') {
     const span = document.createElement('span');
     span.setAttribute('data-i18n', 'script_login_wrong_password');
-    applyTranslations(span);
-    showError('login-password', span.textContent);
+    document.body.appendChild(span);
+    applyTranslations();
+    const message = span.textContent; 
+    span.remove();
+    showError('login-password', message);
   }
 
   if (params.get('error') === 'email_not_found') {
     const span = document.createElement('span');
     span.setAttribute('data-i18n', 'script_login_email_not_found');
-    applyTranslations(span);
-    showError('login-email', span.textContent);
+    document.body.appendChild(span);
+    applyTranslations();
+    const message = span.textContent;
+    span.remove();
+    showError('login-email', message);
   }
 
   // Oude waarde e-mail terugzetten bij loginformulier
@@ -745,12 +761,13 @@ document.addEventListener('DOMContentLoaded', function () {
     if (loginEmailInput) loginEmailInput.value = decodeURIComponent(oldLoginEmail);
   }
 
-    const form = document.getElementById('profileForm');
-    const messages = document.getElementById('formMessages');
+  const form = document.getElementById('profileForm');
+  const messages = document.getElementById('formMessages');
   
-  if (params.get("error")) {
-    const errors = params.get("error").split(",");
+  if (params.get("errors")) {
+    const errors = params.get("errors").split(",");
     errors.forEach(err => {
+      // 1. span maken en data-i18n zetten
       let span = document.createElement('span');
       switch(err) {
         case "name_empty":
@@ -774,22 +791,40 @@ document.addEventListener('DOMContentLoaded', function () {
         default:
           return; // onbekende error, niks doen
       }
-      applyTranslations(span);
-      showError(
-        err === "name_empty" ? "name" :
-        err === "address_empty" ? "address" :
-        err === "email_invalid" || err === "email_exists" ? "email" :
-        err === "password_mismatch" ? "passwordConfirm" :
-        "password", 
-        span.textContent
-      );
+
+      // 2. span tijdelijk toevoegen aan DOM
+      span.style.display = "none"; // zodat het niet zichtbaar is
+      document.body.appendChild(span);
+
+      // 3. vertaling toepassen
+      applyTranslations();
+
+      // 4. vertaalde tekst lezen
+      const message = span.textContent;
+
+      // 5. span verwijderen
+      span.remove();
+
+      // 6. error tonen bij juiste input
+      const inputId = err === "name_empty" ? "name" :
+                      err === "address_empty" ? "address" :
+                      err === "email_invalid" || err === "email_exists" ? "email" :
+                      err === "password_mismatch" ? "passwordConfirm" :
+                      err === "password_same" ? "password" :
+                      "";
+
+      if (inputId) showError(inputId, message);
     });
   }
 
   if (params.get("success") === "1") {
     const successEl = document.createElement("p");
-    successEl.setAttribute('data-i18n', 'script_profile_update_success');
-    applyTranslations(successEl);
+    successEl.setAttribute('data-i18n', 'script_profile_updated');
+    document.body.appendChild(successEl);
+    applyTranslations();
+    const message = successEl.textContent;
+    successEl.remove();
+    successEl.textContent = message;
     successEl.style.color = "green";
     successEl.style.marginTop = "1rem";
     form.appendChild(successEl);
