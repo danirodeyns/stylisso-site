@@ -2177,6 +2177,61 @@ fetch(`categorie.php?cat=${categoryId}&sub=${subcategoryId}`)
   sortSelect.addEventListener('change', renderProducts);
 });
 
+document.getElementById('password-reset-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const form = this;
+    const formData = new FormData(form);
+    const messageDiv = document.getElementById('form-message');
+
+    fetch('wachtwoord vergeten.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            messageDiv.style.color = 'green';
+            messageDiv.textContent = data.success;
+        } else if(data.error) {
+            messageDiv.style.color = 'red';
+            messageDiv.textContent = data.error;
+        }
+    })
+    .catch(err => {
+        messageDiv.style.color = 'red';
+        messageDiv.textContent = 'Er is een fout opgetreden.';
+    });
+});
+
+document.getElementById("reviewForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const formData = new FormData(this);
+
+  try {
+    const response = await fetch("reviews-mailing.php", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+    const messageBox = document.getElementById("review-message");
+
+    if (data.success) {
+      messageBox.textContent = data.success;
+      messageBox.style.color = "green";
+    } else if (data.error) {
+      messageBox.textContent = data.error;
+      messageBox.style.color = "red";
+    }
+
+    messageBox.style.display = "block";
+  } catch (err) {
+    console.error("Error:", err);
+  }
+});
+
 function applyTranslations() {
   // 1. Cookie uitlezen
   const cookieMatch = document.cookie.match(/(?:^|;\s*)siteLanguage=([^;]+)/);

@@ -2,6 +2,7 @@
 session_start();
 require 'db_connect.php'; // maakt $conn aan (mysqli)
 include 'csrf.php';
+include 'translations.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     csrf_validate(); // stopt script als token fout is

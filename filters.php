@@ -1,5 +1,6 @@
 <?php
 require_once 'db_connect.php';
+include 'translations.php';
 
 $category_id = isset($_GET['cat']) ? intval($_GET['cat']) : 0;
 $subcategory_id = isset($_GET['sub']) ? intval($_GET['sub']) : 0;

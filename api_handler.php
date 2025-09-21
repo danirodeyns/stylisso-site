@@ -1,5 +1,6 @@
 <?php
 include 'db_connect.php';
+include 'translations.php';
 
 header('Content-Type: application/json');
 

@@ -10,6 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 
 // Database connectie
 include 'db_connect.php';
+include 'translations.php';
 
 $dsn = "mysql:host=$dbHost;dbname=$dbName;charset=utf8mb4";
 $options = [

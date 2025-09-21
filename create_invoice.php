@@ -1,13 +1,13 @@
 <?php
-// create_invoice.php
-require 'vendor/autoload.php'; // Als je mPDF via Composer hebt geïnstalleerd
+include 'translations.php'; // Zorg dat deze als eerste staat
+require 'vendor/autoload.php';
 use Mpdf\Mpdf;
 
 /**
  * Genereer een PDF-factuur voor een bestelling
  *
  * @param int $order_id ID van de order
- * @param string $order_date Datum van de order (YYYY-MM-DD)
+ * @param string $order_date Datum van de order
  * @param mysqli $conn Databaseverbinding
  * @return string|false Bestandsnaam bij succes, false bij fout
  */
@@ -36,19 +36,24 @@ function create_invoice($order_id, $order_date, $conn) {
     $items = $stmt_items->get_result()->fetch_all(MYSQLI_ASSOC);
 
     // Begin HTML voor PDF
-    $html = '<h1>Factuur</h1>';
-    $html .= '<p><strong>Ordernummer:</strong> ' . $order['id'] . '</p>';
-    $html .= '<p><strong>Datum:</strong> ' . date('d-m-Y', strtotime($order['created_at'])) . '</p>';
-    $html .= '<p><strong>Klant:</strong> ' . htmlspecialchars($order['name']) . '<br>';
-    $html .= '<strong>Email:</strong> ' . htmlspecialchars($order['email']) . '<br>';
-    $html .= '<strong>Adres:</strong> ' . nl2br(htmlspecialchars($order['address'])) . '</p>';
+    $html = '<h1>' . t('invoice_title') . '</h1>';
+    $html .= '<p><strong>' . t('order_number') . ':</strong> ' . $order['id'] . '</p>';
+    $html .= '<p><strong>' . t('order_date') . ':</strong> ' . date('d-m-Y', strtotime($order['created_at'])) . '</p>';
+    $html .= '<p><strong>' . t('customer') . ':</strong> ' . htmlspecialchars($order['name']) . '<br>';
+    $html .= '<strong>' . t('email') . ':</strong> ' . htmlspecialchars($order['email']) . '<br>';
+    $html .= '<strong>' . t('address') . ':</strong> ' . nl2br(htmlspecialchars($order['address'])) . '</p>';
 
     $html .= '<table width="100%" border="1" cellpadding="5" cellspacing="0">';
-    $html .= '<thead><tr><th>Aantal</th><th>Product</th><th>Prijs per stuk</th><th>Totaal</th></tr></thead>';
+    $html .= '<thead><tr>
+                <th>' . t('quantity') . '</th>
+                <th>' . t('product') . '</th>
+                <th>' . t('price_per_item') . '</th>
+                <th>' . t('total') . '</th>
+              </tr></thead>';
     $html .= '<tbody>';
 
     foreach ($items as $item) {
-        $productName = $item['type'] === 'voucher' ? 'Cadeaubon' : $item['product_name'];
+        $productName = $item['type'] === 'voucher' ? t('gift_voucher') : $item['product_name'];
         $qty = intval($item['quantity']);
         $price = number_format($item['price'], 2);
         $total = number_format($qty * $item['price'], 2);
@@ -61,8 +66,8 @@ function create_invoice($order_id, $order_date, $conn) {
     }
 
     $html .= '</tbody></table>';
-    $html .= '<p><strong>Totaal te betalen:</strong> €' . number_format($order['total_price'], 2) . '</p>';
-    $html .= '<p><strong>Status:</strong> ' . ucfirst($order['status']) . '</p>';
+    $html .= '<p><strong>' . t('total_to_pay') . ':</strong> €' . number_format($order['total_price'], 2) . '</p>';
+    $html .= '<p><strong>' . t('status') . ':</strong> ' . ucfirst($order['status']) . '</p>';
 
     // Map voor facturen
     $dir = __DIR__ . '/invoices';

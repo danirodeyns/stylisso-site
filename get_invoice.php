@@ -1,4 +1,5 @@
 <?php
+include 'translations.php';
 // get_invoice.php
 
 // Basiscontrole: is order_id en date aanwezig en geldig?

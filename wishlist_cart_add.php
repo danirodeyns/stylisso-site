@@ -3,6 +3,7 @@ session_start();
 header('Content-Type: application/json');
 
 include 'db_connect.php';
+include 'translations.php';
 include 'csrf.php';
 csrf_validate(); // stopt script als token fout is
 

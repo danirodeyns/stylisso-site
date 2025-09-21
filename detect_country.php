@@ -1,4 +1,5 @@
 <?php
+include 'translations.php';
 header('Content-Type: application/json');
 
 // Haal IP van gebruiker

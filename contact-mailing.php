@@ -1,11 +1,13 @@
 <?php
 include 'csrf.php';
+include 'translations.php';
 csrf_validate(); // stopt script als token fout is
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name    = htmlspecialchars($_POST['name']);
     $email   = htmlspecialchars($_POST['email']);
     $subject = htmlspecialchars($_POST['subject']);
+
     $message = htmlspecialchars($_POST['message']);
 
     $to = "klantendienst@stylisso.be";
@@ -19,9 +21,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $fullMessage .= "Bericht:\n$message\n";
 
     if (mail($to, $subject, $fullMessage, $headers)) {
-        echo "Bedankt! Je bericht is verzonden.";
+        echo t('contact_form_success');
     } else {
-        echo "Er is een fout opgetreden. Probeer het later opnieuw.";
+        echo t('contact_form_error');
     }
 }
 ?>

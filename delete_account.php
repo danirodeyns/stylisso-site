@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'db_connect.php';
+include 'translations.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login_registreren.html");
@@ -46,9 +47,8 @@ $conn->query("DELETE FROM cart WHERE user_id = $userId");
 
 // 5️⃣ Mail sturen
 if ($userEmail) {
-    $subject = "Bevestiging accountverwijdering";
-    $message = "Beste,\n\nJe account en persoonsgegevens zijn verwijderd uit ons systeem. 
-Bestellingen en retourgegevens blijven bewaard voor de wettelijke boekhoudtermijn.\n\nMet vriendelijke groet,\nStylisso";
+    $subject = t('account_delete_subject');
+    $message = t('account_delete_message');
     $headers = "From: no-reply@stylisso.be";
 
     @mail($userEmail, $subject, $message, $headers);

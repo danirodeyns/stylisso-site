@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'db_connect.php'; // Zorg dat je DB-connectie hier hebt
+include 'translations.php';
 
 header('Content-Type: application/json');
 

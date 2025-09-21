@@ -2,6 +2,7 @@
 session_start();
 include 'db_connect.php';
 include 'csrf.php';
+include 'translations.php';
 
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['checkout'])) {
     echo "Geen gebruiker of checkout sessie";
@@ -62,7 +63,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Nieuwe vouchers genereren bij voucher-items
         if ($type === 'voucher') {
-            $code = strtoupper(bin2hex(random_bytes(4)));
+            do {
+                $code = strtoupper(bin2hex(random_bytes(6)));
+                $stmt_check = $conn->prepare("SELECT id FROM vouchers WHERE code = ?");
+                $stmt_check->bind_param("s", $code);
+                $stmt_check->execute();
+                $stmt_check->store_result();
+                $exists = $stmt_check->num_rows > 0;
+                $stmt_check->close();
+            } while ($exists);
             $expires_at = date('Y-m-d H:i:s', strtotime('+1 year'));
 
             $stmt_v = $conn->prepare(
@@ -75,13 +84,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Mailen
             if ($email) {
-                $subject = "Jouw Stylisso cadeaubon";
-                $message = "Bedankt voor je aankoop!\n\n" .
-                           "Je cadeauboncode: $code\n" .
-                           "Waarde: €".number_format($price,2)."\n" .
-                           "Geldig tot: $expires_at\n\n" .
-                           "Veel shopplezier bij Stylisso!";
-                mail($email, $subject, $message, "From: no-reply@stylisso.com");
+                $subject = t('email_subject');
+                $messageTemplate = t('email_message');
+                $message = str_replace(
+                    ['{code}', '{price}', '{expires_at}'],
+                    [$code, number_format($price,2), $expires_at],
+                    $messageTemplate
+                );
+                mail($email, $subject, $message, "From: no-reply@stylisso.be");
             }
         }
 

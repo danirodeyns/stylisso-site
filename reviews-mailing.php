@@ -1,7 +1,10 @@
-<?php
+<?php 
 session_start();
+include 'translations.php';
 include 'csrf.php';
 csrf_validate(); // stopt script als token fout is
+
+header('Content-Type: application/json'); // JSON response
 
 // Ontvanger van de e-mails
 $to = "klantendienst@stylisso.be";
@@ -11,9 +14,9 @@ $name = isset($_POST['name']) ? trim($_POST['name']) : '';
 $beoordeling = isset($_POST['beoordeling']) ? trim($_POST['beoordeling']) : '';
 $review = isset($_POST['review']) ? trim($_POST['review']) : '';
 
-// Validatie: zorgen dat velden niet leeg zijn
+// Validatie
 if (empty($name) || empty($beoordeling) || empty($review)) {
-    echo "Fout: Vul alle velden in.";
+    echo json_encode(["error" => "Vul alle velden in."]);
     exit;
 }
 
@@ -27,16 +30,14 @@ $review
 ";
 
 // E-mail headers
-$headers = "From: no-reply@stylisso.be\r\n"; // vervang indien nodig
+$headers = "From: no-reply@stylisso.be\r\n";
 $headers .= "Reply-To: $name\r\n";
 $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
 
 // E-mail verzenden
 if (mail($to, $subject, $message, $headers)) {
-    // Succes: terugsturen of bedankpagina
-    header("Location: reviews.html?status=success");
-    exit;
+    echo json_encode(["success" => t('review_success')]); 
 } else {
-    echo "Er is iets misgegaan bij het verzenden van de review.";
+    echo json_encode(["error" => t('review_error')]);
 }
 ?>

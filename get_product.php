@@ -3,6 +3,7 @@ session_start();
 header('Content-Type: application/json');
 
 include 'db_connect.php';
+include 'translations.php';
 
 if (!isset($_GET['id'])) {
     echo json_encode(['error' => 'Geen product geselecteerd.']);

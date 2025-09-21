@@ -2,6 +2,7 @@
 session_start();
 include 'db_connect.php';
 include 'csrf.php';
+include 'translations.php';
 
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);

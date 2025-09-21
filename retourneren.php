@@ -2,6 +2,7 @@
 session_start();
 header('Content-Type: application/json');
 require_once 'db_connect.php';
+include 'translations.php';
 
 $userId = $_SESSION['user_id'] ?? 0;
 

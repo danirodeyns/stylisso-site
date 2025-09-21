@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'db_connect.php';
+include 'translations.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login_registreren.html');

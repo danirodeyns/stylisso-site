@@ -1,6 +1,7 @@
 <?php
 session_start();
 require 'db_connect.php';
+include 'translations.php';
 include 'csrf.php';
 csrf_validate();
 

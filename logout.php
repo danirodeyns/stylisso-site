@@ -1,6 +1,7 @@
 <?php
 session_start();
-include 'db_connect.php'; // DB connectie nodig om token te verwijderen
+include 'db_connect.php';
+include 'translations.php';
 include 'csrf.php';
 csrf_validate(); // stopt script als token fout is
 

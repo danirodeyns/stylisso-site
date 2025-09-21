@@ -1,6 +1,7 @@
 <?php
 session_start();
 require 'db_connect.php';
+include 'translations.php';
 include 'csrf.php';
 csrf_validate(); // stopt script als token fout is
 
@@ -8,7 +9,7 @@ header('Content-Type: application/json'); // JSON response
 
 // Controleer of gebruiker ingelogd is
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode(["error" => "Je moet ingelogd zijn om een bon in te wisselen."]);
+    echo json_encode(["error" => t('voucher_login_required')]);
     exit;
 }
 
@@ -17,7 +18,7 @@ $user_id = $_SESSION['user_id'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Controleer of voucher_code aanwezig is
     if (!isset($_POST['voucher_code']) || empty(trim($_POST['voucher_code']))) {
-        echo json_encode(["error" => "Voer een geldige boncode in."]);
+        echo json_encode(["error" => t('voucher_invalid_code')]);
         exit;
     }
 
@@ -38,19 +39,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
 
     if (!$voucher) {
-        echo json_encode(["error" => "Deze boncode bestaat niet, is volledig gebruikt of is verlopen."]);
+        echo json_encode(["error" => t('voucher_not_found_or_expired')]);
         exit;
     }
 
-    // Controleer of bon al gekoppeld is aan deze gebruiker
-    $stmt = $conn->prepare("SELECT id FROM user_vouchers WHERE user_id = ? AND voucher_id = ?");
-    $stmt->bind_param("ii", $user_id, $voucher['id']);
+    // Controleer of voucher al door iemand geclaimd is
+    $stmt = $conn->prepare("SELECT user_id FROM user_vouchers WHERE voucher_id = ?");
+    $stmt->bind_param("i", $voucher['id']);
     $stmt->execute();
-    $existing = $stmt->get_result()->fetch_assoc();
+    $claimed = $stmt->get_result()->fetch_assoc();
     $stmt->close();
 
-    if ($existing) {
-        echo json_encode(["error" => "Deze cadeaubon is al aan jouw account gekoppeld."]);
+    if ($claimed) {
+        if ($claimed['user_id'] == $user_id) {
+            echo json_encode(["error" => t("voucher_already_linked")]);
+        } else {
+            echo json_encode(["error" => t("voucher_already_claimed")]);
+        }
         exit;
     }
 
@@ -61,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
 
     echo json_encode([
-        "success" => "Cadeaubon succesvol gekoppeld aan je account! Waarde: €" . number_format($voucher['remaining_value'], 2, ',', '.')
+        "success" => t('voucher_link_success') . " €" . number_format($voucher['remaining_value'], 2, ',', '.')
     ]);
 }
 ?>

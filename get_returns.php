@@ -3,6 +3,7 @@ session_start();
 header('Content-Type: application/json');
 
 include 'db_connect.php';
+include 'translations.php';
 
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['error' => 'Niet ingelogd']);

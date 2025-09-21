@@ -1,5 +1,6 @@
 <?php
 require_once 'db_connect.php';
+include 'translations.php';
 
 // Parameters uit URL
 $category_id = isset($_GET['cat']) ? intval($_GET['cat']) : 0;

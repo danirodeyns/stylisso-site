@@ -8,6 +8,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 include 'db_connect.php';
+include 'translations.php';
 $userId = $_SESSION['user_id'];
 
 // Haal alle orders op

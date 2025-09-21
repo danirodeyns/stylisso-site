@@ -4,6 +4,7 @@ header('Content-Type: application/json');
 
 include 'db_connect.php';
 include 'csrf.php';
+include 'translations.php';
 csrf_validate(); // stopt script als token fout is
 
 // Check of gebruiker ingelogd is
