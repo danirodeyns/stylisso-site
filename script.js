@@ -1385,14 +1385,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const voucherList = document.getElementById('voucher-list');
   if (!voucherList) return;
 
-  // --- Wacht tot vertalingen beschikbaar zijn ---
+  // Wacht tot vertalingen beschikbaar zijn
   async function waitForTranslations() {
     return new Promise(resolve => {
-      if (typeof translations !== 'undefined' && typeof currentLang !== 'undefined') {
-        resolve();
-      } else {
+      if (typeof translations !== 'undefined') resolve();
+      else {
         const interval = setInterval(() => {
-          if (typeof translations !== 'undefined' && typeof currentLang !== 'undefined') {
+          if (typeof translations !== 'undefined') {
             clearInterval(interval);
             resolve();
           }
@@ -1400,10 +1399,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   }
-
   await waitForTranslations();
 
-  // --- Functie om boodschap te tonen ---
+  // Functie om boodschap te tonen
   function showMessage(container, key) {
     container.innerHTML = '';
     const p = document.createElement('p');
@@ -1412,56 +1410,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     applyTranslations(container);
   }
 
-  // --- Haal vouchers op ---
   try {
     const res = await fetch('get_vouchers.php', { credentials: 'same-origin' });
     if (!res.ok) throw new Error(`HTTP fout! status: ${res.status}`);
     const data = await res.json();
 
-    console.log('Voucher data:', data);
-
-    voucherList.innerHTML = ''; // altijd leegmaken
-
-    // --- Controleer op server error ---
-    if (data.error) {
-      const p = document.createElement('p');
-      p.setAttribute('data-i18n', 'script_voucher_redeem_error'); 
-      container.innerHTML = '';
-      container.appendChild(p);
-      applyTranslations();
-      return;
-    }
-
-    // --- Controleer of er vouchers zijn ---
-    if (!Array.isArray(data) || data.length === 0) {
-      const p = document.createElement('p');
-      p.setAttribute('data-i18n', 'script_no_vouchers'); 
-      container.innerHTML = '';
-      container.appendChild(p);
-      applyTranslations();
-      return;
-    }
-
+    // Filter geldige vouchers
     const now = new Date();
-
-    // --- Filter alleen geldige vouchers ---
-    const validVouchers = data.filter(voucher => {
-      const remaining = Number(voucher.remaining_value ?? 0);
-      const expiresAt = voucher.expires_at ? new Date(voucher.expires_at) : null;
+    const validVouchers = (Array.isArray(data) ? data : []).filter(v => {
+      const remaining = Number(v.remaining_value ?? 0);
+      const expiresAt = v.expires_at ? new Date(v.expires_at) : null;
       return remaining > 0 && (!expiresAt || expiresAt >= now);
     });
 
-    // --- Als geen geldige vouchers ---
-    if (validVouchers.length === 0) {
-      showMessage(voucherList, 'script_no_vouchers');
+    // Alleen de laatste voucher tonen op mijn_stylisso.html
+    let vouchersToRender = validVouchers;
+    if (window.location.pathname.includes('mijn_stylisso.html')) {
+      vouchersToRender = validVouchers.length ? [validVouchers[0]] : [];
+    }
+
+    // Als geen vouchers te renderen
+    if (!vouchersToRender.length) {
+      const key = window.location.pathname.includes('mijn_stylisso.html')
+        ? 'mijn_stylisso_text_no_vouchers'
+        : 'script_no_vouchers';
+      showMessage(voucherList, key);
       return;
     }
 
-    // --- Render vouchers ---
+    // Render vouchers
     const ul = document.createElement('ul');
     ul.classList.add('voucher-list');
 
-    validVouchers.forEach(voucher => {
+    vouchersToRender.forEach(voucher => {
       const li = document.createElement('li');
       const remainingValue = Number(voucher.remaining_value ?? 0).toFixed(2);
 
@@ -1486,6 +1467,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       ul.appendChild(li);
     });
 
+    voucherList.innerHTML = '';
     voucherList.appendChild(ul);
     applyTranslations(voucherList);
 
@@ -1622,30 +1604,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function refreshSavedVouchers(selectEl) {
     if (!selectEl) return;
+
+    // Haal de taal uit cookie en fallback
+    const cookieMatch = document.cookie.match(/(?:^|;\s*)siteLanguage=([^;]+)/);
+    const lang = cookieMatch ? decodeURIComponent(cookieMatch[1]) : "be-nl";
+    const dict = translations[lang] || translations["be-nl"];
+
     fetch('get_vouchers.php', { credentials: 'same-origin' })
-      .then(r => r.json())
-      .then(list => {
-        if (!Array.isArray(list)) return;
-        const now = new Date();
-        const opts = ['<option value="" data-i18n="script_select_voucher">Kies een bon</option>'];
-        list.forEach(v => {
-          const expires = v.expires_at ? new Date(v.expires_at) : null;
-          const remaining = Number(v.remaining_value ?? 0);
-          if (remaining > 0 && (!expires || expires >= now)) {
-            const expireDate = expires 
-              ? `${String(expires.getDate()).padStart(2,'0')}-${String(expires.getMonth()+1).padStart(2,'0')}-${expires.getFullYear()}` 
-              : '';
-            opts.push(
-              `<option value="${v.code}">${v.code} — €${remaining.toFixed(2)}${expireDate ? ' (<span data-i18n="script_until">tot</span> ' + expireDate + ')' : ''}</option>`
-            );
-          }
-        });
-        selectEl.innerHTML = opts.join('');
-      })
-      .catch(err => console.error('get_vouchers dropdown error:', err));
+        .then(r => r.json())
+        .then(list => {
+            if (!Array.isArray(list)) return;
+
+            const now = new Date();
+            const opts = [`<option value="">${dict["script_select_voucher"]}</option>`];
+
+            list.forEach(v => {
+                const expires = v.expires_at ? new Date(v.expires_at) : null;
+                const remaining = Number(v.remaining_value ?? 0);
+
+                // Alleen geldige vouchers tonen
+                if (remaining > 0 && (!expires || expires >= now)) {
+                    let expireText = '';
+                    if (expires) {
+                        const day = String(expires.getDate()).padStart(2, '0');
+                        const month = String(expires.getMonth() + 1).padStart(2, '0');
+                        const year = expires.getFullYear();
+                        expireText = ` (${dict["script_until"]} ${day}-${month}-${year})`;
+                    }
+
+                    opts.push(
+                        `<option value="${v.code}">${v.code} — €${remaining.toFixed(2)}${expireText}</option>`
+                    );
+                }
+            });
+
+            // Dropdown vullen
+            selectEl.innerHTML = opts.join('');
+        })
+        .catch(err => console.error('get_vouchers dropdown error:', err));
   }
 
-  function refreshVoucherList() {
+  function refreshVoucherList(isMijnStylisso = false) {
     const container = document.getElementById('voucher-list');
     if (!container) return;
 
@@ -1653,30 +1652,40 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(r => r.json())
       .then(data => {
         const cookieMatch = document.cookie.match(/(?:^|;\s*)siteLanguage=([^;]+)/);
-        const lang = cookieMatch ? decodeURIComponent(cookieMatch[1]) : "be-nl"; // fallback
+        const lang = cookieMatch ? decodeURIComponent(cookieMatch[1]) : "be-nl";
         const dict = translations[lang] || translations["be-nl"];
+
         if (data.error || !Array.isArray(data)) {
           container.innerHTML = `<p>${data.error || dict["script_no_vouchers"]}</p>`;
+          applyTranslations(container);
           return;
         }
+
         const now = new Date();
         const valid = data.filter(v => {
           const expires = v.expires_at ? new Date(v.expires_at) : null;
           const remaining = Number(v.remaining_value ?? 0);
           return remaining > 0 && (!expires || expires >= now);
         });
+
         if (!valid.length) {
-          container.innerHTML = `<p data-i18n="script_no_vouchers"></p>`;
+          const key = isMijnStylisso ? 'mijn_stylisso_text_no_vouchers' : 'script_no_vouchers';
+          container.innerHTML = `<p data-i18n="${key}"></p>`;
+          applyTranslations(container);
           return;
         }
+
+        let vouchersToRender = valid;
+        if (isMijnStylisso) vouchersToRender = [valid[0]]; // alleen laatste
+
         const ul = document.createElement('ul');
         ul.className = 'voucher-list';
-        valid.forEach(v => {
+        vouchersToRender.forEach(v => {
           const expires = v.expires_at ? new Date(v.expires_at) : null;
           const expireDate = expires
             ? `${String(expires.getDate()).padStart(2,'0')}-${String(expires.getMonth()+1).padStart(2,'0')}-${expires.getFullYear()}`
             : 'Onbepaald';
-          li = document.createElement('li');
+          const li = document.createElement('li');
           li.innerHTML = `
             <span class="left"><strong data-i18n="script_voucher_code">Code:</strong> ${v.code}</span>
             <span class="separator" aria-hidden="true">|</span>
@@ -1686,17 +1695,19 @@ document.addEventListener('DOMContentLoaded', () => {
           `;
           ul.appendChild(li);
         });
+
         container.innerHTML = '';
         container.appendChild(ul);
+        applyTranslations(container); // ✅ nu altijd
       })
       .catch(err => {
-    console.error('get_vouchers list error:', err);
+        console.error('get_vouchers list error:', err);
         const p = document.createElement('p');
         p.setAttribute('data-i18n', 'script_voucher_load_error');
         container.innerHTML = '';
         container.appendChild(p);
         applyTranslations(container);
-    });
+      });
   }
 
   if (document.readyState === 'loading') {
