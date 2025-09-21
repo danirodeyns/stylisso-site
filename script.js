@@ -915,17 +915,13 @@ async function loadOrders() {
     const response = await fetch('get_orders.php');
     const orders = await response.json();
 
-    if (orders.error) {
-      container.innerHTML = `<p>${orders.error}</p>`;
-      return;
-    }
-
-    if (orders.length === 0) {
+    // ✅ Controleer leeg array
+    if (!orders || orders.length === 0) {
       const p = document.createElement('p');
-      p.setAttribute('data-i18n', 'script_order_no_orders');
+      p.setAttribute('data-i18n', 'script_order_none'); // vertaling gebruiken
       container.innerHTML = '';
       container.appendChild(p);
-      applyTranslations(p);
+      applyTranslations(p); // gegarandeerd vertalen
       return;
     }
 
@@ -1257,7 +1253,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!data || data.length === 0) {
           const p = document.createElement('p');
           p.className = 'no-orders';
-          p.setAttribute('data-i18n', 'script_no_orders_yet');
+          p.setAttribute('data-i18n', 'script_order_none');
           returnCardsContainer.appendChild(p);
           applyTranslations(returnCardsContainer);
           return;
@@ -1428,13 +1424,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- Controleer op server error ---
     if (data.error) {
-      showMessage(voucherList, 'script_voucher_error');
+      const p = document.createElement('p');
+      p.setAttribute('data-i18n', 'script_voucher_redeem_error'); 
+      container.innerHTML = '';
+      container.appendChild(p);
+      applyTranslations();
       return;
     }
 
     // --- Controleer of er vouchers zijn ---
     if (!Array.isArray(data) || data.length === 0) {
-      showMessage(voucherList, 'script_no_vouchers');
+      const p = document.createElement('p');
+      p.setAttribute('data-i18n', 'script_no_vouchers'); 
+      container.innerHTML = '';
+      container.appendChild(p);
+      applyTranslations();
       return;
     }
 
