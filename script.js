@@ -1041,7 +1041,14 @@ async function loadLastOrder() {
     const order = await response.json();
 
     if (order.error) {
-      container.innerHTML = `<p data-i18n="script_last_order_error"></p>`;
+      // Controleer op specifieke fouttekst
+      let i18nKey = 'script_last_order_error'; // fallback
+
+      if (order.error.toLowerCase().includes('nog geen bestellingen')) {
+        i18nKey = 'script_order_none';
+      }
+
+      container.innerHTML = `<p data-i18n="${i18nKey}"></p>`;
       applyTranslations(container);
       return;
     }
