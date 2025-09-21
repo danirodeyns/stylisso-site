@@ -1806,8 +1806,12 @@ async function loadWishlist() {
       const emptyBox = document.createElement("div");
       emptyBox.className = "empty-wishlist-box";
       emptyBox.setAttribute("data-i18n", "script_wishlist_empty");
-      applyTranslations(emptyBox);
+
+      // --- vertaling pas toepassen nadat element in DOM staat ---
       container.appendChild(emptyBox);
+      // setTimeout zorgt ervoor dat applyTranslations wordt uitgevoerd na eventuele andere scripts die DOM aanpassen
+      setTimeout(() => applyTranslations(emptyBox), 0);
+
       return;
     }
 
