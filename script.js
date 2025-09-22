@@ -2272,6 +2272,13 @@ function applyTranslations() {
       el.setAttribute('placeholder', dict[key]);
     }
   });
+
+  document.querySelectorAll('[data-i18n-href]').forEach(el => {
+    const key = el.getAttribute('data-i18n-href');
+    if (dict[key]) {
+      el.setAttribute('href', dict[key]);
+    }
+  });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
