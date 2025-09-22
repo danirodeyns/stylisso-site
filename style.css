@@ -1131,6 +1131,10 @@ input[type="number"].quantity-input {
 /* Form titels */
 .auth-section h1 {
   font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+  margin-bottom: 0.25rem;
+}
+
+.auth-section p {
   margin-bottom: 1.5rem;
 }
 
@@ -1159,6 +1163,10 @@ input[type="number"].quantity-input {
 
 .auth-section a:hover {
   text-decoration: none;
+}
+
+#form-message {
+  margin-top: -2rem;
 }
 
 /* Kleine tekst onder login */
@@ -1191,7 +1199,7 @@ input[type="number"].quantity-input {
   text-decoration: none;
 }
 
-.back-link a:hover {
+.back-link:hover {
   text-decoration: underline;
 }
 
