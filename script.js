@@ -409,6 +409,11 @@ document.addEventListener('DOMContentLoaded', function () {
       banner.style.display = "block";
     }
 
+    if (consent && consent.functional) {
+      const input = document.getElementById('cookiesAccepted');
+      if (input) input.value = "1";
+    }
+
     // --- Functie om gtag.js te laden en config te doen ---
     function loadGTAG() {
       console.log("gtag.js geladen");
