@@ -2158,8 +2158,9 @@ input[type="number"].quantity-input {
 /* Container */
 .product-page-container {
   max-width: 1100px;
-  margin: 40px auto;
-  padding: 20px;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  padding: 2rem;
   font-family: Arial, sans-serif;
   display: flex;
   flex-direction: column;
