@@ -2523,6 +2523,8 @@ input[type="number"].quantity-input {
   transition: transform 0.2s, box-shadow 0.2s;
   color: #222;
   margin-bottom: 0.5rem;
+  cursor: pointer; /* cursor verandert in handje bij hover */
+  transition: transform 0.2s; /* optioneel: subtiele hover animatie */
 }
 
 .product-card2 img {

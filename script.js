@@ -2171,6 +2171,12 @@ fetch(`categorie.php?cat=${categoryId}&sub=${subcategoryId}`)
         <h3>${p.name}</h3>
         <p>€${parseFloat(p.price).toFixed(2)}</p>
       `;
+
+        // --- klikbare kaart: naar productpagina ---
+        card.addEventListener("click", () => {
+          window.location.href = `productpagina.html?id=${p.id}`;
+        });
+
       productGrid.appendChild(card);
     });
   }
