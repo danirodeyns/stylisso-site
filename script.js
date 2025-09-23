@@ -2088,26 +2088,26 @@ document.addEventListener("DOMContentLoaded", () => {
   let activeFilters = {};
 
   // --- Titel ophalen via categorie.php ---
-fetch(`categorie.php?cat=${categoryId}&sub=${subcategoryId}`)
-  .then(res => res.json())
-  .then(data => {
-    let title = '';
+  fetch(`categorie.php?cat=${categoryId}&sub=${subcategoryId}`)
+    .then(res => res.json())
+    .then(data => {
+      let title = '';
 
-    // Als subcategorie is geselecteerd, toon die
-    if(data.selected.subcategory){
-      title = data.selected.subcategory;
-    }
-    // Anders toon hoofdcategorie
-    else if(data.selected.category){
-      title = data.selected.category;
-    }
-    // fallback
-    else {
-      title = "Categorie";
-    }
+      // Als subcategorie is geselecteerd, toon die
+      if(data.selected.subcategory){
+        title = data.selected.subcategory;
+      }
+      // Anders toon hoofdcategorie
+      else if(data.selected.category){
+        title = data.selected.category;
+      }
+      // fallback
+      else {
+        title = "Categorie";
+      }
 
-    categoryTitle.textContent = title;
-  });
+      categoryTitle.textContent = title;
+    });
 
   // --- Filters ophalen ---
   fetch(`filters.php?cat=${categoryId}&sub=${subcategoryId}`)
@@ -2166,16 +2166,68 @@ fetch(`categorie.php?cat=${categoryId}&sub=${subcategoryId}`)
     filtered.forEach(p => {
       const card = document.createElement('div');
       card.className = 'product-card2';
+
+      // Status komt uit de DB via fetch_products.php (true/false)
+      const inWishlist = p.in_wishlist;
+
       card.innerHTML = `
+        <div class="wishlist-btn" data-id="${p.id}">
+          <img src="${inWishlist ? 'wishlist/added.png' : 'wishlist/wishlist.png'}" 
+              alt="Wishlist knop" 
+              class="wishlist-icon-light">
+          <img src="${inWishlist ? 'wishlist/added (dark mode).png' : 'wishlist/wishlist (dark mode).png'}" 
+              alt="Wishlist knop dark" 
+              class="wishlist-icon-dark">
+        </div>
         <img src="${p.image}" alt="${p.name}">
         <h3>${p.name}</h3>
         <p>€${parseFloat(p.price).toFixed(2)}</p>
       `;
 
-        // --- klikbare kaart: naar productpagina ---
-        card.addEventListener("click", () => {
-          window.location.href = `productpagina.html?id=${p.id}`;
-        });
+      // --- klikbare kaart: naar productpagina ---
+      card.addEventListener("click", (e) => {
+        if (e.target.closest(".wishlist-btn")) return; // voorkom dat wishlist-klik doorloopt
+        window.location.href = `productpagina.html?id=${p.id}`;
+      });
+
+      // --- wishlist knop ---
+      const wishlistBtn = card.querySelector(".wishlist-btn");
+      wishlistBtn.addEventListener("click", (e) => {
+        e.stopPropagation(); // voorkom dat klik doorloopt naar productpagina
+
+        const iconLight = wishlistBtn.querySelector(".wishlist-icon-light");
+        const iconDark = wishlistBtn.querySelector(".wishlist-icon-dark");
+
+        // Bepaal actie op basis van huidige src
+        const action = iconLight.src.includes("added.png") ? "remove" : "add";
+        const url = action === "add" ? "wishlist_add.php" : "wishlist_remove.php";
+
+        // Stuur correct POST-parameter naar PHP
+        const formData = new URLSearchParams();
+        formData.append("product_id", p.id); // <-- hier aanpassen
+
+        fetch(url, {
+          method: "POST",
+          body: formData
+        })
+        .then(res => res.json()) // JSON terug van PHP
+        .then(response => {
+          if (response.error) {
+            console.error("Wishlist error:", response.error);
+            return;
+          }
+
+          // Update icon
+          if (action === "add") {
+            iconLight.src = "wishlist/added.png";
+            iconDark.src = "wishlist/added (dark mode).png";
+          } else {
+            iconLight.src = "wishlist/wishlist.png";
+            iconDark.src = "wishlist/wishlist (dark mode).png";
+          }
+        })
+        .catch(err => console.error("Wishlist fetch error:", err));
+      });
 
       productGrid.appendChild(card);
     });
