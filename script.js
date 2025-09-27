@@ -1911,9 +1911,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const priceEl = document.getElementById('product-price');
   const quantityEl = document.getElementById('product-quantity');
   const addBtn = document.getElementById('add-to-cart');
-  const csrfTokenEl = document.getElementById('csrf_token'); // hidden input
+  const csrfTokenEl = document.getElementById('csrf_token');
   const errorEl = document.getElementById('product-error');
-
+  const wishlistBtn = document.getElementById('wishlist-btn');
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
 
@@ -1924,7 +1924,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // --- Haal CSRF-token op via fetch ---
+  // --- Haal CSRF-token op ---
   try {
     const csrfResp = await fetch('csrf.php');
     const csrfData = await csrfResp.json();
@@ -1937,55 +1937,232 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+  // --- Check login status ---
+  async function isLoggedIn() {
+    try {
+      const resp = await fetch('current_user.php');
+      const data = await resp.json();
+      return data.loggedIn;
+    } catch (err) {
+      console.error('Login check error:', err);
+      return false;
+    }
+  }
+
   try {
-    // Product ophalen via PHP JSON
+    // --- Product ophalen ---
     const response = await fetch(`get_product.php?id=${id}`);
     const product = await response.json();
-
     if (product.error) {
       errorEl.textContent = product.error;
       return;
     }
 
-    // Vul HTML
+    // --- Vul HTML ---
     titleEl.textContent = product.name;
     imageEl.src = product.image;
     imageEl.alt = product.name;
     descEl.innerHTML = product.description.replace(/\n/g, "<br>");
     priceEl.textContent = `€${parseFloat(product.price).toFixed(2)}`;
 
-    // Add to cart knop
-    addBtn.addEventListener('click', async () => {
-    const quantity = parseInt(quantityEl.value);
-    if (quantity < 1) return;
+    // --- Wishlist knop hoofdproduct ---
+    if (wishlistBtn) {
+      const iconLight = wishlistBtn.querySelector(".wishlist-icon-light");
+      const iconDark = wishlistBtn.querySelector(".wishlist-icon-dark");
+      let inWishlist = product.in_wishlist; // interne status
 
-    const formData = new FormData();
-    formData.append('product_id', product.id);
-    formData.append('quantity', quantity);
-    formData.append('csrf_token', csrfTokenEl.value); // CSRF-token meesturen
+      console.log("Hoofdproduct load: inWishlist =", inWishlist); // DEBUG
 
-    try {
-      const addResp = await fetch('add_to_cart.php', {
-        method: 'POST',
-        body: formData
+      iconLight.src = inWishlist ? "wishlist/added.png" : "wishlist/wishlist.png";
+      iconDark.src = inWishlist ? "wishlist/added (dark mode).png" : "wishlist/wishlist (dark mode).png";
+
+      wishlistBtn.addEventListener("click", () => {
+        console.log("Hoofdproduct clicked. Voor toggle: inWishlist =", inWishlist); // DEBUG
+
+        const action = inWishlist ? "remove" : "add";
+        console.log("Actie:", action); // DEBUG
+
+        const url = action === "add" ? "wishlist_add.php" : "wishlist_remove.php";
+        const formData = new URLSearchParams();
+        formData.append("product_id", product.id);
+
+        fetch(url, { method: "POST", body: formData })
+          .then(res => res.json())
+          .then(response => {
+            console.log("Response hoofdproduct:", response); // DEBUG
+            if (response.error) {
+              console.error("Wishlist error:", response.error);
+              return;
+            }
+            inWishlist = !inWishlist;
+            iconLight.src = inWishlist ? "wishlist/added.png" : "wishlist/wishlist.png";
+            iconDark.src = inWishlist ? "wishlist/added (dark mode).png" : "wishlist/wishlist (dark mode).png";
+            console.log("Na toggle: inWishlist =", inWishlist); // DEBUG
+          })
+          .catch(err => console.error("Wishlist fetch error:", err));
       });
-      const result = await addResp.json(); // JSON verwacht
-      if(result.success){
-        window.location.href = 'cart.html';
-      } else {
+    }
+
+    // --- Add to cart knop ---
+    addBtn.addEventListener('click', async () => {
+      const quantity = parseInt(quantityEl.value);
+      if (quantity < 1) return;
+
+      const formData = new FormData();
+      formData.append('product_id', product.id);
+      formData.append('quantity', quantity);
+      formData.append('csrf_token', csrfTokenEl.value);
+
+      try {
+        const addResp = await fetch('add_to_cart.php', { method: 'POST', body: formData });
+        const result = await addResp.json();
+        if (result.success) {
+          window.location.href = 'cart.html';
+        } else {
+          const temp = document.createElement('span');
+          temp.setAttribute('data-i18n', 'script_add_to_cart_error');
+          applyTranslations(temp);
+          alert(result.error || temp.textContent);
+        }
+      } catch (err) {
         const temp = document.createElement('span');
         temp.setAttribute('data-i18n', 'script_add_to_cart_error');
         applyTranslations(temp);
-        alert(result.error || temp.textContent);
+        alert(temp.textContent);
+        console.error(err);
       }
-    } catch (err) {
-      const temp = document.createElement('span');
-      temp.setAttribute('data-i18n', 'script_add_to_cart_error');
-      applyTranslations(temp);
-      alert(temp.textContent);
-      console.error(err);
+    });
+
+    // -------------------------------
+    // Andere producten & laatst bekeken
+    // -------------------------------
+    function renderProducts(products, containerId, excludeId = null) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      const visibleProducts = products ? products.filter(p => p.id !== excludeId) : [];
+
+      if (!visibleProducts || visibleProducts.length === 0) {
+        const emptyMsg = document.createElement("p");
+        emptyMsg.setAttribute("data-i18n", "productpagina_no_products");
+        container.appendChild(emptyMsg);
+        applyTranslations(emptyMsg);
+        return;
+      }
+
+      visibleProducts.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "product-card2";
+
+        let inWishlist = p.in_wishlist; // interne status
+        card.innerHTML = `
+          <div class="wishlist-btn" data-id="${p.id}">
+            <img src="${inWishlist ? 'wishlist/added.png' : 'wishlist/wishlist.png'}" 
+                alt="Wishlist knop" 
+                class="wishlist-icon-light">
+            <img src="${inWishlist ? 'wishlist/added (dark mode).png' : 'wishlist/wishlist (dark mode).png'}" 
+                alt="Wishlist knop dark" 
+                class="wishlist-icon-dark">
+          </div>
+          <a href="productpagina.html?id=${p.id}">
+            <img src="${p.image}" alt="${p.name}" class="product-thumb">
+            <h3>${p.name}</h3>
+            <p>€${parseFloat(p.price).toFixed(2)}</p>
+          </a>
+        `;
+
+        const wishlistBtn = card.querySelector(".wishlist-btn");
+        const iconLight = wishlistBtn.querySelector(".wishlist-icon-light");
+        const iconDark = wishlistBtn.querySelector(".wishlist-icon-dark");
+
+        console.log(`Product ${p.id} load: inWishlist =`, inWishlist); // DEBUG
+
+        wishlistBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          console.log(`Product ${p.id} clicked. Voor toggle: inWishlist =`, inWishlist); // DEBUG
+
+          const action = inWishlist ? "remove" : "add";
+          console.log(`Product ${p.id} actie:`, action); // DEBUG
+
+          const url = action === "add" ? "wishlist_add.php" : "wishlist_remove.php";
+          const formData = new URLSearchParams();
+          formData.append("product_id", p.id);
+
+          fetch(url, { method: "POST", body: formData })
+            .then(res => res.json())
+            .then(response => {
+              console.log(`Product ${p.id} response:`, response); // DEBUG
+              if (response.error) {
+                console.error("Wishlist error:", response.error);
+                return;
+              }
+              inWishlist = !inWishlist;
+              iconLight.src = inWishlist ? "wishlist/added.png" : "wishlist/wishlist.png";
+              iconDark.src = inWishlist ? "wishlist/added (dark mode).png" : "wishlist/wishlist (dark mode).png";
+              console.log(`Product ${p.id} na toggle: inWishlist =`, inWishlist); // DEBUG
+            })
+            .catch(err => console.error("Wishlist fetch error:", err));
+        });
+
+        card.addEventListener("click", (e) => {
+          if (e.target.closest(".wishlist-btn")) return;
+          window.location.href = `productpagina.html?id=${p.id}`;
+        });
+
+        container.appendChild(card);
+      });
     }
-  });
+
+    async function loadOtherProducts(category, excludeId) {
+      try {
+        const resp = await fetch(`get_related_products.php?category=${encodeURIComponent(category)}&exclude=${excludeId}`);
+        const products = await resp.json();
+        renderProducts(products, "other-products-container");
+      } catch (err) {
+        console.error("Error loading related products:", err);
+      }
+    }
+
+    async function updateLastSeen(product) {
+      const loggedIn = await isLoggedIn();
+      if (loggedIn) {
+        try {
+          await fetch('last_seen.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `product_id=${product.id}`
+          });
+        } catch (err) {
+          console.error('Error saving last seen in DB:', err);
+        }
+      }
+
+      let lastSeen = JSON.parse(sessionStorage.getItem("lastSeen") || "[]");
+      lastSeen = lastSeen.filter(p => p.id !== product.id);
+      lastSeen.unshift({ id: product.id, name: product.name, price: product.price, image: product.image });
+      if (lastSeen.length > 6) lastSeen = lastSeen.slice(0, 6);
+      sessionStorage.setItem("lastSeen", JSON.stringify(lastSeen));
+    }
+
+    async function loadLastSeen(currentProductId) {
+      const loggedIn = await isLoggedIn();
+      let products = [];
+      if (loggedIn) {
+        try {
+          const resp = await fetch('get_last_seen.php');
+          products = await resp.json();
+        } catch (err) {
+          console.error('Error loading last seen from DB:', err);
+        }
+      } else {
+        products = JSON.parse(sessionStorage.getItem("lastSeen") || "[]");
+      }
+      renderProducts(products, "last-seen-products-container", currentProductId);
+    }
+
+    // --- Aanroepen na productload ---
+    loadOtherProducts(product.category_id, product.id);
+    await updateLastSeen(product);
+    await loadLastSeen(product.id);
 
   } catch (err) {
     errorEl.setAttribute('data-i18n', 'script_product_load_error');

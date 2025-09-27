@@ -432,12 +432,20 @@ const translations = {
     // productpagine.html
     "productpagina_page_title": "Productpagina",
     "productpagina_product_title": "Productnaam",
+    "productpagina_description_title": "Beschrijving",
     "productpagina_product_description": "Beschrijving van het product.",
+    "productpagina_specificaties_title": "Specificaties",
+    "productpagina_specificaties": "Specificaties van het product.",
     "productpagina_product_price": "Prijs: €0,00",
     "productpagina_product_quantity_label": "Aantal:",
     "productpagina_add_to_cart_button": "Toevoegen aan winkelwagen",
+    "productpagina_wishlist-knop": "Verlanglijstje",
     "productpagina_product_image_alt": "Product afbeelding",
     "productpagina_product_error": "Er is een fout opgetreden. Probeer opnieuw.",
+    "productpagina_verzending": "Op voorraad. Binnen 5 werkdagen in huis. - Gratis verzending vanaf €50.",
+    "productpagina_other_products_title": "Misschien vindt je dit ook leuk",
+    "productpagina_last_seen_title": "Laatst bekeken",
+    "productpagina_no_products": "Geen producten gevonden.",
 
     // reset_password.html
     "reset_password_page_title": "Stylisso – Nieuw wachtwoord",
@@ -1068,12 +1076,20 @@ const translations = {
     // productpagina.html
     "productpagina_page_title": "Page produit",
     "productpagina_product_title": "Nom du produit",
+    "productpagina_description_title": "Description",
     "productpagina_product_description": "Description du produit.",
+    "productpagina_specificaties_title": " Spécifications",
+    "productpagina_specificaties": "Spécifications du produit",
     "productpagina_product_price": "Prix : 0,00 €",
     "productpagina_product_quantity_label": "Quantité :",
     "productpagina_add_to_cart_button": "Ajouter au panier",
+    "productpagina_wishlist-knop": "Liste de souhaits",
     "productpagina_product_image_alt": "Image du produit",
     "productpagina_product_error": "Une erreur s'est produite. Veuillez réessayer.",
+    "productpagina_verzending": "En stock. Chez vous dans les 5 jours ouvrables. - Livraison gratuite à partir de 50 €.",
+    "productpagina_other_products_title": "Vous pourriez aussi aimer",
+    "productpagina_last_seen_title": "Derniers vus",
+    "productpagina_no_products": "Aucun produit trouvé.",
 
     // reset_password.html
     "reset_password_page_title": "Stylisso – Nouveau mot de passe",
@@ -1704,12 +1720,20 @@ const translations = {
     // productpagina.html
     "productpagina_page_title": "Product Page",
     "productpagina_product_title": "Product Name",
+    "productpagina_description_title": "Description",
     "productpagina_product_description": "Product description.",
+    "productpagina_specificaties_title": "Specifications",
+    "productpagina_specificaties": "Product specifications.",
     "productpagina_product_price": "Price: €0.00",
     "productpagina_product_quantity_label": "Quantity:",
     "productpagina_add_to_cart_button": "Add to cart",
+    "productpagina_wishlist-knop": "Wishlist",
     "productpagina_product_image_alt": "Product image",
     "productpagina_product_error": "An error occurred. Please try again.",
+    "productpagina_verzending": "In stock. At your home within 5 working days. - Free shipping from €50.",
+    "productpagina_other_products_title": "You might also like",
+    "productpagina_last_seen_title": "Last viewed",
+    "productpagina_no_products": "No products found.",
 
     // reset_password.html
     "reset_password_page_title": "Stylisso – New Password",

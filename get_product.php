@@ -12,22 +12,39 @@ if (!isset($_GET['id'])) {
 
 $product_id = intval($_GET['id']);
 
-// Productgegevens ophalen
-$stmt = $conn->prepare("
-    SELECT id, name, description, price, image, created_at
-    FROM products
-    WHERE id = ?
-");
-$stmt->bind_param("i", $product_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$product = $result->fetch_assoc();
+// Huidige gebruiker (voor wishlist check)
+$userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
 
-if (!$product) {
-    echo json_encode(['error' => 'Product niet gevonden.']);
-    exit;
+// Productgegevens ophalen, inclusief wishlist status
+$sql = "
+    SELECT p.id, p.name, p.description, p.price, p.image, p.created_at, p.category_id,
+           CASE WHEN w.product_id IS NOT NULL THEN 1 ELSE 0 END AS in_wishlist
+    FROM products p
+    LEFT JOIN wishlist w 
+      ON w.product_id = p.id AND w.user_id = ?
+    WHERE p.id = ?
+";
+
+if ($stmt = $conn->prepare($sql)) {
+    $stmt->bind_param("ii", $userId, $product_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $product = $result->fetch_assoc();
+
+    if (!$product) {
+        echo json_encode(['error' => 'Product niet gevonden.']);
+        exit;
+    }
+
+    // Cast in_wishlist naar boolean
+    $product['in_wishlist'] = (bool)$product['in_wishlist'];
+
+    echo json_encode($product);
+
+    $stmt->close();
+} else {
+    echo json_encode(['error' => 'Database error: ' . $conn->error]);
 }
 
-// Eventueel: extra info zoals voorraad of type kan hier toegevoegd worden
-echo json_encode($product);
+$conn->close();
 ?>

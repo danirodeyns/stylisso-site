@@ -22,21 +22,42 @@
 
       <!-- Rechts: details -->
       <div class="product-right">
+        <strong data-i18n="productpagina_description_title">Beschrijving</strong>
         <p id="product-description" class="product-description" data-i18n="productpagina_product_description"></p>
+        <strong data-i18n="productpagina_specificaties_title">Specificaties</strong>
+        <p id="product-specificaties" data-i18n="productpagina_specificaties"></p>
         <p class="product-price" id="product-price" data-i18n="productpagina_product_price"></p>
 
         <div class="product-action">
           <input type="hidden" id="csrf_token" value="">
-          <label data-i18n="productpagina_product_quantity_label">
-            Aantal:
-            <input type="number" id="product-quantity" class="productpage-quantity" value="1" min="1">
-          </label>
+          <label data-i18n="productpagina_product_quantity_label">Aantal:</label>
+          <input type="number" id="product-quantity" class="productpage-quantity" value="1" min="1">
           <button id="add-to-cart" class="productpage-add-btn" data-i18n="productpagina_add_to_cart_button">Toevoegen aan winkelwagen</button>
+          
+          <!-- Nieuw: wishlist knop -->
+          <span class="wishlist-container" id="wishlist-btn">
+            <div class="wishlist-knop" data-id="">
+              <img src="wishlist/wishlist.png" alt="Wishlist knop" class="wishlist-icon-light">
+              <img src="wishlist/wishlist (dark mode).png" alt="Wishlist knop dark" class="wishlist-icon-dark">
+            </div>
+            <span data-i18n="productpagina_wishlist-knop">Verlanglijstje</span>
+          </span>
+          <p id="product-verzending" data-i18n="productpagina_verzending">Op voorraad. Binnen 5 werkdagen in huis. - Gratis vanaf €50</p>
         </div>
       </div>
+      
+      <div class="other-products">
+        <h2 id="other-products-title" class="other-products-title" data-i18n="productpagina_other_products_title">Misschien vindt je dit ook leuk</h2>
+        <div id="other-products-container" class="other-products-container"></div>
+      </div>
+
+      <div class="last-seen-products">
+        <h2 id="last-seen-products-title" class="last-seen-products-title" data-i18n="productpagina_last_seen_title">Laatst bekeken</h2>
+        <div id="last-seen-products-container" class="last-seen-products-container"></div>
+      </div>
+
+      <div id="product-error" class="product-error"></div>
     </div>
-    
-    <div id="product-error" class="product-error"></div>
   </div>
 
   <div id="footer-placeholder"></div>

@@ -2157,14 +2157,10 @@ input[type="number"].quantity-input {
 
 /* Container */
 .product-page-container {
-  max-width: 1100px;
-  margin-left: 2rem;
-  margin-right: 2rem;
+  gap: 2rem;
   padding: 2rem;
-  font-family: Arial, sans-serif;
   display: flex;
   flex-direction: column;
-  gap: 20px;
 }
 
 /* Titel */
@@ -2533,7 +2529,7 @@ input[type="number"].quantity-input {
   max-width: 100%;
   height: 160px;
   object-fit: cover;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.5rem;
 }
 
 .product-card2 h3 {
@@ -2548,6 +2544,12 @@ input[type="number"].quantity-input {
   font-weight: bold;
 }
 
+.product-card2 a {
+  text-decoration: none; /* geen underline */
+  color: inherit;         /* kleur overnemen van de card */
+  display: block;         /* hele card klikbaar */
+}
+
 .wishlist-btn {
   position: absolute;
   top: 8px;
@@ -2559,6 +2561,49 @@ input[type="number"].quantity-input {
 .wishlist-btn img {
   width: 1.5rem;
   height: 1.5rem;
+}
+
+.wishlist-container {
+  position: relative;
+  text-align: center;
+  margin-top: 0.25rem;
+  color: black;
+  border: 2px solid black;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.wishlist-container:hover {
+  color: #666;
+}
+
+.wishlist-knop {
+  position: absolute;
+  bottom: 0.2rem;
+}
+
+.wishlist-knop img {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.other-products,
+.last-seen-products {
+  width: 100%;
+}
+
+.other-products-title,
+.last-seen-products-title {
+  margin-bottom: 0.5rem;
+}
+
+/* 🔹 Product grid voor de secties */
+.other-products-container,
+.last-seen-products-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 1.5rem;
 }
 
 /* Dark mode */
@@ -3460,5 +3505,14 @@ input[type="number"].quantity-input {
 
   .product-card2 p {
     color: #fff;
+  }
+
+  .wishlist-container {
+    border: 2px solid white;
+    color: white;
+  }
+
+  .wishlist-container:hover {
+    color: #eee;
   }
 }
