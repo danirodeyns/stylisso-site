@@ -20,7 +20,33 @@
       <input type="text" id="name" name="name" placeholder="Naam" required data-i18n-placeholder="afrekenen_placeholder_name" />
 
       <label for="address" data-i18n="afrekenen_label_address">Adres</label>
-      <input type="text" id="address" name="address" placeholder="Straat + Nr, Postcode + Stad" required data-i18n-placeholder="afrekenen_placeholder_address" />
+      <span class="address-street-number">
+        <input type="text" id="street" name="street" placeholder="Straat" required data-i18n-placeholder="afrekenen_placeholder_street" />
+        <input type="text" id="house_number" name="house_number" placeholder="Nr" required data-i18n-placeholder="afrekenen_placeholder_house_number" />
+      </span>
+      <span class="address-postal-code-city">
+        <input type="text" id="postal_code" name="postal_code" placeholder="Postcode" required data-i18n-placeholder="afrekenen_placeholder_postal_code" />
+        <input type="text" id="city" name="city" placeholder="Stad" required data-i18n-placeholder="afrekenen_placeholder_city" />
+      </span>
+      <input type="text" id="country" name="country" placeholder="Land" required data-i18n-placeholder="afrekenen_placeholder_country" />
+
+      <!-- Checkbox om te kiezen of factuuradres anders is -->
+      <label for="different_billing">
+        <input type="checkbox" id="different_billing" name="different_billing" value="1" />
+        <span data-i18n="afrekenen_different_billing">Mijn factuuradres is anders dan mijn verzendadres</span>
+      </label>
+
+      <!-- Factuuradres -->
+      <label for="billing_street" data-i18n="afrekenen_label_billing_address" style="display:none;">Factuuradres</label>
+      <span id="billing_street_number" class="address-street-number" style="display:none;">
+        <input type="text" id="billing_street" name="billing_street" placeholder="Straat" data-i18n-placeholder="afrekenen_placeholder_street" />
+        <input type="text" id="billing_house_number" name="billing_house_number" placeholder="Nr" data-i18n-placeholder="afrekenen_placeholder_house_number" />
+      </span>
+      <span id="billing_postal_city" class="address-postal-code-city" style="display:none;">
+        <input type="text" id="billing_postal_code" name="billing_postal_code" placeholder="Postcode" data-i18n-placeholder="afrekenen_placeholder_postal_code" />
+        <input type="text" id="billing_city" name="billing_city" placeholder="Stad" data-i18n-placeholder="afrekenen_placeholder_city" />
+      </span>
+      <input type="text" id="billing_country" name="billing_country" placeholder="Land" data-i18n-placeholder="afrekenen_placeholder_country" style="display:none;" />
 
       <label for="company_name" data-i18n="afrekenen_label_company">Bedrijfsnaam</label>
       <input type="text" id="company_name" name="company_name" placeholder="Bedrijf (Optioneel)" data-i18n-placeholder="afrekenen_placeholder_company" />

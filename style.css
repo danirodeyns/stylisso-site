@@ -2606,6 +2606,38 @@ input[type="number"].quantity-input {
   gap: 1.5rem;
 }
 
+.address-street-number {
+  display: flex;
+  gap: 0.5rem; /* ruimte tussen de velden */
+  width: 100%; /* past aan zoals andere velden */
+}
+
+.address-street-number #street,
+.address-street-number #billing_street {
+  flex: 3; /* 3/4 van de ruimte */
+}
+
+.address-street-number #house_number,
+.address-street-number #billing_house_number {
+  flex: 1; /* 1/4 van de ruimte */
+}
+
+.address-postal-code-city {
+  display: flex;
+  gap: 0.5rem; /* ruimte tussen de velden */
+  width: 100%; /* past aan zoals andere velden */
+}
+
+.address-postal-code-city #postal_code,
+.address-postal-code-city #billing_postal_code {
+  flex: 1; /* 1/4 van de ruimte */
+}
+
+.address-postal-code-city #city,
+.address-postal-code-city #billing_city {
+  flex: 3; /* 3/4 van de ruimte */
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {

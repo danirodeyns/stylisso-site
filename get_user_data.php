@@ -21,9 +21,9 @@ $options = [
 try {
     $pdo = new PDO($dsn, $dbUser, $dbPass, $options);
     
-    // Selecteer gebruikersgegevens inclusief bedrijf en BTW-nummer
+    // Selecteer gebruikersgegevens zonder adres
     $stmt = $pdo->prepare("
-        SELECT name, email, address, newsletter, company_name, vat_number
+        SELECT name, email, newsletter, company_name, vat_number
         FROM users
         WHERE id = :id
     ");
@@ -31,6 +31,30 @@ try {
     $user = $stmt->fetch();
 
     if ($user) {
+        // Haal shipping adres op
+        $stmt_shipping = $pdo->prepare("
+            SELECT id, street, house_number, postal_code, city, country
+            FROM addresses
+            WHERE user_id = :id AND type = 'shipping'
+            LIMIT 1
+        ");
+        $stmt_shipping->execute([':id' => $_SESSION['user_id']]);
+        $shippingAddress = $stmt_shipping->fetch();
+
+        // Haal billing adres op
+        $stmt_billing = $pdo->prepare("
+            SELECT id, street, house_number, postal_code, city, country
+            FROM addresses
+            WHERE user_id = :id AND type = 'billing'
+            LIMIT 1
+        ");
+        $stmt_billing->execute([':id' => $_SESSION['user_id']]);
+        $billingAddress = $stmt_billing->fetch();
+
+        // Voeg toe aan JSON output
+        $user['shipping_address'] = $shippingAddress ?: null;
+        $user['billing_address']  = $billingAddress ?: null;
+
         echo json_encode($user);
     } else {
         echo json_encode(['error' => 'Gebruiker niet gevonden']);

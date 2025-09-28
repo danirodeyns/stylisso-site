@@ -10,13 +10,35 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Adres ophalen uit DB
-$stmt = $conn->prepare("SELECT address, name, email FROM users WHERE id = ?");
+// --- Laatste adres ophalen uit DB (shipping type) ---
+$stmt = $conn->prepare("
+    SELECT a.id AS address_id, a.street, a.house_number, a.postal_code, a.city, a.country, u.name, u.email, u.company_name, u.vat_number
+    FROM addresses a
+    INNER JOIN users u ON u.id = a.user_id
+    WHERE a.user_id = ? AND a.type = 'shipping'
+    ORDER BY a.id DESC
+    LIMIT 1
+");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
-$current_address = $user['address'] ?? '';
+
+// Als geen adres aanwezig, lege velden
+if (!$user) {
+    $user = [
+        'address_id' => null,
+        'street' => '',
+        'house_number' => '',
+        'postal_code' => '',
+        'city' => '',
+        'country' => '',
+        'name' => '',
+        'email' => '',
+        'company_name' => '',
+        'vat_number' => ''
+    ];
+}
 
 // -------------------------
 // Producten uit winkelwagen

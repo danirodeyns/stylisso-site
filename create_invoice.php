@@ -12,17 +12,36 @@ use Mpdf\Mpdf;
  * @return string|false Bestandsnaam bij succes, false bij fout
  */
 function create_invoice($order_id, $order_date, $conn) {
-    // Ophalen van orderinformatie
+    // Ophalen van orderinformatie + gebruikersgegevens
     $stmt = $conn->prepare("
-        SELECT o.id, o.total_price, o.status, o.created_at, u.name, u.email, u.address
+        SELECT o.id, o.total_price, o.status, o.created_at,
+               u.name, u.email, u.company_name, u.vat_number,
+               -- Eerst billing, fallback naar shipping
+               COALESCE(b.street, s.street) AS street,
+               COALESCE(b.house_number, s.house_number) AS house_number,
+               COALESCE(b.postal_code, s.postal_code) AS postal_code,
+               COALESCE(b.city, s.city) AS city,
+               COALESCE(b.country, s.country) AS country
         FROM orders o
         JOIN users u ON o.user_id = u.id
+        LEFT JOIN addresses s ON s.user_id = u.id AND s.type = 'shipping'
+        LEFT JOIN addresses b ON b.user_id = u.id AND b.type = 'billing'
         WHERE o.id = ?
+        ORDER BY b.id DESC, s.id DESC
+        LIMIT 1
     ");
     $stmt->bind_param("i", $order_id);
     $stmt->execute();
     $order = $stmt->get_result()->fetch_assoc();
     if (!$order) return false;
+
+    // Opbouwen van het adres
+    $addressParts = [];
+    if (!empty($order['street'])) $addressParts[] = htmlspecialchars($order['street']) . ' ' . htmlspecialchars($order['house_number']);
+    if (!empty($order['postal_code'])) $addressParts[] = htmlspecialchars($order['postal_code']);
+    if (!empty($order['city'])) $addressParts[] = htmlspecialchars($order['city']);
+    if (!empty($order['country'])) $addressParts[] = htmlspecialchars($order['country']);
+    $fullAddress = implode(', ', $addressParts);
 
     // Ophalen van order items
     $stmt_items = $conn->prepare("
@@ -41,7 +60,9 @@ function create_invoice($order_id, $order_date, $conn) {
     $html .= '<p><strong>' . t('order_date') . ':</strong> ' . date('d-m-Y', strtotime($order['created_at'])) . '</p>';
     $html .= '<p><strong>' . t('customer') . ':</strong> ' . htmlspecialchars($order['name']) . '<br>';
     $html .= '<strong>' . t('email') . ':</strong> ' . htmlspecialchars($order['email']) . '<br>';
-    $html .= '<strong>' . t('address') . ':</strong> ' . nl2br(htmlspecialchars($order['address'])) . '</p>';
+    if (!empty($order['company_name'])) $html .= '<strong>' . t('company') . ':</strong> ' . htmlspecialchars($order['company_name']) . '<br>';
+    if (!empty($order['vat_number'])) $html .= '<strong>' . t('vat_number') . ':</strong> ' . htmlspecialchars($order['vat_number']) . '<br>';
+    $html .= '<strong>' . t('address') . ':</strong> ' . $fullAddress . '</p>';
 
     $html .= '<table width="100%" border="1" cellpadding="5" cellspacing="0">';
     $html .= '<thead><tr>
