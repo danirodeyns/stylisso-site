@@ -184,46 +184,51 @@ document.addEventListener('DOMContentLoaded', function () {
       const itemDiv = document.createElement('div');
       itemDiv.classList.add('cart-item');
 
-      // Dynamische attributen: id voor DB, index voor sessie
       const idAttr = item.id ? `data-id="${item.id}"` : (item.index !== undefined ? `data-index="${item.index}"` : '');
 
-      if (item.type === 'voucher') {
-        itemDiv.innerHTML = `
-          <div class="item-image-wrapper">
-            <img src="cadeaubon/voucher.png" alt="${item.name}" class="item-image item-image-light"/>
-            <img src="cadeaubon/voucher (dark mode).png" alt="${item.name}" class="item-image item-image-dark"/>
-          </div>
-          <div class="item-info">
-            <h3>${item.name}</h3>
-            <p>${item.variant || ''}</p>
-            <p><span data-i18n="script_cart_price">Prijs</span>: €${parseFloat(item.price).toFixed(2)}</p>
-            <input type="hidden" value="${item.quantity}" min="1" ${idAttr} data-type="${item.type}" class="quantity-input">
-            <button class="remove-item" ${idAttr} data-type="${item.type}">
-              <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
-              <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
-            </button>
-          </div>
-        `;
-      } else {
-        itemDiv.innerHTML = `
-          <img src="${item.image}" alt="${item.name}" class="item-image"/>
-          <div class="item-info">
-            <h3>${item.name}</h3>
-            <p>${item.variant || ''}</p>
-            <p><span data-i18n="script_cart_price">Prijs</span>: €${parseFloat(item.price).toFixed(2)}</p>
-            <label>
-              <span data-i18n="script_cart_amount">Aantal</span>:
-              <input type="number" value="${item.quantity}" min="1" ${idAttr} data-type="${item.type}" class="quantity-input">
-            </label>
-            <button class="remove-item" ${idAttr} data-type="${item.type}">
-              <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
-              <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
-            </button>
-          </div>
-        `;
-      }
+      itemDiv.innerHTML = `
+        <img src="${item.image}" alt="${item.name}" class="item-image"/>
+        <div class="item-info">
+          <h3>${item.name}</h3>
+          <p>${item.variant || ''}</p>
+          <p><span data-i18n="script_cart_price">Prijs</span>: €${parseFloat(item.price).toFixed(2)}</p>
+          <label>
+            <span data-i18n="script_cart_amount">Aantal</span>:
+            <input type="number" value="${item.quantity}" min="1" ${idAttr} data-type="${item.type}" class="quantity-input">
+          </label>
+          <button class="remove-item" ${idAttr} data-type="${item.type}">
+            <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
+            <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
+          </button>
+        </div>
+      `;
 
       cartItemsContainer.appendChild(itemDiv);
+    });
+
+    // ✅ Eventlisteners toevoegen voor alle quantity inputs
+    cartItemsContainer.querySelectorAll('.quantity-input').forEach(input => {
+      input.addEventListener('change', e => {
+        const newQty = parseInt(e.target.value);
+        const id = e.target.dataset.id;
+        const type = e.target.dataset.type;
+
+        // stuur wijziging door naar de server
+        fetch('cart.php?action=update_quantity', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: `id=${encodeURIComponent(id)}&type=${encodeURIComponent(type)}&quantity=${newQty}&csrf_token=${encodeURIComponent(window.csrfToken)}`
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            fetchCart(document.getElementById('cartDropdown'));
+          }
+        })
+        .catch(err => console.error('Fout bij update_quantity:', err));
+      });
     });
 
     calculateSubtotal(cart);
