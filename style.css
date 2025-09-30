@@ -2550,6 +2550,15 @@ input[type="number"].quantity-input {
   display: block;         /* hele card klikbaar */
 }
 
+/* Specificaties lijst */
+#product-specificaties ul {
+  padding-left: 1rem;          /* ruimte voor de lijststijl */
+}
+
+#product-specificaties li {
+  line-height: 1.6;
+}
+
 .wishlist-btn {
   position: absolute;
   top: 8px;

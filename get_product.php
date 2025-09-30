@@ -17,7 +17,7 @@ $userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
 
 // Productgegevens ophalen, inclusief wishlist status
 $sql = "
-    SELECT p.id, p.name, p.description, p.price, p.image, p.created_at, p.category_id,
+    SELECT p.id, p.name, p.description, p.price, p.image, p.created_at, p.category_id, p.specifications,
            CASE WHEN w.product_id IS NOT NULL THEN 1 ELSE 0 END AS in_wishlist
     FROM products p
     LEFT JOIN wishlist w 

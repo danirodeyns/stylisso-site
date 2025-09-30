@@ -2058,6 +2058,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const titleEl = document.getElementById('product-title');
   const imageEl = document.getElementById('product-image');
   const descEl = document.getElementById('product-description');
+  const specsEl = document.getElementById('product-specificaties'); // <--- toegevoegd
   const priceEl = document.getElementById('product-price');
   const quantityEl = document.getElementById('product-quantity');
   const addBtn = document.getElementById('add-to-cart');
@@ -2115,23 +2116,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     descEl.innerHTML = product.description.replace(/\n/g, "<br>");
     priceEl.textContent = `€${parseFloat(product.price).toFixed(2)}`;
 
+    // --- Specificaties netjes weergeven ---
+    const specsEl = document.getElementById('product-specificaties');
+    if (product.specifications) {
+      const specsArray = product.specifications.split(';').map(s => s.trim()).filter(s => s);
+      const ul = document.createElement('ul');
+      specsArray.forEach(spec => {
+        const li = document.createElement('li');
+        li.textContent = spec;
+        ul.appendChild(li);
+      });
+      specsEl.innerHTML = '';
+      specsEl.appendChild(ul);
+    } else {
+      specsEl.textContent = '';
+    }
+
     // --- Wishlist knop hoofdproduct ---
     if (wishlistBtn) {
       const iconLight = wishlistBtn.querySelector(".wishlist-icon-light");
       const iconDark = wishlistBtn.querySelector(".wishlist-icon-dark");
-      let inWishlist = product.in_wishlist; // interne status
-
-      console.log("Hoofdproduct load: inWishlist =", inWishlist); // DEBUG
+      let inWishlist = product.in_wishlist;
 
       iconLight.src = inWishlist ? "wishlist/added.png" : "wishlist/wishlist.png";
       iconDark.src = inWishlist ? "wishlist/added (dark mode).png" : "wishlist/wishlist (dark mode).png";
 
       wishlistBtn.addEventListener("click", () => {
-        console.log("Hoofdproduct clicked. Voor toggle: inWishlist =", inWishlist); // DEBUG
-
         const action = inWishlist ? "remove" : "add";
-        console.log("Actie:", action); // DEBUG
-
         const url = action === "add" ? "wishlist_add.php" : "wishlist_remove.php";
         const formData = new URLSearchParams();
         formData.append("product_id", product.id);
@@ -2139,15 +2150,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         fetch(url, { method: "POST", body: formData })
           .then(res => res.json())
           .then(response => {
-            console.log("Response hoofdproduct:", response); // DEBUG
-            if (response.error) {
-              console.error("Wishlist error:", response.error);
-              return;
-            }
+            if (response.error) return console.error("Wishlist error:", response.error);
             inWishlist = !inWishlist;
             iconLight.src = inWishlist ? "wishlist/added.png" : "wishlist/wishlist.png";
             iconDark.src = inWishlist ? "wishlist/added (dark mode).png" : "wishlist/wishlist (dark mode).png";
-            console.log("Na toggle: inWishlist =", inWishlist); // DEBUG
           })
           .catch(err => console.error("Wishlist fetch error:", err));
       });
@@ -2203,15 +2209,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         const card = document.createElement("div");
         card.className = "product-card2";
 
-        let inWishlist = p.in_wishlist; // interne status
+        let inWishlist = p.in_wishlist;
         card.innerHTML = `
           <div class="wishlist-btn" data-id="${p.id}">
             <img src="${inWishlist ? 'wishlist/added.png' : 'wishlist/wishlist.png'}" 
-                alt="Wishlist knop" 
-                class="wishlist-icon-light">
+                 alt="Wishlist knop" 
+                 class="wishlist-icon-light">
             <img src="${inWishlist ? 'wishlist/added (dark mode).png' : 'wishlist/wishlist (dark mode).png'}" 
-                alt="Wishlist knop dark" 
-                class="wishlist-icon-dark">
+                 alt="Wishlist knop dark" 
+                 class="wishlist-icon-dark">
           </div>
           <a href="productpagina.html?id=${p.id}">
             <img src="${p.image}" alt="${p.name}" class="product-thumb">
@@ -2224,15 +2230,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const iconLight = wishlistBtn.querySelector(".wishlist-icon-light");
         const iconDark = wishlistBtn.querySelector(".wishlist-icon-dark");
 
-        console.log(`Product ${p.id} load: inWishlist =`, inWishlist); // DEBUG
-
         wishlistBtn.addEventListener("click", (e) => {
           e.stopPropagation();
-          console.log(`Product ${p.id} clicked. Voor toggle: inWishlist =`, inWishlist); // DEBUG
-
           const action = inWishlist ? "remove" : "add";
-          console.log(`Product ${p.id} actie:`, action); // DEBUG
-
           const url = action === "add" ? "wishlist_add.php" : "wishlist_remove.php";
           const formData = new URLSearchParams();
           formData.append("product_id", p.id);
@@ -2240,15 +2240,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           fetch(url, { method: "POST", body: formData })
             .then(res => res.json())
             .then(response => {
-              console.log(`Product ${p.id} response:`, response); // DEBUG
-              if (response.error) {
-                console.error("Wishlist error:", response.error);
-                return;
-              }
+              if (response.error) return console.error("Wishlist error:", response.error);
               inWishlist = !inWishlist;
               iconLight.src = inWishlist ? "wishlist/added.png" : "wishlist/wishlist.png";
               iconDark.src = inWishlist ? "wishlist/added (dark mode).png" : "wishlist/wishlist (dark mode).png";
-              console.log(`Product ${p.id} na toggle: inWishlist =`, inWishlist); // DEBUG
             })
             .catch(err => console.error("Wishlist fetch error:", err));
         });
