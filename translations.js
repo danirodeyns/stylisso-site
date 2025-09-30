@@ -77,7 +77,7 @@ const translations = {
     "footer_copyright": "© 2025 Stylisso. Alle rechten voorbehouden.",
 
     // afrekenen.html
-    "afrekenen_checkout_title": "Stylisso - Afrekenen",
+    "afrekenen_checkout_title": "Afrekenen",
     "afrekenen_label_name": "Naam",
     "afrekenen_placeholder_name": "Naam",
     "afrekenen_label_address": "Verzendadres",
@@ -112,7 +112,7 @@ const translations = {
     "afrekenen_different_billing": "Factuuradres is anders dan verzendadres",
 
     // algemene voorwaarden.html
-    "algemene voorwaarden_terms_title": "Algemene Voorwaarden Stylisso",
+    "algemene voorwaarden_terms_title": "Algemene Voorwaarden",
     "algemene voorwaarden_terms_heading": "Algemene Voorwaarden Stylisso",
     "algemene voorwaarden_terms_section1_title": "1. Toepasselijkheid",
     "algemene voorwaarden_terms_section1_text": "Deze algemene voorwaarden zijn van toepassing op alle aanbiedingen, bestellingen en overeenkomsten die via de website van Stylisso (",
@@ -168,13 +168,13 @@ const translations = {
     "menu_logout": "Uitloggen",
     
     // bestellingen.html
-    "bestellingen_profile_title": "Profielinstellingen - Stylisso",
+    "bestellingen_profile_title": "Bestellingen & Facturen",
     "bestellingen_orders_heading": "Bestellingen & Facturen",
     "bestellingen_orders_text": "Hier vind je een overzicht van je eerdere bestellingen en facturen.",
     "bestellingen_orders_empty": "Nog geen bestellingen om weer te geven.",
 
     // betaalmethodes.html
-    "betaalmethodes_payment_title": "Stylisso",
+    "betaalmethodes_payment_title": "Betaalmethodes",
     "betaalmethodes_payment_heading": "Betaalmethodes",
     "betaalmethodes_payment_intro": "Bij Stylisso bieden we meerdere veilige betaalmogelijkheden aan zodat jij zorgeloos je bestelling kunt afronden.",
     "betaalmethodes_payment_card": "💳 Kredietkaart",
@@ -189,7 +189,7 @@ const translations = {
     "betaalmethodes_payment_vouchers_text": "Heb je een Stylisso-cadeaubon? Vul je code in tijdens het afrekenen om deze toe te passen.",
 
     // cadeaubonnen_kopen.html
-    "cadeaubonnen_kopen_voucher_title": "Cadeaubonnen - Stylisso",
+    "cadeaubonnen_kopen_voucher_title": "Cadeaubonnen",
     "cadeaubonnen_kopen_voucher_heading": "🛍️ Cadeaubon kopen",
     "cadeaubonnen_kopen_voucher_text": "Kies het bedrag van je cadeaubon en ontvang de code per e-mail.",
     "cadeaubonnen_kopen_voucher_label_amount": "Bedrag:",
@@ -201,7 +201,7 @@ const translations = {
     "cadeaubonnen_kopen_voucher_button_buy": "Cadeaubon kopen",
 
     // cadeaubonnen.html
-    "cadeaubonnen_account_vouchers_title": "Profielinstellingen - Stylisso",
+    "cadeaubonnen_account_vouchers_title": "Cadeaubonnen",
     "cadeaubonnen_account_vouchers_heading": "🛍️ Cadeaubonnen",
     "cadeaubonnen_account_vouchers_text": "Voeg hier een cadeauboncode toe om deze aan je account te koppelen en te gebruiken bij je volgende bestelling.",
     "cadeaubonnen_account_vouchers_label": "Cadeauboncode",
@@ -211,14 +211,14 @@ const translations = {
     "cadeaubonnen_account_vouchers_list_empty": "Geen cadeaubonnen gekoppeld.",
 
     // cart.html
-    "cart_title": "Stylisso",
+    "cart_title": "Winkelwagen",
     "cart_heading": "Winkelwagen",
     "cart_empty": "Je winkelwagen is momenteel leeg.",
     "cart_subtotal": "Subtotaal",
     "cart_checkout_button": "Ga naar afrekenen",
 
     // categorie.html
-    "categorie_category_title_page": "Stylisso Categorie",
+    "categorie_category_title_page": "Categorie",
     "categorie_filters_title": "Filters",
     "categorie_filters_reset": "Reset filters",
     "categorie_category_title": "Categorie",
@@ -228,7 +228,7 @@ const translations = {
     "categorie_sort_new": "Nieuwste",
 
     // contact.html
-    "contact_title_page": "Stylisso",
+    "contact_title_page": "Contact",
     "contact_header": "Contacteer ons",
     "contact_intro": "Heb je vragen of opmerkingen? Vul het formulier in en wij nemen zo snel mogelijk contact met je op.",
     "contact_label_name": "Naam:",
@@ -242,7 +242,7 @@ const translations = {
     "contact_button_submit": "Verzenden",
 
     // cookiebeleid.html
-    "cookiebeleid_title": "Cookiebeleid - Stylisso",
+    "cookiebeleid_title": "Cookiebeleid",
     "cookiebeleid_heading": "Cookiebeleid",
     "cookiebeleid_section1_title": "1. Wat zijn cookies?",
     "cookiebeleid_section1_text": "Cookies zijn kleine tekstbestanden die door websites worden opgeslagen in je browser. Ze helpen ons de website goed te laten functioneren, je voorkeuren te onthouden en gebruiksgegevens te analyseren.",
@@ -300,7 +300,7 @@ const translations = {
     "cookiebeleid_section6_text": "Stylisso kan dit cookiebeleid op elk moment wijzigen. Controleer regelmatig deze pagina voor eventuele updates.",
 
     // gegevens.html
-    "profile_title_page": "Profielinstellingen - Stylisso",
+    "profile_title_page": "Profielinstellingen",
     "profile_header": "Gegevens & Voorkeuren",
     "profile_intro": "Hier kun je je persoonlijke gegevens bekijken en aanpassen, en je voorkeuren voor communicatie beheren.",
     "profile_name_label": "Naam",
@@ -332,6 +332,7 @@ const translations = {
     "profile_different_billing": "Factuuradres is anders dan verzendadres",
 
     // login_registreren.html
+    "login_registreren_title": "Inloggen / Registreren",
     "login_header": "Inloggen",
     "login_email_label": "E-mailadres",
     "login_email_placeholder": "jouw@email.com",
@@ -350,7 +351,7 @@ const translations = {
     "register_button": "Registreren",
 
     // mijn_stylisso.html
-    "mijn_stylisso_page_title": "Mijn Stylisso - Overzicht",
+    "mijn_stylisso_page_title": "Mijn Stylisso",
     "mijn_stylisso_welcome_header": "Welkom bij Mijn Stylisso",
     "mijn_stylisso_welcome_subheader": "Overzicht van je gegevens, bestelling en cadeaubonnen.",
     "mijn_stylisso_section_my_data": "Mijn Gegevens",
@@ -369,7 +370,7 @@ const translations = {
     "mijn_stylisso_btn_view_vouchers": "Bekijk cadeaubonnen",
 
     // over ons.html
-    "over_ons_page_title": "Welkom bij Stylisso - Style That Moves",
+    "over_ons_page_title": "Over ons",
     "over_ons_header_main": "Welkom bij Stylisso - Style That Moves",
     "over_ons_intro_1": "Bij Stylisso begint stijl waar beweging start. Wij geloven dat kleding meer is dan alleen iets dat je draagt – het is een manier om jezelf uit te drukken, je doelen te ondersteunen en je dagelijkse leven mooier te maken. Onze slogan “Style That Moves” vat dat perfect samen: mode die meebeweegt met jouw tempo, jouw ambities en jouw unieke persoonlijkheid.",
     "over_ons_intro_2": "Van de vroege ochtendtraining tot een avondje uit. Wij zorgen dat jij altijd stijlvol en comfortabel bent. Onze collectie is speciaal ontworpen voor mensen die actief in het leven staan en geen compromis willen sluiten tussen looks en functionaliteit.",
@@ -388,7 +389,7 @@ const translations = {
     "over_ons_conclusion_2": "Wij zien Stylisso niet alleen als een merk, maar als een community van mensen die bewust kiezen voor stijl, kwaliteit en duurzaamheid. We luisteren naar onze klanten, volgen trends, testen nieuwe ideeën en verbeteren ons aanbod continu. Alles om ervoor te zorgen dat jij bij Stylisso vindt wat je zoekt.",
 
     // privacybeleid.html
-    "privacy_page_title": "Privacybeleid Stylisso",
+    "privacy_page_title": "Privacybeleid",
     "privacy_header_main": "Privacybeleid Stylisso",
     "privacy_intro": "Bij Stylisso hechten we veel waarde aan de bescherming van jouw persoonsgegevens. In dit privacybeleid leggen we uit welke gegevens we verzamelen, hoe we deze gebruiken, met wie we ze delen en welke rechten je hebt.",
     "privacy_section_1_title": "1. Verzamelde persoonsgegevens",
@@ -461,7 +462,7 @@ const translations = {
     "productpagina_no_products": "Geen producten gevonden.",
 
     // reset_password.html
-    "reset_password_page_title": "Stylisso – Nieuw wachtwoord",
+    "reset_password_page_title": "Nieuw wachtwoord",
     "reset_password_header": "Nieuw wachtwoord instellen",
     "reset_password_intro_text": "Kies hieronder een nieuw wachtwoord om je account opnieuw te beveiligen.",
     "reset_password_label": "Nieuw wachtwoord",
@@ -473,18 +474,18 @@ const translations = {
     "reset_password_back_link": "Terug naar inloggen",
 
     // reset_succes.html
-    "reset_succes_page_title": "Stylisso – Wachtwoord gewijzigd",
+    "reset_succes_page_title": "Wachtwoord gewijzigd",
     "reset_succes_header": "Wachtwoord succesvol gewijzigd",
     "reset_succes_message": "Je wachtwoord is met succes aangepast. Je kunt nu opnieuw inloggen met je nieuwe wachtwoord.",
     "reset_succes_login_button": "Inloggen",
 
     // retourneren.html
-    "retourneren_page_title": "Profielinstellingen - Stylisso",
+    "retourneren_page_title": "Retourneren",
     "retourneren_header": "Retourneren",
     "retourneren_description": "Gebruik dit formulier om een product terug te sturen.",
 
     // retourzendingen.html
-    "retourzendingen_page_title": "Retourzendingen | Stylisso",
+    "retourzendingen_page_title": "Retourzendingen",
     "retourzendingen_header": "Retourzendingen",
     "retourzendingen_intro": "Bij Stylisso streven we naar 100% klanttevredenheid. Ben je niet tevreden met je aankoop? Dan kun je deze eenvoudig retourneren, in overeenstemming met het wettelijk herroepingsrecht en onze aanvullende retourvoorwaarden.",
     "retourzendingen_section1_title": "1. Herroepingsrecht",
@@ -515,8 +516,8 @@ const translations = {
     "retourzendingen_section7_text_2": ". Wij antwoorden doorgaans binnen 48 uur.",
 
     // reviews.html
-    "reviews_page_title": "Klantreviews | Stylisso",
-    "reviews_header": "Klantreviews",
+    "reviews_page_title": "Beoordelingen",
+    "reviews_header": "Klantbeoordelingen",
     "reviews_intro": "Hieronder vind je enkele ervaringen van klanten die bij Stylisso hebben besteld.",
     "reviews_rating_label": "Beoordeling:",
     "reviews_review1": "De producten zijn van uitstekende kwaliteit en werden snel geleverd. Ik ben erg tevreden!",
@@ -532,7 +533,7 @@ const translations = {
     "reviews_form_submit": "Verstuur review",
 
     // verzending en levering.html
-    "verzending en levering_page_title": "Verzending en Levering | Stylisso",
+    "verzending en levering_page_title": "Verzending en Levering",
     "verzending en levering_header": "Verzending en Levering",
     "verzending en levering_intro": "Bij Stylisso zorgen we ervoor dat jouw bestelling zo snel en zorgvuldig mogelijk wordt verwerkt en geleverd. Hieronder vind je alle informatie met betrekking tot verzending en levering.",
     "verzending en levering_section1_title": "1. Verzendkosten",
@@ -552,7 +553,7 @@ const translations = {
     "verzending en levering_contact_link": "contactpagina",
 
     // wachtwoord vergeten.html
-    "wachtwoord vergeten_page_title": "Stylisso – Wachtwoord vergeten",
+    "wachtwoord vergeten_page_title": "Wachtwoord vergeten",
     "wachtwoord vergeten_header": "Wachtwoord vergeten",
     "wachtwoord vergeten_intro": "Vul hieronder je e-mailadres in. We sturen je een link om je wachtwoord te resetten.",
     "wachtwoord vergeten_email_label": "E-mailadres",
@@ -561,12 +562,12 @@ const translations = {
     "wachtwoord vergeten_back_link": "Terug naar inloggen",
 
     // wishlist.html
-    "wishlist_page_title": "Mijn Wishlist - Stylisso",
+    "wishlist_page_title": "Mijn Verlanglijstje",
     "wishlist_header": "Mijn Verlanglijstje",
     "wishlist_loading": "Wishlist wordt geladen...",
 
     // zoekpagina.html
-    "search_title_page": "Zoekresultaten - Stylisso",
+    "search_title_page": "Zoekresultatens",
     "search_results_title": "Zoekresultaten",
 
     // script.js
@@ -743,7 +744,7 @@ const translations = {
     "footer_copyright": "© 2025 Stylisso. Tous droits réservés.",
 
     // afrekenen.html
-    "afrekenen_checkout_title": "Stylisso - Commander",
+    "afrekenen_checkout_title": "Commander",
     "afrekenen_label_name": "Nom",
     "afrekenen_placeholder_name": "Nom",
     "afrekenen_label_address": "Adresse de livraison",
@@ -778,7 +779,7 @@ const translations = {
     "afrekenen_different_billing": "Adresse de facturation différente",
 
     // algemene voorwaarden.html
-    "algemene voorwaarden_terms_title": "Conditions Générales Stylisso",
+    "algemene voorwaarden_terms_title": "Conditions Générales",
     "algemene voorwaarden_terms_heading": "Conditions Générales Stylisso",
     "algemene voorwaarden_terms_section1_title": "1. Applicabilité",
     "algemene voorwaarden_terms_section1_text": "Ces conditions générales s'appliquent à toutes les offres, commandes et accords effectués via le site Stylisso (",
@@ -834,13 +835,13 @@ const translations = {
     "menu_logout": "Déconnexion",
 
     // bestellingen.html
-    "bestellingen_profile_title": "Paramètres du profil - Stylisso",
+    "bestellingen_profile_title": "Commandes & Factures",
     "bestellingen_orders_heading": "Commandes & Factures",
     "bestellingen_orders_text": "Voici un aperçu de vos commandes et factures précédentes.",
     "bestellingen_orders_empty": "Aucune commande à afficher.",
 
     // betaalmethodes.html
-    "betaalmethodes_payment_title": "Stylisso",
+    "betaalmethodes_payment_title": "Méthodes de paiement",
     "betaalmethodes_payment_heading": "Méthodes de paiement",
     "betaalmethodes_payment_intro": "Chez Stylisso, nous proposons plusieurs options de paiement sécurisées afin que vous puissiez finaliser votre commande en toute tranquillité.",
     "betaalmethodes_payment_card": "💳 Carte de crédit",
@@ -855,7 +856,7 @@ const translations = {
     "betaalmethodes_payment_vouchers_text": "Vous avez un bon Stylisso ? Entrez votre code lors du paiement pour l’appliquer.",
 
     // cadeaubonnen_kopen.html
-    "cadeaubonnen_kopen_voucher_title": "Bons cadeaux - Stylisso",
+    "cadeaubonnen_kopen_voucher_title": "Bons cadeaux",
     "cadeaubonnen_kopen_voucher_heading": "🛍️ Acheter un bon",
     "cadeaubonnen_kopen_voucher_text": "Choisissez le montant de votre bon et recevez le code par e-mail.",
     "cadeaubonnen_kopen_voucher_label_amount": "Montant :",
@@ -867,7 +868,7 @@ const translations = {
     "cadeaubonnen_kopen_voucher_button_buy": "Acheter le bon",
 
     // cadeaubonnen.html
-    "cadeaubonnen_account_vouchers_title": "Paramètres du profil - Stylisso",
+    "cadeaubonnen_account_vouchers_title": "Bons cadeaux",
     "cadeaubonnen_account_vouchers_heading": "🛍️ Bons cadeaux",
     "cadeaubonnen_account_vouchers_text": "Ajoutez ici un code de bon pour le lier à votre compte et l'utiliser lors de votre prochaine commande.",
     "cadeaubonnen_account_vouchers_label": "Code du bon",
@@ -877,14 +878,14 @@ const translations = {
     "cadeaubonnen_account_vouchers_list_empty": "Aucun bon cadeau associé.",
 
     // cart.html
-    "cart_title": "Stylisso",
+    "cart_title": "Panier",
     "cart_heading": "Panier",
     "cart_empty": "Votre panier est actuellement vide.",
     "cart_subtotal": "Sous-total",
     "cart_checkout_button": "Passer à la caisse",
 
     // categorie.html
-    "categorie_category_title_page": "Catégorie Stylisso",
+    "categorie_category_title_page": "Catégorie",
     "categorie_filters_title": "Filtres",
     "categorie_filters_reset": "Réinitialiser les filtres",
     "categorie_category_title": "Catégorie",
@@ -894,7 +895,7 @@ const translations = {
     "categorie_sort_new": "Nouveautés",
 
     // contact.html
-    "contact_title_page": "Stylisso",
+    "contact_title_page": "Contact",
     "contact_header": "Contactez-nous",
     "contact_intro": "Vous avez des questions ou des commentaires ? Remplissez le formulaire et nous vous contacterons dès que possible.",
     "contact_label_name": "Nom:",
@@ -908,7 +909,7 @@ const translations = {
     "contact_button_submit": "Envoyer",
 
     // cookiebeleid.html
-    "cookiebeleid_title": "Politique de cookies - Stylisso",
+    "cookiebeleid_title": "Politique de cookies",
     "cookiebeleid_heading": "Politique de cookies",
     "cookiebeleid_section1_title": "1. Que sont les cookies ?",
     "cookiebeleid_section1_text": "Les cookies sont de petits fichiers texte stockés par les sites web dans votre navigateur. Ils nous aident à faire fonctionner correctement le site, à mémoriser vos préférences et à analyser les données d'utilisation.",
@@ -966,7 +967,7 @@ const translations = {
     "cookiebeleid_section6_text": "Stylisso peut modifier cette politique de cookies à tout moment. Vérifiez régulièrement cette page pour les éventuelles mises à jour.",
 
     // gegevens.html
-    "profile_title_page": "Paramètres du profil - Stylisso",
+    "profile_title_page": "Paramètres du profil",
     "profile_header": "Profil & Préférences",
     "profile_intro": "Ici, vous pouvez consulter et modifier vos informations personnelles et gérer vos préférences de communication.",
     "profile_name_label": "Nom",
@@ -998,6 +999,7 @@ const translations = {
     "profile_different_billing": "Adresse de facturation différente",
 
     // login_registreren.html
+    "login_registreren_title": "Connexion / Inscription",    
     "login_header": "Connexion",
     "login_email_label": "Adresse e-mail",
     "login_email_placeholder": "votre@email.com",
@@ -1016,7 +1018,7 @@ const translations = {
     "register_button": "S'inscrire",
 
     // mijn_stylisso.html
-    "mijn_stylisso_page_title": "Mon Stylisso - Aperçu",
+    "mijn_stylisso_page_title": "Mon Stylisso",
     "mijn_stylisso_welcome_header": "Bienvenue sur Mon Stylisso",
     "mijn_stylisso_welcome_subheader": "Vue d'ensemble de vos données, commandes et bons cadeaux.",
     "mijn_stylisso_section_my_data": "Mes données",
@@ -1035,7 +1037,7 @@ const translations = {
     "mijn_stylisso_btn_view_vouchers": "Voir les bons cadeaux",
 
     // over ons.html
-    "over_ons_page_title": "Bienvenue chez Stylisso - Style That Moves",
+    "over_ons_page_title": "À propos de nous",
     "over_ons_header_main": "Bienvenue chez Stylisso - Style That Moves",
     "over_ons_intro_1": "Chez Stylisso, le style commence là où le mouvement commence. Nous croyons que les vêtements sont plus qu'une simple chose à porter – c'est un moyen de s'exprimer, de soutenir vos objectifs et d'embellir votre vie quotidienne. Notre slogan “Style That Moves” le résume parfaitement : la mode qui bouge avec votre rythme, vos ambitions et votre personnalité unique.",
     "over_ons_intro_2": "De l'entraînement matinal aux sorties du soir. Nous veillons à ce que vous soyez toujours élégant et confortable. Notre collection est spécialement conçue pour les personnes actives qui ne veulent pas faire de compromis entre style et fonctionnalité.",
@@ -1054,7 +1056,7 @@ const translations = {
     "over_ons_conclusion_2": "Nous voyons Stylisso non seulement comme une marque, mais comme une communauté de personnes qui choisissent consciemment le style, la qualité et la durabilité. Nous écoutons nos clients, suivons les tendances, testons de nouvelles idées et améliorons continuellement notre offre. Tout cela pour s'assurer que vous trouviez chez Stylisso ce que vous cherchez.",
 
     // privacybeleid.html
-    "privacy_page_title": "Politique de confidentialité Stylisso",
+    "privacy_page_title": "Politique de confidentialité",
     "privacy_header_main": "Politique de confidentialité Stylisso",
     "privacy_intro": "Chez Stylisso, nous attachons une grande importance à la protection de vos données personnelles. Cette politique explique quelles données nous collectons, comment nous les utilisons, avec qui nous les partageons et quels sont vos droits.",
     "privacy_section_1_title": "1. Données personnelles collectées",
@@ -1127,7 +1129,7 @@ const translations = {
     "productpagina_no_products": "Aucun produit trouvé.",
 
     // reset_password.html
-    "reset_password_page_title": "Stylisso – Nouveau mot de passe",
+    "reset_password_page_title": "Nouveau mot de passe",
     "reset_password_header": "Définir un nouveau mot de passe",
     "reset_password_intro_text": "Choisissez un nouveau mot de passe ci-dessous pour sécuriser à nouveau votre compte.",
     "reset_password_label": "Nouveau mot de passe",
@@ -1139,18 +1141,18 @@ const translations = {
     "reset_password_back_link": "Retour à la connexion",
 
     // reset_succes.html
-    "reset_succes_page_title": "Stylisso – Mot de passe modifié",
+    "reset_succes_page_title": "Mot de passe modifié",
     "reset_succes_header": "Mot de passe modifié avec succès",
     "reset_succes_message": "Votre mot de passe a été modifié avec succès. Vous pouvez maintenant vous reconnecter avec votre nouveau mot de passe.",
     "reset_succes_login_button": "Se connecter",
 
     // retourneren.html
-    "retourneren_page_title": "Paramètres du profil - Stylisso",
+    "retourneren_page_title": "Retourner",
     "retourneren_header": "Retours",
     "retourneren_description": "Utilisez ce formulaire pour renvoyer un produit.",
 
     // retourzendingen.html
-    "retourzendingen_page_title": "Retours | Stylisso",
+    "retourzendingen_page_title": "Retours",
     "retourzendingen_header": "Retours",
     "retourzendingen_intro": "Chez Stylisso, nous visons une satisfaction client de 100 %. Vous n'êtes pas satisfait de votre achat ? Vous pouvez le retourner facilement, conformément au droit légal de rétractation et à nos conditions de retour supplémentaires.",
     "retourzendingen_section1_title": "1. Droit de rétractation",
@@ -1181,7 +1183,7 @@ const translations = {
     "retourzendingen_section7_text_2": ". Nous répondons généralement dans les 48 heures.",
 
     // reviews.html
-    "reviews_page_title": "Avis clients | Stylisso",
+    "reviews_page_title": "Avis",
     "reviews_header": "Avis clients",
     "reviews_intro": "Ci-dessous, vous trouverez quelques expériences de clients ayant commandé chez Stylisso.",
     "reviews_rating_label": "Évaluation :",
@@ -1198,7 +1200,7 @@ const translations = {
     "reviews_form_submit": "Envoyer l'avis",
 
     // verzending en levering.html
-    "verzending en levering_page_title": "Expédition et Livraison | Stylisso",
+    "verzending en levering_page_title": "Expédition et Livraison",
     "verzending en levering_header": "Expédition et Livraison",
     "verzending en levering_intro": "Chez Stylisso, nous veillons à ce que votre commande soit traitée et livrée aussi rapidement et soigneusement que possible. Vous trouverez ci-dessous toutes les informations concernant l'expédition et la livraison.",
     "verzending en levering_section1_title": "1. Frais de livraison",
@@ -1218,7 +1220,7 @@ const translations = {
     "verzending en levering_contact_link": "page de contact",
 
     // wachtwoord vergeten.html
-    "wachtwoord vergeten_page_title": "Stylisso – Mot de passe oublié",
+    "wachtwoord vergeten_page_title": "Mot de passe oublié",
     "wachtwoord vergeten_header": "Mot de passe oublié",
     "wachtwoord vergeten_intro": "Veuillez saisir votre adresse e-mail ci-dessous. Nous vous enverrons un lien pour réinitialiser votre mot de passe.",
     "wachtwoord vergeten_email_label": "Adresse e-mail",
@@ -1227,12 +1229,12 @@ const translations = {
     "wachtwoord vergeten_back_link": "Retour à la connexion",
 
     // wishlist.html
-    "wishlist_page_title": "Ma Wishlist - Stylisso",
+    "wishlist_page_title": "Ma liste de souhaits",
     "wishlist_header": "Ma liste de souhaits",
     "wishlist_loading": "Chargement de la wishlist...",
 
     // zoekpagina.html
-    "search_title_page": "Résultats de la recherche - Stylisso",
+    "search_title_page": "Résultats de la recherche",
     "search_results_title": "Résultats de la recherche",
 
     // script.js
@@ -1409,7 +1411,7 @@ const translations = {
     "footer_copyright": "© 2025 Stylisso. All rights reserved.",
 
     // afrekenen.html
-    "afrekenen_checkout_title": "Stylisso - Checkout",
+    "afrekenen_checkout_title": "Checkout",
     "afrekenen_label_name": "Name",
     "afrekenen_placeholder_name": "Name",
     "afrekenen_label_address": "Shipping address",
@@ -1444,7 +1446,7 @@ const translations = {
     "afrekenen_different_billing": "Billing address is different from shipping address",
 
     // algemene voorwaarden.html
-    "algemene voorwaarden_terms_title": "General Terms and Conditions Stylisso",
+    "algemene voorwaarden_terms_title": "General Terms and Conditions",
     "algemene voorwaarden_terms_heading": "General Terms and Conditions Stylisso",
     "algemene voorwaarden_terms_section1_title": "1. Applicability",
     "algemene voorwaarden_terms_section1_text": "These general terms and conditions apply to all offers, orders and agreements made and concluded via the Stylisso website (",
@@ -1500,13 +1502,13 @@ const translations = {
     "menu_logout": "Log out",
     
     // bestellingen.html
-    "bestellingen_profile_title": "Profile Settings - Stylisso",
+    "bestellingen_profile_title": "Orders & Invoices",
     "bestellingen_orders_heading": "Orders & Invoices",
     "bestellingen_orders_text": "Here you can find an overview of your previous orders and invoices.",
     "bestellingen_orders_empty": "No orders to display.",
 
     // betaalmethodes.html
-    "betaalmethodes_payment_title": "Stylisso",
+    "betaalmethodes_payment_title": "Payment Methods",
     "betaalmethodes_payment_heading": "Payment Methods",
     "betaalmethodes_payment_intro": "At Stylisso we offer multiple secure payment options so you can complete your order with peace of mind.",
     "betaalmethodes_payment_card": "💳 Credit Card",
@@ -1521,7 +1523,7 @@ const translations = {
     "betaalmethodes_payment_vouchers_text": "Do you have a Stylisso gift card? Enter your code at checkout to apply it.",
 
     // cadeaubonnen_kopen.html
-    "cadeaubonnen_kopen_voucher_title": "Gift Cards - Stylisso",
+    "cadeaubonnen_kopen_voucher_title": "Gift Cards",
     "cadeaubonnen_kopen_voucher_heading": "🛍️ Buy a Gift Card",
     "cadeaubonnen_kopen_voucher_text": "Choose the amount of your gift card and receive the code by email.",
     "cadeaubonnen_kopen_voucher_label_amount": "Amount:",
@@ -1533,7 +1535,7 @@ const translations = {
     "cadeaubonnen_kopen_voucher_button_buy": "Buy Gift Card",
 
     // cadeaubonnen.html
-    "cadeaubonnen_account_vouchers_title": "Profile Settings - Stylisso",
+    "cadeaubonnen_account_vouchers_title": "Gift Cards",
     "cadeaubonnen_account_vouchers_heading": "🛍️ Gift Cards",
     "cadeaubonnen_account_vouchers_text": "Add a gift card code here to link it to your account and use it on your next order.",
     "cadeaubonnen_account_vouchers_label": "Gift Card Code",
@@ -1543,14 +1545,14 @@ const translations = {
     "cadeaubonnen_account_vouchers_list_empty": "No gift cards linked.",
 
     // cart.html
-    "cart_title": "Stylisso",
+    "cart_title": "Cart",
     "cart_heading": "Cart",
     "cart_empty": "Your cart is currently empty.",
     "cart_subtotal": "Subtotal",
     "cart_checkout_button": "Go to Checkout",
 
     // categorie.html
-    "categorie_category_title_page": "Stylisso Category",
+    "categorie_category_title_page": "Category",
     "categorie_filters_title": "Filters",
     "categorie_filters_reset": "Reset filters",
     "categorie_category_title": "Category",
@@ -1560,7 +1562,7 @@ const translations = {
     "categorie_sort_new": "Newest",
 
     // contact.html
-    "contact_title_page": "Stylisso",
+    "contact_title_page": "Contact",
     "contact_header": "Contact Us",
     "contact_intro": "Do you have questions or comments? Fill out the form and we will get in touch as soon as possible.",
     "contact_label_name": "Name:",
@@ -1574,7 +1576,7 @@ const translations = {
     "contact_button_submit": "Send",
 
     // cookiebeleid.html
-    "cookiebeleid_title": "Cookie Policy - Stylisso",
+    "cookiebeleid_title": "Cookie Policy",
     "cookiebeleid_heading": "Cookie Policy",
     "cookiebeleid_section1_title": "1. What are cookies?",
     "cookiebeleid_section1_text": "Cookies are small text files stored by websites in your browser. They help our website function properly, remember your preferences, and analyze usage data.",
@@ -1632,7 +1634,7 @@ const translations = {
     "cookiebeleid_section6_text": "Stylisso may modify this cookie policy at any time. Please check this page regularly for updates.",
 
     // gegevens.html
-    "profile_title_page": "Profile Settings - Stylisso",
+    "profile_title_page": "Profile settings",
     "profile_header": "Profile & Preferences",
     "profile_intro": "Here you can view and update your personal information and manage your communication preferences.",
     "profile_name_label": "Name",
@@ -1664,6 +1666,7 @@ const translations = {
     "profile_different_billing": "My billing address is different",
 
     // login_registreren.html
+    "login_registreren_page": "Login / Register",
     "login_header": "Login",
     "login_email_label": "Email Address",
     "login_email_placeholder": "your@email.com",
@@ -1682,7 +1685,7 @@ const translations = {
     "register_button": "Register",
 
     // mijn_stylisso.html
-    "mijn_stylisso_page_title": "My Stylisso - Overview",
+    "mijn_stylisso_page_title": "My Stylisso",
     "mijn_stylisso_welcome_header": "Welcome to My Stylisso",
     "mijn_stylisso_welcome_subheader": "Overview of your data, orders, and gift vouchers.",
     "mijn_stylisso_section_my_data": "My Data",
@@ -1701,7 +1704,7 @@ const translations = {
     "mijn_stylisso_btn_view_vouchers": "View Gift Vouchers",
 
     //over ons.html
-    "over_ons_page_title": "Welcome to Stylisso - Style That Moves",
+    "over_ons_page_title": "About Us",
     "over_ons_header_main": "Welcome to Stylisso - Style That Moves",
     "over_ons_intro_1": "At Stylisso, style begins where movement starts. We believe clothing is more than just something you wear – it's a way to express yourself, support your goals, and enhance your daily life. Our slogan “Style That Moves” perfectly captures this: fashion that moves with your pace, ambitions, and unique personality.",
     "over_ons_intro_2": "From early morning workouts to evening outings. We ensure you are always stylish and comfortable. Our collection is specially designed for people who live actively and don't want to compromise between looks and functionality.",
@@ -1720,7 +1723,7 @@ const translations = {
     "over_ons_conclusion_2": "We see Stylisso not just as a brand but as a community of people who consciously choose style, quality, and sustainability. We listen to our customers, follow trends, test new ideas, and continuously improve our offerings. All to ensure you find at Stylisso what you're looking for.",
 
     // privacybeleid.html
-    "privacy_page_title": "Stylisso Privacy Policy",
+    "privacy_page_title": "Privacy Policy",
     "privacy_header_main": "Stylisso Privacy Policy",
     "privacy_intro": "At Stylisso, we place great importance on protecting your personal data. This privacy policy explains what data we collect, how we use it, with whom we share it, and your rights.",
     "privacy_section_1_title": "1. Collected personal data",
@@ -1793,7 +1796,7 @@ const translations = {
     "productpagina_no_products": "No products found.",
 
     // reset_password.html
-    "reset_password_page_title": "Stylisso – New Password",
+    "reset_password_page_title": "New Password",
     "reset_password_header": "Set New Password",
     "reset_password_intro_text": "Choose a new password below to secure your account again.",
     "reset_password_label": "New Password",
@@ -1805,18 +1808,18 @@ const translations = {
     "reset_password_back_link": "Back to login",
 
     // reset_succes.html
-    "reset_succes_page_title": "Stylisso – Password Changed",
+    "reset_succes_page_title": "Password Changed",
     "reset_succes_header": "Password Successfully Changed",
     "reset_succes_message": "Your password has been successfully updated. You can now log in again with your new password.",
     "reset_succes_login_button": "Log In",
 
     // retourneren.html
-    "retourneren_page_title": "Profile Settings - Stylisso",
+    "retourneren_page_title": "Returns",
     "retourneren_header": "Returns",
     "retourneren_description": "Use this form to return a product.",
 
     // retourzendingen.html
-    "retourzendingen_page_title": "Returns | Stylisso",
+    "retourzendingen_page_title": "Return shipments",
     "retourzendingen_header": "Returns",
     "retourzendingen_intro": "At Stylisso, we aim for 100% customer satisfaction. Not happy with your purchase? You can easily return it in accordance with the legal right of withdrawal and our additional return conditions.",
     "retourzendingen_section1_title": "1. Right of withdrawal",
@@ -1847,7 +1850,7 @@ const translations = {
     "retourzendingen_section7_text_2": ". We usually respond within 48 hours.",
 
     // reviews.html
-    "reviews_page_title": "Customer Reviews | Stylisso",
+    "reviews_page_title": "Reviews",
     "reviews_header": "Customer Reviews",
     "reviews_intro": "Below you can find some experiences from customers who ordered from Stylisso.",
     "reviews_rating_label": "Rating:",
@@ -1864,7 +1867,7 @@ const translations = {
     "reviews_form_submit": "Submit review",
 
     // verzending en levering.html
-    "verzending en levering_page_title": "Shipping & Delivery | Stylisso",
+    "verzending en levering_page_title": "Shipping & Delivery",
     "verzending en levering_header": "Shipping & Delivery",
     "verzending en levering_intro": "At Stylisso, we ensure that your order is processed and delivered as quickly and carefully as possible. Below you will find all information regarding shipping and delivery.",
     "verzending en levering_section1_title": "1. Shipping Costs",
@@ -1884,7 +1887,7 @@ const translations = {
     "verzending en levering_contact_link": "contact page",
 
     // wachtwoord vergeten.html
-    "wachtwoord vergeten_page_title": "Stylisso – Forgot Password",
+    "wachtwoord vergeten_page_title": "Forgot Password",
     "wachtwoord vergeten_header": "Forgot Password",
     "wachtwoord vergeten_intro": "Enter your email address below. We will send you a link to reset your password.",
     "wachtwoord vergeten_email_label": "Email Address",
@@ -1893,12 +1896,12 @@ const translations = {
     "wachtwoord vergeten_back_link": "Back to login",
 
     // wishlist.html
-    "wishlist_page_title": "My Wishlist - Stylisso",
+    "wishlist_page_title": "My Wishlist",
     "wishlist_header": "My Wishlist",
     "wishlist_loading": "Loading wishlist...",
 
     // zoekpagina.html
-    "search_title_page": "Search Results - Stylisso",
+    "search_title_page": "Search Results",
     "search_results_title": "Search Results",
 
     // script.js
