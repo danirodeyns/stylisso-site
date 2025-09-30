@@ -2400,175 +2400,272 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+  // ==============================
+  // --- FILTERS / PRODUCT-GRID2 ---
+  // ==============================
   const filtersContainer = document.getElementById("filters-container");
   const productGrid = document.getElementById("product-grid2");
-  const productCount = document.getElementById("product-count");
-  const sortSelect = document.getElementById("sort-products");
   const resetBtn = document.getElementById("reset-filters");
+  const sortSelect = document.getElementById("sort-products");
   const categoryTitle = document.getElementById("category-title");
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const categoryId = urlParams.get('cat') || 0;
-  const subcategoryId = urlParams.get('sub') || 0;
+  if (productGrid && filtersContainer && categoryTitle) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryId = urlParams.get('cat') || 0;
+    const subcategoryId = urlParams.get('sub') || 0;
 
-  let products = [];
-  let activeFilters = {};
+    let products = [];
+    let activeFilters = {};
 
-  // --- Titel ophalen via categorie.php ---
-  fetch(`categorie.php?cat=${categoryId}&sub=${subcategoryId}`)
-    .then(res => res.json())
-    .then(data => {
-      let title = '';
+    // --- Titel ophalen via categorie.php ---
+    fetch(`categorie.php?cat=${categoryId}&sub=${subcategoryId}`)
+      .then(res => res.json())
+      .then(data => {
+        categoryTitle.textContent = data.selected.subcategory || data.selected.category || "Categorie";
+      });
 
-      // Als subcategorie is geselecteerd, toon die
-      if(data.selected.subcategory){
-        title = data.selected.subcategory;
-      }
-      // Anders toon hoofdcategorie
-      else if(data.selected.category){
-        title = data.selected.category;
-      }
-      // fallback
-      else {
-        title = "Categorie";
-      }
-
-      categoryTitle.textContent = title;
-    });
-
-  // --- Filters ophalen ---
-  fetch(`filters.php?cat=${categoryId}&sub=${subcategoryId}`)
-    .then(res => res.json())
-    .then(filters => {
-      for (let key in filters) {
-        const group = document.createElement('div');
-        group.className = 'filter-group';
-        group.innerHTML = `<h3>${key.charAt(0).toUpperCase() + key.slice(1)}</h3>`;
-        filters[key].forEach(value => {
-          const label = document.createElement('label');
-          label.innerHTML = `<input type="checkbox" name="${key}" value="${value}"> ${value}`;
-          group.appendChild(label);
-        });
-        filtersContainer.appendChild(group);
-      }
-
-      // Event listeners voor filters
-      document.querySelectorAll('.filter-group input[type=checkbox]').forEach(cb => {
-        cb.addEventListener('change', () => {
-          activeFilters = {};
-          document.querySelectorAll('.filter-group input[type=checkbox]:checked').forEach(chk => {
-            if (!activeFilters[chk.name]) activeFilters[chk.name] = [];
-            activeFilters[chk.name].push(chk.value);
+    // --- Filters ophalen ---
+    fetch(`filters.php?cat=${categoryId}&sub=${subcategoryId}`)
+      .then(res => res.json())
+      .then(filters => {
+        for (let key in filters) {
+          const group = document.createElement('div');
+          group.className = 'filter-group';
+          group.innerHTML = `<h3>${key.charAt(0).toUpperCase() + key.slice(1)}</h3>`;
+          filters[key].forEach(value => {
+            const label = document.createElement('label');
+            label.innerHTML = `<input type="checkbox" name="${key}" value="${value}"> ${value}`;
+            group.appendChild(label);
           });
-          renderProducts();
+          filtersContainer.appendChild(group);
+        }
+
+        // Event listeners voor filters
+        document.querySelectorAll('.filter-group input[type=checkbox]').forEach(cb => {
+          cb.addEventListener('change', () => {
+            activeFilters = {};
+            document.querySelectorAll('.filter-group input[type=checkbox]:checked').forEach(chk => {
+              if (!activeFilters[chk.name]) activeFilters[chk.name] = [];
+              activeFilters[chk.name].push(chk.value);
+            });
+            renderProducts();
+          });
         });
       });
-    });
 
-  // --- Producten ophalen ---
-  fetch(`fetch_products.php?cat=${categoryId}&sub=${subcategoryId}`)
-    .then(res => res.json())
-    .then(data => {
-      products = data;
-      renderProducts();
-    });
-
-  // --- Render producten ---
-  function renderProducts() {
-    let filtered = products.filter(p => {
-      for (let key in activeFilters) {
-        if (!activeFilters[key].includes(p[key])) return false;
-      }
-      return true;
-    });
-
-    // Sorteren
-    const sortVal = sortSelect.value;
-    if (sortVal === 'prijs-oplopend') filtered.sort((a, b) => a.price - b.price);
-    else if (sortVal === 'prijs-aflopend') filtered.sort((a, b) => b.price - a.price);
-    else if (sortVal === 'nieuw') filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
-    // Productgrid vullen
-    productGrid.innerHTML = '';
-    filtered.forEach(p => {
-      const card = document.createElement('div');
-      card.className = 'product-card2';
-
-      // Status komt uit de DB via fetch_products.php (true/false)
-      const inWishlist = p.in_wishlist;
-
-      card.innerHTML = `
-        <div class="wishlist-btn" data-id="${p.id}">
-          <img src="${inWishlist ? 'wishlist/added.png' : 'wishlist/wishlist.png'}" 
-              alt="Wishlist knop" 
-              class="wishlist-icon-light">
-          <img src="${inWishlist ? 'wishlist/added (dark mode).png' : 'wishlist/wishlist (dark mode).png'}" 
-              alt="Wishlist knop dark" 
-              class="wishlist-icon-dark">
-        </div>
-        <img src="${p.image}" alt="${p.name}">
-        <h3>${p.name}</h3>
-        <p>€${parseFloat(p.price).toFixed(2)}</p>
-      `;
-
-      // --- klikbare kaart: naar productpagina ---
-      card.addEventListener("click", (e) => {
-        if (e.target.closest(".wishlist-btn")) return; // voorkom dat wishlist-klik doorloopt
-        window.location.href = `productpagina.html?id=${p.id}`;
+    // --- Producten ophalen ---
+    fetch(`fetch_products.php?cat=${categoryId}&sub=${subcategoryId}`)
+      .then(res => res.json())
+      .then(data => {
+        products = data;
+        renderProducts();
       });
 
-      // --- wishlist knop ---
-      const wishlistBtn = card.querySelector(".wishlist-btn");
-      wishlistBtn.addEventListener("click", (e) => {
-        e.stopPropagation(); // voorkom dat klik doorloopt naar productpagina
-
-        const iconLight = wishlistBtn.querySelector(".wishlist-icon-light");
-        const iconDark = wishlistBtn.querySelector(".wishlist-icon-dark");
-
-        // Bepaal actie op basis van huidige src
-        const action = iconLight.src.includes("added.png") ? "remove" : "add";
-        const url = action === "add" ? "wishlist_add.php" : "wishlist_remove.php";
-
-        // Stuur correct POST-parameter naar PHP
-        const formData = new URLSearchParams();
-        formData.append("product_id", p.id); // <-- hier aanpassen
-
-        fetch(url, {
-          method: "POST",
-          body: formData
-        })
-        .then(res => res.json()) // JSON terug van PHP
-        .then(response => {
-          if (response.error) {
-            console.error("Wishlist error:", response.error);
-            return;
-          }
-
-          // Update icon
-          if (action === "add") {
-            iconLight.src = "wishlist/added.png";
-            iconDark.src = "wishlist/added (dark mode).png";
-          } else {
-            iconLight.src = "wishlist/wishlist.png";
-            iconDark.src = "wishlist/wishlist (dark mode).png";
-          }
-        })
-        .catch(err => console.error("Wishlist fetch error:", err));
+    function renderProducts() {
+      let filtered = products.filter(p => {
+        for (let key in activeFilters) {
+          if (!activeFilters[key].includes(p[key])) return false;
+        }
+        return true;
       });
 
-      productGrid.appendChild(card);
-    });
+      // Sorteren
+      if (sortSelect.value === 'prijs-oplopend') filtered.sort((a, b) => a.price - b.price);
+      else if (sortSelect.value === 'prijs-aflopend') filtered.sort((a, b) => b.price - a.price);
+      else if (sortSelect.value === 'nieuw') filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      // Productgrid vullen
+      productGrid.innerHTML = '';
+      filtered.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'product-card2';
+
+        const inWishlist = p.in_wishlist;
+        card.innerHTML = `
+          <div class="wishlist-btn" data-id="${p.id}">
+            <img src="${inWishlist ? 'wishlist/added.png' : 'wishlist/wishlist.png'}" class="wishlist-icon-light">
+            <img src="${inWishlist ? 'wishlist/added (dark mode).png' : 'wishlist/wishlist (dark mode).png'}" class="wishlist-icon-dark">
+          </div>
+          <img src="${p.image}" alt="${p.name}">
+          <h3>${p.name}</h3>
+          <p>€${parseFloat(p.price).toFixed(2)}</p>
+        `;
+
+        // Klikbare kaart naar productpagina
+        card.addEventListener("click", e => {
+          if (e.target.closest(".wishlist-btn")) return;
+          window.location.href = `productpagina.html?id=${p.id}`;
+        });
+
+        // Wishlist knop
+        const wishlistBtn = card.querySelector(".wishlist-btn");
+        wishlistBtn.addEventListener("click", e => {
+          e.stopPropagation();
+          const iconLight = wishlistBtn.querySelector(".wishlist-icon-light");
+          const iconDark = wishlistBtn.querySelector(".wishlist-icon-dark");
+          const action = iconLight.src.includes("added.png") ? "remove" : "add";
+          const url = action === "add" ? "wishlist_add.php" : "wishlist_remove.php";
+
+          const formData = new URLSearchParams();
+          formData.append("product_id", p.id);
+
+          fetch(url, { method: "POST", body: formData })
+            .then(res => res.json())
+            .then(response => {
+              if (response.error) return console.error("Wishlist error:", response.error);
+              if (action === "add") {
+                iconLight.src = "wishlist/added.png";
+                iconDark.src = "wishlist/added (dark mode).png";
+              } else {
+                iconLight.src = "wishlist/wishlist.png";
+                iconDark.src = "wishlist/wishlist (dark mode).png";
+              }
+            })
+            .catch(err => console.error("Wishlist fetch error:", err));
+        });
+
+        productGrid.appendChild(card);
+      });
+    }
+
+    // --- Reset filters ---
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-group input[type=checkbox]').forEach(cb => cb.checked = false);
+        activeFilters = {};
+        renderProducts();
+      });
+    }
+
+    // --- Sorteren bij selectie ---
+    if (sortSelect) sortSelect.addEventListener('change', renderProducts);
   }
 
-  // --- Reset filters ---
-  resetBtn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-group input[type=checkbox]').forEach(cb => cb.checked = false);
-    activeFilters = {};
-    renderProducts();
-  });
+  // ==============================
+  // --- SEARCH GRID3 (ZOEKRESULTATEN) ---
+  // ==============================
+  const grid3 = document.getElementById('product-grid3');
+  const sortSelectSearch = document.getElementById('search-sort-products'); // correcte naam uit HTML
 
-  // --- Sorteren bij selectie ---
-  sortSelect.addEventListener('change', renderProducts);
+  if (grid3) {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q') || '';
+    if (!q) {
+      grid3.innerHTML = `
+        <p data-i18n="script_search_no_query">Geen zoekterm opgegeven.</p>
+      `;
+      applyTranslations();
+      return;
+    }
+
+    const fetchUrl = `get_search_products.php?q=${encodeURIComponent(q)}`;
+    let searchProducts = []; // bewaren voor sorteren
+
+    fetch(fetchUrl)
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const contentType = res.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) {
+          throw new TypeError("Verwacht JSON, kreeg: " + contentType);
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (!Array.isArray(data) || data.length === 0) {
+          grid3.innerHTML = `
+            <p data-i18n="script_search_no_results" data-i18n-vars='{"term":"${q}"}'>
+              Geen resultaten gevonden voor "<strong>${q}</strong>"
+            </p>
+          `;
+          applyTranslations();
+          return;
+        }
+
+        searchProducts = data;
+        renderSearchProducts(); // eerste render
+      })
+      .catch(err => {
+        console.error('Fout bij ophalen producten grid3:', err);
+        grid3.innerHTML = `
+          <p style="color:red;" data-i18n="script_search_fetch_error">
+            Fout bij ophalen producten
+          </p>
+        `;
+        applyTranslations();
+      });
+
+    function renderSearchProducts() {
+      let filtered = [...searchProducts];
+
+      // --- Sorteren op basis van selectie ---
+      if (sortSelectSearch && sortSelectSearch.value === 'prijs-oplopend') {
+        filtered.sort((a, b) => a.price - b.price);
+      } else if (sortSelectSearch && sortSelectSearch.value === 'prijs-aflopend') {
+        filtered.sort((a, b) => b.price - a.price);
+      } else if (sortSelectSearch && sortSelectSearch.value === 'nieuw') {
+        filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      } else if (sortSelectSearch && sortSelectSearch.value === 'populariteit') {
+        filtered.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+      }
+
+      grid3.innerHTML = '';
+      filtered.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'product-card2';
+
+        const inWishlist = !!p.in_wishlist;
+        card.innerHTML = `
+          <div class="wishlist-btn" data-id="${p.id}">
+            <img src="${inWishlist ? 'wishlist/added.png' : 'wishlist/wishlist.png'}" class="wishlist-icon-light" alt="wishlist">
+            <img src="${inWishlist ? 'wishlist/added (dark mode).png' : 'wishlist/wishlist (dark mode).png'}" class="wishlist-icon-dark" alt="wishlist dark">
+          </div>
+          <img src="${p.image}" alt="${p.name}" />
+          <h3>${p.name}</h3>
+          <p>€${parseFloat(p.price).toFixed(2)}</p>
+        `;
+
+        // Klikbare kaart (behalve wishlist)
+        card.addEventListener("click", e => {
+          if (e.target.closest(".wishlist-btn")) return;
+          window.location.href = `productpagina.html?id=${p.id}`;
+        });
+
+        // Wishlist logica
+        const wishlistBtn = card.querySelector(".wishlist-btn");
+        wishlistBtn.addEventListener("click", e => {
+          e.stopPropagation();
+          const iconLight = wishlistBtn.querySelector(".wishlist-icon-light");
+          const iconDark = wishlistBtn.querySelector(".wishlist-icon-dark");
+          const action = iconLight.src.includes("added.png") ? "remove" : "add";
+          const url = action === "add" ? "wishlist_add.php" : "wishlist_remove.php";
+
+          const formData = new URLSearchParams();
+          formData.append("product_id", p.id);
+
+          fetch(url, { method: "POST", body: formData })
+            .then(res => res.json())
+            .then(response => {
+              if (response.error) return console.error("Wishlist error:", response.error);
+              if (action === "add") {
+                iconLight.src = "wishlist/added.png";
+                iconDark.src = "wishlist/added (dark mode).png";
+              } else {
+                iconLight.src = "wishlist/wishlist.png";
+                iconDark.src = "wishlist/wishlist (dark mode).png";
+              }
+            })
+            .catch(err => console.error("Wishlist fetch error:", err));
+        });
+
+        grid3.appendChild(card);
+      });
+
+      applyTranslations();
+    }
+
+    // --- Sorteren bij selectie ---
+    if (sortSelectSearch) sortSelectSearch.addEventListener('change', renderSearchProducts);
+  }
 });
 
 document.getElementById('password-reset-form').addEventListener('submit', function(e) {

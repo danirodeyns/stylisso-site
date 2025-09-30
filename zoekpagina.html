@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n="search_title_page">Stylisso Zoeken</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="header-placeholder"></div>
+
+  <main class="page-content search-page">
+    <!-- Zoekresultaten -->
+    <section class="search-products">
+      <div class="search-products-header">
+        <h1 id="search-title" data-i18n="search_results_title">Zoekresultaten</h1>
+        <div class="search-sort-wrapper">
+          <span class="search-sort-icon">⇅</span>
+          <select id="search-sort-products">
+            <option value="populariteit" data-i18n="categorie_sort_popularity">Populariteit</option>
+            <option value="prijs-oplopend" data-i18n="categorie_sort_price_asc">Prijs: Laag → Hoog</option>
+            <option value="prijs-aflopend" data-i18n="categorie_sort_price_desc">Prijs: Hoog → Laag</option>
+            <option value="nieuw" data-i18n="categorie_sort_new">Nieuwste</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="product-grid3" class="product-grid"></div>
+    </section>
+  </main>
+
+  <div id="footer-placeholder"></div>
+  
+  <script src="GA.js"></script>
+  <script src="marketing.js"></script>
+  <script src="translations.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

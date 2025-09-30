@@ -2638,6 +2638,74 @@ input[type="number"].quantity-input {
   flex: 3; /* 3/4 van de ruimte */
 }
 
+.page-content.search-page {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.page-content.search-page h1 {
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+  margin-bottom: 0.25rem;
+  font-weight: 700;
+  text-align: left;
+  color: #111;
+}
+
+.search-products {
+  flex: 3;
+}
+
+.search-products-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.search-products-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #222;
+}
+
+.search-products-header p {
+  margin: 0.5rem 0;
+  color: #777;
+}
+
+#search-sort-products {
+  padding: 0.4rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #222;
+}
+
+/* Wrapper om select + icoon netjes uit te lijnen */
+.search-sort-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+}
+
+.search-sort-icon {
+  font-size: 1.2rem;
+  color: black;
+}
+
+/* Select zelf zonder standaardstijl */
+.search-sort-wrapper select {
+  border: none;
+  background: transparent;
+  font-size: 0.95rem;
+  outline: none;
+  cursor: pointer;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
@@ -3546,5 +3614,23 @@ input[type="number"].quantity-input {
 
   .wishlist-container:hover {
     color: #eee;
+  }
+
+  .page-content.search-page h1 {
+    color: #fff;
+  }
+
+  .search-products-header p {
+    color: #aaa;
+  }
+
+  #search-sort-products {
+    background: #222;
+    color: #eee;
+    border: 1px solid #444;
+  }
+
+  .search-sort-icon {
+    color: white;
   }
 }

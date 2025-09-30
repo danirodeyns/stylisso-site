@@ -565,6 +565,10 @@ const translations = {
     "wishlist_header": "Mijn Verlanglijstje",
     "wishlist_loading": "Wishlist wordt geladen...",
 
+    // zoekpagina.html
+    "search_title_page": "Zoekresultaten - Stylisso",
+    "search_results_title": "Zoekresultaten",
+
     // script.js
     "script_site_loaded": "Stylisso site geladen.",
     "script_csrf_error": "Geen CSRF-token ontvangen",
@@ -656,7 +660,10 @@ const translations = {
     "script_invalid_reset_link": "Ongeldige of verlopen reset-link.",
     "script_no_product_selected": "Geen product geselecteerd.",
     "script_shipping_country_not_allowed": "Verzending naar dit land is nog niet mogelijk.",
-    "script_billing_country_not_allowed": "Facturatie naar dit land is nog niet mogelijk."
+    "script_billing_country_not_allowed": "Facturatie naar dit land is nog niet mogelijk.",
+    "script_search_no_query": "Geen zoekterm opgegeven.",
+    "script_search_no_results": "Geen resultaten gevonden.",
+    "script_search_fetch_error": "Fout bij ophalen producten.",
 },
   "be-fr": {
     // index.html
@@ -1224,6 +1231,10 @@ const translations = {
     "wishlist_header": "Ma liste de souhaits",
     "wishlist_loading": "Chargement de la wishlist...",
 
+    // zoekpagina.html
+    "search_title_page": "Résultats de la recherche - Stylisso",
+    "search_results_title": "Résultats de la recherche",
+
     // script.js
     "script_site_loaded": "Site Stylisso chargée.",
     "script_csrf_error": "Aucun jeton CSRF reçu",
@@ -1316,6 +1327,9 @@ const translations = {
     "script_no_product_selected": "Aucun produit sélectionné.",
     "script_shipping_country_not_allowed": "Expédition vers ce pays n'est pas encore possible.",
     "script_billing_country_not_allowed": "Facturation vers ce pays n'est pas encore possible.",
+    "script_search_no_query": "Aucun terme de recherche saisi.",
+    "script_search_no_results": "Aucun résultat trouvé.",
+    "script_search_fetch_error": "Erreur lors du chargement des produits.",
 },
   "be-en": {
     // index.html
@@ -1883,6 +1897,10 @@ const translations = {
     "wishlist_header": "My Wishlist",
     "wishlist_loading": "Loading wishlist...",
 
+    // zoekpagina.html
+    "search_title_page": "Search Results - Stylisso",
+    "search_results_title": "Search Results",
+
     // script.js
     "script_site_loaded": "Stylisso site loaded.",
     "script_csrf_error": "No CSRF token received",
@@ -1975,4 +1993,7 @@ const translations = {
     "script_no_product_selected": "No product selected.",
     "script_shipping_country_not_allowed": "Shipping to this country is not yet possible.",
     "script_billing_country_not_allowed": "Billing to this country is not yet possible.",
+    "script_search_no_query": "No search term provided.",
+    "script_search_no_results": "No results found.",
+    "script_search_fetch_error": "Error fetching products.",
 }};
