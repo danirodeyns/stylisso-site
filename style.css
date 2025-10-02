@@ -431,6 +431,25 @@ footer {
   padding: 0.5rem 0;
 }
 
+/* Dropdown cart list items */
+.dropdown-cart-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* verdeelt naam/prijs */
+  padding: 6px 0;
+}
+
+.dropdown-cart-list .item-text {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* ruimte tussen afbeelding en naam */
+}
+
+/* De prijs span apart stylen */
+.dropdown-cart-list .item-price {
+  margin-left: auto; /* duwt de prijs naar rechts */
+}
+
 .dropdown-item-image {
   width: 40px;
   height: auto;

@@ -134,9 +134,19 @@ if ($user_id) {
             c.quantity, 
             c.price, 
             c.maat, -- ✅ maat toevoegen
-            COALESCE(p.name, 'Cadeaubon') AS name,
-            COALESCE(p.image, 'cadeaubon/voucher.png') AS image,
-            CASE WHEN c.type = 'voucher' THEN 'cadeaubon/voucher (dark mode).png' ELSE NULL END AS dark_image
+            CASE 
+                WHEN c.type = 'voucher' THEN 'Cadeaubon' 
+                ELSE p.name 
+            END AS name,
+            CASE 
+                WHEN c.type = 'voucher' THEN 'cadeaubon/voucher.png'
+                WHEN p.image IS NOT NULL THEN p.image
+                ELSE 'placeholder.png'
+            END AS image,
+            CASE 
+                WHEN c.type = 'voucher' THEN 'cadeaubon/voucher (dark mode).png'
+                ELSE NULL
+            END AS dark_image
         FROM cart c
         LEFT JOIN products p ON c.product_id = p.id
         WHERE c.user_id = ?

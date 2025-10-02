@@ -186,8 +186,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
       const idAttr = item.id ? `data-id="${item.id}"` : (item.index !== undefined ? `data-index="${item.index}"` : '');
 
+      // ✅ Voucher image logica zoals in de dropdown
+      let imageHtml = '';
+      if (item.type === 'voucher') {
+        imageHtml = `
+          <div class="item-image-wrapper">
+            <img src="${item.image}" alt="${item.name}" class="item-image item-image-light"/>
+            ${item.dark_image ? `<img src="${item.dark_image}" alt="${item.name}" class="item-image item-image-dark"/>` : ''}
+          </div>
+        `;
+      } else {
+        imageHtml = `<img src="${item.image}" alt="${item.name}" class="item-image"/>`;
+      }
+
       itemDiv.innerHTML = `
-        <img src="${item.image}" alt="${item.name}" class="item-image"/>
+        ${imageHtml}
         <div class="item-info">
           <h3>${item.name}</h3>
           <p>${item.variant || ''}</p>
@@ -217,19 +230,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const id = e.target.dataset.id;
         const type = e.target.dataset.type;
 
-        // stuur wijziging door naar de server
         fetch('cart.php?action=update_quantity', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: `id=${encodeURIComponent(id)}&type=${encodeURIComponent(type)}&quantity=${newQty}&csrf_token=${encodeURIComponent(window.csrfToken)}`
         })
         .then(res => res.json())
         .then(data => {
-          if (data.success) {
-            fetchCart(document.getElementById('cartDropdown'));
-          }
+          if (data.success) fetchCart(document.getElementById('cartDropdown'));
         })
         .catch(err => console.error('Fout bij update_quantity:', err));
       });
@@ -257,20 +265,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
     cart.forEach(item => {
       const li = document.createElement('li');
+
+      let imageHtml = '';
       if (item.type === 'voucher') {
-        li.innerHTML = `
+        imageHtml = `
           <div class="dropdown-item-image-wrapper">
-            <img src="cadeaubon/voucher.png" alt="${item.name}" class="dropdown-item-image dropdown-item-image-light"/>
-            <img src="cadeaubon/voucher (dark mode).png" alt="${item.name}" class="dropdown-item-image dropdown-item-image-dark"/>
+            <img src="${item.image}" alt="${item.name}" class="dropdown-item-image dropdown-item-image-light"/>
+            ${item.dark_image ? `<img src="${item.dark_image}" alt="${item.name}" class="dropdown-item-image dropdown-item-image-dark"/>` : ''}
           </div>
-          <span class="item-text">${item.name} <span class="item-price">€${parseFloat(item.price).toFixed(2)}</span></span>
         `;
       } else {
-        li.innerHTML = `
-          <img src="${item.image}" alt="${item.name}" class="dropdown-item-image"/>
-          <span class="item-text">${item.name} <span class="item-price">€${parseFloat(item.price).toFixed(2)}</span></span>
-        `;
+        imageHtml = `<img src="${item.image}" alt="${item.name}" class="dropdown-item-image"/>`;
       }
+
+      li.innerHTML = `
+        ${imageHtml}
+        <span class="item-text">${item.name} <span class="item-price">€${parseFloat(item.price).toFixed(2)}</span></span>
+      `;
       ul.appendChild(li);
     });
 
