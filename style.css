@@ -473,11 +473,12 @@ footer {
   flex: 1;
   font-size: 0.95rem;
   color: #000;
+  text-align: left;
 }
 
 .item-price {
   font-weight: normal;
-  margin-left: 0.25rem;
+  text-align: right;
 }
 
 .remove-item {
@@ -2216,6 +2217,23 @@ input[type="number"].quantity-input {
   color: var(--primary-color, #222);
 }
 
+/* Maat container */
+.product-size-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Maat selectie */
+.product-size {
+  width: 80px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  text-align: center;
+}
+
 /* Aantal en knop */
 .product-action {
   display: flex;
@@ -3478,6 +3496,12 @@ input[type="number"].quantity-input {
 
   .product-price {
     color: #ffffff;
+  }
+
+  .product-size {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    border: 1px solid #555;
   }
 
   .productpage-quantity {

@@ -11,7 +11,7 @@ if (!$userId) {
     exit;
 }
 
-// Haal order_items + return_status
+// Haal order_items + return_status + maat
 $sql = "
     SELECT 
         oi.id AS order_item_id,
@@ -19,6 +19,7 @@ $sql = "
         oi.product_id,
         oi.quantity,
         oi.price AS item_price,
+        oi.maat AS size,
         o.created_at AS order_date,
         p.name AS product_name,
         p.image AS product_image,
@@ -44,10 +45,11 @@ while ($row = $result->fetch_assoc()) {
         'product_id'    => $row['product_id'],
         'quantity'      => $row['quantity'],
         'item_price'    => $row['item_price'],
+        'size'          => $row['size'],          // ✅ maat toegevoegd
         'order_date'    => $row['order_date'],
         'product_name'  => $row['product_name'],
         'product_image' => $row['product_image'],
-        'return_status' => $row['return_status'] // NULL, requested, approved, processed, rejected
+        'return_status' => $row['return_status']   // NULL, requested, approved, processed, rejected
     ];
 }
 

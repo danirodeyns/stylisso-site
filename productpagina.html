@@ -32,6 +32,13 @@
         <p id="product-specificaties" data-i18n="productpagina_specificaties"></p>
         <p class="product-price" id="product-price" data-i18n="productpagina_product_price"></p>
 
+        <div id="maat-wrapper" style="display:none;">
+          <span class="product-size-container">
+            <label for="maat-select" data-i18n="productpagina_product_size_label">Maat:</label>
+            <select id="product-size" name="maat" class="product-size" required></select>
+          </span>
+        </div>
+        
         <div class="product-action">
           <input type="hidden" id="csrf_token" value="">
           <label data-i18n="productpagina_product_quantity_label">Aantal:</label>

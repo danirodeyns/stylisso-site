@@ -21,9 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode($raw_data, true);
 
     // Als JSON leeg is, fallback naar $_POST (FormData)
-    if (!$data) {
-        $data = $_POST;
-    }
+    if (!$data) $data = $_POST;
 
     $action = $_GET['action'] ?? '';
 
@@ -33,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $cart_index = isset($data['index']) && is_numeric($data['index']) ? (int)$data['index'] : null;
         $type = $data['type'] ?? null;
 
-        // alleen verwijderen als id of index geldig is
         if (!$cart_id && $cart_index === null) {
             echo json_encode(['success' => false, 'message' => 'Ongeldige verwijderdata']);
             exit;
@@ -51,7 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        error_log('Remove item: type=' . $type . ', cart_id=' . $cart_id . ', index=' . $cart_index);
         echo json_encode(['success' => true]);
         exit;
     }
@@ -88,6 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $type = $data['type'] ?? 'product';
     $quantity = isset($data['quantity']) ? (int)$data['quantity'] : 1;
     $price = isset($data['price']) ? floatval($data['price']) : null;
+    $maat = $data['maat'] ?? null; // ✅ maat toevoegen
 
     if (($type === 'product' && !$product_id) || $quantity < 1) {
         echo json_encode(['success' => false, 'message' => 'Ongeldige data.']);
@@ -95,13 +92,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($user_id) {
-        $stmt = $conn->prepare("UPDATE cart SET quantity = quantity + ? WHERE user_id = ? AND product_id <=> ? AND type = ?");
-        $stmt->bind_param("iiss", $quantity, $user_id, $product_id, $type);
+        // UPDATE met maat
+        $stmt = $conn->prepare("UPDATE cart SET quantity = quantity + ? WHERE user_id = ? AND product_id <=> ? AND type = ? AND (maat <=> ?)");
+        $stmt->bind_param("iisss", $quantity, $user_id, $product_id, $type, $maat);
         $stmt->execute();
 
         if ($stmt->affected_rows === 0) {
-            $stmt = $conn->prepare("INSERT INTO cart (user_id, product_id, type, quantity, price) VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param("iisid", $user_id, $product_id, $type, $quantity, $price);
+            // INSERT met maat
+            $stmt = $conn->prepare("INSERT INTO cart (user_id, product_id, type, quantity, price, maat) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("iisids", $user_id, $product_id, $type, $quantity, $price, $maat);
             $stmt->execute();
         }
     } else {
@@ -110,7 +109,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['cart_vouchers'][] = ['price' => $price, 'quantity' => $quantity];
         } else {
             if (!isset($_SESSION['cart_products'])) $_SESSION['cart_products'] = [];
-            $_SESSION['cart_products'][] = ['product_id' => $product_id, 'quantity' => $quantity, 'price' => $price];
+            $_SESSION['cart_products'][] = [
+                'product_id' => $product_id,
+                'quantity' => $quantity,
+                'price' => $price,
+                'maat' => $maat // ✅ maat toevoegen aan sessie-cart
+            ];
         }
     }
 
@@ -129,6 +133,7 @@ if ($user_id) {
             c.type, 
             c.quantity, 
             c.price, 
+            c.maat, -- ✅ maat toevoegen
             COALESCE(p.name, 'Cadeaubon') AS name,
             COALESCE(p.image, 'cadeaubon/voucher.png') AS image,
             CASE WHEN c.type = 'voucher' THEN 'cadeaubon/voucher (dark mode).png' ELSE NULL END AS dark_image
@@ -149,6 +154,7 @@ if ($user_id) {
                 'type' => 'product',
                 'quantity' => $p['quantity'],
                 'price' => $p['price'],
+                'maat' => $p['maat'] ?? null, // ✅ maat toevoegen
                 'name' => 'Product #' . $p['product_id'],
                 'image' => 'placeholder.png',
                 'dark_image' => null,

@@ -17,6 +17,7 @@ $userId = $_SESSION['user_id'];
 $productId = $_POST['product_id'] ?? null;
 $quantity = $_POST['quantity'] ?? 1;
 $quantity = max(1, intval($quantity)); // Minimum 1
+$maat = $_POST['maat'] ?? null; // <-- key "maat", consistent met JS en DB
 
 if (!$productId) {
     echo json_encode(['error' => 'Geen product opgegeven']);
@@ -37,9 +38,15 @@ if (!$product) {
 
 $price = $product['price'];
 
-// --- Controleer of product al in winkelwagen zit ---
-$stmt = $conn->prepare("SELECT quantity FROM cart WHERE user_id = ? AND product_id = ? AND type='product'");
-$stmt->bind_param("ii", $userId, $productId);
+// --- Controleer of product + maat al in winkelwagen zit ---
+if ($maat) {
+    $stmt = $conn->prepare("SELECT quantity FROM cart WHERE user_id = ? AND product_id = ? AND type='product' AND maat = ?");
+    $stmt->bind_param("iis", $userId, $productId, $maat);
+} else {
+    $stmt = $conn->prepare("SELECT quantity FROM cart WHERE user_id = ? AND product_id = ? AND type='product'");
+    $stmt->bind_param("ii", $userId, $productId);
+}
+
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -48,13 +55,23 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $newQuantity = $row['quantity'] + $quantity;
 
-    $updateStmt = $conn->prepare("UPDATE cart SET quantity = ?, price = ? WHERE user_id = ? AND product_id = ? AND type='product'");
-    $updateStmt->bind_param("diii", $newQuantity, $price, $userId, $productId);
+    if ($maat) {
+        $updateStmt = $conn->prepare("UPDATE cart SET quantity = ?, price = ? WHERE user_id = ? AND product_id = ? AND type='product' AND maat = ?");
+        $updateStmt->bind_param("diiis", $newQuantity, $price, $userId, $productId, $maat);
+    } else {
+        $updateStmt = $conn->prepare("UPDATE cart SET quantity = ?, price = ? WHERE user_id = ? AND product_id = ? AND type='product'");
+        $updateStmt->bind_param("diii", $newQuantity, $price, $userId, $productId);
+    }
     $updateStmt->execute();
 } else {
     // Nieuw product toevoegen
-    $insertStmt = $conn->prepare("INSERT INTO cart (user_id, product_id, type, quantity, price) VALUES (?, ?, 'product', ?, ?)");
-    $insertStmt->bind_param("iiid", $userId, $productId, $quantity, $price);
+    if ($maat) {
+        $insertStmt = $conn->prepare("INSERT INTO cart (user_id, product_id, type, quantity, price, maat) VALUES (?, ?, 'product', ?, ?, ?)");
+        $insertStmt->bind_param("iiids", $userId, $productId, $quantity, $price, $maat);
+    } else {
+        $insertStmt = $conn->prepare("INSERT INTO cart (user_id, product_id, type, quantity, price) VALUES (?, ?, 'product', ?, ?)");
+        $insertStmt->bind_param("iiid", $userId, $productId, $quantity, $price);
+    }
     $insertStmt->execute();
 }
 
@@ -63,6 +80,7 @@ echo json_encode([
     'success' => 'Product toegevoegd aan winkelwagen',
     'product_id' => (int)$productId,
     'quantity' => (int)$quantity,
-    'price' => (float)$price
+    'price' => (float)$price,
+    'maat' => $maat
 ]);
 ?>

@@ -191,9 +191,10 @@ document.addEventListener('DOMContentLoaded', function () {
         <div class="item-info">
           <h3>${item.name}</h3>
           <p>${item.variant || ''}</p>
-          <p><span data-i18n="script_cart_price">Prijs</span>: €${parseFloat(item.price).toFixed(2)}</p>
+          ${item.maat ? `<p><span data-i18n="script_cart_size">Maat:</span> ${item.maat}</p>` : ''}
+          <p><span data-i18n="script_cart_price">Prijs:</span> €${parseFloat(item.price).toFixed(2)}</p>
           <label>
-            <span data-i18n="script_cart_amount">Aantal</span>:
+            <span data-i18n="script_cart_amount">Aantal:</span>
             <input type="number" value="${item.quantity}" min="1" ${idAttr} data-type="${item.type}" class="quantity-input">
           </label>
           <button class="remove-item" ${idAttr} data-type="${item.type}">
@@ -204,6 +205,9 @@ document.addEventListener('DOMContentLoaded', function () {
       `;
 
       cartItemsContainer.appendChild(itemDiv);
+
+      // ✅ Vertalingen toepassen op alleen dit nieuwe item
+      applyTranslations(itemDiv);
     });
 
     // ✅ Eventlisteners toevoegen voor alle quantity inputs
@@ -570,7 +574,7 @@ document.addEventListener('DOMContentLoaded', function () {
           .then(response => response.text())
           .then(data => {
               if (data.trim() === "success") {
-                  // Redirect naar index.html bij succes
+                  // Redirect naar bedankt.html bij succes
                   window.location.href = 'bedankt.html';
               } else {
                   console.error('Server response:', data);
@@ -1070,13 +1074,12 @@ async function loadOrders() {
     const response = await fetch('get_orders.php');
     const orders = await response.json();
 
-    // ✅ Controleer leeg array
     if (!orders || orders.length === 0) {
       const p = document.createElement('p');
-      p.setAttribute('data-i18n', 'script_order_none'); // vertaling gebruiken
+      p.setAttribute('data-i18n', 'script_order_none');
       container.innerHTML = '';
       container.appendChild(p);
-      applyTranslations(p); // gegarandeerd vertalen
+      applyTranslations(p);
       return;
     }
 
@@ -1086,8 +1089,7 @@ async function loadOrders() {
       let productHtml = '';
 
       items.forEach(item => {
-        if (typeof item === 'string') {
-          // Voucher: standaard afbeelding, geen aantal, naam = 'Cadeaubon', klikbaar
+        if (item.type === 'voucher') {
           productHtml += `
             <div class="order-product-row voucher-row" style="cursor:pointer;">
               <div class="order-product-info">
@@ -1096,18 +1098,20 @@ async function loadOrders() {
                 <span class="order-product-name" data-i18n="script_order_voucher">Cadeaubon</span>
               </div>
               <div class="order-product-details">
-                <span class="order-product-price">${item.replace(/Cadeaubon:\s*/i, '')}</span>
+                <span class="order-product-price">€${parseFloat(item.price).toFixed(2)}</span>
               </div>
             </div>
           `;
           applyTranslations();
-        } else if (typeof item === 'object') {
-          // Gewone producten: klikbaar naar productpagina
+        } else if (item.type === 'product') {
+          // Voeg maat toe als deze niet null is
+          const maatHtml = item.maat ? ` (<span class="order-product-size">${item.maat}</span>)` : '';
+
           productHtml += `
             <div class="order-product-row" data-product-id="${item.id}" style="cursor:pointer;">
               <div class="order-product-info">
                 <img src="${item.image}" alt="${item.name}" class="order-product-img">
-                <span class="order-product-name">${item.name}</span>
+                <span class="order-product-name">${item.name}${maatHtml}</span>
               </div>
               <div class="order-product-details">
                 <span class="order-product-qty"><span data-i18n="script_order_amount">Aantal</span>: ${item.quantity}</span>
@@ -1147,11 +1151,11 @@ async function loadOrders() {
     container.innerHTML = html;
     applyTranslations();
 
-    // Alleen factuurknop klikbaar maken
+    // Factuurknop klikbaar
     container.querySelectorAll('.invoice-btn').forEach(button => {
       button.style.cursor = 'pointer';
       button.addEventListener('click', (event) => {
-        event.stopPropagation(); // voorkomt dat andere events op parent triggert
+        event.stopPropagation();
         const orderCard = button.closest('.order-card');
         if (!orderCard) return;
         const orderId = orderCard.getAttribute('data-order-id');
@@ -1159,7 +1163,7 @@ async function loadOrders() {
       });
     });
 
-    // Maak gewone producten klikbaar naar productpagina
+    // Producten klikbaar naar productpagina
     container.querySelectorAll('.order-product-row[data-product-id]').forEach(row => {
       row.addEventListener('click', () => {
         const productId = row.getAttribute('data-product-id');
@@ -1167,7 +1171,7 @@ async function loadOrders() {
       });
     });
 
-    // Maak vouchers klikbaar naar cadeaubonnen_kopen.html
+    // Vouchers klikbaar naar cadeaubonnen_kopen.html
     container.querySelectorAll('.voucher-row').forEach(row => {
       row.addEventListener('click', () => {
         window.location.href = 'cadeaubonnen_kopen.html';
@@ -1339,6 +1343,7 @@ async function loadLastOrderDetails() {
                  alt="${item.name}" 
                  style="width:40px; height:40px; object-fit:cover; border-radius:6px; border:1px solid #ddd;">
             <span>${item.name}</span>
+            ${item.maat ? `<span style="margin-left:8px;">(${item.maat})</span>` : ''}
           </div>
         `;
       }
@@ -1448,7 +1453,8 @@ document.addEventListener('DOMContentLoaded', () => {
             img.className = 'return-product-img';
 
             const name = document.createElement('p');
-            name.textContent = product.product_name;
+            // ✅ Voeg maat toe tussen haakjes
+            name.textContent = product.product_name + (product.size ? ` (${product.size})` : '');
 
             const returnLink = document.createElement('a');
             returnLink.href = '#';
@@ -2058,13 +2064,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   const titleEl = document.getElementById('product-title');
   const imageEl = document.getElementById('product-image');
   const descEl = document.getElementById('product-description');
-  const specsEl = document.getElementById('product-specificaties'); // <--- toegevoegd
+  const specsEl = document.getElementById('product-specificaties'); 
   const priceEl = document.getElementById('product-price');
   const quantityEl = document.getElementById('product-quantity');
   const addBtn = document.getElementById('add-to-cart');
   const csrfTokenEl = document.getElementById('csrf_token');
   const errorEl = document.getElementById('product-error');
   const wishlistBtn = document.getElementById('wishlist-btn');
+  const sizeWrapper = document.getElementById('maat-wrapper');
+  const sizeDropdown = document.getElementById('product-size');
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
 
@@ -2117,7 +2125,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     priceEl.textContent = `€${parseFloat(product.price).toFixed(2)}`;
 
     // --- Specificaties netjes weergeven ---
-    const specsEl = document.getElementById('product-specificaties');
     if (product.specifications) {
       const specsArray = product.specifications.split(';').map(s => s.trim()).filter(s => s);
       const ul = document.createElement('ul');
@@ -2130,6 +2137,22 @@ document.addEventListener('DOMContentLoaded', async () => {
       specsEl.appendChild(ul);
     } else {
       specsEl.textContent = '';
+    }
+
+    // --- Maat dropdown ---
+    if (product.maat && Array.isArray(product.maat)) {
+      sizeDropdown.innerHTML = "";
+      product.maat.forEach(opt => {
+        const option = document.createElement("option");
+        option.value = opt.trim();
+        option.textContent = opt.trim();
+        sizeDropdown.appendChild(option);
+      });
+      sizeDropdown.required = true;
+      sizeWrapper.style.display = "block";
+    } else {
+      sizeDropdown.required = false;
+      sizeWrapper.style.display = "none";
     }
 
     // --- Wishlist knop hoofdproduct ---
@@ -2168,6 +2191,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       formData.append('product_id', product.id);
       formData.append('quantity', quantity);
       formData.append('csrf_token', csrfTokenEl.value);
+
+      // maat meesturen indien zichtbaar
+      if (product.maat && sizeDropdown && sizeDropdown.value) {
+        formData.append('maat', sizeDropdown.value);
+      }
 
       try {
         const addResp = await fetch('add_to_cart.php', { method: 'POST', body: formData });

@@ -10,9 +10,12 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// --- Laatste adres ophalen uit DB (shipping type) ---
+// ================================
+// 1. Laatste shipping adres ophalen uit DB
+// ================================
 $stmt = $conn->prepare("
-    SELECT a.id AS address_id, a.street, a.house_number, a.postal_code, a.city, a.country, u.name, u.email, u.company_name, u.vat_number
+    SELECT a.id AS address_id, a.street, a.house_number, a.postal_code, a.city, a.country, 
+           u.name, u.email, u.company_name, u.vat_number
     FROM addresses a
     INNER JOIN users u ON u.id = a.user_id
     WHERE a.user_id = ? AND a.type = 'shipping'
@@ -40,11 +43,12 @@ if (!$user) {
     ];
 }
 
-// -------------------------
-// Producten uit winkelwagen
-// -------------------------
+// ================================
+// 2. Producten uit winkelwagen ophalen (inclusief maat)
+// ================================
 $stmt = $conn->prepare("
-    SELECT c.product_id, c.type, COALESCE(p.price, c.price) AS price, c.quantity, COALESCE(p.name, 'Cadeaubon') AS name
+    SELECT c.product_id, c.type, COALESCE(p.price, c.price) AS price, c.quantity, 
+           COALESCE(p.name, 'Cadeaubon') AS name, c.maat
     FROM cart c
     LEFT JOIN products p ON c.product_id = p.id
     WHERE c.user_id = ?
@@ -57,13 +61,13 @@ $total = 0;
 $items = [];
 
 while ($row = $result->fetch_assoc()) {
-    $items[] = $row;
+    $items[] = $row; // 'maat' zit nu ook in $row
     $total += $row['price'] * $row['quantity'];
 }
 
-// -------------------------
-// Cadeaubonnen uit sessie
-// -------------------------
+// ================================
+// 3. Cadeaubonnen uit sessie toevoegen
+// ================================
 if (isset($_SESSION['cart'])) {
     foreach ($_SESSION['cart'] as $voucher) {
         if ($voucher['type'] === 'voucher') {
@@ -72,20 +76,25 @@ if (isset($_SESSION['cart'])) {
                 'name' => 'Cadeaubon',
                 'price' => $voucher['amount'],
                 'quantity' => 1,
-                'email' => $voucher['email']
+                'email' => $voucher['email'],
+                'maat' => null // geen maat voor vouchers
             ];
             $total += $voucher['amount'];
         }
     }
 }
 
-// Als er echt niets is
+// ================================
+// 4. Controleer of winkelwagen leeg is
+// ================================
 if (empty($items)) {
     echo "Je winkelwagen is leeg.";
     exit;
 }
 
-// Bepaal of alles vouchers zijn
+// ================================
+// 5. Bepaal of alles vouchers zijn
+// ================================
 $allVouchers = true;
 foreach ($items as $i) {
     if ($i['type'] !== 'voucher') {
@@ -94,23 +103,27 @@ foreach ($items as $i) {
     }
 }
 
-// Dynamische verzendkosten
+// ================================
+// 6. Dynamische verzendkosten
+// ================================
 $shipping = $allVouchers ? 0.00 : 5.00;
 
-// -------------------------
-// Sessiedata klaarmaken
-// -------------------------
+// ================================
+// 7. Sessiedata klaarmaken voor afrekenen
+// ================================
 $_SESSION['checkout'] = [
     'user' => $user,
     'cart_items' => $items,
     'subtotal' => $total,
     'vat' => $total * 0.21, // 21% BTW
     'shipping' => $shipping,
-    'total' => $total + $shipping, 
+    'total' => $total + $shipping,
     'voucher_discount' => 0 // placeholder
 ];
 
-// Redirect naar afrekenen.html
+// ================================
+// 8. Redirect naar afrekenen.html
+// ================================
 header('Location: afrekenen.html');
 exit;
 ?>

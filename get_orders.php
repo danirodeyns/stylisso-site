@@ -24,9 +24,9 @@ while ($order = $result->fetch_assoc()) {
     $orderId = $order['id'];
     $items = [];
 
-    // Gewone producten ophalen
+    // Gewone producten ophalen inclusief maat
     $stmtProd = $conn->prepare("
-        SELECT oi.product_id, p.name, p.image, oi.quantity, oi.price
+        SELECT oi.product_id, p.name, p.image, oi.quantity, oi.price, oi.maat
         FROM order_items oi
         JOIN products p ON oi.product_id = p.id
         WHERE oi.order_id=? AND oi.product_id IS NOT NULL
@@ -40,7 +40,9 @@ while ($order = $result->fetch_assoc()) {
             'name'     => $row['name'],
             'quantity' => (int)$row['quantity'],
             'price'    => (float)$row['price'],
-            'image'    => $row['image'] ? $row['image'] : 'placeholder.jpg'
+            'image'    => $row['image'] ? $row['image'] : 'placeholder.jpg',
+            'maat'     => $row['maat'] ?? null,  // maat toevoegen
+            'type'     => 'product'
         ];
     }
 
@@ -56,8 +58,15 @@ while ($order = $result->fetch_assoc()) {
     $stmtVoucher->execute();
     $resVoucher = $stmtVoucher->get_result();
     while ($row = $resVoucher->fetch_assoc()) {
-        // Alleen prijs meesturen, de naam/afbeelding wordt in JS bepaald
-        $items[] = "€" . number_format($row['price'], 2);
+        $items[] = [
+            'id'       => null,
+            'name'     => "Cadeaubon: " . $row['code'],
+            'quantity' => 1,
+            'price'    => (float)$row['price'],
+            'image'    => null,
+            'maat'     => null,
+            'type'     => 'voucher'
+        ];
     }
 
     $order['products'] = $items;

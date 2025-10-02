@@ -4,6 +4,9 @@ include 'db_connect.php';
 include 'csrf.php';
 include 'translations.php';
 
+// ================================
+// 0. Sessie check
+// ================================
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['checkout'])) {
     echo "Geen gebruiker of checkout sessie";
     exit;
@@ -15,7 +18,9 @@ $checkout = $_SESSION['checkout'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_validate();
 
-    // --- Adresvelden ophalen ---
+    // ================================
+    // 1. Adres- en bedrijfsgegevens ophalen
+    // ================================
     $street        = trim($_POST['street'] ?? '');
     $house_number  = trim($_POST['house_number'] ?? '');
     $postal_code   = trim($_POST['postal_code'] ?? '');
@@ -32,18 +37,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $billing_city         = trim($_POST['billing_city'] ?? '');
     $billing_country      = trim($_POST['billing_country'] ?? '');
 
-    // --- Functie om land te normaliseren (accents, hoofdletters, spaties) ---
+    // ================================
+    // 2. Functie om land te normaliseren
+    // ================================
     function normalizeCountry($str) {
         $str = trim($str);
-        $str = mb_strtolower($str, 'UTF-8');                  // kleine letters
-        $str = iconv('UTF-8', 'ASCII//TRANSLIT', $str);      // accenten verwijderen
-        $str = preg_replace('/[^a-z]/', '', $str);           // niet-letters verwijderen
+        $str = mb_strtolower($str, 'UTF-8');
+        $str = iconv('UTF-8', 'ASCII//TRANSLIT', $str);
+        $str = preg_replace('/[^a-z]/', '', $str);
         return $str;
     }
 
     $allowedCountries = ['belgie', 'belgium', 'belgique'];
 
-    // --- Valideer landen ---
+    // ================================
+    // 3. Land validatie
+    // ================================
     $normalizedShipping = normalizeCountry($country);
     if (!in_array($normalizedShipping, $allowedCountries)) {
         echo "Verzending naar {$country} is nog niet mogelijk.";
@@ -58,35 +67,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // --- Shipping adres opslaan ---
-    $stmt_addr = $conn->prepare("
-        INSERT INTO addresses (user_id, street, house_number, postal_code, city, country, type)
-        VALUES (?, ?, ?, ?, ?, ?, 'shipping')
-    ");
-    $stmt_addr->bind_param("isssss", $user_id, $street, $house_number, $postal_code, $city, $country);
-    if (!$stmt_addr->execute()) {
-        echo "Fout bij opslaan shipping adres: ".$stmt_addr->error;
-        exit;
-    }
-    $shipping_address_id = $conn->insert_id;
+    // ================================
+    // 4. User updaten met company + VAT
+    // ================================
+    $stmt_user = $conn->prepare("UPDATE users SET company_name = ?, vat_number = ? WHERE id = ?");
+    $stmt_user->bind_param("ssi", $company_name, $vat_number, $user_id);
+    $stmt_user->execute();
 
-    // --- Billing adres opslaan (indien anders) ---
-    if ($differentBilling && $billing_street && $billing_house_number && $billing_postal_code && $billing_city && $billing_country) {
-        $stmt_bill = $conn->prepare("
-            INSERT INTO addresses (user_id, street, house_number, postal_code, city, country, type)
-            VALUES (?, ?, ?, ?, ?, ?, 'billing')
+    // ================================
+    // 5. Shipping adres updaten of invoegen
+    // ================================
+    $stmt_check_ship = $conn->prepare("SELECT id FROM addresses WHERE user_id = ? AND type = 'shipping'");
+    $stmt_check_ship->bind_param("i", $user_id);
+    $stmt_check_ship->execute();
+    $res_ship = $stmt_check_ship->get_result();
+
+    if ($res_ship->num_rows > 0) {
+        $row = $res_ship->fetch_assoc();
+        $shipping_address_id = $row['id'];
+        $stmt_update_ship = $conn->prepare("
+            UPDATE addresses 
+            SET street=?, house_number=?, postal_code=?, city=?, country=? 
+            WHERE id=? AND user_id=? AND type='shipping'
         ");
-        $stmt_bill->bind_param("isssss", $user_id, $billing_street, $billing_house_number, $billing_postal_code, $billing_city, $billing_country);
-        if (!$stmt_bill->execute()) {
-            echo "Fout bij opslaan billing adres: ".$stmt_bill->error;
-            exit;
+        $stmt_update_ship->bind_param("ssssssi", $street, $house_number, $postal_code, $city, $country, $shipping_address_id, $user_id);
+        $stmt_update_ship->execute();
+    } else {
+        $stmt_insert_ship = $conn->prepare("
+            INSERT INTO addresses (user_id, street, house_number, postal_code, city, country, type)
+            VALUES (?, ?, ?, ?, ?, ?, 'shipping')
+        ");
+        $stmt_insert_ship->bind_param("isssss", $user_id, $street, $house_number, $postal_code, $city, $country);
+        $stmt_insert_ship->execute();
+        $shipping_address_id = $conn->insert_id;
+    }
+
+    // ================================
+    // 6. Billing adres updaten of invoegen
+    // ================================
+    if ($differentBilling && $billing_street && $billing_house_number && $billing_postal_code && $billing_city && $billing_country) {
+        $stmt_check_bill = $conn->prepare("SELECT id FROM addresses WHERE user_id = ? AND type = 'billing'");
+        $stmt_check_bill->bind_param("i", $user_id);
+        $stmt_check_bill->execute();
+        $res_bill = $stmt_check_bill->get_result();
+
+        if ($res_bill->num_rows > 0) {
+            $row = $res_bill->fetch_assoc();
+            $billing_address_id = $row['id'];
+            $stmt_update_bill = $conn->prepare("
+                UPDATE addresses 
+                SET street=?, house_number=?, postal_code=?, city=?, country=? 
+                WHERE id=? AND user_id=? AND type='billing'
+            ");
+            $stmt_update_bill->bind_param("ssssssi", $billing_street, $billing_house_number, $billing_postal_code, $billing_city, $billing_country, $billing_address_id, $user_id);
+            $stmt_update_bill->execute();
+        } else {
+            $stmt_insert_bill = $conn->prepare("
+                INSERT INTO addresses (user_id, street, house_number, postal_code, city, country, type)
+                VALUES (?, ?, ?, ?, ?, ?, 'billing')
+            ");
+            $stmt_insert_bill->bind_param("isssss", $user_id, $billing_street, $billing_house_number, $billing_postal_code, $billing_city, $billing_country);
+            $stmt_insert_bill->execute();
+            $billing_address_id = $conn->insert_id;
         }
-        $billing_address_id = $conn->insert_id;
     } else {
         $billing_address_id = null;
     }
 
-    // --- Gebruikte voucher ---
+    // ================================
+    // 7. Voucher check & korting berekenen
+    // ================================
     $used_voucher = null;
     if (!empty($_POST['used_voucher'])) {
         $decoded = json_decode($_POST['used_voucher'], true);
@@ -100,30 +150,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $used_amount = min($voucher_discount, $order_subtotal);
     $total_order = max(0, floatval($checkout['total']) - $used_amount);
 
-    // --- Order toevoegen ---
+    // ================================
+    // 8. Order toevoegen
+    // ================================
     $stmt_order = $conn->prepare("
-        INSERT INTO orders (user_id, total_price, payment_method, address_id, company_name, vat_number)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO orders (user_id, total_price, payment_method)
+        VALUES (?, ?, ?)
     ");
-    if (!$stmt_order) { echo "Prepare order fout: ".$conn->error; exit; }
-    $stmt_order->bind_param("idisss", $user_id, $total_order, $payment_method, $shipping_address_id, $company_name, $vat_number);
-    if (!$stmt_order->execute()) { echo "Execute order fout: ".$stmt_order->error; exit; }
+    $stmt_order->bind_param("ids", $user_id, $total_order, $payment_method);
+    $stmt_order->execute();
     $order_id = $conn->insert_id;
 
-    // --- PDF factuur genereren ---
+    // ================================
+    // 9. PDF factuur genereren
+    // ================================
     $order_date = date('Y-m-d');
     include 'create_invoice.php';
     create_invoice($order_id, $order_date, $conn);
 
-    // --- Order items toevoegen ---
+    // ================================
+    // 10. Order items toevoegen (inclusief type + maat)
+    // ================================
     foreach ($checkout['cart_items'] as $item) {
-        $type = $item['type'];
+        $type = $item['type'] ?? 'product';
         $price = floatval($item['price']);
         $qty = intval($item['quantity']);
         $prod_id = $type === 'product' ? intval($item['product_id']) : null;
         $voucher_id = null;
+        $maat = $item['maat'] ?? null;
 
-        // Voucher genereren
+        // --- Voucher genereren & mailen ---
         if ($type === 'voucher') {
             do {
                 $code = strtoupper(bin2hex(random_bytes(6)));
@@ -143,7 +199,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt_v->execute();
             $voucher_id = $conn->insert_id;
 
-            // Mailen
+            // --- Mailen naar klant ---
             if ($email) {
                 $subject = t('email_subject');
                 $messageTemplate = t('email_message');
@@ -156,15 +212,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Order item invoegen
-        $stmt_item = $conn->prepare(
-            "INSERT INTO order_items (order_id, product_id, voucher_id, quantity, price, type) VALUES (?, ?, ?, ?, ?, ?)"
-        );
-        $stmt_item->bind_param("iiiids", $order_id, $prod_id, $voucher_id, $qty, $price, $type);
+        // --- Item toevoegen aan order_items ---
+        $stmt_item = $conn->prepare("
+            INSERT INTO order_items (order_id, product_id, voucher_id, type, quantity, price, maat) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ");
+        // ⚡ Correcte types: order_id=i, product_id=i, voucher_id=i, type=s, quantity=i, price=d, maat=s
+        $stmt_item->bind_param("iiisids", $order_id, $prod_id, $voucher_id, $type, $qty, $price, $maat);
         $stmt_item->execute();
     }
 
-    // --- Gebruikte voucher bijwerken ---
+    // ================================
+    // 11. Gebruikte voucher bijwerken
+    // ================================
     if ($used_voucher) {
         $stmt_uv = $conn->prepare(
             "UPDATE vouchers SET remaining_value = GREATEST(remaining_value - ?, 0) WHERE code = ?"
@@ -173,11 +233,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt_uv->execute();
     }
 
-    // --- Winkelwagen leegmaken ---
+    // ================================
+    // 12. Winkelwagen leegmaken
+    // ================================
     $stmt_cart = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
     $stmt_cart->bind_param("i", $user_id);
     $stmt_cart->execute();
 
+    // ================================
+    // 13. Checkout resetten
+    // ================================
     unset($_SESSION['checkout']);
     unset($_SESSION['used_voucher']);
 

@@ -460,6 +460,7 @@ const translations = {
     "productpagina_other_products_title": "Misschien vindt je dit ook leuk",
     "productpagina_last_seen_title": "Laatst bekeken",
     "productpagina_no_products": "Geen producten gevonden.",
+    "productpagina_product_size_label": "Maat:",
 
     // reset_password.html
     "reset_password_page_title": "Nieuw wachtwoord",
@@ -641,8 +642,8 @@ const translations = {
     "script_voucher_code": "Code:",
     "script_voucher_remaining_value": "Resterende waarde:",
     "script_voucher_expiry": "Vervalt op:",
-    "script_cart_price": "Prijs",
-    "script_cart_amount": "Aantal",
+    "script_cart_price": "Prijs:",
+    "script_cart_amount": "Aantal:",
     "script_welcome": "Welkom",
     "script_remove_item_error": "Er ging iets mis bij het verwijderen.",
     "script_remove_item_failed": "Fout bij verwijderen item",
@@ -665,6 +666,8 @@ const translations = {
     "script_search_no_query": "Geen zoekterm opgegeven.",
     "script_search_no_results": "Geen resultaten gevonden.",
     "script_search_fetch_error": "Fout bij ophalen producten.",
+    "script_cart_size": "Maat:",
+    "script_voucher_name": "Cadeaubon",
 },
   "be-fr": {
     // index.html
@@ -1127,6 +1130,7 @@ const translations = {
     "productpagina_other_products_title": "Vous pourriez aussi aimer",
     "productpagina_last_seen_title": "Derniers vus",
     "productpagina_no_products": "Aucun produit trouvé.",
+    "productpagina_product_size_label": "Taille :",
 
     // reset_password.html
     "reset_password_page_title": "Nouveau mot de passe",
@@ -1308,8 +1312,8 @@ const translations = {
     "script_voucher_code": "Code:",
     "script_voucher_remaining_value": "Valeur restante:",
     "script_voucher_expiry": "Expire le:",
-    "script_cart_price": "Prix",
-    "script_cart_amount": "Quantité",
+    "script_cart_price": "Prix :",
+    "script_cart_amount": "Quantité :",
     "script_welcome": "Bienvenue",
     "script_remove_item_error": "Une erreur est survenue lors de la suppression.",
     "script_remove_item_failed": "Erreur lors de la suppression de l'article",
@@ -1332,6 +1336,8 @@ const translations = {
     "script_search_no_query": "Aucun terme de recherche saisi.",
     "script_search_no_results": "Aucun résultat trouvé.",
     "script_search_fetch_error": "Erreur lors du chargement des produits.",
+    "script_cart_size": "Taille :",
+    "script_voucher_name": "Bon cadeau",
 },
   "be-en": {
     // index.html
@@ -1794,6 +1800,7 @@ const translations = {
     "productpagina_other_products_title": "You might also like",
     "productpagina_last_seen_title": "Last viewed",
     "productpagina_no_products": "No products found.",
+    "productpagina_product_size_label": "Size:",
 
     // reset_password.html
     "reset_password_page_title": "New Password",
@@ -1975,8 +1982,8 @@ const translations = {
     "script_voucher_code": "Code:",
     "script_voucher_remaining_value": "Remaining Value:",
     "script_voucher_expiry": "Expires on:",
-    "script_cart_price": "Price",
-    "script_cart_amount": "Quantity",
+    "script_cart_price": "Price:",
+    "script_cart_amount": "Quantity:",
     "script_welcome": "Welcome",
     "script_remove_item_error": "Something went wrong while removing the item.",
     "script_remove_item_failed": "Error removing item",
@@ -1999,4 +2006,6 @@ const translations = {
     "script_search_no_query": "No search term provided.",
     "script_search_no_results": "No results found.",
     "script_search_fetch_error": "Error fetching products.",
+    "script_cart_size": "Size:",
+    "script_voucher_name": "Voucher",
 }};

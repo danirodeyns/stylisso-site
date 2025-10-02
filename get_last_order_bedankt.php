@@ -33,9 +33,9 @@ if (!$order) {
 $orderId = $order['id'];
 $items   = [];
 
-// Gewone producten ophalen
+// Gewone producten ophalen inclusief maat
 $stmtProd = $conn->prepare("
-    SELECT oi.product_id, p.name, p.image, oi.quantity, oi.price
+    SELECT oi.product_id, p.name, p.image, oi.quantity, oi.price, oi.maat
     FROM order_items oi
     JOIN products p ON oi.product_id = p.id
     WHERE oi.order_id=? AND oi.product_id IS NOT NULL
@@ -50,7 +50,8 @@ while ($row = $resProd->fetch_assoc()) {
         'quantity' => (int)$row['quantity'],
         'price'    => (float)$row['price'],
         'image'    => $row['image'] ? $row['image'] : 'placeholder.jpg',
-        'type'     => 'product'                // of 'voucher'
+        'maat'     => $row['maat'],        // maat toegevoegd
+        'type'     => 'product'
     ];
 }
 
@@ -72,6 +73,7 @@ while ($row = $resVoucher->fetch_assoc()) {
         'quantity' => 1,
         'price'    => (float)$row['price'],
         'image'    => null,
+        'maat'     => null,                // geen maat voor vouchers
         'type'     => 'voucher'
     ];
 }
