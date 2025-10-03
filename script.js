@@ -612,7 +612,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const subtotalOrder = document.getElementById('subtotalOrder');
   const redeemVoucherSpan = document.getElementById('redeem_voucher');
   const savedVoucherDropdown = document.getElementById('saved_voucher');
-  const taxAmount = document.getElementById('totalAmount');
+  const taxAmount = document.getElementById('taxAmount');
   const totalAmount = document.getElementById('totalAmount');
 
   let cartData = [];
@@ -649,32 +649,43 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Functie om totaal te berekenen
   function updateTotals() {
-    let subtotal = 0;
-    let allVouchers = true; // Start met de veronderstelling dat alles vouchers zijn
+      let subtotal = 0;
+      let allVouchers = true; // Start met de veronderstelling dat alles vouchers zijn
 
-    cartData.forEach(item => {
-        subtotal += parseFloat(item.price) * item.quantity;
-        if (item.type !== 'voucher') {
-            allVouchers = false;
+      cartData.forEach(item => {
+          subtotal += parseFloat(item.price) * item.quantity;
+          if (item.type !== 'voucher') {
+              allVouchers = false;
+          }
+      });
+
+      // Voucher = ingezette voucher (maximaal gelijk aan subtotal)
+      const voucher = Math.min(voucherAmount, subtotal);
+
+      // Shipping: standaard 5, behalve als subtotal >= 50 of alle items vouchers zijn
+      let shipping = 5.00;
+      if (subtotal >= 50 || allVouchers) {
+          shipping = 0.00;
+      }
+
+      // BTW = subtotaal * 0.21 (subtotaal is zonder voucher)
+      const vat = subtotal * 0.21;
+
+      // Totaal = subtotaal + shipping – voucher
+      const total = subtotal + shipping - voucher;
+
+      // Update UI
+      if (subtotalOrder) subtotalOrder.textContent = `€${subtotal.toFixed(2)}`;
+      if (redeemVoucherSpan) {
+        if (voucher > 0) {
+          redeemVoucherSpan.textContent = `-€${voucher.toFixed(2)}`;
+        } else {
+          redeemVoucherSpan.textContent = `€0.00`;
         }
-    });
-
-    // Beperk voucherAmount tot subtotal
-    const effectiveVoucher = Math.min(voucherAmount, subtotal);
-
-    const adjustedSubtotal = subtotal - effectiveVoucher;
-
-    // Verzendkosten 0 als alles vouchers zijn
-    const shipping = allVouchers ? 0.00 : 5.00;
-
-    const vat = adjustedSubtotal * 0.21;
-    const total = adjustedSubtotal + shipping;
-
-    if (subtotalOrder) subtotalOrder.textContent = `€${adjustedSubtotal.toFixed(2)}`;
-    if (redeemVoucherSpan) redeemVoucherSpan.textContent = `€${effectiveVoucher.toFixed(2)}`;
-    if (shippingCost) shippingCost.textContent = `€${shipping.toFixed(2)}`;
-    if (taxAmount) taxAmount.textContent = `€${vat.toFixed(2)}`;
-    if (totalAmount) totalAmount.textContent = `€${total.toFixed(2)}`;
+      }
+      if (shippingCost) shippingCost.textContent = `€${shipping.toFixed(2)}`;
+      if (taxAmount) taxAmount.textContent = `€${vat.toFixed(2)}`;
+      if (totalAmount) totalAmount.textContent = `€${total.toFixed(2)}`;
   }
 
   // Event bij klikken op "Gebruiken"
