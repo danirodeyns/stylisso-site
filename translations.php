@@ -28,6 +28,15 @@ $translations = [
         'voucher_applied' => 'Bon toegepast',
         'voucher_redeem_error' => 'Er is een fout opgetreden bij het toepassen van de bon',
 
+        // create_credit_nota.php
+        'credit_note_title' => 'Creditnota',
+        'credit_note_number' => 'Creditnota nummer',
+        'credit_note_date' => 'Datum creditnota',
+        'credit_note_total' => 'Totaal gecrediteerd',
+        'credit_reason' => 'Reden van creditnota',
+        'credit_against_invoice' => 'Creditnota tegen factuur',
+        'total_to_refund' => 'Totaal terug te betalen',
+
         // delete_account.php
         'account_delete_subject' => 'Bevestiging accountverwijdering',
         'account_delete_message' => "Beste,\n\nJe account en persoonsgegevens zijn verwijderd uit ons systeem. Bestellingen en retourgegevens blijven bewaard voor de wettelijke boekhoudtermijn.\n\nMet vriendelijke groet,\nStylisso",
@@ -81,6 +90,15 @@ $translations = [
         'voucher_applied' => 'Bon appliqué',
         'voucher_redeem_error' => 'Une erreur est survenue lors de l’application du bon',
 
+        // create_credit_nota.php
+        'credit_note_title' => 'Note de crédit',
+        'credit_note_number' => 'Numéro de la note de crédit',
+        'credit_note_date' => 'Date de la note de crédit',
+        'credit_note_total' => 'Montant total crédité',
+        'credit_reason' => 'Raison de la note de crédit',
+        'credit_against_invoice' => 'Note de crédit relative à la facture',
+        'total_to_refund' => 'Montant total à rembourser',
+        
         // delete_account.php
         'account_delete_subject' => "Confirmation de suppression de compte",
         'account_delete_message' => "Bonjour,\n\nVotre compte et vos données personnelles ont été supprimés de notre système. Les commandes et données de retour restent conservées conformément au délai légal de comptabilité.\n\nCordialement,\nStylisso",
@@ -130,6 +148,15 @@ $translations = [
         'voucher_applied' => 'Voucher applied',
         'voucher_redeem_error' => 'An error occurred while applying the voucher',
 
+        // create_credit_nota.php
+        'credit_note_title' => 'Credit Note',
+        'credit_note_number' => 'Credit Note Number',
+        'credit_note_date' => 'Credit Note Date',
+        'credit_note_total' => 'Total Credited',
+        'credit_reason' => 'Reason for Credit Note',
+        'credit_against_invoice' => 'Credit Note against Invoice',
+        'total_to_refund' => 'Total to Refund',
+        
         // delete_account.php
         'account_delete_subject' => "Account deletion confirmation",
         'account_delete_message' => "Dear customer,\n\nYour account and personal data have been deleted from our system. Orders and return data are retained for the statutory accounting period.\n\nBest regards,\nStylisso",

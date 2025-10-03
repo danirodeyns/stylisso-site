@@ -2626,7 +2626,6 @@ label[for="different_billing"] span {
   position: absolute;
   top: 8px;
   right: 8px;
-  z-index: 10;
   cursor: pointer;
 }
 
