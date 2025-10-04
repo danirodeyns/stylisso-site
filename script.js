@@ -2603,7 +2603,11 @@ document.addEventListener('DOMContentLoaded', () => {
                   const staffLink = document.querySelector('.staff-link');
                   if (staffLink) {
                       staffLink.style.display = 'block';
-                  }  
+                  }
+                  const staffLink2 = document.querySelector('.staff-link2');
+                  if (staffLink2) {
+                      staffLink2.style.display = 'block';
+                  }    
                 return; // geen redirect
             }
 
