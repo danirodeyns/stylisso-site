@@ -41,6 +41,14 @@ $translations = [
         'account_delete_subject' => 'Bevestiging accountverwijdering',
         'account_delete_message' => "Beste,\n\nJe account en persoonsgegevens zijn verwijderd uit ons systeem. Bestellingen en retourgegevens blijven bewaard voor de wettelijke boekhoudtermijn.\n\nMet vriendelijke groet,\nStylisso",
 
+        // get_order_retour.php
+        'order_not_found' => 'Order niet gevonden',
+        
+        // processing_retours.php
+        'processing_retours_alert_not_logged_in' => 'Je moet ingelogd zijn om retouren te verwerken.',
+        'processing_retours_alert_no_access' => 'Je hebt geen toegang om retouren te verwerken.',
+        'processing_retours_alert_success' => 'Retouren succesvol verwerkt.',
+        
         // redeem_voucher.php
         'voucher_login_required' => 'Je moet ingelogd zijn om een bon in te wisselen.',
         'voucher_invalid_code' => 'Voer een geldige boncode in.',
@@ -103,6 +111,14 @@ $translations = [
         'account_delete_subject' => "Confirmation de suppression de compte",
         'account_delete_message' => "Bonjour,\n\nVotre compte et vos données personnelles ont été supprimés de notre système. Les commandes et données de retour restent conservées conformément au délai légal de comptabilité.\n\nCordialement,\nStylisso",
 
+        // get_order_retour.php
+        'order_not_found' => 'Commande non trouvée',
+        
+        // processing_retours.php
+        'script_processing_retours_alert_not_logged_in' => 'Vous devez être connecté pour traiter les retours.',
+        'script_processing_retours_alert_no_access' => 'Vous n\'avez pas accès pour traiter les retours.',
+        'script_processing_retours_alert_success' => 'Retours traités avec succès.',
+        
         // redeem_voucher.php
         'voucher_login_required' => 'Vous devez être connecté pour utiliser un bon.',
         'voucher_invalid_code' => 'Veuillez saisir un code de bon valide.',
@@ -161,6 +177,14 @@ $translations = [
         'account_delete_subject' => "Account deletion confirmation",
         'account_delete_message' => "Dear customer,\n\nYour account and personal data have been deleted from our system. Orders and return data are retained for the statutory accounting period.\n\nBest regards,\nStylisso",
 
+        // get_order_retour.php
+        'order_not_found' => 'Order not found',
+        
+        // processing_retours.php
+        'script_processing_retours_alert_not_logged_in' => 'You must be logged in to process returns.',
+        'script_processing_retours_alert_no_access' => 'You do not have access to process returns.',
+        'script_processing_retours_alert_success' => 'Returns processed successfully.',
+        
         // redeem_voucher.php
         'voucher_login_required' => 'You must be logged in to redeem a voucher.',
         'voucher_invalid_code' => 'Please enter a valid voucher code.',

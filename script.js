@@ -1562,6 +1562,209 @@ document.addEventListener('DOMContentLoaded', () => {
         applyTranslations(returnCardsContainer);
         console.error(err);
     });
+
+  const loadOrderBtn = document.getElementById('loadOrderBtn');
+  const orderIdInput = document.getElementById('orderIdInput');
+
+  // Helper: krijg de juiste vertaling van een key
+  function getStatusText(statusKey) {
+    const lang = document.cookie.match(/(?:^|;\s*)siteLanguage=([^;]+)/)?.[1] || "be-nl";
+    const dict = translations[lang] || translations["be-nl"];
+    return dict[statusKey] || statusKey;
+  }
+
+  // Mapping DB-orderstatus => i18n key
+  const orderStatusMap = {
+    "pending": "script_processing_retours_order_status_pending",
+    "paid": "script_processing_retours_order_status_paid",
+    "shipped": "script_processing_retours_order_status_shipped",
+    "received": "script_processing_retours_order_status_received",
+    "cancelled": "script_processing_retours_order_status_cancelled"
+  };
+
+  // Functie om vertaalde orderstatus te krijgen
+  function getOrderStatusText(dbStatus) {
+    const key = orderStatusMap[dbStatus.toLowerCase()] || dbStatus;
+    return { key, text: getStatusText(key) };
+  }
+
+  // Vul de orderitems tabel
+  function populateOrderTable(order) {
+    const tbody = document.getElementById('orderItemsBody');
+    tbody.innerHTML = '';
+
+    if (!order.items || order.items.length === 0) return;
+
+    order.items.forEach(item => {
+      if (item.type === 'voucher') return;
+
+      const qty = Number(item.quantity) || 0;
+      const price = Number(item.price) || 0;
+      const productName = item.product_name;
+
+      let itemReturn = null;
+      if (order.return_items && order.return_items.length > 0) {
+        itemReturn = order.return_items.find(r => r.order_item_id === item.order_item_id);
+      }
+
+      let statusKey = 'none';
+      let approvedChecked = '';
+      let rejectedChecked = '';
+
+      if (itemReturn && itemReturn.return_status) {
+        statusKey = itemReturn.return_status === 'processed' ? 'approved' : itemReturn.return_status;
+        if (statusKey === 'approved') approvedChecked = 'checked';
+        if (statusKey === 'rejected') rejectedChecked = 'checked';
+      }
+
+      const statusText = getStatusText(`script_processing_retours_status_${statusKey}`);
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${productName}</td>
+        <td style="text-align:center;">${qty}</td>
+        <td style="text-align:center;">€${price.toFixed(2)}</td>
+        <td style="text-align:center;">€${(price * qty).toFixed(2)}</td>
+        <td style="text-align:center;" data-i18n="script_processing_retours_status_${statusKey}" data-status-original="${statusKey}">${statusText}</td>
+        <td style="text-align:center;"><input type="checkbox" class="approveItem" data-item-id="${item.order_item_id}" ${approvedChecked}></td>
+        <td style="text-align:center;"><input type="checkbox" class="rejectItem" data-item-id="${item.order_item_id}" ${rejectedChecked}></td>
+      `;
+      tbody.appendChild(tr);
+
+      // Exclusiviteit checkboxes
+      const approveCb = tr.querySelector('.approveItem');
+      const rejectCb = tr.querySelector('.rejectItem');
+      approveCb.addEventListener('change', () => { if (approveCb.checked) rejectCb.checked = false; });
+      rejectCb.addEventListener('change', () => { if (rejectCb.checked) approveCb.checked = false; });
+    });
+  }
+
+  // Laad order
+  function loadOrder() {
+    const orderId = orderIdInput.value.trim();
+    if (!orderId) {
+      alert(getStatusText('script_processing_retours_alert_invalid_id'));
+      return;
+    }
+
+    fetch(`get_order_retour.php?order_id=${orderId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          alert(data.message || getStatusText('script_processing_retours_alert_fetch_error'));
+          return;
+        }
+
+        const orderDetails = document.getElementById('orderDetails');
+        orderDetails.style.display = 'block';
+        const order = data.order;
+
+        // Ordergegevens
+        document.getElementById('orderNumber').textContent = order.order_id;
+        document.getElementById('orderDate').textContent = order.order_date;
+        document.getElementById('orderTotal').textContent = Number(order.total_price).toFixed(2);
+
+        // Orderstatus vertalen en data-i18n attribuut instellen
+        const orderStatusEl = document.getElementById('orderStatus');
+        const orderStatusObj = getOrderStatusText(order.order_status);
+        orderStatusEl.textContent = orderStatusObj.text;
+        orderStatusEl.setAttribute('data-i18n', orderStatusObj.key);
+
+        // Klantgegevens
+        document.getElementById('customerName').textContent = order.customer_name;
+        document.getElementById('customerEmail').textContent = order.customer_email;
+        document.getElementById('customerCompany').textContent = order.company_name || '-';
+        document.getElementById('customerVAT').textContent = order.vat_number || '-';
+
+        // Adressen vertalen en data-i18n attribuut instellen
+        const addressEl = document.getElementById('customerAddress');
+        let addressText = '';
+        if (order.address_shipping) {
+          addressText += `<span data-i18n="script_processing_retours_shipping_label">${getStatusText('script_processing_retours_shipping_label')}</span>: ${order.address_shipping.street} ${order.address_shipping.house_number}, ${order.address_shipping.postal_code} ${order.address_shipping.city}, ${order.address_shipping.country}`;
+        }
+        if (order.address_billing) {
+          if (addressText) addressText += '\n';
+          addressText += `<span data-i18n="script_processing_retours_billing_label">${getStatusText('script_processing_retours_billing_label')}</span>: ${order.address_billing.street} ${order.address_billing.house_number}, ${order.address_billing.postal_code} ${order.address_billing.city}, ${order.address_billing.country}`;
+        }
+        addressEl.innerHTML = addressText || '-';
+        addressEl.style.whiteSpace = 'pre-line';
+
+        populateOrderTable(order);
+      })
+      .catch(err => {
+        console.error(err);
+        alert(getStatusText('script_processing_retours_alert_load_error'));
+      });
+  }
+
+  loadOrderBtn.addEventListener('click', loadOrder);
+
+  // Retour verwerken
+  const returnBtn = document.getElementById('ReturnBtn');
+  returnBtn.addEventListener('click', () => {
+    const orderId = orderIdInput.value.trim();
+    if (!orderId) {
+      alert(getStatusText('script_processing_retours_alert_no_id'));
+      return;
+    }
+
+    const approvedItems = [];
+    const rejectedItems = [];
+
+    document.querySelectorAll('.approveItem').forEach(cb => { if (cb.checked) approvedItems.push(cb.dataset.itemId); });
+    document.querySelectorAll('.rejectItem').forEach(cb => { if (cb.checked) rejectedItems.push(cb.dataset.itemId); });
+
+    fetch('processing_retours.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order_id: orderId, approved_items: approvedItems, rejected_items: rejectedItems })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert(getStatusText('script_processing_retours_alert_success'));
+          loadOrder();
+        } else {
+          alert(getStatusText('script_processing_retours_alert_processing_error') + ': ' + (data.message || 'Onbekende fout'));
+        }
+      })
+      .catch(err => { console.error(err); alert(getStatusText('script_processing_retours_alert_general_error')); });
+  });
+
+  // Live vertaling bij taalwissel
+  document.addEventListener('translationsApplied', () => {
+    // Orderitems status
+    document.querySelectorAll('#orderItemsBody td[data-i18n]').forEach(cell => {
+      const key = cell.getAttribute('data-i18n');
+      if (key) cell.textContent = getStatusText(key);
+    });
+
+    // Orderstatus
+    const orderStatusEl = document.getElementById('orderStatus');
+    const keyStatus = orderStatusEl.getAttribute('data-i18n');
+    if (keyStatus) orderStatusEl.textContent = getStatusText(keyStatus);
+
+    // Adressen
+    const addressEl = document.getElementById('customerAddress');
+    addressEl.querySelectorAll('[data-i18n]').forEach(span => {
+      const key = span.getAttribute('data-i18n');
+      if (key) span.textContent = getStatusText(key);
+    });
+  });
+
+  // Enter-toets functionaliteit
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      const active = document.activeElement;
+      if (active === orderIdInput) {
+        event.preventDefault();
+        loadOrderBtn.click();
+      } else {
+        event.preventDefault();
+        returnBtn.click();
+      }
+    }
+  });
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -2375,13 +2578,13 @@ document.addEventListener('DOMContentLoaded', () => {
         'create_invoice.php','get_invoice.php','get_last_order_bedankt.php',
         'get_last_order.php','get_orders.php','get_returns.php','get_user_data.php',
         'get_vouchers.php','logout.php','redeem_voucher.php','retourneren.php',
-        'submit_returns.php','update_profile.php','delete_account.php'
+        'submit_returns.php','update_profile.php','delete_account.php','processing_retours.html','staff_pages.html'
     ];
 
     const guestPages = [
         'login_registreren.html','reset_password.html','reset_success.html',
         'wachtwoord vergeten.html','login.php','register.php','reset_password.php',
-        'wachtwoord vergeten.php'
+        'wachtwoord vergeten.php','processing_retours.html','staff_pages.html'
     ];
 
     const loginPage = 'login_registreren.html';
@@ -2396,6 +2599,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Staff mag overal heen
             if (loggedIn && toegang === 'staff') {
+                // --- Toon staff link ---
+                  const staffLink = document.querySelector('.staff-link');
+                  if (staffLink) {
+                      staffLink.style.display = 'block';
+                  }  
                 return; // geen redirect
             }
 

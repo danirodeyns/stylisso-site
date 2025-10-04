@@ -2777,6 +2777,87 @@ label[for="different_billing"] span {
   cursor: pointer;
 }
 
+.processing-retours-container {
+  line-height: 1.6;
+  width: 80vw;
+  max-width: 1300px;
+  margin: 2rem auto;
+  margin-bottom: 2rem;
+  text-align: justify;
+}
+
+.processing-retours-header h1{
+  text-align: left;
+  margin-bottom: 0.5rem;
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+}
+
+.processing-retours-order-id {
+  margin-top: 0rem;
+  margin-bottom: 0.25rem;
+}
+
+.processing-retours-order-id input {
+  width: 80px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  text-align: center;
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+}
+
+.processing-retours-order-id input::-webkit-inner-spin-button, 
+.processing-retours-order-id input::-webkit-outer-spin-button {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.processing-retours-order-id button {
+  display: inline-block;
+  padding: 6px 10px;
+  background-color: black;
+  color: white;
+  text-decoration: none;
+  margin-top: 0rem;
+  transition: background-color 0.2s;
+  border-radius: 6px;
+  border: 2px solid black;
+  cursor: pointer;
+}
+
+.processing-retours-order-id button:hover {
+  background-color: white;
+  color: black;
+  border-color: black;
+}
+
+.processing-retours-table {
+  text-align: center;
+}
+
+.processing-retours-confirm button {
+  display: inline-block;
+  padding: 6px 10px;
+  background-color: black;
+  color: white;
+  text-decoration: none;
+  margin-top: 0.5rem;
+  transition: background-color 0.2s;
+  border-radius: 6px;
+  border: 2px solid black;
+  cursor: pointer;
+}
+
+.processing-retours-confirm button:hover {
+  background-color: white;
+  color: black;
+  border-color: black;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
@@ -3709,6 +3790,30 @@ label[for="different_billing"] span {
 
   .search-sort-icon {
     color: white;
+  }
+
+  .processing-retours-order-id button {
+    background-color: white;
+    color: black;
+    border: 2px solid white;
+  }
+
+  .processing-retours-order-id button:hover {
+    background-color: black;
+    color: white;
+    border-color: white;
+  }
+
+  .processing-retours-confirm button {
+    background-color: white;
+    color: black;
+    border: 2px solid white;
+  }
+
+  .processing-retours-confirm button:hover {
+    background-color: black;
+    color: white;
+    border-color: white;
   }
 }
 

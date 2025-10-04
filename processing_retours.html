@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="processing_retours_title">Retourverwerking - Staff</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Light mode favicon -->
+  <link rel="icon" type="image/png" href="logo/logo klein.png" media="(prefers-color-scheme: light)">
+  <!-- Dark mode favicon -->
+  <link rel="icon" type="image/png" href="logo/logo klein (dark mode).png" media="(prefers-color-scheme: dark)">
+</head>
+<body>
+  
+  <div id="header-placeholder"></div>
+  
+  <section class="processing-retours-container">
+    <section class="processing-retours-header">
+        <h1 data-i18n="processing_retours_header">Retourverwerking</h1>
+    </section>
+
+    <!-- Order ID invoer -->
+    <section class="processing-retours-order-id">
+        <label for="orderIdInput" data-i18n="processing_retours_enter_order_id">Voer Order ID in:</label>
+        <input type="number" id="orderIdInput" placeholder="1234" placeholder-data-i18n="processing_retours_order_id_placeholder" />
+        <button id="loadOrderBtn" data-i18n="processing_retours_load_order">Laad order</button>
+    </section>
+
+    <!-- Order en klantgegevens -->
+    <section id="orderDetails" style="display:none;">
+        <hr>
+
+        <h2 data-i18n="processing_retours_order_details">Ordergegevens</h2>
+        <p><strong data-i18n="processing_retours_order_number">Ordernummer:</strong> <span id="orderNumber"></span></p>
+        <p><strong data-i18n="processing_retours_order_date">Orderdatum:</strong> <span id="orderDate"></span></p>
+        <p><strong data-i18n="processing_retours_order_status">Status bestelling:</strong> <span id="orderStatus"></span></p>
+        <p><strong data-i18n="processing_retours_order_total">Totaalprijs:</strong> €<span id="orderTotal"></span></p>
+        
+        <hr>
+
+        <h2 data-i18n="processing_retours_customer_details">Klantgegevens</h2>
+        <p><strong data-i18n="processing_retours_name">Naam:</strong> <span id="customerName"></span></p>
+        <p><strong data-i18n="processing_retours_email">E-mail:</strong> <span id="customerEmail"></span></p>
+        <p><strong data-i18n="processing_retours_company">Bedrijf:</strong> <span id="customerCompany"></span></p>
+        <p><strong data-i18n="processing_retours_vat_number">BTW-nummer:</strong> <span id="customerVAT"></span></p>
+        <p><strong data-i18n="processing_retours_address">Adres:</strong></p>
+        <p><span id="customerAddress"></span></p>
+        
+        <hr>
+
+        <h2 data-i18n="processing_retours_order_items">Orderitems</h2>
+        <table border="1" cellpadding="5" cellspacing="0" width="100%">
+        <thead class="processing-retours-table">
+            <tr>
+            <th data-i18n="processing_retours_product">Product</th>
+            <th data-i18n="processing_retours_quantity">Aantal</th>
+            <th data-i18n="processing_retours_price_per_item">Prijs per stuk</th>
+            <th data-i18n="processing_retours_total">Totaal</th>
+            <th data-i18n="processing_retours_status">Status</th>
+            <th data-i18n="processing_retours_approved">Goedgekeurd</th>
+            <th data-i18n="processing_retours_rejected">Afgekeurd</th>
+            </tr>
+        </thead>
+        <tbody class="processing-retours-table" id="orderItemsBody">
+            <!-- Wordt via JS gevuld -->
+        </tbody>
+        </table>
+
+        <div class="processing-retours-confirm">
+            <button id="ReturnBtn" data-i18n="processing_retours_process_return">Retour verwerken</button>
+        </div>
+    </section>
+  </section>
+
+    <div id="footer-placeholder"></div>
+
+    <!-- Onzichtbare data-i18n elementen voor JS vertalingen -->
+    <div style="display:none;">
+        <span data-i18n="script_processing_retours_status_requested">Aangevraagd</span>
+        <span data-i18n="script_processing_retours_status_approved">Goedgekeurd</span>
+        <span data-i18n="script_processing_retours_status_processed">Verwerkt</span>
+        <span data-i18n="script_processing_retours_status_rejected">Afgekeurd</span>
+        <span data-i18n="script_processing_retours_status_none">Retour niet aangevraagd</span>
+        <span data-i18n="script_processing_retours_shipping_label">Verzendadres</span>
+        <span data-i18n="script_processing_retours_billing_label">Factuuradres</span>
+        <span data-i18n="script_processing_retours_alert_invalid_id">Voer een geldig Order ID in.</span>
+        <span data-i18n="script_processing_retours_alert_fetch_error">Fout bij ophalen van de order.</span>
+        <span data-i18n="script_processing_retours_alert_load_error">Er is iets misgegaan bij het laden van de order.</span>
+        <span data-i18n="script_processing_retours_alert_no_id">Geen geldig order ID.</span>
+        <span data-i18n="script_processing_retours_alert_success">Retourverwerking succesvol!</span>
+        <span data-i18n="script_processing_retours_alert_processing_error">Fout bij verwerken retour</span>
+        <span data-i18n="script_processing_retours_alert_general_error">Er is iets misgegaan bij het verwerken van de retour.</span>
+    </div>
+
+  <script src="GA.js"></script>
+  <script src="marketing.js"></script>
+  <script src="translations.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

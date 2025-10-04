@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n="retourneren_page_title">Retourneren - Stylisso</title>
+  <title data-i18n="staff_pages_page_title">Werknemerspagina's - Stylisso</title>
   <link rel="stylesheet" href="style.css" />
   <!-- Light mode favicon -->
   <link rel="icon" type="image/png" href="logo/logo klein.png" media="(prefers-color-scheme: light)">
@@ -21,26 +21,23 @@
       <ul>
         <li><a href="mijn_stylisso.html" data-i18n="menu_my_stylisso">Mijn Stylisso</a></li>
         <li><a href="bestellingen.html" data-i18n="menu_orders">Bestellingen & Facturen</a></li>
-        <li><a href="retourneren.html" class="active" data-i18n="menu_returns">Retourneren</a></li>
+        <li><a href="retourneren.html" data-i18n="menu_returns">Retourneren</a></li>
         <li><a href="gegevens.html" data-i18n="menu_data">Gegevens & Voorkeuren</a></li>
         <li><a href="cadeaubonnen.html" data-i18n="menu_vouchers">Cadeaubonnen</a></li>
-        <li class="staff-link" style="display:none;"><a href="staff_pages.html" data-i18n="menu_staff_pages"></a></li>
+        <li class="staff-link"><a href="staff_pages.html" class="active" data-i18n="menu_staff_pages"></a></li>
         <li><a href="#" id="logoutButton" data-i18n="menu_logout">Uitloggen</a></li>
       </ul>
     </nav>
 
     <!-- Rechter content -->
-    <section class="account-content">
-      <h1 data-i18n="retourneren_header">Retourneren</h1>
-      <p data-i18n="retourneren_description">Gebruik dit formulier om een product terug te sturen.</p>
-      <input type="hidden" name="csrf_token" value="">
+    <section class="account-content">      
+      <h1 data-i18n="staff_pages_header">Werknemerspagina</h1>
+      <p data-i18n="staff_pages_subheader">Overzicht van je gegevens, bestelling en cadeaubonnen.</p>
 
-      <div id="return-message"></div>
-
-      <div id="return-cards">
-        <!-- Retour cards worden hier dynamisch toegevoegd via JS -->
-      </div>
-
+      <div class="summary-section">
+        <h2 data-i18n="staff_pages_pages">Beschikbare pagina's</h2>
+        <a href="processing_retours.html" class="btn" data-i18n="staff_pages_retours">Retours verwerken</a>
+      </div>      
     </section>
 
   </main>

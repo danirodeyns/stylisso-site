@@ -7,7 +7,7 @@ use Mpdf\Mpdf;
  * Genereer een PDF-factuur voor een bestelling
  *
  * @param int $order_id ID van de order
- * @param string $order_date Datum van de order
+ * @param string $order_date Datum van de order (timestamp of string)
  * @param mysqli $conn Databaseverbinding
  * @return string|false Bestandsnaam bij succes, false bij fout
  */
@@ -94,8 +94,9 @@ function create_invoice($order_id, $order_date, $conn) {
     $dir = __DIR__ . '/invoices';
     if (!is_dir($dir)) mkdir($dir, 0755, true);
 
-    // Bestandsnaam
-    $filename = $order_date . '-' . $order_id . '.pdf';
+    // Bestandsnaam in formaat YYYY-MM-DD-order_id.pdf
+    $orderDateFormatted = date('Y-m-d', strtotime($order_date));
+    $filename = $orderDateFormatted . '-' . $order_id . '.pdf';
     $filepath = $dir . '/' . $filename;
 
     try {
