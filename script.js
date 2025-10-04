@@ -1530,7 +1530,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     .then(res => res.json())
                     .then(resp => {
                       if (resp.success) {
-                        returnLink.setAttribute('data-i18n', 'script_return_request_succes');
+                        returnLink.setAttribute('data-i18n', 'script_return_request_success');
                         returnLink.style.pointerEvents = 'none';
                         returnLink.classList.add('return-requested');
                         applyTranslations(returnLink);
