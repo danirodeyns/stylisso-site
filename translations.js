@@ -61,6 +61,7 @@ const translations = {
     "header_nav_orders": "Bestellingen & Facturen",
     "header_nav_returns": "Retourneren",
     "header_nav_preferences": "Gegevens & Voorkeuren",
+    "header_nav_staff_pages": "Werknemerspagina's",
     "header_nav_logout": "Uitloggen",
     "search_placeholder": "Zoeken",
 
@@ -785,6 +786,7 @@ const translations = {
     "header_nav_orders": "Commandes & Factures",
     "header_nav_returns": "Retours",
     "header_nav_preferences": "Données & Préférences",
+    "header_nav_staff_pages": "Pages du personnel",
     "header_nav_logout": "Déconnexion",
     "search_placeholder": "Rechercher",
 
@@ -1509,6 +1511,7 @@ const translations = {
     "header_nav_orders": "Orders & Invoices",
     "header_nav_returns": "Returns",
     "header_nav_preferences": "Data & Preferences",
+    "header_nav_staff_pages": "Staff Pages",
     "header_nav_logout": "Logout",
     "search_placeholder": "Search",
 
