@@ -202,6 +202,76 @@ $translations = [
         'password_reset_sent' => 'An email with instructions to reset your password has been sent.',
         'password_reset_failed' => 'Something went wrong sending the email.',
         'hour' => 'hour'
+    ],
+    'be-de' => [
+        // afrekenen.php
+        'email_subject' => 'Ihr Stylisso-Geschenkgutschein',
+        'email_message' => "Vielen Dank für Ihren Einkauf!\n\nIhr Gutscheincode: {code}\nWert: €{price}\nGültig bis: {expires_at}\n\nViel Spaß beim Shoppen bei Stylisso!",
+    
+        // contact-mailing.php
+        'contact_form_success' => 'Danke! Ihre Nachricht wurde gesendet.',
+        'contact_form_error' => 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.',
+    
+        // create_invoice.php
+        'invoice_title' => 'Rechnung',
+        'order_number' => 'Bestellnummer',
+        'order_date' => 'Datum',
+        'customer' => 'Kunde',
+        'email' => 'E-Mail',
+        'address' => 'Adresse',
+        'quantity' => 'Anzahl',
+        'product' => 'Produkt',
+        'price_per_item' => 'Stückpreis',
+        'total' => 'Gesamt',
+        'gift_voucher' => 'Geschenkgutschein',
+        'total_to_pay' => 'Zu zahlender Gesamtbetrag',
+        'status' => 'Status',
+        'select_voucher_first' => 'Bitte zuerst einen Gutschein auswählen',
+        'voucher_applied' => 'Gutschein angewendet',
+        'voucher_redeem_error' => 'Beim Anwenden des Gutscheins ist ein Fehler aufgetreten',
+    
+        // create_credit_nota.php
+        'credit_note_title' => 'Gutschrift',
+        'credit_note_number' => 'Gutschriftsnummer',
+        'credit_note_date' => 'Datum der Gutschrift',
+        'credit_note_total' => 'Gesamterstattungsbetrag',
+        'credit_reason' => 'Grund der Gutschrift',
+        'credit_against_invoice' => 'Gutschrift zu Rechnung',
+        'total_to_refund' => 'Gesamtbetrag zur Rückerstattung',
+    
+        // delete_account.php
+        'account_delete_subject' => 'Bestätigung der Kontolöschung',
+        'account_delete_message' => "Sehr geehrte/r Kunde/in,\n\nIhr Konto und Ihre persönlichen Daten wurden aus unserem System gelöscht. Bestellungen und Rücksendedaten werden für den gesetzlich vorgeschriebenen Buchhaltungszeitraum aufbewahrt.\n\nMit freundlichen Grüßen,\nStylisso",
+    
+        // get_order_retour.php
+        'order_not_found' => 'Bestellung nicht gefunden',
+    
+        // processing_retours.php
+        'processing_retours_alert_not_logged_in' => 'Sie müssen eingeloggt sein, um Rücksendungen zu bearbeiten.',
+        'processing_retours_alert_no_access' => 'Sie haben keinen Zugriff, um Rücksendungen zu bearbeiten.',
+        'processing_retours_alert_success' => 'Rücksendungen erfolgreich bearbeitet.',
+    
+        // redeem_voucher.php
+        'voucher_login_required' => 'Sie müssen eingeloggt sein, um einen Gutschein einzulösen.',
+        'voucher_invalid_code' => 'Bitte geben Sie einen gültigen Gutscheincode ein.',
+        'voucher_not_found_or_expired' => 'Dieser Gutscheincode existiert nicht, wurde vollständig verwendet oder ist abgelaufen.',
+        'voucher_already_linked' => 'Dieser Geschenkgutschein ist bereits mit Ihrem Konto verknüpft.',
+        'voucher_link_success' => 'Geschenkgutschein erfolgreich mit Ihrem Konto verknüpft! Wert:',
+        'voucher_already_claimed' => 'Dieser Geschenkgutschein wurde bereits von einem anderen Nutzer eingelöst.',
+    
+        // reviews-mailing.php
+        'review_success' => 'Danke für Ihre Bewertung!',
+        'review_error'   => 'Beim Senden Ihrer Bewertung ist ein Fehler aufgetreten.',
+    
+        // wachtwoord vergeten.php
+        'invalid_email' => 'Ungültige E-Mail-Adresse.',
+        'db_prepare_failed' => 'Datenbankvorbereitung fehlgeschlagen',
+        'email_not_found' => 'Diese E-Mail-Adresse ist uns nicht bekannt.',
+        'password_reset_subject' => 'Passwort zurücksetzen - Stylisso',
+        'password_reset_message' => "Hallo,\n\nKlicken Sie auf den untenstehenden Link, um Ihr Passwort zurückzusetzen:\n{resetLink}\n\nDieser Link läuft in {expires} ab.",
+        'password_reset_sent' => 'Eine E-Mail mit Anweisungen zum Zurücksetzen Ihres Passworts wurde gesendet.',
+        'password_reset_failed' => 'Beim Senden der E-Mail ist ein Fehler aufgetreten.',
+        'hour' => 'Stunde'
     ]
 ];
 

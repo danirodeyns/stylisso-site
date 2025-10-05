@@ -28,4 +28,8 @@ composer.lock
 node_modules/
 package-lock.json
 
+# ⛔ Toekomstige wijzigingen (alle bestanden)
+future_changes/
+
+# ⛔ SQL Database
 stylisso_db.sql
