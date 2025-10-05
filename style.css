@@ -2899,6 +2899,93 @@ label[for="different_billing"] span {
   display: none;
 }
 
+.categorie-menu-button {
+  padding: 0;
+  background: none;
+  border: none;
+  outline: none;
+  text-decoration: none;
+  position: relative;
+  border-radius: 0.5rem;
+}
+
+.categorie-menu {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.categorie-menu-button:hover {
+  background-color: #f4f4f4;
+}
+
+.categorie-menu img {
+  width: 1.5rem;
+  height: 1.5rem;
+  pointer-events: none;
+}
+
+.menu-icon-light {
+  display: none;
+}
+
+.menu-icon-dark {
+  display: none;
+}
+
+.categorieën-menu-page-container {
+  width: 80vw;
+  max-width: 1300px;
+  margin: 2rem auto;
+  margin-bottom: 2rem;
+  text-align: justify;
+}
+
+.categorieën-menu-page-container h1 {
+  text-align: left;
+  margin-bottom: 1rem;
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+}
+
+.categorieën-menu-page-container h2 {
+  text-align: left;
+  font-size: clamp(1.25rem, 2vw + 0.8rem, 1.5rem);
+  margin-top: 0rem;
+  margin-bottom: 0.25rem;
+  text-decoration: none;
+  color: black;
+}
+
+.categorieën-menu-page-container a {
+  color: black;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.6;
+  padding: 0.25rem;
+  border: 1px solid #f9f9f9;
+  border-radius: 0.5rem;
+}
+
+.categorieën-menu-page-container a:hover {
+  border-color: black;
+}
+
+.categorieën-menu-page-container hr {
+  margin-bottom: 0.5rem;
+}
+
+.categorieën-menu-page-item {
+  background-color: #f9f9f9;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
@@ -3864,11 +3951,51 @@ label[for="different_billing"] span {
     color: white;
     border-color: white;
   }
+
+  .categorie-menu-button:hover {
+    background-color: #333;
+  }
+
+  .categorieën-menu-page-container h2 {
+    color: white;
+  }
+
+  .categorieën-menu-page-container a {
+    color: white;
+    border: 1px solid #1f1f1f;
+    border-radius: 0.5rem;
+  }
+
+  .categorieën-menu-page-container a:hover {
+    border-color: white;
+  }
+
+  .categorieën-menu-page-item {
+    background-color: #1f1f1f;
+  }
 }
 
 @media screen and (max-width: 1050px) {
   .header-center {
     display: none;
+  }
+
+  .menu-icon-light{
+    display: block;
+  }
+
+  .menu-icon-dark {
+    display: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+      .menu-icon-light{
+      display: none;
+    }
+
+    .menu-icon-dark {
+      display: block;
+    }
   }
 }
 

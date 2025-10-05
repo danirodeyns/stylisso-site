@@ -232,6 +232,10 @@ const translations = {
     "categorie_sort_price_desc": "Prijs: Hoog → Laag",
     "categorie_sort_new": "Nieuwste",
 
+    // categorieën_menu.html
+    "categorieën_menu_page": "Categorieën",
+    "categorieën_menu_page_title": "Categorieën",
+
     // contact.html
     "contact_title_page": "Contact",
     "contact_header": "Contacteer ons",
@@ -960,6 +964,10 @@ const translations = {
     "categorie_sort_price_asc": "Prix : Bas → Haut",
     "categorie_sort_price_desc": "Prix : Haut → Bas",
     "categorie_sort_new": "Nouveautés",
+
+    // categorieën_menu.html
+    "categorieën_menu_page": "Catégories",
+    "categorieën_menu_page_title": "Catégories",
 
     // contact.html
     "contact_title_page": "Contact",
@@ -1690,6 +1698,10 @@ const translations = {
     "categorie_sort_price_desc": "Price: High → Low",
     "categorie_sort_new": "Newest",
 
+    // categorieën_menu.html
+    "categorieën_menu_page": "Categories",
+    "categorieën_menu_page_title": "Categories",
+
     // contact.html
     "contact_title_page": "Contact",
     "contact_header": "Contact Us",
@@ -2318,6 +2330,10 @@ const translations = {
     "categorie_sort_price_asc": "Preis: Niedrig → Hoch",
     "categorie_sort_price_desc": "Preis: Hoch → Niedrig",
     "categorie_sort_new": "Neueste",
+
+    // categorieën_menu.html
+    "categorieën_menu_page": "Kategorien",
+    "categorieën_menu_page_title": "Kategorien",
 
     // contact.html
     "contact_title_page": "Kontakt",
