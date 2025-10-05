@@ -3955,13 +3955,8 @@ label[for="different_billing"] span {
   .over-ons-container,
   .verzending-en-levering-container,
   .voucher-container {
-    padding: 1rem;
     margin: 1rem auto;
     max-width: 90vw;
-  }
-
-  .wishlist-section {
-    padding: 1rem;
   }
 
   .max-width {
@@ -4027,13 +4022,8 @@ label[for="different_billing"] span {
   .over-ons-container,
   .verzending-en-levering-container,
   .voucher-container {
-    padding: 0.5rem;
     margin: 0.5rem auto;
     max-width: 90vw;
-  }
-
-  .wishlist-section {
-    padding: 0.5rem;
   }
 
   .account-container {
@@ -4054,6 +4044,19 @@ label[for="different_billing"] span {
   .cart-item img {
     width: 100px;
     height: auto;
+  }
+
+  .remove-item {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 0.5rem;
+    cursor: pointer;
+  }
+
+  .remove-icon {
+    max-width: 2rem;
+    max-height: 2rem;
   }
 
   .order-product-img {
@@ -4116,5 +4119,11 @@ label[for="different_billing"] span {
   .wishlist-info h3,
   .wishlist-info p {
     font-size: 0.95rem;
+  }
+
+  .add-to-cart img {
+    margin: 0.25rem;
+    max-width: 1.5rem;
+    max-height: 1.5rem;
   }
 }
