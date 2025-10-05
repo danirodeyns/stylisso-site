@@ -1866,11 +1866,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       li.innerHTML = `
-        <span class="left"><strong data-i18n="script_voucher_code">Code:</strong> ${voucher.code}</span>
+        <span class="left min-width"><strong data-i18n="script_voucher_code">Code:</strong> ${voucher.code}</span>
+        <span class="left max-width">${voucher.code}</span>
         <span class="separator">|</span>
-        <span class="center"><strong data-i18n="script_voucher_remaining_value">Resterende waarde:</strong> €${remainingValue}</span>
+        <span class="center min-width"><strong data-i18n="script_voucher_remaining_value">Resterende waarde:</strong> €${remainingValue}</span>
+        <span class="center max-width">€${remainingValue}</span>
         <span class="separator">|</span>
-        <span class="right"><strong data-i18n="script_voucher_expiry">Vervalt op:</strong> ${expireDate}</span>
+        <span class="right min-width"><strong data-i18n="script_voucher_expiry">Vervalt op:</strong> ${expireDate}</span>
+        <span class="right max-width">${expireDate}</span>
       `;
       ul.appendChild(li);
     });
@@ -2111,11 +2114,14 @@ document.addEventListener('DOMContentLoaded', () => {
             : 'Onbepaald';
           const li = document.createElement('li');
           li.innerHTML = `
-            <span class="left"><strong data-i18n="script_voucher_code">Code:</strong> ${v.code}</span>
+            <span class="left min-width"><strong data-i18n="script_voucher_code">Code:</strong> ${v.code}</span>
+            <span class="left max-width">${v.code}</span>
             <span class="separator" aria-hidden="true">|</span>
-            <span class="center"><strong data-i18n="script_voucher_remaining_value">Resterende waarde:</strong> €${Number(v.remaining_value ?? 0).toFixed(2)}</span>
+            <span class="center min-width"><strong data-i18n="script_voucher_remaining_value">Resterende waarde:</strong> €${Number(v.remaining_value ?? 0).toFixed(2)}</span>
+            <span class="center max-width">€${Number(v.remaining_value ?? 0).toFixed(2)}</span>
             <span class="separator" aria-hidden="true">|</span>
-            <span class="right"><strong data-i18n="script_voucher_expiry">Vervalt op:</strong> ${expireDate}</span>
+            <span class="right min-width"><strong data-i18n="script_voucher_expiry">Vervalt op:</strong> ${expireDate}</span>
+            <span class="right max-width">${expireDate}</span>
           `;
           ul.appendChild(li);
         });
