@@ -15,7 +15,7 @@ $user_id = $_SESSION['user_id'];
 // ================================
 $stmt = $conn->prepare("
     SELECT a.id AS address_id, a.street, a.house_number, a.postal_code, a.city, a.country, 
-           u.name, u.email, u.company_name, u.vat_number
+        u.name, u.email, u.company_name, u.vat_number
     FROM addresses a
     INNER JOIN users u ON u.id = a.user_id
     WHERE a.user_id = ? AND a.type = 'shipping'
@@ -48,7 +48,7 @@ if (!$user) {
 // ================================
 $stmt = $conn->prepare("
     SELECT c.product_id, c.type, COALESCE(p.price, c.price) AS price, c.quantity, 
-           COALESCE(p.name, 'Cadeaubon') AS name, c.maat
+        COALESCE(p.name, 'Cadeaubon') AS name, c.maat
     FROM cart c
     LEFT JOIN products p ON c.product_id = p.id
     WHERE c.user_id = ?
@@ -106,7 +106,10 @@ foreach ($items as $i) {
 // ================================
 // 6. Dynamische verzendkosten
 // ================================
-$shipping = $allVouchers ? 0.00 : 5.00;
+$shipping = 5.00;
+if ($total >= 50 || $allVouchers) {
+    $shipping = 0.00;
+}
 
 // ================================
 // 7. Sessiedata klaarmaken voor afrekenen
