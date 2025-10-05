@@ -584,18 +584,40 @@ document.addEventListener('DOMContentLoaded', function () {
           })
           .then(response => response.text())
           .then(data => {
+              console.log("Server response:", data);
+
+              const paymentErrorEl = document.getElementById('payment-error');
+              if (paymentErrorEl) paymentErrorEl.textContent = ''; // wis vorige melding
+
               if (data.trim() === "success") {
-                  // Redirect naar bedankt.html bij succes
+                  // ✅ Succes: redirect
                   window.location.href = 'bedankt.html';
-              } else {
-                  console.error('Server response:', data);
-                  const msgBox = document.createElement("div");
-                  msgBox.setAttribute("data-i18n", "script_checkout_error");
-                  document.body.appendChild(msgBox);
-                  applyTranslations(msgBox);
-                  alert(msgBox.textContent);
-                  msgBox.remove();
+                  return;
               }
+
+              // 🚫 Alleen deze fout tonen
+              if (data.includes("Ongeldige betaalmethode")) {
+                if (paymentErrorEl) {
+                    // Zet data-i18n attribuut zodat applyTranslations het kan oppakken
+                    paymentErrorEl.setAttribute('data-i18n', 'script_ongeldige_betaalmethode');
+
+                    // Optioneel: fallback tekst direct instellen
+                    paymentErrorEl.textContent = translations['be-nl']['script_ongeldige_betaalmethode'] || 'Ongeldige betaalmethode.';
+
+                    paymentErrorEl.style.color = "red";
+                    paymentErrorEl.style.fontSize = "0.9rem";
+                    paymentErrorEl.style.marginTop = "4px";
+
+                    // Vertaling toepassen (zorgt ervoor dat taalwijziging ook werkt)
+                    if (typeof applyTranslations === 'function') {
+                        applyTranslations();
+                    }
+                }
+                return;
+              }
+
+              // Alle andere responses worden enkel gelogd
+              console.error('Server response (genegeerd):', data);
           })
           .catch(err => {
               console.error('Fout bij afrekenen:', err);

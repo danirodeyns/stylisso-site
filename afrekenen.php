@@ -38,6 +38,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $billing_country      = trim($_POST['billing_country'] ?? '');
 
     // ================================
+    // 1B. Validatie van betaalmethode
+    // ================================
+    $allowed_methods = ['credit card', 'bancontact', 'paypal', 'apple pay', 'google pay'];
+    if (!in_array($payment_method, $allowed_methods, true) && $payment_method !== '') {
+        echo "Ongeldige betaalmethode.";
+        exit;
+    }
+
+    // ================================
     // 2. Functie om land te normaliseren
     // ================================
     function normalizeCountry($str) {

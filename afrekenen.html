@@ -63,9 +63,13 @@
       <label for="payment_method" data-i18n="afrekenen_label_payment">Betaalmethode</label>
       <select id="payment_method" name="payment_method" required>
         <option value="" data-i18n="afrekenen_payment_choose">Kies een optie</option>
-        <option value="ideal" data-i18n="afrekenen_payment_ideal">iDEAL</option>
-        <option value="creditcard" data-i18n="afrekenen_payment_creditcard">Creditcard</option>
+        <option value="credit card" data-i18n="afrekenen_payment_creditcard">Creditcard</option>
+        <option value="bancontact" data-i18n="afrekenen_payment_bancontact">Bancontact</option>
+        <option value="paypal" data-i18n="afrekenen_payment_paypal">PayPal</option>
+        <option value="apple pay" data-i18n="afrekenen_payment_apple_pay">Apple Pay</option>
+        <option value="google pay" data-i18n="afrekenen_payment_google_pay">Google Pay</option>
       </select>
+      <div id="payment-error"></div>
 
       <button type="submit" class="checkout-button" data-i18n="afrekenen_button_pay">Betalen</button>
     </form>
