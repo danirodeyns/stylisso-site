@@ -180,11 +180,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (cartSummary) cartSummary.style.display = "block";
 
-    cart.forEach((item, index) => {
+    cart.forEach((item) => {
       const itemDiv = document.createElement('div');
       itemDiv.classList.add('cart-item');
 
-      const idAttr = item.id ? `data-id="${item.id}"` : (item.index !== undefined ? `data-index="${item.index}"` : '');
+      const idAttr = item.id
+        ? `data-id="${item.id}"`
+        : (item.index !== undefined ? `data-index="${item.index}"` : '');
 
       // ✅ Voucher image logica zoals in de dropdown
       let imageHtml = '';
@@ -199,6 +201,14 @@ document.addEventListener('DOMContentLoaded', function () {
         imageHtml = `<img src="${item.image}" alt="${item.name}" class="item-image"/>`;
       }
 
+      // ✅ Toon of verberg aantal afhankelijk van type
+      const quantityHtml = item.type === 'voucher' ? '' : `
+        <label>
+          <span data-i18n="script_cart_amount">Aantal:</span>
+          <input type="number" value="${item.quantity}" min="1" ${idAttr} data-type="${item.type}" class="quantity-input">
+        </label>
+      `;
+
       itemDiv.innerHTML = `
         ${imageHtml}
         <div class="item-info">
@@ -206,10 +216,7 @@ document.addEventListener('DOMContentLoaded', function () {
           <p>${item.variant || ''}</p>
           ${item.maat ? `<p><span data-i18n="script_cart_size">Maat:</span> ${item.maat}</p>` : ''}
           <p><span data-i18n="script_cart_price">Prijs:</span> €${parseFloat(item.price).toFixed(2)}</p>
-          <label>
-            <span data-i18n="script_cart_amount">Aantal:</span>
-            <input type="number" value="${item.quantity}" min="1" ${idAttr} data-type="${item.type}" class="quantity-input">
-          </label>
+          ${quantityHtml}
           <button class="remove-item" ${idAttr} data-type="${item.type}">
             <img src="trash bin/trash bin.png" class="remove-icon remove-icon-light" alt="Verwijderen">
             <img src="trash bin/trash bin (dark mode).png" class="remove-icon remove-icon-dark" alt="Verwijderen">
@@ -221,9 +228,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // ✅ Vertalingen toepassen op alleen dit nieuwe item
       applyTranslations(itemDiv);
+
+      // ✅ Klikbaar maken — alleen als product_id bestaat
+      if (item.product_id) {
+        const productId = String(item.product_id).trim();
+        itemDiv.addEventListener('click', (e) => {
+          // voorkom klikken op knoppen of invoervelden
+          if (e.target.closest('input, button, .quantity-input, .remove-item')) return;
+
+          const target = new URL('productpagina.html', window.location.href);
+          target.searchParams.set('id', productId);
+
+          window.location.href = target.toString();
+        });
+        itemDiv.style.cursor = 'pointer';
+      }
     });
 
-    // ✅ Eventlisteners toevoegen voor alle quantity inputs
+    // ✅ Eventlisteners toevoegen voor alle quantity inputs (alleen niet-vouchers)
     cartItemsContainer.querySelectorAll('.quantity-input').forEach(input => {
       input.addEventListener('change', e => {
         const newQty = parseInt(e.target.value);
