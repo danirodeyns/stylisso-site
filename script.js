@@ -2466,11 +2466,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         card.innerHTML = `
           <div class="wishlist-btn" data-id="${p.id}">
             <img src="${inWishlist ? 'wishlist/added.png' : 'wishlist/wishlist.png'}" 
-                 alt="Wishlist knop" 
-                 class="wishlist-icon-light">
+                alt="Wishlist knop" 
+                class="wishlist-icon-light">
             <img src="${inWishlist ? 'wishlist/added (dark mode).png' : 'wishlist/wishlist (dark mode).png'}" 
-                 alt="Wishlist knop dark" 
-                 class="wishlist-icon-dark">
+                alt="Wishlist knop dark" 
+                class="wishlist-icon-dark">
           </div>
           <a href="productpagina.html?id=${p.id}">
             <img src="${p.image}" alt="${p.name}" class="product-thumb">
