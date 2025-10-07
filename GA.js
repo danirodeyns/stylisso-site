@@ -1,5 +1,5 @@
 (function() {
-  // Functie om cookie consent te controleren
+  // --- Functie om cookie consent te controleren ---
   function hasConsent() {
     const cookie = document.cookie.split('; ').find(row => row.startsWith('cookieConsent='));
     if (!cookie) return false;
@@ -12,7 +12,7 @@
     }
   }
 
-  // GA alleen laden als toestemming aanwezig is
+  // --- GA alleen laden als toestemming aanwezig is ---
   if (hasConsent()) {
     // Voeg GA-script dynamisch toe
     const gaScript = document.createElement('script');
@@ -26,5 +26,12 @@
     window.gtag = gtag; // zodat andere scripts gtag() kunnen gebruiken
     gtag('js', new Date());
     gtag('config', 'G-33YQ0QLLQS');
+
+    // --- Helperfunctie om events veilig te sturen ---
+    window.trackEvent = function(name, params) {
+      if (window.gtag) {
+        gtag('event', name, params);
+      }
+    };
   }
 })();

@@ -156,6 +156,10 @@ header {
   border-radius: 1rem; /* afgeronde hoeken */
 }
 
+.product-card-index a {
+  text-decoration: none;
+}
+
 footer {
   text-align: center;
   padding: 1rem;
@@ -3021,6 +3025,7 @@ label[for="different_billing"] span {
   .hero, .product-card-index {
     background-color: #222;
     color: white;
+    border-color: #444;
   }
 
   .cta-button {

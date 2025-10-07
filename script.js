@@ -574,6 +574,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
+  loadNewProducts();
+  loadPopularProducts();
+
   // ================================
   // CHECKOUT FORM: update profiel + afrekenen
   // ================================
@@ -3026,6 +3029,93 @@ document.getElementById("reviewForm").addEventListener("submit", async function(
     console.error("Error:", err);
   }
 });
+
+// ---------------- Nieuwste producten laden ----------------
+async function loadNewProducts() {
+  const container = document.getElementById('new-products');
+  if (!container) return;
+
+  try {
+    const res = await fetch('get_new_products.php');
+    const data = await res.json();
+
+    if (!data.success || !data.products.length) {
+      container.innerHTML = '<p>Geen nieuwe producten gevonden.</p>';
+      return;
+    }
+
+    container.innerHTML = data.products
+      .map(
+        (p) => `
+        <div class="product-card-index">
+          <a href="productpagina.html?id=${p.id}">
+            <img src="${p.image}" alt="${p.name}">
+            <h3>${p.name}</h3>
+            <p>€${p.price}</p>
+          </a>
+        </div>
+      `
+      )
+      .join('');
+  } catch (err) {
+    console.error('Fout bij laden van nieuwe producten:', err);
+    container.innerHTML = '<p>Er ging iets mis bij het laden van de producten.</p>';
+  }
+}
+
+// ---------------- Populaire producten laden ----------------
+async function loadPopularProducts() {
+  const container = document.getElementById('popular-products');
+  if (!container) return;
+
+  try {
+    const res = await fetch('api_handler.php?action=popular');
+    const data = await res.json();
+
+    if (!data.success || !data.products.length) {
+      container.innerHTML = '<p>Geen populaire producten gevonden.</p>';
+      return;
+    }
+
+    container.innerHTML = data.products
+      .map(p => `
+        <div class="product-card-index" data-product-id="${p.id}">
+          <a href="productpagina.html?id=${p.id}">
+            <img src="${p.image}" alt="${p.name}">
+            <h3>${p.name}</h3>
+            <p>€${p.price}</p>
+          </a>
+        </div>
+      `)
+      .join('');
+
+    // GA4 tracking
+    addGA4Tracking(container);
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = '<p>Fout bij laden van populaire producten.</p>';
+  }
+}
+
+// ---------------- GA4 tracking toevoegen ----------------
+function addGA4Tracking(container) {
+  container.querySelectorAll('.product-card-index').forEach(card => {
+    const productId = card.dataset.productId;
+    const productName = card.querySelector('h3')?.textContent || '';
+    const productPrice = parseFloat(card.querySelector('p')?.textContent.replace('€','')) || 0;
+
+    // Event bij klikken
+    card.addEventListener('click', () => {
+      if (window.gtag) {
+        gtag('event', 'popular_products', {
+            product_id: productId,
+            item_name: productName,
+            price: productPrice
+        });
+      }
+    });
+  });
+}
 
 function applyTranslations() {
   // 1. Cookie uitlezen
