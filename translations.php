@@ -127,6 +127,10 @@ $translations = [
         'voucher_link_success' => 'Bon cadeau associé avec succès à votre compte ! Valeur :',
         'voucher_already_claimed' => 'Ce bon cadeau a déjà été utilisé par un autre utilisateur.',
 
+        // reviews-mailing.php
+        'review_success' => 'Merci pour votre avis !',
+        'review_error'   => 'Une erreur s’est produite lors de l’envoi de votre avis.',
+
         // wachtwoord vergeten.php
         'invalid_email' => "Adresse e-mail invalide.",
         'db_prepare_failed' => 'Préparation de la base de données échouée',
@@ -192,6 +196,10 @@ $translations = [
         'voucher_already_linked' => 'This gift voucher is already linked to your account.',
         'voucher_link_success' => 'Gift voucher successfully linked to your account! Value:',
         'voucher_already_claimed' => 'This voucher has already been claimed by another user.',
+
+        // reviews-mailing.php
+        'review_success' => 'Thank you for your review!',
+        'review_error'   => 'There was an error submitting your review.',
 
         // wachtwoord vergeten.php
         'invalid_email' => 'Invalid email address.',
