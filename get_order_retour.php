@@ -29,10 +29,13 @@ if ($orderId <= 0) {
     exit;
 }
 
+// --- Taal instellen ---
+$lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
+
 // --- Ophalen order + gebruiker ---
 $stmtOrder = $conn->prepare("
     SELECT o.id AS order_id, o.user_id, o.total_price, o.status AS order_status, o.created_at AS order_date,
-           u.name AS customer_name, u.email AS customer_email, u.company_name, u.vat_number
+        u.name AS customer_name, u.email AS customer_email, u.company_name, u.vat_number
     FROM orders o
     JOIN users u ON o.user_id = u.id
     WHERE o.id = ?
@@ -43,16 +46,18 @@ $stmtOrder->execute();
 $order = $stmtOrder->get_result()->fetch_assoc();
 
 if (!$order) {
-    echo json_encode([
-        'success' => false,
-        'message' => t('order_not_found')
-    ]);
+    echo json_encode(['success' => false, 'message' => t('order_not_found')]);
     exit;
 }
 
 // --- Ophalen addresses ---
 function get_address($conn, $user_id, $type) {
-    $stmt = $conn->prepare("SELECT street, house_number, postal_code, city, country FROM addresses WHERE user_id = ? AND type = ? LIMIT 1");
+    $stmt = $conn->prepare("
+        SELECT street, house_number, postal_code, city, country
+        FROM addresses
+        WHERE user_id = ? AND type = ?
+        LIMIT 1
+    ");
     $stmt->bind_param("is", $user_id, $type);
     $stmt->execute();
     return $stmt->get_result()->fetch_assoc();
@@ -61,20 +66,33 @@ function get_address($conn, $user_id, $type) {
 $shippingAddress = get_address($conn, $order['user_id'], 'shipping');
 $billingAddress  = get_address($conn, $order['user_id'], 'billing');
 
-// --- Ophalen orderitems ---
-$stmtItems = $conn->prepare("
-    SELECT oi.id AS order_item_id, oi.quantity, oi.price, oi.type, p.name AS product_name
+// --- Ophalen orderitems met vertaling ---
+$sqlItems = "
+    SELECT 
+        oi.id AS order_item_id, 
+        oi.quantity, 
+        oi.price, 
+        oi.type,
+        COALESCE(pt.name, p.name) AS product_name,
+        p.image AS product_image
     FROM order_items oi
     LEFT JOIN products p ON oi.product_id = p.id
+    LEFT JOIN product_translations pt ON pt.product_id = p.id AND pt.lang = ?
     WHERE oi.order_id = ?
-");
-$stmtItems->bind_param("i", $orderId);
+";
+$stmtItems = $conn->prepare($sqlItems);
+$stmtItems->bind_param("si", $lang, $orderId);
 $stmtItems->execute();
 $items = $stmtItems->get_result()->fetch_all(MYSQLI_ASSOC);
 
 // --- Ophalen retouritems van deze order ---
 $stmtReturn = $conn->prepare("
-    SELECT r.id AS return_id, r.order_item_id, r.quantity, r.status AS return_status, r.comment
+    SELECT 
+        r.id AS return_id, 
+        r.order_item_id, 
+        r.quantity, 
+        r.status AS return_status, 
+        r.comment
     FROM returns r
     JOIN order_items oi ON r.order_item_id = oi.id
     WHERE oi.order_id = ?

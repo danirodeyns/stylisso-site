@@ -10,10 +10,17 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$userId = $_SESSION['user_id'];
+$userId = $_SESSION['user_id']; 
+$lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
 
+// -------------------------
 // Laatste order ophalen
+// -------------------------
 $stmt = $conn->prepare("SELECT id, total_price, status, created_at FROM orders WHERE user_id=? ORDER BY created_at DESC LIMIT 1");
+if (!$stmt) {
+    echo json_encode(['error' => 'Database error: ' . $conn->error]);
+    exit;
+}
 $stmt->bind_param("i", $userId);
 $stmt->execute();
 $orderResult = $stmt->get_result();
@@ -27,45 +34,71 @@ if (!$order) {
 $orderId = $order['id'];
 $items = [];
 
-// Gewone producten ophalen
-$stmtProd = $conn->prepare("
-    SELECT p.name, oi.quantity
+// -------------------------
+// Gewone producten ophalen (met vertaling)
+// -------------------------
+$sqlProd = "
+    SELECT oi.id AS order_item_id, oi.quantity,
+        COALESCE(pt.name, p.name) AS product_name,
+        p.image AS product_image,
+        oi.maat AS size, oi.type
     FROM order_items oi
     JOIN products p ON oi.product_id = p.id
+    LEFT JOIN product_translations pt 
+        ON pt.product_id = p.id AND pt.lang = ?
     WHERE oi.order_id=? AND oi.product_id IS NOT NULL
-");
-$stmtProd->bind_param("i", $orderId);
+";
+
+$stmtProd = $conn->prepare($sqlProd);
+if (!$stmtProd) {
+    echo json_encode(['error' => 'Database error: ' . $conn->error]);
+    exit;
+}
+$stmtProd->bind_param("si", $lang, $orderId);
 $stmtProd->execute();
 $resProd = $stmtProd->get_result();
+
 while ($row = $resProd->fetch_assoc()) {
     $items[] = [
-        'name' => $row['name'],
+        'order_item_id' => $row['order_item_id'],
+        'product_name' => $row['product_name'],
+        'product_image' => $row['product_image'],
         'quantity' => $row['quantity'],
+        'size' => $row['size'],
         'type' => 'product'
     ];
 }
 
-// Controleren of er vouchers zijn
-$stmtVoucher = $conn->prepare("
-    SELECT COUNT(*) AS voucher_count
-    FROM order_items
-    WHERE order_id=? AND type='voucher'
-");
+// -------------------------
+// Controleren op vouchers
+// -------------------------
+$sqlVoucher = "SELECT id FROM order_items WHERE order_id=? AND type='voucher'";
+$stmtVoucher = $conn->prepare($sqlVoucher);
+if (!$stmtVoucher) {
+    echo json_encode(['error' => 'Database error: ' . $conn->error]);
+    exit;
+}
 $stmtVoucher->bind_param("i", $orderId);
 $stmtVoucher->execute();
 $resVoucher = $stmtVoucher->get_result();
-$rowVoucher = $resVoucher->fetch_assoc();
 
-if ($rowVoucher['voucher_count'] > 0) {
-    // Voeg één item toe voor alle vouchers
+while ($rowVoucher = $resVoucher->fetch_assoc()) {
     $items[] = [
-        'name' => "Cadeaubon(nen)",
+        'order_item_id' => $rowVoucher['id'],
+        'product_name' => 'Cadeaubon(nen)',
         'quantity' => 1,
         'type' => 'voucher'
     ];
 }
 
+// -------------------------
+// Resultaat teruggeven
+// -------------------------
 $order['products'] = $items;
-
 echo json_encode($order);
+
+$stmt->close();
+$stmtProd->close();
+$stmtVoucher->close();
+$conn->close();
 ?>

@@ -10,6 +10,9 @@ ini_set('error_log', __DIR__ . '/php-error.log');
 
 header('Content-Type: application/json');
 
+// --- taal bepalen ---
+$lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
+
 $user_id = $_SESSION['user_id'] ?? null;
 
 // --- POST-handling ---
@@ -38,8 +41,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($user_id && $cart_id) {
             $stmt = $conn->prepare("DELETE FROM cart WHERE id = ? AND user_id = ?");
-            $stmt->bind_param("ii", $cart_id, $user_id);
-            $stmt->execute();
+            if ($stmt) {
+                $stmt->bind_param("ii", $cart_id, $user_id);
+                $stmt->execute();
+            }
         } else {
             if ($type === 'voucher' && isset($_SESSION['cart_vouchers'][$cart_index])) {
                 array_splice($_SESSION['cart_vouchers'], $cart_index, 1);
@@ -65,8 +70,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
             $stmt = $conn->prepare("UPDATE cart SET quantity = ? WHERE id = ? AND user_id = ?");
-            $stmt->bind_param("iii", $quantity, $cart_id, $user_id);
-            $stmt->execute();
+            if ($stmt) {
+                $stmt->bind_param("iii", $quantity, $cart_id, $user_id);
+                $stmt->execute();
+            }
         } elseif (!$user_id && $index !== null) {
             if ($itemType === 'voucher' && !empty($_SESSION['cart_vouchers']) && isset($_SESSION['cart_vouchers'][$index])) {
                 $_SESSION['cart_vouchers'][$index]['quantity'] = $quantity;
@@ -84,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $type = $data['type'] ?? 'product';
     $quantity = isset($data['quantity']) ? (int)$data['quantity'] : 1;
     $price = isset($data['price']) ? floatval($data['price']) : null;
-    $maat = $data['maat'] ?? null; // ✅ maat toevoegen
+    $maat = $data['maat'] ?? null;
 
     if (($type === 'product' && !$product_id) || $quantity < 1) {
         echo json_encode(['success' => false, 'message' => 'Ongeldige data.']);
@@ -92,16 +99,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($user_id) {
-        // UPDATE met maat
         $stmt = $conn->prepare("UPDATE cart SET quantity = quantity + ? WHERE user_id = ? AND product_id <=> ? AND type = ? AND (maat <=> ?)");
-        $stmt->bind_param("iisss", $quantity, $user_id, $product_id, $type, $maat);
-        $stmt->execute();
-
-        if ($stmt->affected_rows === 0) {
-            // INSERT met maat
-            $stmt = $conn->prepare("INSERT INTO cart (user_id, product_id, type, quantity, price, maat) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("iisids", $user_id, $product_id, $type, $quantity, $price, $maat);
+        if ($stmt) {
+            $stmt->bind_param("iisss", $quantity, $user_id, $product_id, $type, $maat);
             $stmt->execute();
+
+            if ($stmt->affected_rows === 0) {
+                $stmt = $conn->prepare("INSERT INTO cart (user_id, product_id, type, quantity, price, maat) VALUES (?, ?, ?, ?, ?, ?)");
+                if ($stmt) {
+                    $stmt->bind_param("iisids", $user_id, $product_id, $type, $quantity, $price, $maat);
+                    $stmt->execute();
+                }
+            }
         }
     } else {
         if ($type === 'voucher') {
@@ -113,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'product_id' => $product_id,
                 'quantity' => $quantity,
                 'price' => $price,
-                'maat' => $maat // ✅ maat toevoegen aan sessie-cart
+                'maat' => $maat
             ];
         }
     }
@@ -133,10 +142,10 @@ if ($user_id) {
             c.type, 
             c.quantity, 
             c.price, 
-            c.maat, -- ✅ maat toevoegen
+            c.maat,
             CASE 
                 WHEN c.type = 'voucher' THEN 'Cadeaubon' 
-                ELSE p.name 
+                ELSE COALESCE(pt.name, p.name)
             END AS name,
             CASE 
                 WHEN c.type = 'voucher' THEN 'cadeaubon/voucher.png'
@@ -149,12 +158,15 @@ if ($user_id) {
             END AS dark_image
         FROM cart c
         LEFT JOIN products p ON c.product_id = p.id
+        LEFT JOIN product_translations pt ON pt.product_id = p.id AND pt.lang = ?
         WHERE c.user_id = ?
     ");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    while ($row = $result->fetch_assoc()) $cart[] = $row;
+    if ($stmt) {
+        $stmt->bind_param("si", $lang, $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) $cart[] = $row;
+    }
 } else {
     if (!empty($_SESSION['cart_products'])) {
         foreach ($_SESSION['cart_products'] as $i => $p) {
@@ -164,7 +176,7 @@ if ($user_id) {
                 'type' => 'product',
                 'quantity' => $p['quantity'],
                 'price' => $p['price'],
-                'maat' => $p['maat'] ?? null, // ✅ maat toevoegen
+                'maat' => $p['maat'] ?? null,
                 'name' => 'Product #' . $p['product_id'],
                 'image' => 'placeholder.png',
                 'dark_image' => null,
@@ -190,5 +202,4 @@ if ($user_id) {
 }
 
 echo json_encode(['success' => true, 'cart' => $cart]);
-error_log('POST remove_item ontvangen: ' . file_get_contents('php://input'));
 ?>

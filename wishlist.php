@@ -1,8 +1,7 @@
 <?php
 session_start();
 header('Content-Type: application/json');
-
-include 'db_connect.php'; // jouw bestaande mysqli connectie
+include 'db_connect.php';
 include 'translations.php';
 
 if (!isset($_SESSION['user_id'])) {
@@ -10,19 +9,29 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$userId = $_SESSION['user_id'];
+$userId = (int)$_SESSION['user_id'];
+$lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl'; // standaardtaal
 
-// Bereid query voor en haal wishlist items op
-$sql = "SELECT p.id, p.name, p.price, p.image
-        FROM wishlist w
-        JOIN products p ON w.product_id = p.id
-        WHERE w.user_id = ?";
+// Query met vertalingen
+$sql = "
+    SELECT 
+        p.id,
+        COALESCE(pt.name, p.name) AS name,
+        COALESCE(pt.description, p.description) AS description,
+        p.price,
+        p.image
+    FROM wishlist w
+    JOIN products p ON w.product_id = p.id
+    LEFT JOIN product_translations pt 
+        ON pt.product_id = p.id AND pt.lang = ?
+    WHERE w.user_id = ?
+";
 
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $userId);
+$stmt->bind_param("si", $lang, $userId);
 
 if (!$stmt->execute()) {
-    echo json_encode(['error' => 'Database fout']);
+    echo json_encode(['error' => 'Database fout: ' . $conn->error]);
     exit;
 }
 

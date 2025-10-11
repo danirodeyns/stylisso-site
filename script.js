@@ -129,6 +129,7 @@ document.addEventListener('DOMContentLoaded', function () {
         applyLanguage(newLang);
         langSelect.classList.remove('open');
         applyTranslations(); // vertalingen toepassen
+        document.dispatchEvent(new CustomEvent("languageChanged", { detail: { lang: newLang}}));
       });
     });
 
@@ -139,8 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // --- fetchCart functie (gecombineerd) ---
   function fetchCart(cartDropdown) {
-    fetch('cart.php?action=get_cart')
-      .then(res => res.json())
+    fetchWithLang('cart.php?action=get_cart')
       .then(data => {
         if (data.success) {
           renderCartItems(data.cart);
@@ -252,12 +252,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const id = e.target.dataset.id;
         const type = e.target.dataset.type;
 
-        fetch('cart.php?action=update_quantity', {
+        fetchWithLang('cart.php?action=update_quantity', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: `id=${encodeURIComponent(id)}&type=${encodeURIComponent(type)}&quantity=${newQty}&csrf_token=${encodeURIComponent(window.csrfToken)}`
         })
-        .then(res => res.json())
         .then(data => {
           if (data.success) fetchCart(document.getElementById('cartDropdown'));
         })
@@ -518,7 +517,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (itemId) payload.id = itemId;
     if (itemIndex !== null) payload.index = itemIndex;
 
-    fetch('cart.php?action=update_quantity', {
+    fetchWithLang('cart.php?action=update_quantity', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.csrfToken },
       body: JSON.stringify(payload)
@@ -539,11 +538,10 @@ document.addEventListener('DOMContentLoaded', function () {
       csrf_token: window.csrfToken
     });
 
-    fetch('cart.php?action=remove_item', {
+    fetchWithLang('cart.php?action=remove_item', {
       method: 'POST',
       body: formData
     })
-    .then(res => res.text())
     .then(text => {
       let data;
       try {
@@ -576,6 +574,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
   loadNewProducts();
   loadPopularProducts();
+
+    // --- update winkelwagen bij taalwijziging ---
+  document.addEventListener("languageChanged", () => {
+    const cartDropdown = document.getElementById('cartDropdown');
+    fetchCart(cartDropdown);
+
+    // Extra: grote winkelwagenpagina verversen
+    if (document.getElementById('cart-items')) {
+      fetchCart(cartDropdown);
+    }
+  });
 
   // ================================
   // CHECKOUT FORM: update profiel + afrekenen
@@ -667,8 +676,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let vouchers = [];
 
   // Haal producten uit cart
-  fetch('cart.php?action=get_cart')
-      .then(res => res.json())
+  fetchWithLang('cart.php?action=get_cart')
       .then(data => {
           if (!data.success) return;
           cartData = data.cart;
@@ -1140,8 +1148,7 @@ async function loadOrders() {
   if (!container) return;
 
   try {
-    const response = await fetch('get_orders.php');
-    const orders = await response.json();
+    const orders = await fetchWithLang('get_orders.php');
 
     if (!orders || orders.length === 0) {
       const p = document.createElement('p');
@@ -1261,17 +1268,13 @@ async function loadLastOrder() {
   if (!container) return;
 
   try {
-    const response = await fetch('get_last_order.php');
-    const order = await response.json();
+    const order = await fetchWithLang('get_last_order.php'); // fetchWithLang retourneert al JSON
 
     if (order.error) {
-      // Controleer op specifieke fouttekst
-      let i18nKey = 'script_last_order_error'; // fallback
-
+      let i18nKey = 'script_last_order_error';
       if (order.error.toLowerCase().includes('nog geen bestellingen')) {
         i18nKey = 'script_order_none';
       }
-
       container.innerHTML = `<p data-i18n="${i18nKey}"></p>`;
       applyTranslations(container);
       return;
@@ -1282,7 +1285,7 @@ async function loadLastOrder() {
 
     if (order.products && order.products.length) {
       order.products.forEach(item => {
-        if (item.name.toLowerCase().includes('cadeaubon')) {
+        if (item.type === 'voucher' || (item.name && item.name.toLowerCase().includes('cadeaubon'))) {
           vouchers.push(item);
         } else {
           products.push(item);
@@ -1293,13 +1296,13 @@ async function loadLastOrder() {
     let productList = '';
 
     if (products.length > 0) {
-      productList += products.map(p => `${p.quantity} x ${p.name}`).join(', ');
+      productList += products.map(p => `${p.quantity} x ${p.product_name || p.name}`).join(', ');
     }
 
     if (vouchers.length > 0) {
       if (productList) productList += ', ';
       productList += vouchers.length === 1
-        ? `${vouchers[0].name.replace(/Cadeaubon: /, '')}`
+        ? `${vouchers[0].product_name || vouchers[0].name}`.replace(/Cadeaubon: /, '')
         : 'Cadeaubon(nen)';
     }
 
@@ -1342,6 +1345,14 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+document.addEventListener('languageChanged', () => {
+  loadOrders();
+});
+
+document.addEventListener('languageChanged', () => {
+  loadLastOrder();
+});
+
 // ==========================
 // Helperfunctie om datum te formatteren (YYYY-MM-DD -> DD-MM-YYYY)
 // ==========================
@@ -1361,8 +1372,7 @@ async function loadLastOrderDetails() {
   if (!container) return; // alleen uitvoeren op bedankt.html
 
   try {
-    const res = await fetch("get_last_order_bedankt.php");
-    const data = await res.json();
+    const data = await fetchWithLang("get_last_order_bedankt.php");
 
     if (!data || data.error) {
       container.innerHTML = ''; // eerst leegmaken
@@ -1409,8 +1419,8 @@ async function loadLastOrderDetails() {
         productHtml = `
           <div style="display:flex; align-items:center; gap:8px;">
             <img src="${item.image || 'placeholder.jpg'}" 
-                 alt="${item.name}" 
-                 style="width:40px; height:40px; object-fit:cover; border-radius:6px; border:1px solid #ddd;">
+                alt="${item.name}"
+                style="width:40px; height:40px; object-fit:cover; border-radius:6px; border:1px solid #ddd;">
             <span>${item.name}</span>
             ${item.maat ? `<span style="margin-left:8px;">(${item.maat})</span>` : ''}
           </div>
@@ -1452,37 +1462,38 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// ---------------------------
-// Nieuwe functie: Retourneren
-// ---------------------------
 document.addEventListener('DOMContentLoaded', () => {
-    const returnCardsContainer = document.getElementById('return-cards');
 
-    // Haal CSRF-token op
+  // ---------------------------
+  // Retourkaarten (optioneel)
+  // ---------------------------
+  const returnCardsContainer = document.getElementById('return-cards');
+  if (returnCardsContainer) {
+
+    // CSRF-token ophalen
     let csrfToken = '';
-    fetch('csrf.php')
-        .then(res => res.json())
-        .then(data => { csrfToken = data.csrf_token; })
-        .catch(err => console.error('Fout bij ophalen CSRF-token:', err));
+    async function ensureCsrf() {
+      if (csrfToken) return csrfToken;
+      try {
+        const data = await fetch('csrf.php').then(res => res.json());
+        csrfToken = data.csrf_token || '';
+        return csrfToken;
+      } catch (err) {
+        console.error('Fout bij ophalen CSRF-token:', err);
+        return '';
+      }
+    }
 
-    // Haal bestellingen op
-    fetch('retourneren.php')
-      .then(res => res.json())
-      .then(data => {
-        returnCardsContainer.innerHTML = ''; // eerst leegmaken
+    // Retourkaarten laden
+    async function loadReturns() {
+      try {
+        const data = await fetch('retourneren.php').then(res => res.json());
+        returnCardsContainer.innerHTML = '';
 
-        if (data.error) {
+        if (!data || data.length === 0 || data.error) {
           const p = document.createElement('p');
-          p.setAttribute('data-i18n', 'script_returns_error');
-          returnCardsContainer.appendChild(p);
-          applyTranslations(returnCardsContainer);
-          return;
-        }
-
-        if (!data || data.length === 0) {
-          const p = document.createElement('p');
-          p.className = 'no-orders';
-          p.setAttribute('data-i18n', 'script_order_none');
+          p.className = data?.length === 0 ? 'no-orders' : '';
+          p.setAttribute('data-i18n', data?.error ? 'script_returns_error' : 'script_order_none');
           returnCardsContainer.appendChild(p);
           applyTranslations(returnCardsContainer);
           return;
@@ -1490,15 +1501,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const orders = {};
         data.forEach(item => {
-          if (!orders[item.order_id]) {
-            orders[item.order_id] = { order_date: item.order_date, items: [] };
-          }
+          if (!orders[item.order_id]) orders[item.order_id] = { order_date: item.order_date, items: [] };
           orders[item.order_id].items.push(item);
         });
 
-        const sortedOrderIds = Object.keys(orders).sort((a,b) => 
-          new Date(orders[b].order_date) - new Date(orders[a].order_date)
-        );
+        const sortedOrderIds = Object.keys(orders).sort((a,b) => new Date(orders[b].order_date) - new Date(orders[a].order_date));
 
         sortedOrderIds.forEach(orderId => {
           const order = orders[orderId];
@@ -1522,7 +1529,6 @@ document.addEventListener('DOMContentLoaded', () => {
             img.className = 'return-product-img';
 
             const name = document.createElement('p');
-            // ✅ Voeg maat toe tussen haakjes
             name.textContent = product.product_name + (product.size ? ` (${product.size})` : '');
 
             const returnLink = document.createElement('a');
@@ -1531,8 +1537,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const today = new Date();
             const orderDate = new Date(order.order_date);
-            const diffTime = today - orderDate;
-            const diffDays = diffTime / (1000 * 60 * 60 * 24);
+            const diffDays = (today - orderDate) / (1000 * 60 * 60 * 24);
 
             if (diffDays > 30) {
               returnLink.setAttribute('data-i18n', 'script_order_status_expired');
@@ -1562,8 +1567,9 @@ document.addEventListener('DOMContentLoaded', () => {
                   break;
                 default:
                   returnLink.setAttribute('data-i18n', 'script_order_status_start');
-                  returnLink.addEventListener('click', e => {
+                  returnLink.addEventListener('click', async e => {
                     e.preventDefault();
+                    await ensureCsrf();
                     if (!csrfToken) {
                       alert(document.querySelector('[data-i18n="script_csrf_not_loaded"]').textContent);
                       return;
@@ -1600,27 +1606,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         applyTranslations(returnCardsContainer);
-      })
-      .catch(err => {
+
+      } catch(err) {
+        console.error(err);
         const p = document.createElement('p');
         p.setAttribute('data-i18n', 'script_return_request_error');
         returnCardsContainer.innerHTML = '';
         returnCardsContainer.appendChild(p);
         applyTranslations(returnCardsContainer);
-        console.error(err);
-    });
+      }
+    }
 
+    loadReturns();
+    document.addEventListener('languageChanged', loadReturns);
+  }
+
+  // ---------------------------
+  // Order details en retour verwerken
+  // ---------------------------
   const loadOrderBtn = document.getElementById('loadOrderBtn');
   const orderIdInput = document.getElementById('orderIdInput');
+  const returnBtn = document.getElementById('ReturnBtn');
 
-  // Helper: krijg de juiste vertaling van een key
   function getStatusText(statusKey) {
     const lang = document.cookie.match(/(?:^|;\s*)siteLanguage=([^;]+)/)?.[1] || "be-nl";
     const dict = translations[lang] || translations["be-nl"];
     return dict[statusKey] || statusKey;
   }
 
-  // Mapping DB-orderstatus => i18n key
   const orderStatusMap = {
     "pending": "script_processing_retours_order_status_pending",
     "paid": "script_processing_retours_order_status_paid",
@@ -1629,56 +1642,43 @@ document.addEventListener('DOMContentLoaded', () => {
     "cancelled": "script_processing_retours_order_status_cancelled"
   };
 
-  // Functie om vertaalde orderstatus te krijgen
   function getOrderStatusText(dbStatus) {
     const key = orderStatusMap[dbStatus.toLowerCase()] || dbStatus;
     return { key, text: getStatusText(key) };
   }
 
-  // Vul de orderitems tabel
   function populateOrderTable(order) {
     const tbody = document.getElementById('orderItemsBody');
     tbody.innerHTML = '';
-
-    if (!order.items || order.items.length === 0) return;
+    if (!order.items) return;
 
     order.items.forEach(item => {
       if (item.type === 'voucher') return;
-
       const qty = Number(item.quantity) || 0;
       const price = Number(item.price) || 0;
-      const productName = item.product_name;
-
-      let itemReturn = null;
-      if (order.return_items && order.return_items.length > 0) {
-        itemReturn = order.return_items.find(r => r.order_item_id === item.order_item_id);
-      }
-
       let statusKey = 'none';
-      let approvedChecked = '';
-      let rejectedChecked = '';
+      let approvedChecked = '', rejectedChecked = '';
+      const itemReturn = order.return_items?.find(r => r.order_item_id === item.order_item_id);
 
-      if (itemReturn && itemReturn.return_status) {
+      if (itemReturn?.return_status) {
         statusKey = itemReturn.return_status === 'processed' ? 'approved' : itemReturn.return_status;
         if (statusKey === 'approved') approvedChecked = 'checked';
         if (statusKey === 'rejected') rejectedChecked = 'checked';
       }
 
       const statusText = getStatusText(`script_processing_retours_status_${statusKey}`);
-
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${productName}</td>
+        <td>${item.product_name}</td>
         <td style="text-align:center;">${qty}</td>
         <td style="text-align:center;">€${price.toFixed(2)}</td>
-        <td style="text-align:center;">€${(price * qty).toFixed(2)}</td>
+        <td style="text-align:center;">€${(qty*price).toFixed(2)}</td>
         <td style="text-align:center;" data-i18n="script_processing_retours_status_${statusKey}" data-status-original="${statusKey}">${statusText}</td>
         <td style="text-align:center;"><input type="checkbox" class="approveItem" data-item-id="${item.order_item_id}" ${approvedChecked}></td>
         <td style="text-align:center;"><input type="checkbox" class="rejectItem" data-item-id="${item.order_item_id}" ${rejectedChecked}></td>
       `;
       tbody.appendChild(tr);
 
-      // Exclusiviteit checkboxes
       const approveCb = tr.querySelector('.approveItem');
       const rejectCb = tr.querySelector('.rejectItem');
       approveCb.addEventListener('change', () => { if (approveCb.checked) rejectCb.checked = false; });
@@ -1686,44 +1686,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Laad order
   function loadOrder() {
     const orderId = orderIdInput.value.trim();
-    if (!orderId) {
-      alert(getStatusText('script_processing_retours_alert_invalid_id'));
-      return;
-    }
+    if (!orderId) { alert(getStatusText('script_processing_retours_alert_invalid_id')); return; }
 
-    fetch(`get_order_retour.php?order_id=${orderId}`)
-      .then(res => res.json())
+    fetchWithLang(`get_order_retour.php?order_id=${orderId}`)
       .then(data => {
-        if (!data.success) {
-          alert(data.message || getStatusText('script_processing_retours_alert_fetch_error'));
-          return;
-        }
+        if (!data.success) { alert(data.message || getStatusText('script_processing_retours_alert_fetch_error')); return; }
 
-        const orderDetails = document.getElementById('orderDetails');
-        orderDetails.style.display = 'block';
         const order = data.order;
-
-        // Ordergegevens
+        document.getElementById('orderDetails').style.display = 'block';
         document.getElementById('orderNumber').textContent = order.order_id;
         document.getElementById('orderDate').textContent = order.order_date;
         document.getElementById('orderTotal').textContent = Number(order.total_price).toFixed(2);
 
-        // Orderstatus vertalen en data-i18n attribuut instellen
-        const orderStatusEl = document.getElementById('orderStatus');
         const orderStatusObj = getOrderStatusText(order.order_status);
+        const orderStatusEl = document.getElementById('orderStatus');
         orderStatusEl.textContent = orderStatusObj.text;
         orderStatusEl.setAttribute('data-i18n', orderStatusObj.key);
 
-        // Klantgegevens
         document.getElementById('customerName').textContent = order.customer_name;
         document.getElementById('customerEmail').textContent = order.customer_email;
         document.getElementById('customerCompany').textContent = order.company_name || '-';
         document.getElementById('customerVAT').textContent = order.vat_number || '-';
 
-        // Adressen vertalen en data-i18n attribuut instellen
         const addressEl = document.getElementById('customerAddress');
         let addressText = '';
         if (order.address_shipping) {
@@ -1738,26 +1724,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         populateOrderTable(order);
       })
-      .catch(err => {
-        console.error(err);
-        alert(getStatusText('script_processing_retours_alert_load_error'));
-      });
+      .catch(err => { console.error(err); alert(getStatusText('script_processing_retours_alert_load_error')); });
   }
 
-  loadOrderBtn.addEventListener('click', loadOrder);
+  loadOrderBtn?.addEventListener('click', loadOrder);
 
-  // Retour verwerken
-  const returnBtn = document.getElementById('ReturnBtn');
-  returnBtn.addEventListener('click', () => {
+  returnBtn?.addEventListener('click', () => {
     const orderId = orderIdInput.value.trim();
-    if (!orderId) {
-      alert(getStatusText('script_processing_retours_alert_no_id'));
-      return;
-    }
+    if (!orderId) { alert(getStatusText('script_processing_retours_alert_no_id')); return; }
 
-    const approvedItems = [];
-    const rejectedItems = [];
-
+    const approvedItems = [], rejectedItems = [];
     document.querySelectorAll('.approveItem').forEach(cb => { if (cb.checked) approvedItems.push(cb.dataset.itemId); });
     document.querySelectorAll('.rejectItem').forEach(cb => { if (cb.checked) rejectedItems.push(cb.dataset.itemId); });
 
@@ -1766,50 +1742,60 @@ document.addEventListener('DOMContentLoaded', () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ order_id: orderId, approved_items: approvedItems, rejected_items: rejectedItems })
     })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          alert(getStatusText('script_processing_retours_alert_success'));
-          loadOrder();
-        } else {
-          alert(getStatusText('script_processing_retours_alert_processing_error') + ': ' + (data.message || 'Onbekende fout'));
-        }
-      })
-      .catch(err => { console.error(err); alert(getStatusText('script_processing_retours_alert_general_error')); });
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert(getStatusText('script_processing_retours_alert_success'));
+        loadOrder();
+      } else {
+        alert(getStatusText('script_processing_retours_alert_processing_error') + ': ' + (data.message || 'Onbekende fout'));
+      }
+    })
+    .catch(err => { console.error(err); alert(getStatusText('script_processing_retours_alert_general_error')); });
   });
 
-  // Live vertaling bij taalwissel
+  // Live vertalingen bij taalwissel
   document.addEventListener('translationsApplied', () => {
-    // Orderitems status
     document.querySelectorAll('#orderItemsBody td[data-i18n]').forEach(cell => {
       const key = cell.getAttribute('data-i18n');
       if (key) cell.textContent = getStatusText(key);
     });
 
-    // Orderstatus
     const orderStatusEl = document.getElementById('orderStatus');
     const keyStatus = orderStatusEl.getAttribute('data-i18n');
     if (keyStatus) orderStatusEl.textContent = getStatusText(keyStatus);
 
-    // Adressen
-    const addressEl = document.getElementById('customerAddress');
-    addressEl.querySelectorAll('[data-i18n]').forEach(span => {
+    document.getElementById('customerAddress').querySelectorAll('[data-i18n]').forEach(span => {
       const key = span.getAttribute('data-i18n');
       if (key) span.textContent = getStatusText(key);
     });
   });
 
   // Enter-toets functionaliteit
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-      const active = document.activeElement;
-      if (active === orderIdInput) {
-        event.preventDefault();
-        loadOrderBtn.click();
-      } else {
-        event.preventDefault();
-        returnBtn.click();
+  if (window.location.pathname.endsWith('processing_retours.html')) {
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        const active = document.activeElement;
+        if (active === orderIdInput) {
+          event.preventDefault();
+          loadOrderBtn?.click();
+        } else if (active && active.form && active.form.contains(returnBtn)) {
+          event.preventDefault();
+          returnBtn?.click();
+        }
       }
+    });
+  }
+
+  // --- update bij taalwijziging ---
+  document.addEventListener("languageChanged", loadOrder);
+  document.addEventListener("languageChanged", loadNewProducts);
+  document.addEventListener("languageChanged", loadPopularProducts);
+  document.addEventListener("languageChanged", loadProductGrid);
+  document.addEventListener("languageChanged", loadSearchGrid);
+  document.addEventListener("languageChanged", () => {
+    if (document.getElementById("order-details")) {
+      loadLastOrderDetails();
     }
   });
 });
@@ -2234,8 +2220,8 @@ async function getCsrfToken() {
 
 async function loadWishlist() {
   try {
-    const response = await fetch("wishlist.php");
-    const data = await response.json();
+    // --- Haal wishlist met vertaling op ---
+    const data = await fetchWithLang("wishlist.php");
 
     const container = document.getElementById("wishlist-container");
     container.innerHTML = "";
@@ -2246,11 +2232,8 @@ async function loadWishlist() {
       emptyBox.className = "empty-wishlist-box";
       emptyBox.setAttribute("data-i18n", "script_wishlist_empty");
 
-      // --- vertaling pas toepassen nadat element in DOM staat ---
       container.appendChild(emptyBox);
-      // setTimeout zorgt ervoor dat applyTranslations wordt uitgevoerd na eventuele andere scripts die DOM aanpassen
       setTimeout(() => applyTranslations(emptyBox), 0);
-
       return;
     }
 
@@ -2269,7 +2252,7 @@ async function loadWishlist() {
         <div class="wishlist-info">
           <h3>${item.name}</h3>
           ${item.variant ? `<p>${item.variant}</p>` : ""}
-          <p><span data-i18n="script_cart_price">Prijs</span>: €${parseFloat(item.price).toFixed(2)}</p>
+          <p><span data-i18n="script_cart_price">Prijs:</span> €${parseFloat(item.price).toFixed(2)}</p>
           <div class="wishlist-actions">
             <button class="add-to-cart" data-id="${item.id}">
               <img src="shopping bag/shopping bag.png" alt="Toevoegen aan winkelwagen" class="cart-icon cart-icon-light" />
@@ -2300,7 +2283,6 @@ async function loadWishlist() {
           body: `product_id=${productId}&quantity=1&csrf_token=${encodeURIComponent(token)}`
         });
 
-        // navigeer naar winkelwagen
         window.location.href = "cart.html";
       });
 
@@ -2316,7 +2298,6 @@ async function loadWishlist() {
           body: `product_id=${productId}&csrf_token=${encodeURIComponent(token)}`
         });
 
-        // herlaad wishlist
         loadWishlist();
       });
 
@@ -2337,6 +2318,9 @@ async function loadWishlist() {
 }
 
 document.addEventListener("DOMContentLoaded", loadWishlist);
+
+// --- update bij taalwijziging ---
+document.addEventListener("languageChanged", loadWishlist);
 
 document.addEventListener('DOMContentLoaded', async () => {
   const titleEl = document.getElementById('product-title');
@@ -2359,6 +2343,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     errorEl.setAttribute('data-i18n', 'script_no_product_selected');
     applyTranslations(errorEl);
     return;
+  }
+
+  // --- Huidige taal initieel uit cookie ---
+  let currentLang = (document.cookie.match(/(^|;)\s*siteLanguage\s*=\s*([^;]+)/)?.pop()) || 'be-nl';
+
+  // --- Helper: fetch met taal ---
+  async function fetchWithLang(url, options = {}) {
+    const separator = url.includes('?') ? '&' : '?';
+    const resp = await fetch(`${url}${separator}lang=${encodeURIComponent(currentLang)}`, options);
+    return resp.json();
   }
 
   // --- Haal CSRF-token op ---
@@ -2386,162 +2380,67 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  try {
-    // --- Product ophalen ---
-    const response = await fetch(`get_product.php?id=${id}`);
-    const product = await response.json();
-    if (product.error) {
-      errorEl.textContent = product.error;
-      return;
-    }
-
-    // --- Vul HTML ---
-    titleEl.textContent = product.name;
-    imageEl.src = product.image;
-    imageEl.alt = product.name;
-    descEl.innerHTML = product.description.replace(/\n/g, "<br>");
-    priceEl.textContent = `€${parseFloat(product.price).toFixed(2)}`;
-
-    // --- Specificaties netjes weergeven ---
-    if (product.specifications) {
-      const specsArray = product.specifications.split(';').map(s => s.trim()).filter(s => s);
-      const ul = document.createElement('ul');
-      specsArray.forEach(spec => {
-        const li = document.createElement('li');
-        li.textContent = spec;
-        ul.appendChild(li);
-      });
-      specsEl.innerHTML = '';
-      specsEl.appendChild(ul);
-    } else {
-      specsEl.textContent = '';
-    }
-
-    // --- Maat dropdown ---
-    if (product.maat && Array.isArray(product.maat)) {
-      sizeDropdown.innerHTML = "";
-      product.maat.forEach(opt => {
-        const option = document.createElement("option");
-        option.value = opt.trim();
-        option.textContent = opt.trim();
-        sizeDropdown.appendChild(option);
-      });
-      sizeDropdown.required = true;
-      sizeWrapper.style.display = "block";
-    } else {
-      sizeDropdown.required = false;
-      sizeWrapper.style.display = "none";
-    }
-
-    // --- Wishlist knop hoofdproduct ---
-    if (wishlistBtn) {
-      const iconLight = wishlistBtn.querySelector(".wishlist-icon-light");
-      const iconDark = wishlistBtn.querySelector(".wishlist-icon-dark");
-      let inWishlist = product.in_wishlist;
-
-      iconLight.src = inWishlist ? "wishlist/added.png" : "wishlist/wishlist.png";
-      iconDark.src = inWishlist ? "wishlist/added (dark mode).png" : "wishlist/wishlist (dark mode).png";
-
-      wishlistBtn.addEventListener("click", () => {
-        const action = inWishlist ? "remove" : "add";
-        const url = action === "add" ? "wishlist_add.php" : "wishlist_remove.php";
-        const formData = new URLSearchParams();
-        formData.append("product_id", product.id);
-
-        fetch(url, { method: "POST", body: formData })
-          .then(res => res.json())
-          .then(response => {
-            if (response.error) return console.error("Wishlist error:", response.error);
-            inWishlist = !inWishlist;
-            iconLight.src = inWishlist ? "wishlist/added.png" : "wishlist/wishlist.png";
-            iconDark.src = inWishlist ? "wishlist/added (dark mode).png" : "wishlist/wishlist (dark mode).png";
-          })
-          .catch(err => console.error("Wishlist fetch error:", err));
-      });
-    }
-
-    // --- Add to cart knop ---
-    addBtn.addEventListener('click', async () => {
-      const quantity = parseInt(quantityEl.value);
-      if (quantity < 1) return;
-
-      const formData = new FormData();
-      formData.append('product_id', product.id);
-      formData.append('quantity', quantity);
-      formData.append('csrf_token', csrfTokenEl.value);
-
-      // maat meesturen indien zichtbaar
-      if (product.maat && sizeDropdown && sizeDropdown.value) {
-        formData.append('maat', sizeDropdown.value);
-      }
-
-      try {
-        const addResp = await fetch('add_to_cart.php', { method: 'POST', body: formData });
-        const result = await addResp.json();
-        if (result.success) {
-          window.location.href = 'cart.html';
-        } else {
-          const temp = document.createElement('span');
-          temp.setAttribute('data-i18n', 'script_add_to_cart_error');
-          applyTranslations(temp);
-          alert(result.error || temp.textContent);
-        }
-      } catch (err) {
-        const temp = document.createElement('span');
-        temp.setAttribute('data-i18n', 'script_add_to_cart_error');
-        applyTranslations(temp);
-        alert(temp.textContent);
-        console.error(err);
-      }
-    });
-
-    // -------------------------------
-    // Andere producten & laatst bekeken
-    // -------------------------------
-    function renderProducts(products, containerId, excludeId = null) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = "";
-      const visibleProducts = products ? products.filter(p => p.id !== excludeId) : [];
-
-      if (!visibleProducts || visibleProducts.length === 0) {
-        const emptyMsg = document.createElement("p");
-        emptyMsg.setAttribute("data-i18n", "productpagina_no_products");
-        container.appendChild(emptyMsg);
-        applyTranslations(emptyMsg);
+  // --- Functie om product + gerelateerde data te laden ---
+  async function loadProductData() {
+    try {
+      const product = await fetchWithLang(`get_product.php?id=${encodeURIComponent(id)}`);
+      if (product.error) {
+        errorEl.textContent = product.error;
         return;
       }
 
-      visibleProducts.forEach(p => {
-        const card = document.createElement("div");
-        card.className = "product-card2";
+      // --- Vul HTML ---
+      titleEl.textContent = product.name;
+      imageEl.src = product.image;
+      imageEl.alt = product.name;
+      descEl.innerHTML = product.description.replace(/\n/g, "<br>");
+      priceEl.textContent = `€${parseFloat(product.price).toFixed(2)}`;
 
-        let inWishlist = p.in_wishlist;
-        card.innerHTML = `
-          <div class="wishlist-btn" data-id="${p.id}">
-            <img src="${inWishlist ? 'wishlist/added.png' : 'wishlist/wishlist.png'}" 
-                alt="Wishlist knop" 
-                class="wishlist-icon-light">
-            <img src="${inWishlist ? 'wishlist/added (dark mode).png' : 'wishlist/wishlist (dark mode).png'}" 
-                alt="Wishlist knop dark" 
-                class="wishlist-icon-dark">
-          </div>
-          <a href="productpagina.html?id=${p.id}">
-            <img src="${p.image}" alt="${p.name}" class="product-thumb">
-            <h3>${p.name}</h3>
-            <p>€${parseFloat(p.price).toFixed(2)}</p>
-          </a>
-        `;
+      // --- Specificaties ---
+      if (product.specifications) {
+        const specsArray = product.specifications.split(';').map(s => s.trim()).filter(s => s);
+        const ul = document.createElement('ul');
+        specsArray.forEach(spec => {
+          const li = document.createElement('li');
+          li.textContent = spec;
+          ul.appendChild(li);
+        });
+        specsEl.innerHTML = '';
+        specsEl.appendChild(ul);
+      } else {
+        specsEl.textContent = '';
+      }
 
-        const wishlistBtn = card.querySelector(".wishlist-btn");
+      // --- Maat dropdown ---
+      if (product.maat && Array.isArray(product.maat)) {
+        sizeDropdown.innerHTML = "";
+        product.maat.forEach(opt => {
+          const option = document.createElement("option");
+          option.value = opt.trim();
+          option.textContent = opt.trim();
+          sizeDropdown.appendChild(option);
+        });
+        sizeDropdown.required = true;
+        sizeWrapper.style.display = "block";
+      } else {
+        sizeDropdown.required = false;
+        sizeWrapper.style.display = "none";
+      }
+
+      // --- Wishlist knop ---
+      if (wishlistBtn) {
         const iconLight = wishlistBtn.querySelector(".wishlist-icon-light");
         const iconDark = wishlistBtn.querySelector(".wishlist-icon-dark");
+        let inWishlist = product.in_wishlist;
 
-        wishlistBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
+        iconLight.src = inWishlist ? "wishlist/added.png" : "wishlist/wishlist.png";
+        iconDark.src = inWishlist ? "wishlist/added (dark mode).png" : "wishlist/wishlist (dark mode).png";
+
+        wishlistBtn.onclick = () => {
           const action = inWishlist ? "remove" : "add";
           const url = action === "add" ? "wishlist_add.php" : "wishlist_remove.php";
           const formData = new URLSearchParams();
-          formData.append("product_id", p.id);
+          formData.append("product_id", product.id);
 
           fetch(url, { method: "POST", body: formData })
             .then(res => res.json())
@@ -2552,74 +2451,177 @@ document.addEventListener('DOMContentLoaded', async () => {
               iconDark.src = inWishlist ? "wishlist/added (dark mode).png" : "wishlist/wishlist (dark mode).png";
             })
             .catch(err => console.error("Wishlist fetch error:", err));
-        });
-
-        card.addEventListener("click", (e) => {
-          if (e.target.closest(".wishlist-btn")) return;
-          window.location.href = `productpagina.html?id=${p.id}`;
-        });
-
-        container.appendChild(card);
-      });
-    }
-
-    async function loadOtherProducts(category, excludeId) {
-      try {
-        const resp = await fetch(`get_related_products.php?category=${encodeURIComponent(category)}&exclude=${excludeId}`);
-        const products = await resp.json();
-        renderProducts(products, "other-products-container");
-      } catch (err) {
-        console.error("Error loading related products:", err);
+        };
       }
-    }
 
-    async function updateLastSeen(product) {
-      const loggedIn = await isLoggedIn();
-      if (loggedIn) {
+      // --- Add to cart knop ---
+      addBtn.onclick = async () => {
+        const quantity = parseInt(quantityEl.value);
+        if (quantity < 1) return;
+
+        const formData = new FormData();
+        formData.append('product_id', product.id);
+        formData.append('quantity', quantity);
+        formData.append('csrf_token', csrfTokenEl.value);
+
+        if (product.maat && sizeDropdown && sizeDropdown.value) {
+          formData.append('maat', sizeDropdown.value);
+        }
+
         try {
-          await fetch('last_seen.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `product_id=${product.id}`
+          const addResp = await fetch('add_to_cart.php', { method: 'POST', body: formData });
+          const result = await addResp.json();
+          if (result.success) {
+            window.location.href = 'cart.html';
+          } else {
+            const temp = document.createElement('span');
+            temp.setAttribute('data-i18n', 'script_add_to_cart_error');
+            applyTranslations(temp);
+            alert(result.error || temp.textContent);
+          }
+        } catch (err) {
+          const temp = document.createElement('span');
+          temp.setAttribute('data-i18n', 'script_add_to_cart_error');
+          applyTranslations(temp);
+          alert(temp.textContent);
+          console.error(err);
+        }
+      };
+
+      // --- Render producten ---
+      function renderProducts(products, containerId, excludeId = null) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = "";
+        const visibleProducts = products ? products.filter(p => p.id !== excludeId) : [];
+
+        if (!visibleProducts || visibleProducts.length === 0) {
+          const emptyMsg = document.createElement("p");
+          emptyMsg.setAttribute("data-i18n", "productpagina_no_products");
+          container.appendChild(emptyMsg);
+          applyTranslations(emptyMsg);
+          return;
+        }
+
+        visibleProducts.forEach(p => {
+          const card = document.createElement("div");
+          card.className = "product-card2";
+
+          let inWishlist = p.in_wishlist;
+          card.innerHTML = `
+            <div class="wishlist-btn" data-id="${p.id}">
+              <img src="${inWishlist ? 'wishlist/added.png' : 'wishlist/wishlist.png'}" 
+                  alt="Wishlist knop" 
+                  class="wishlist-icon-light">
+              <img src="${inWishlist ? 'wishlist/added (dark mode).png' : 'wishlist/wishlist (dark mode).png'}" 
+                  alt="Wishlist knop dark" 
+                  class="wishlist-icon-dark">
+            </div>
+            <a href="productpagina.html?id=${p.id}">
+              <img src="${p.image}" alt="${p.name}" class="product-thumb">
+              <h3>${p.name}</h3>
+              <p>€${parseFloat(p.price).toFixed(2)}</p>
+            </a>
+          `;
+
+          const wishlistBtn = card.querySelector(".wishlist-btn");
+          const iconLight = wishlistBtn.querySelector(".wishlist-icon-light");
+          const iconDark = wishlistBtn.querySelector(".wishlist-icon-dark");
+
+          wishlistBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const action = inWishlist ? "remove" : "add";
+            const url = action === "add" ? "wishlist_add.php" : "wishlist_remove.php";
+            const formData = new URLSearchParams();
+            formData.append("product_id", p.id);
+
+            fetch(url, { method: "POST", body: formData })
+              .then(res => res.json())
+              .then(response => {
+                if (response.error) return console.error("Wishlist error:", response.error);
+                inWishlist = !inWishlist;
+                iconLight.src = inWishlist ? "wishlist/added.png" : "wishlist/wishlist.png";
+                iconDark.src = inWishlist ? "wishlist/added (dark mode).png" : "wishlist/wishlist (dark mode).png";
+              })
+              .catch(err => console.error("Wishlist fetch error:", err));
           });
-        } catch (err) {
-          console.error('Error saving last seen in DB:', err);
-        }
+
+          card.addEventListener("click", (e) => {
+            if (e.target.closest(".wishlist-btn")) return;
+            window.location.href = `productpagina.html?id=${p.id}`;
+          });
+
+          container.appendChild(card);
+        });
       }
 
-      let lastSeen = JSON.parse(sessionStorage.getItem("lastSeen") || "[]");
-      lastSeen = lastSeen.filter(p => p.id !== product.id);
-      lastSeen.unshift({ id: product.id, name: product.name, price: product.price, image: product.image });
-      if (lastSeen.length > 6) lastSeen = lastSeen.slice(0, 6);
-      sessionStorage.setItem("lastSeen", JSON.stringify(lastSeen));
-    }
-
-    async function loadLastSeen(currentProductId) {
-      const loggedIn = await isLoggedIn();
-      let products = [];
-      if (loggedIn) {
+      // --- Load related products ---
+      async function loadOtherProducts(category, excludeId) {
         try {
-          const resp = await fetch('get_last_seen.php');
-          products = await resp.json();
+          const products = await fetchWithLang(`get_related_products.php?category=${encodeURIComponent(category)}&exclude=${excludeId}`);
+          renderProducts(products, "other-products-container");
         } catch (err) {
-          console.error('Error loading last seen from DB:', err);
+          console.error("Error loading related products:", err);
         }
-      } else {
-        products = JSON.parse(sessionStorage.getItem("lastSeen") || "[]");
       }
-      renderProducts(products, "last-seen-products-container", currentProductId);
+
+      // --- Last seen ---
+      async function updateLastSeen(product) {
+        const loggedIn = await isLoggedIn();
+        if (loggedIn) {
+          try {
+            await fetch('last_seen.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: `product_id=${product.id}`
+            });
+          } catch (err) {
+            console.error('Error saving last seen in DB:', err);
+          }
+        }
+
+        let lastSeen = JSON.parse(sessionStorage.getItem("lastSeen") || "[]");
+        lastSeen = lastSeen.filter(p => p.id !== product.id);
+        lastSeen.unshift({ id: product.id, name: product.name, price: product.price, image: product.image });
+        if (lastSeen.length > 6) lastSeen = lastSeen.slice(0, 6);
+        sessionStorage.setItem("lastSeen", JSON.stringify(lastSeen));
+      }
+
+      async function loadLastSeen(currentProductId) {
+        const loggedIn = await isLoggedIn();
+        let products = [];
+        if (loggedIn) {
+          try {
+            const resp = await fetch('get_last_seen.php');
+            products = await resp.json();
+          } catch (err) {
+            console.error('Error loading last seen from DB:', err);
+          }
+        } else {
+          products = JSON.parse(sessionStorage.getItem("lastSeen") || "[]");
+        }
+        renderProducts(products, "last-seen-products-container", currentProductId);
+      }
+
+      // --- Aanroepen na productload ---
+      loadOtherProducts(product.category_id, product.id);
+      await updateLastSeen(product);
+      await loadLastSeen(product.id);
+
+    } catch (err) {
+      errorEl.setAttribute('data-i18n', 'script_product_load_error');
+      applyTranslations(errorEl);
+      console.error(err);
     }
-
-    // --- Aanroepen na productload ---
-    loadOtherProducts(product.category_id, product.id);
-    await updateLastSeen(product);
-    await loadLastSeen(product.id);
-
-  } catch (err) {
-    errorEl.setAttribute('data-i18n', 'script_product_load_error');
-    applyTranslations(errorEl);
-    console.error(err);
   }
+
+  // --- Eerste keer laden ---
+  await loadProductData();
+
+  // --- Event: taal gewijzigd ---
+  document.addEventListener("languageChanged", async (e) => {
+    currentLang = e.detail.lang;
+    await loadProductData();
+  });
 });
 
 // --- Redirect als gebruiker niet ingelogd ---
@@ -2706,10 +2708,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-  // ==============================
-  // --- FILTERS / PRODUCT-GRID2 ---
-  // ==============================
+// ==============================
+// --- FILTERS / PRODUCT-GRID2 ---
+// ==============================
+function loadProductGrid() {
   const filtersContainer = document.getElementById("filters-container");
   const productGrid = document.getElementById("product-grid2");
   const resetBtn = document.getElementById("reset-filters");
@@ -2725,8 +2727,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let activeFilters = {};
 
     // --- Titel ophalen via categorie.php ---
-    fetch(`categorie.php?cat=${categoryId}&sub=${subcategoryId}`)
-      .then(res => res.json())
+    fetchWithLang(`categorie.php?cat=${categoryId}&sub=${subcategoryId}`)
       .then(data => {
         categoryTitle.textContent = data.selected.subcategory || data.selected.category || "Categorie";
       });
@@ -2761,8 +2762,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
     // --- Producten ophalen ---
-    fetch(`fetch_products.php?cat=${categoryId}&sub=${subcategoryId}`)
-      .then(res => res.json())
+    fetchWithLang(`fetch_products.php?cat=${categoryId}&sub=${subcategoryId}`)
       .then(data => {
         products = data;
         renderProducts();
@@ -2847,16 +2847,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- Sorteren bij selectie ---
     if (sortSelect) sortSelect.addEventListener('change', renderProducts);
   }
+}
 
-  // ==============================
-  // --- SEARCH GRID3 (ZOEKRESULTATEN) ---
-  // ==============================
-  const grid3 = document.getElementById('product-grid3');
-  const sortSelectSearch = document.getElementById('search-sort-products'); // correcte naam uit HTML
+// ==============================
+// --- SEARCH GRID3 (ZOEKRESULTATEN) ---
+// ==============================
+function loadSearchGrid() {
+  const grid3 = document.getElementById("product-grid3");
+  const sortSelectSearch = document.getElementById("search-sort-products");
 
   if (grid3) {
     const params = new URLSearchParams(window.location.search);
-    const q = params.get('q') || '';
+    const q = params.get("q") || "";
     if (!q) {
       grid3.innerHTML = `
         <p data-i18n="script_search_no_query">Geen zoekterm opgegeven.</p>
@@ -2865,18 +2867,8 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const fetchUrl = `get_search_products.php?q=${encodeURIComponent(q)}`;
-    let searchProducts = []; // bewaren voor sorteren
-
-    fetch(fetchUrl)
-      .then(res => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const contentType = res.headers.get("content-type") || "";
-        if (!contentType.includes("application/json")) {
-          throw new TypeError("Verwacht JSON, kreeg: " + contentType);
-        }
-        return res.json();
-      })
+    // Gebruik universele fetch die taal meestuurt
+    fetchWithLang(`get_search_products.php?q=${encodeURIComponent(q)}`)
       .then(data => {
         if (!Array.isArray(data) || data.length === 0) {
           grid3.innerHTML = `
@@ -2889,10 +2881,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         searchProducts = data;
-        renderSearchProducts(); // eerste render
+        renderSearchProducts();
       })
       .catch(err => {
-        console.error('Fout bij ophalen producten grid3:', err);
+        console.error("Fout bij ophalen producten grid3:", err);
         grid3.innerHTML = `
           <p style="color:red;" data-i18n="script_search_fetch_error">
             Fout bij ophalen producten
@@ -2901,30 +2893,32 @@ document.addEventListener("DOMContentLoaded", () => {
         applyTranslations();
       });
 
+    let searchProducts = [];
+
     function renderSearchProducts() {
       let filtered = [...searchProducts];
 
-      // --- Sorteren op basis van selectie ---
-      if (sortSelectSearch && sortSelectSearch.value === 'prijs-oplopend') {
+      // --- Sorteren ---
+      if (sortSelectSearch && sortSelectSearch.value === "prijs-oplopend") {
         filtered.sort((a, b) => a.price - b.price);
-      } else if (sortSelectSearch && sortSelectSearch.value === 'prijs-aflopend') {
+      } else if (sortSelectSearch && sortSelectSearch.value === "prijs-aflopend") {
         filtered.sort((a, b) => b.price - a.price);
-      } else if (sortSelectSearch && sortSelectSearch.value === 'nieuw') {
+      } else if (sortSelectSearch && sortSelectSearch.value === "nieuw") {
         filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-      } else if (sortSelectSearch && sortSelectSearch.value === 'populariteit') {
+      } else if (sortSelectSearch && sortSelectSearch.value === "populariteit") {
         filtered.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
       }
 
-      grid3.innerHTML = '';
+      grid3.innerHTML = "";
       filtered.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'product-card2';
+        const card = document.createElement("div");
+        card.className = "product-card2";
 
         const inWishlist = !!p.in_wishlist;
         card.innerHTML = `
           <div class="wishlist-btn" data-id="${p.id}">
-            <img src="${inWishlist ? 'wishlist/added.png' : 'wishlist/wishlist.png'}" class="wishlist-icon-light" alt="wishlist">
-            <img src="${inWishlist ? 'wishlist/added (dark mode).png' : 'wishlist/wishlist (dark mode).png'}" class="wishlist-icon-dark" alt="wishlist dark">
+            <img src="${inWishlist ? "wishlist/added.png" : "wishlist/wishlist.png"}" class="wishlist-icon-light" alt="wishlist">
+            <img src="${inWishlist ? "wishlist/added (dark mode).png" : "wishlist/wishlist (dark mode).png"}" class="wishlist-icon-dark" alt="wishlist dark">
           </div>
           <img src="${p.image}" alt="${p.name}" />
           <h3>${p.name}</h3>
@@ -2971,8 +2965,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // --- Sorteren bij selectie ---
-    if (sortSelectSearch) sortSelectSearch.addEventListener('change', renderSearchProducts);
+    if (sortSelectSearch) sortSelectSearch.addEventListener("change", renderSearchProducts);
+
+    // --- Herlaad producten bij taalwijziging ---
+    document.addEventListener("languageChanged", () => {
+      fetchWithLang(`get_search_products.php?q=${encodeURIComponent(q)}`)
+        .then(data => {
+          searchProducts = data;
+          renderSearchProducts();
+        })
+        .catch(err => console.error("Fout bij ophalen producten na taalwissel:", err));
+    });
   }
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadProductGrid();
+  loadSearchGrid();
 });
 
 document.getElementById('password-reset-form').addEventListener('submit', function(e) {
@@ -3036,8 +3045,8 @@ async function loadNewProducts() {
   if (!container) return;
 
   try {
-    const res = await fetch('get_new_products.php');
-    const data = await res.json();
+    // fetchWithLang haalt automatisch de huidige taal op
+    const data = await fetchWithLang('get_new_products.php');
 
     if (!data.success || !data.products.length) {
       container.innerHTML = '<p>Geen nieuwe producten gevonden.</p>';
@@ -3069,8 +3078,7 @@ async function loadPopularProducts() {
   if (!container) return;
 
   try {
-    const res = await fetch('api_handler.php?action=popular');
-    const data = await res.json();
+    const data = await fetchWithLang('get_popular_products.php?action=popular');
 
     if (!data.success || !data.products.length) {
       container.innerHTML = '<p>Geen populaire producten gevonden.</p>';
@@ -3154,3 +3162,29 @@ function applyTranslations() {
 document.addEventListener("DOMContentLoaded", () => {
   applyTranslations();
 });
+
+// ============================================
+// 🔥 Universele fetch-functie die taal meeneemt
+// ============================================
+
+function getCurrentLang() {
+  const cookieMatch = document.cookie.match(/(?:^|;\s*)siteLanguage=([^;]+)/);
+  return cookieMatch ? decodeURIComponent(cookieMatch[1]) : "be-nl";
+}
+
+async function fetchWithLang(url, options = {}) {
+  const lang = getCurrentLang();
+  const separator = url.includes("?") ? "&" : "?";
+  const urlWithLang = `${url}${separator}lang=${encodeURIComponent(lang)}`;
+  const response = await fetch(urlWithLang, options);
+  if (!response.ok) throw new Error(`Fetch mislukt: ${response.status}`);
+  return response.json();
+}
+
+function changeLanguage(langCode) {
+  document.cookie = `siteLanguage=${langCode}; path=/; max-age=31536000`;
+  applyTranslations(); // UI labels bijwerken
+  document.dispatchEvent(
+    new CustomEvent("languageChanged", { detail: { lang: langCode } })
+  );
+}

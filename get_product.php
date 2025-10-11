@@ -1,4 +1,4 @@
-<?php
+<?php 
 session_start();
 header('Content-Type: application/json');
 
@@ -11,23 +11,30 @@ if (!isset($_GET['id'])) {
 }
 
 $product_id = intval($_GET['id']);
+$lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl'; // standaard taal
 
 // Huidige gebruiker (voor wishlist check)
 $userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
 
-// Productgegevens ophalen, inclusief wishlist status en maat-opties
+// Product ophalen inclusief wishlist status
 $sql = "
-    SELECT p.id, p.name, p.description, p.price, p.image, p.created_at, 
-           p.category_id, p.specifications, p.maat,
-           CASE WHEN w.product_id IS NOT NULL THEN 1 ELSE 0 END AS in_wishlist
+    SELECT p.id, 
+        COALESCE(pt.name, p.name) AS name,
+        COALESCE(pt.description, p.description) AS description,
+        COALESCE(pt.specifications, p.specifications) AS specifications,
+        COALESCE(pt.maat, p.maat) AS maat,
+        p.price, p.image, p.category_id,
+        CASE WHEN w.product_id IS NOT NULL THEN 1 ELSE 0 END AS in_wishlist
     FROM products p
+    LEFT JOIN product_translations pt 
+        ON pt.product_id = p.id AND pt.lang = ?
     LEFT JOIN wishlist w 
-      ON w.product_id = p.id AND w.user_id = ?
+        ON w.product_id = p.id AND w.user_id = ?
     WHERE p.id = ?
 ";
 
 if ($stmt = $conn->prepare($sql)) {
-    $stmt->bind_param("ii", $userId, $product_id);
+    $stmt->bind_param("sii", $lang, $userId, $product_id);
     $stmt->execute();
     $result = $stmt->get_result();
     $product = $result->fetch_assoc();
@@ -40,11 +47,11 @@ if ($stmt = $conn->prepare($sql)) {
     // Cast in_wishlist naar boolean
     $product['in_wishlist'] = (bool)$product['in_wishlist'];
 
-    // Als maat niet leeg is, splitsen in een array
+    // Maat in array als niet leeg
     if (!empty($product['maat'])) {
         $product['maat'] = explode(";", $product['maat']);
     } else {
-        $product['maat'] = null; // geen maat nodig
+        $product['maat'] = null;
     }
 
     echo json_encode($product);

@@ -4,14 +4,16 @@ header('Content-Type: application/json');
 require_once 'db_connect.php';
 include 'translations.php';
 
-$userId = $_SESSION['user_id'] ?? 0;
-
+$userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
 if (!$userId) {
     echo json_encode(['error' => 'Niet ingelogd']);
     exit;
 }
 
-// Haal order_items + return_status + maat
+// taal uit GET (fetchWithLang voegt ?lang=... toe)
+$lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
+
+// SQL: haal productnaam/afbeelding uit product_translations indien beschikbaar, anders fallback op products
 $sql = "
     SELECT 
         oi.id AS order_item_id,
@@ -21,37 +23,54 @@ $sql = "
         oi.price AS item_price,
         oi.maat AS size,
         o.created_at AS order_date,
-        p.name AS product_name,
+        COALESCE(pt.name, p.name) AS product_name,
         p.image AS product_image,
         r.status AS return_status
     FROM order_items oi
     JOIN orders o ON oi.order_id = o.id
     JOIN products p ON oi.product_id = p.id
+    LEFT JOIN product_translations pt 
+        ON pt.product_id = p.id AND pt.lang = ?
     LEFT JOIN returns r ON r.order_item_id = oi.id
     WHERE o.user_id = ? AND oi.type = 'product'
     ORDER BY o.created_at DESC, oi.id ASC
 ";
 
 $stmt = $conn->prepare($sql);
-$stmt->bind_param('i', $userId);
-$stmt->execute();
+if (!$stmt) {
+    echo json_encode(['error' => 'Database prepare fout: ' . $conn->error]);
+    exit;
+}
+
+$stmt->bind_param('si', $lang, $userId);
+
+if (!$stmt->execute()) {
+    echo json_encode(['error' => 'Database execute fout: ' . $stmt->error]);
+    $stmt->close();
+    $conn->close();
+    exit;
+}
+
 $result = $stmt->get_result();
 
 $orderItems = [];
 while ($row = $result->fetch_assoc()) {
     $orderItems[] = [
-        'order_item_id' => $row['order_item_id'],
-        'order_id'      => $row['order_id'],
-        'product_id'    => $row['product_id'],
-        'quantity'      => $row['quantity'],
-        'item_price'    => $row['item_price'],
-        'size'          => $row['size'],          // ✅ maat toegevoegd
+        'order_item_id' => (int)$row['order_item_id'],
+        'order_id'      => (int)$row['order_id'],
+        'product_id'    => (int)$row['product_id'],
+        'quantity'      => (int)$row['quantity'],
+        'item_price'    => (float)$row['item_price'],
+        'size'          => $row['size'],           // ongewijzigde string; JS toont dit als tekst
         'order_date'    => $row['order_date'],
         'product_name'  => $row['product_name'],
         'product_image' => $row['product_image'],
-        'return_status' => $row['return_status']   // NULL, requested, approved, processed, rejected
+        'return_status' => $row['return_status']   // NULL of status string
     ];
 }
+
+$stmt->close();
+$conn->close();
 
 echo json_encode($orderItems);
 exit;

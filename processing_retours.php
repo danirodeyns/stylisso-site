@@ -95,7 +95,7 @@ foreach ($rejectedItems as $itemId) {
 // --- Controleer of alle items van deze order approved of processed zijn ---
 $stmtAllItems = $conn->prepare("
     SELECT COUNT(*) AS total_items,
-           SUM(CASE WHEN r.status IN ('approved','processed') THEN 1 ELSE 0 END) AS processed_items
+        SUM(CASE WHEN r.status IN ('approved','processed') THEN 1 ELSE 0 END) AS processed_items
     FROM order_items oi
     LEFT JOIN returns r ON oi.id = r.order_item_id
     WHERE oi.order_id = ?

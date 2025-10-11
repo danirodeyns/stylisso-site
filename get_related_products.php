@@ -1,12 +1,13 @@
 <?php
 // get_related_products.php
+session_start();
 header('Content-Type: application/json');
 
-session_start();
-require 'db_connect.php'; // mysqli verbinding
+require 'db_connect.php';
 include 'translations.php';
 
 // --- Parameters ---
+$lang     = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl'; // standaard taal
 $category = isset($_GET['category']) ? (int)$_GET['category'] : 0;
 $exclude  = isset($_GET['exclude']) ? (int)$_GET['exclude'] : 0;
 
@@ -18,18 +19,25 @@ if ($category <= 0) {
     exit;
 }
 
-// --- SQL statement met LEFT JOIN op wishlist ---
-$sql = "SELECT p.id, p.name, p.price, p.image,
-               CASE WHEN w.product_id IS NOT NULL THEN 1 ELSE 0 END AS in_wishlist
-        FROM products p
-        LEFT JOIN wishlist w 
-          ON w.product_id = p.id AND w.user_id = ?
-        WHERE p.category_id = ? AND p.id != ?
-        ORDER BY p.created_at DESC
-        LIMIT 6";
+// --- SQL statement met LEFT JOIN op wishlist en translations ---
+$sql = "
+    SELECT p.id, 
+        COALESCE(t.name, p.name) AS name,
+        p.price,
+        p.image,
+        CASE WHEN w.product_id IS NOT NULL THEN 1 ELSE 0 END AS in_wishlist
+    FROM products p
+    LEFT JOIN product_translations t 
+        ON t.product_id = p.id AND t.lang = ?
+    LEFT JOIN wishlist w 
+        ON w.product_id = p.id AND w.user_id = ?
+    WHERE p.category_id = ? AND p.id != ?
+    ORDER BY p.created_at DESC
+    LIMIT 6
+";
 
 if ($stmt = $conn->prepare($sql)) {
-    $stmt->bind_param("iii", $userId, $category, $exclude);
+    $stmt->bind_param("siii", $lang, $userId, $category, $exclude);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -41,7 +49,6 @@ if ($stmt = $conn->prepare($sql)) {
     }
 
     echo json_encode($products);
-
     $stmt->close();
 } else {
     echo json_encode(["error" => "Database error: " . $conn->error]);

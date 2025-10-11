@@ -2,9 +2,13 @@
 session_start();
 header('Content-Type: application/json');
 
-include 'db_connect.php';
-include 'translations.php';
+require_once 'db_connect.php';
+require_once 'translations.php';
 
+// --- Taalparameter instellen ---
+$lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl'; // standaard taal
+
+// --- Check login ---
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['error' => 'Niet ingelogd']);
     exit;
@@ -12,7 +16,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $userId = $_SESSION['user_id'];
 
-// Laatste order ophalen
+// --- Laatste order ophalen ---
 $stmt = $conn->prepare("
     SELECT id, total_price, status, created_at 
     FROM orders 
@@ -33,39 +37,50 @@ if (!$order) {
 $orderId = $order['id'];
 $items   = [];
 
-// Gewone producten ophalen inclusief maat
+// --- Producten ophalen met vertaling ---
 $stmtProd = $conn->prepare("
-    SELECT oi.product_id, p.name, p.image, oi.quantity, oi.price, oi.maat
+    SELECT 
+        oi.product_id, 
+        COALESCE(pt.name, p.name) AS name, 
+        COALESCE(pt.description, p.description) AS description,
+        p.image, 
+        oi.quantity, 
+        oi.price, 
+        oi.maat
     FROM order_items oi
     JOIN products p ON oi.product_id = p.id
-    WHERE oi.order_id=? AND oi.product_id IS NOT NULL
+    LEFT JOIN product_translations pt 
+        ON pt.product_id = p.id AND pt.lang  = ?
+    WHERE oi.order_id = ? AND oi.product_id IS NOT NULL
 ");
-$stmtProd->bind_param("i", $orderId);
+$stmtProd->bind_param("si", $lang, $orderId);
 $stmtProd->execute();
 $resProd = $stmtProd->get_result();
+
 while ($row = $resProd->fetch_assoc()) {
     $items[] = [
         'id'       => (int)$row['product_id'],
         'name'     => $row['name'],
         'quantity' => (int)$row['quantity'],
         'price'    => (float)$row['price'],
-        'image'    => $row['image'] ? $row['image'] : 'placeholder.jpg',
-        'maat'     => $row['maat'],        // maat toegevoegd
-        'type'     => 'product'
+        'image'    => $row['image'] ?: 'placeholder.jpg',
+        'maat'     => $row['maat'],
+        'type'     => 'product',
     ];
 }
 
-// Vouchers ophalen
+// --- Vouchers ophalen ---
 $stmtVoucher = $conn->prepare("
     SELECT v.code, oi.price
     FROM order_items oi
     JOIN vouchers v ON oi.voucher_id = v.id
-    WHERE oi.order_id=? AND oi.type='voucher'
+    WHERE oi.order_id = ? AND oi.type = 'voucher'
     ORDER BY v.created_at ASC
 ");
 $stmtVoucher->bind_param("i", $orderId);
 $stmtVoucher->execute();
 $resVoucher = $stmtVoucher->get_result();
+
 while ($row = $resVoucher->fetch_assoc()) {
     $items[] = [
         'id'       => null,
@@ -73,11 +88,12 @@ while ($row = $resVoucher->fetch_assoc()) {
         'quantity' => 1,
         'price'    => (float)$row['price'],
         'image'    => null,
-        'maat'     => null,                // geen maat voor vouchers
-        'type'     => 'voucher'
+        'maat'     => null,
+        'type'     => 'voucher',
     ];
 }
 
+// --- Combineer alles ---
 $order['products'] = $items;
 
 echo json_encode($order);

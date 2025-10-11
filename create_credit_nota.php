@@ -1,7 +1,9 @@
 <?php
-include 'translations.php'; // Zorg dat deze als eerste staat
+include 'translations.php';
 require 'vendor/autoload.php';
 use Mpdf\Mpdf;
+
+$lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
 
 /**
  * Genereer een PDF-creditnota voor een bestelling
@@ -9,25 +11,27 @@ use Mpdf\Mpdf;
  * @param int $order_id ID van de order
  * @param array $approved_item_ids Array met order_item_id's die goedgekeurd zijn
  * @param mysqli $conn Databaseverbinding
+ * @param string $lang Taalcode, bv. 'be-nl', 'be-fr', 'be-de'
  * @return string|false Bestandsnaam bij succes, false bij fout
  */
-function create_credit_nota($order_id, $approved_item_ids, $conn) {
+function create_credit_nota($order_id, $approved_item_ids, $conn, $lang) {
     if (empty($approved_item_ids)) return false;
 
-    // Ophalen van orderinformatie + gebruikersgegevens
+    // --- Order + klantinfo ophalen ---
     $stmt = $conn->prepare("
         SELECT o.id, o.total_price, o.status, o.created_at,
-               u.name, u.email, u.company_name, u.vat_number,
-               COALESCE(b.street, s.street) AS street,
-               COALESCE(b.house_number, s.house_number) AS house_number,
-               COALESCE(b.postal_code, s.postal_code) AS postal_code,
-               COALESCE(b.city, s.city) AS city,
-               COALESCE(b.country, s.country) AS country
+            u.name, u.email, u.company_name, u.vat_number,
+            COALESCE(b.street, s.street) AS street,
+            COALESCE(b.house_number, s.house_number) AS house_number,
+            COALESCE(b.postal_code, s.postal_code) AS postal_code,
+            COALESCE(b.city, s.city) AS city,
+            COALESCE(b.country, s.country) AS country
         FROM orders o
         JOIN users u ON o.user_id = u.id
         LEFT JOIN addresses s ON s.user_id = u.id AND s.type = 'shipping'
         LEFT JOIN addresses b ON b.user_id = u.id AND b.type = 'billing'
         WHERE o.id = ?
+        ORDER BY b.id DESC, s.id DESC
         LIMIT 1
     ");
     $stmt->bind_param("i", $order_id);
@@ -35,7 +39,7 @@ function create_credit_nota($order_id, $approved_item_ids, $conn) {
     $order = $stmt->get_result()->fetch_assoc();
     if (!$order) return false;
 
-    // Opbouwen van adres
+    // --- Adres opbouwen ---
     $addressParts = [];
     if (!empty($order['street'])) $addressParts[] = htmlspecialchars($order['street']) . ' ' . htmlspecialchars($order['house_number']);
     if (!empty($order['postal_code'])) $addressParts[] = htmlspecialchars($order['postal_code']);
@@ -43,20 +47,22 @@ function create_credit_nota($order_id, $approved_item_ids, $conn) {
     if (!empty($order['country'])) $addressParts[] = htmlspecialchars($order['country']);
     $fullAddress = implode(', ', $addressParts);
 
-    // Ophalen van alleen goedgekeurde items
+    // --- Alleen goedgekeurde items ophalen inclusief vertaalde productnamen ---
     $in = implode(',', array_map('intval', $approved_item_ids));
     $stmt_items = $conn->prepare("
-        SELECT oi.id AS order_item_id, oi.quantity, oi.price, oi.type, p.name AS product_name
+        SELECT oi.id AS order_item_id, oi.quantity, oi.price, oi.type,
+               COALESCE(pt.name, p.name) AS product_name
         FROM order_items oi
         LEFT JOIN products p ON oi.product_id = p.id
+        LEFT JOIN product_translations pt ON pt.product_id = p.id AND pt.lang = ?
         WHERE oi.order_id = ? AND oi.id IN ($in)
     ");
-    $stmt_items->bind_param("i", $order_id);
+    $stmt_items->bind_param("si", $lang, $order_id);
     $stmt_items->execute();
     $items = $stmt_items->get_result()->fetch_all(MYSQLI_ASSOC);
     if (!$items) return false;
 
-    // Begin HTML voor PDF
+    // --- HTML genereren ---
     $html = '<h1>' . t('credit_note_title') . '</h1>';
     $html .= '<p><strong>' . t('credit_note_number') . ':</strong> CN-' . $order['id'] . '</p>';
     $html .= '<p><strong>' . t('credit_note_date') . ':</strong> ' . date('d-m-Y') . '</p>';
@@ -77,6 +83,7 @@ function create_credit_nota($order_id, $approved_item_ids, $conn) {
 
     $totalCredit = 0;
     $item_ids_for_filename = [];
+
     foreach ($items as $item) {
         $productName = $item['type'] === 'voucher' ? t('gift_voucher') : $item['product_name'];
         $qty = intval($item['quantity']);
@@ -96,7 +103,7 @@ function create_credit_nota($order_id, $approved_item_ids, $conn) {
     $html .= '</tbody></table>';
     $html .= '<p><strong>' . t('total_to_refund') . ':</strong> -€' . number_format($totalCredit, 2) . '</p>';
 
-    // Map voor creditnota's
+    // --- Map voor creditnota’s ---
     $dir = __DIR__ . '/credit_notes';
     if (!is_dir($dir)) mkdir($dir, 0755, true);
 
@@ -106,6 +113,7 @@ function create_credit_nota($order_id, $approved_item_ids, $conn) {
     $filename = $dateStr . '-' . $order_id . '-' . $itemIdsStr . '-CN.pdf';
     $filepath = $dir . '/' . $filename;
 
+    // --- PDF genereren ---
     try {
         $mpdf = new Mpdf();
         $mpdf->WriteHTML($html);

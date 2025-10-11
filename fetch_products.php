@@ -1,22 +1,49 @@
-<?php
+<?php 
 require_once 'db_connect.php';
 include 'translations.php';
 
 session_start();
 
-// Zorg dat je user_id in de sessie hebt staan na inloggen
+// ===============================
+// Taal bepalen
+// ===============================
+$lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
+
+// ===============================
+// User ID uit sessie
+// ===============================
 $user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
 
+// ===============================
+// Categorie / Subcategorie
+// ===============================
 $category_id = isset($_GET['cat']) ? intval($_GET['cat']) : 0;
 $subcategory_id = isset($_GET['sub']) ? intval($_GET['sub']) : null;
 
-// SQL query met categorie en subcategorie
-$sql = "SELECT * FROM products WHERE category_id = ?";
-$params = [$category_id];
-$types = "i";
+// ===============================
+// SQL query met vertalingen
+// ===============================
+$sql = "
+    SELECT 
+        p.id,
+        p.category_id,
+        p.subcategory_id,
+        COALESCE(pt.name, p.name) AS name,
+        COALESCE(pt.description, p.description) AS description,
+        COALESCE(pt.specifications, p.specifications) AS specifications,
+        COALESCE(pt.maat, p.maat) AS maat,
+        p.price,
+        p.image
+    FROM products p
+    LEFT JOIN product_translations pt 
+        ON pt.product_id = p.id AND pt.lang = ?
+    WHERE p.category_id = ?
+";
+$params = [$lang, $category_id];
+$types = "si";
 
 if ($subcategory_id) {
-    $sql .= " AND subcategory_id = ?";
+    $sql .= " AND p.subcategory_id = ?";
     $types .= "i";
     $params[] = $subcategory_id;
 }
@@ -26,6 +53,9 @@ $stmt->bind_param($types, ...$params);
 $stmt->execute();
 $result = $stmt->get_result();
 
+// ===============================
+// Producten verwerken
+// ===============================
 $products = [];
 while ($row = $result->fetch_assoc()) {
     // standaard false
@@ -42,8 +72,16 @@ while ($row = $result->fetch_assoc()) {
         $check->close();
     }
 
+    // fallback image
+    $row['image'] = $row['image'] ?: 'images/placeholder.png';
+    $row['price'] = number_format((float)$row['price'], 2, '.', '');
+
     $products[] = $row;
 }
 
-echo json_encode($products);
+// ===============================
+// JSON-output
+// ===============================
+header('Content-Type: application/json; charset=utf-8');
+echo json_encode($products, JSON_UNESCAPED_UNICODE);
 ?>

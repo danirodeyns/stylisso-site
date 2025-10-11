@@ -1,7 +1,9 @@
 <?php
-include 'translations.php'; // Zorg dat deze als eerste staat
+include 'translations.php';
 require 'vendor/autoload.php';
 use Mpdf\Mpdf;
+
+$lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
 
 /**
  * Genereer een PDF-factuur voor een bestelling
@@ -9,19 +11,19 @@ use Mpdf\Mpdf;
  * @param int $order_id ID van de order
  * @param string $order_date Datum van de order (timestamp of string)
  * @param mysqli $conn Databaseverbinding
+ * @param string $lang Taalcode, bv. 'be-nl', 'be-fr', 'be-de'
  * @return string|false Bestandsnaam bij succes, false bij fout
  */
-function create_invoice($order_id, $order_date, $conn) {
+function create_invoice($order_id, $order_date, $conn, $lang) {
     // Ophalen van orderinformatie + gebruikersgegevens
     $stmt = $conn->prepare("
         SELECT o.id, o.total_price, o.status, o.created_at,
-               u.name, u.email, u.company_name, u.vat_number,
-               -- Eerst billing, fallback naar shipping
-               COALESCE(b.street, s.street) AS street,
-               COALESCE(b.house_number, s.house_number) AS house_number,
-               COALESCE(b.postal_code, s.postal_code) AS postal_code,
-               COALESCE(b.city, s.city) AS city,
-               COALESCE(b.country, s.country) AS country
+            u.name, u.email, u.company_name, u.vat_number,
+            COALESCE(b.street, s.street) AS street,
+            COALESCE(b.house_number, s.house_number) AS house_number,
+            COALESCE(b.postal_code, s.postal_code) AS postal_code,
+            COALESCE(b.city, s.city) AS city,
+            COALESCE(b.country, s.country) AS country
         FROM orders o
         JOIN users u ON o.user_id = u.id
         LEFT JOIN addresses s ON s.user_id = u.id AND s.type = 'shipping'
@@ -43,14 +45,17 @@ function create_invoice($order_id, $order_date, $conn) {
     if (!empty($order['country'])) $addressParts[] = htmlspecialchars($order['country']);
     $fullAddress = implode(', ', $addressParts);
 
-    // Ophalen van order items
+    // Ophalen van order items inclusief vertaalde productnamen
     $stmt_items = $conn->prepare("
-        SELECT oi.quantity, oi.price, oi.type, p.name AS product_name
+        SELECT oi.quantity, oi.price, oi.type, 
+            COALESCE(pt.name, p.name) AS product_name
         FROM order_items oi
         LEFT JOIN products p ON oi.product_id = p.id
+        LEFT JOIN product_translations pt 
+            ON pt.product_id = p.id AND pt.lang = ?
         WHERE oi.order_id = ?
     ");
-    $stmt_items->bind_param("i", $order_id);
+    $stmt_items->bind_param("si", $lang, $order_id);
     $stmt_items->execute();
     $items = $stmt_items->get_result()->fetch_all(MYSQLI_ASSOC);
 
@@ -94,7 +99,6 @@ function create_invoice($order_id, $order_date, $conn) {
     $dir = __DIR__ . '/invoices';
     if (!is_dir($dir)) mkdir($dir, 0755, true);
 
-    // Bestandsnaam in formaat YYYY-MM-DD-order_id.pdf
     $orderDateFormatted = date('Y-m-d', strtotime($order_date));
     $filename = $orderDateFormatted . '-' . $order_id . '.pdf';
     $filepath = $dir . '/' . $filename;
