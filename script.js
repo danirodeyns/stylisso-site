@@ -1523,6 +1523,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const productDiv = document.createElement('div');
             productDiv.className = 'return-product';
 
+            // ✅ Maak de hele kaart klikbaar naar de productpagina
+            productDiv.addEventListener('click', () => {
+              if (product.product_id) {
+                window.location.href = `productpagina.html?id=${product.product_id}`;
+              }
+            });
+            productDiv.style.cursor = 'pointer';
+
             const img = document.createElement('img');
             img.src = product.product_image;
             img.alt = product.product_name;
@@ -1534,6 +1542,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const returnLink = document.createElement('a');
             returnLink.href = '#';
             returnLink.className = 'return-link';
+
+            // ❗ Zorg dat klikken op retourlink de kaartlink niet triggert
+            returnLink.addEventListener('click', e => e.stopPropagation());
 
             const today = new Date();
             const orderDate = new Date(order.order_date);
