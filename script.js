@@ -538,39 +538,37 @@ document.addEventListener('DOMContentLoaded', function () {
       csrf_token: window.csrfToken
     });
 
-    fetchWithLang('cart.php?action=remove_item', {
+    return fetchWithLang('cart.php?action=remove_item', {
       method: 'POST',
       body: formData
     })
-    .then(text => {
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch (err) {
-        console.error('Geen geldige JSON van server:', text);
-        const msg = translations[lang]?.script_remove_item_error || 'Er ging iets mis bij het verwijderen.';
-        alert(msg);
-        return;
-      }
-      if (data.success) fetchCart(document.getElementById('cartDropdown'));
+    .then(data => { // data is al JSON
+      if (data.success) return true;
       else {
         const msg = data.message || translations[lang]?.script_remove_item_failed || 'Fout bij verwijderen item';
         alert(msg);
+        return false;
       }
     });
   }
 
   // --- Event listener ---
   document.addEventListener('click', function(e) {
-    if (e.target.closest('.remove-item')) {
-      const btn = e.target.closest('.remove-item');
-      const type = btn.dataset.type;
-      const id = btn.dataset.id ? parseInt(btn.dataset.id) : null;
-      const index = btn.dataset.index ? parseInt(btn.dataset.index) : null;
-      console.log('Verwijder:', {type, id, index});
-      removeItemFromServer(id, type, index);
-    }
-  });
+    const btn = e.target.closest('.remove-item');
+    if (!btn) return;
+
+    const type = btn.dataset.type;
+    const id = btn.dataset.id ? parseInt(btn.dataset.id) : null;
+    const index = btn.dataset.index ? parseInt(btn.dataset.index) : null;
+    console.log('Verwijder:', {type, id, index});
+
+    removeItemFromServer(id, type, index).then(success => {
+      if (success) {
+        // Haal de volledige cart opnieuw op van server
+        fetchCart(document.getElementById('cartDropdown'));
+        }
+      })
+    });
 
   loadNewProducts();
   loadPopularProducts();
