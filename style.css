@@ -24,6 +24,46 @@ header {
   gap: 0.5rem;
 }
 
+input[type="checkbox"] {
+  appearance: none;
+  height: 20px;
+  width: 20px;
+  border: 2px solid black;
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-grid;
+  place-content: center;
+  vertical-align: middle;
+}
+
+input[type="checkbox"]::before {
+  content: '';
+  background-color: black;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px black;
+  background-image: url('checkbox/check.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  rotate: -360deg;
+  scale: 0;
+  opacity: 0;
+  transition: 200ms ease;
+}
+
+input[type="checkbox"]:checked::before {
+  rotate: 0;
+  scale: 1;
+  opacity: 1;
+}
+
+input[type="checkbox"]:focus-visible {
+  outline: 2px solid black;
+  outline-offset: 2px;
+}
+
 .logo {
   font-size: 1.5rem;
   font-weight: bold;
@@ -1027,6 +1067,54 @@ input[type="number"].quantity-input {
 }
 
 /* Alleen het checkbox-label */
+label[for="terms_of_use"] {
+  display: flex;               /* flex container */
+  align-items: center;         /* verticale uitlijning */
+  justify-content: flex-start; /* tekst links */
+  gap: 10px;                   /* ruimte tussen tekst en checkbox */
+  cursor: pointer;
+  font-weight: normal;          /* optioneel, kan anders dan andere labels */
+  margin-bottom: 1rem;          /* optioneel, eigen spacing */
+}
+
+/* Checkbox rechts van de tekst */
+label[for="terms_of_use"] input[type="checkbox"] {
+  order: 1;  /* checkbox voor de tekst */
+  width: auto; /* geen 100% zoals normale inputs */
+  margin: 0;   /* geen extra margin */
+  padding: 0;  /* geen padding */
+}
+
+/* Tekst eerst */
+label[for="terms_of_use"] span {
+  order: 2;
+}
+
+/* Alleen het checkbox-label */
+label[for="newsletter"] {
+  display: flex;               /* flex container */
+  align-items: center;         /* verticale uitlijning */
+  justify-content: flex-start; /* tekst links */
+  gap: 10px;                   /* ruimte tussen tekst en checkbox */
+  cursor: pointer;
+  font-weight: normal;          /* optioneel, kan anders dan andere labels */
+  margin-bottom: 1rem;          /* optioneel, eigen spacing */
+}
+
+/* Checkbox rechts van de tekst */
+label[for="newsletter"] input[type="checkbox"] {
+  order: 1;  /* checkbox voor de tekst */
+  width: auto; /* geen 100% zoals normale inputs */
+  margin: 0;   /* geen extra margin */
+  padding: 0;  /* geen padding */
+}
+
+/* Tekst eerst */
+label[for="newsletter"] span {
+  order: 2;
+}
+
+/* Alleen het checkbox-label */
 label[for="different_billing"] {
   display: flex;               /* flex container */
   align-items: center;         /* verticale uitlijning */
@@ -1043,6 +1131,7 @@ label[for="different_billing"] input[type="checkbox"] {
   width: auto; /* geen 100% zoals normale inputs */
   margin: 0;   /* geen extra margin */
   padding: 0;  /* geen padding */
+  border-radius: 50%;
 }
 
 /* Tekst eerst */
@@ -3012,6 +3101,20 @@ label[for="different_billing"] span {
     background-color: black;
     color: #eee;
     border-top: 1px solid #333;
+  }
+
+  input[type="checkbox"] {
+    border-color: white;
+  }
+
+  input[type="checkbox"]::before {
+    background-color: white;
+    box-shadow: 0 0 8px white;
+    background-image: url('checkbox/check\ \(dark\ mode\).png');
+  }
+
+  input[type="checkbox"]:focus-visible {
+    outline-color: white;
   }
 
   .social-icon-light {
