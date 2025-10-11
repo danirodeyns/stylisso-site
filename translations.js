@@ -731,6 +731,7 @@ const translations = {
     "script_processing_retours_alert_processing_error": "Fout bij verwerken retour",
     "script_processing_retours_alert_general_error": "Er is iets misgegaan bij het verwerken van de retour.",
     "script_ongeldige_betaalmethode": "Ongeldige betaalmethode.",
+    "script_wishlist_size": "Maat:",
 },
   "be-fr": {
     // index.html
@@ -1464,6 +1465,7 @@ const translations = {
     "script_processing_retours_alert_processing_error": "Erreur lors du traitement du retour.",
     "script_processing_retours_alert_general_error": "Une erreur s'est produite lors du traitement du retour.",
     "script_ongeldige_betaalmethode": "Méthode de paiement invalide.",
+    "script_wishlist_size": "Taille:",
 },
   "be-en": {
     // index.html
@@ -2197,6 +2199,7 @@ const translations = {
     "script_processing_retours_alert_processing_error": "Error processing return.",
     "script_processing_retours_alert_general_error": "An error occurred while processing the return.",
     "script_ongeldige_betaalmethode": "Invalid payment method",
+    "script_wishlist_size": "Size:",
 },
 "be-de": {
     // index.html
@@ -2927,5 +2930,6 @@ const translations = {
     "script_processing_retours_alert_success": "Retour erfolgreich verarbeitet!",
     "script_processing_retours_alert_processing_error": "Fehler beim Bearbeiten der Retoure",
     "script_processing_retours_alert_general_error": "Beim Verarbeiten der Retoure ist ein Fehler aufgetreten.",
-    "script_ongeldige_betaalmethode": "Ungültige Zahlungsmethode."
+    "script_ongeldige_betaalmethode": "Ungültige Zahlungsmethode.",
+    "script_wishlist_size": "Größe:",
 }};

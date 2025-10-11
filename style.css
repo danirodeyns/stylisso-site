@@ -2779,6 +2779,16 @@ label[for="different_billing"] span {
   color: #666;
 }
 
+/* Maat selectie */
+.wishlist-product-size {
+  width: 80px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  text-align: center;
+}
+
 .wishlist-knop {
   position: absolute;
   bottom: 0.2rem;
@@ -4016,6 +4026,13 @@ label[for="different_billing"] span {
 
   .wishlist-container:hover {
     color: #eee;
+  }
+
+  /* Maat selectie */
+  .wishlist-product-size {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    border: 1px solid #555;
   }
 
   .page-content.search-page h1 {

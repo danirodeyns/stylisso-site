@@ -2264,6 +2264,12 @@ async function loadWishlist() {
           <h3>${item.name}</h3>
           ${item.variant ? `<p>${item.variant}</p>` : ""}
           <p><span data-i18n="script_cart_price">Prijs:</span> €${parseFloat(item.price).toFixed(2)}</p>
+          ${item.sizes && item.sizes.length > 0
+            ? `<label for="size-${item.id}" data-i18n="script_wishlist_size">Maat:</label>
+              <select id="size-${item.id}" class="wishlist-product-size">
+                ${item.sizes.map(size => `<option value="${size}">${size}</option>`).join('')}
+              </select>`
+            : ""}
           <div class="wishlist-actions">
             <button class="add-to-cart" data-id="${item.id}">
               <img src="shopping bag/shopping bag.png" alt="Toevoegen aan winkelwagen" class="cart-icon cart-icon-light" />
@@ -2277,6 +2283,16 @@ async function loadWishlist() {
         </div>
       `;
 
+      // Voeg dit toe na het maken van de select-elementen
+      const sizeSelect = card.querySelector(".wishlist-product-size");
+      if (sizeSelect) {
+        sizeSelect.addEventListener("click", (e) => e.stopPropagation());
+        sizeSelect.addEventListener("mousedown", (e) => e.stopPropagation()); // voorkomt dat klik wordt doorgestuurd
+        sizeSelect.addEventListener("change", (e) => {
+          e.stopPropagation();
+        });
+      }
+
       // --- klik op de card → naar productpagina ---
       card.addEventListener("click", () => {
         window.location.href = `productpagina.html?id=${item.id}`;
@@ -2288,10 +2304,14 @@ async function loadWishlist() {
         const productId = e.currentTarget.dataset.id;
         if (!productId) return;
 
+        // --- maat ophalen indien aanwezig ---
+        const sizeSelect = card.querySelector(".wishlist-product-size");
+        const selectedSize = sizeSelect ? sizeSelect.value : '';
+
         await fetch("./wishlist_cart_add.php", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: `product_id=${productId}&quantity=1&csrf_token=${encodeURIComponent(token)}`
+          body: `product_id=${productId}&quantity=1&size=${encodeURIComponent(selectedSize)}&csrf_token=${encodeURIComponent(token)}`
         });
 
         window.location.href = "cart.html";
@@ -2316,6 +2336,8 @@ async function loadWishlist() {
     });
 
     container.appendChild(grid);
+
+    applyTranslations(container);
 
   } catch (err) {
     const container = document.getElementById("wishlist-container");

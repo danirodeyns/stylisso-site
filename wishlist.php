@@ -12,12 +12,12 @@ if (!isset($_SESSION['user_id'])) {
 $userId = (int)$_SESSION['user_id'];
 $lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl'; // standaardtaal
 
-// Query met vertalingen
 $sql = "
     SELECT 
         p.id,
         COALESCE(pt.name, p.name) AS name,
         COALESCE(pt.description, p.description) AS description,
+        COALESCE(pt.maat, p.maat) AS maat,
         p.price,
         p.image
     FROM wishlist w
@@ -39,6 +39,14 @@ $result = $stmt->get_result();
 $items = [];
 
 while ($row = $result->fetch_assoc()) {
+    // ✅ Zet maat-string om naar array
+    if (!empty($row['maat'])) {
+        $row['sizes'] = explode(";", $row['maat']);
+    } else {
+        $row['sizes'] = null;
+    }
+    unset($row['maat']); // optioneel, voor nettere output
+
     $items[] = $row;
 }
 
