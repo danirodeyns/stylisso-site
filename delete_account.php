@@ -49,13 +49,23 @@ $conn->query("UPDATE returns SET user_id = NULL WHERE user_id = $userId");
 $conn->query("DELETE FROM wishlist WHERE user_id = $userId");
 $conn->query("DELETE FROM cart WHERE user_id = $userId");
 
-// 6️⃣ Mail sturen
+// 6️⃣ Mail sturen via mailing.php
 if ($userEmail) {
-    $subject = t('account_delete_subject');
-    $message = t('account_delete_message');
-    $headers = "From: no-reply@stylisso.be";
+    $postData = http_build_query([
+        'task' => 'account_delete',
+        'email' => $userEmail
+    ]);
 
-    @mail($userEmail, $subject, $message, $headers);
+    $context = stream_context_create([
+        'http' => [
+            'method'  => 'POST',
+            'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
+            'content' => $postData
+        ]
+    ]);
+
+    // Verstuur de mail, errors worden genegeerd zoals @mail eerder
+    @file_get_contents('mailing.php', false, $context);
 }
 
 // 7️⃣ Session vernietigen en redirect

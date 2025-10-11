@@ -5,7 +5,7 @@ header('Content-Type: application/json');
 include 'db_connect.php';
 include 'translations.php';
 include 'csrf.php';
-csrf_validate(); // stopt script als token fout is
+csrf_validate();
 
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['error' => 'Niet ingelogd']);
@@ -23,9 +23,10 @@ if (!$orderItemId || empty($reason)) {
 
 // Controleer of order_item bij deze gebruiker hoort
 $stmt = $conn->prepare("
-    SELECT oi.id, oi.product_id, oi.quantity, oi.price, oi.order_id
+    SELECT oi.id, oi.product_id, oi.quantity, oi.price, oi.order_id, p.name AS product_name
     FROM order_items oi
     JOIN orders o ON oi.order_id = o.id
+    JOIN products p ON oi.product_id = p.id
     WHERE oi.id = ? AND o.user_id = ?
 ");
 $stmt->bind_param("ii", $orderItemId, $userId);
@@ -57,27 +58,37 @@ if ($stmt->execute()) {
     $stmtLedger->bind_param("iiid", $returnId, $orderItem['product_id'], $orderItem['quantity'], $amount);
     $stmtLedger->execute();
 
-    // Controleer of ALLE items in deze order retour aangevraagd zijn
-    $orderId = $orderItem['order_id'];
+    // --- MAILING VIA mailing.php (file_get_contents) ---
+    $userData = $conn->prepare("SELECT email, name FROM users WHERE id = ?");
+    $userData->bind_param("i", $userId);
+    $userData->execute();
+    $userRow = $userData->get_result()->fetch_assoc();
+    $userEmail = $userRow['email'] ?? '';
+    $userName = $userRow['name'] ?? 'Klant';
 
-    // Tel totaal aantal items in de order
-    $stmtTotal = $conn->prepare("SELECT COUNT(*) as total_items FROM order_items WHERE order_id = ?");
-    $stmtTotal->bind_param("i", $orderId);
-    $stmtTotal->execute();
-    $resTotal = $stmtTotal->get_result()->fetch_assoc();
-    $totalItems = $resTotal['total_items'];
+    if ($userEmail) {
+        $postData = http_build_query([
+            'task' => 'return_requested',
+            'email' => $userEmail,
+            'name'  => $userName,
+            'order_item_id' => $orderItemId,
+            'product_name' => $orderItem['product_name'],
+            'quantity' => $orderItem['quantity'],
+            'reason' => $reason,
+            'lang' => 'be-nl' // optie om taal uit user tabel of voorkeur te halen
+        ]);
 
-    // Tel hoeveel unieke order_items retour zijn aangevraagd
-    $stmtReturned = $conn->prepare("
-        SELECT COUNT(DISTINCT r.order_item_id) as returned_items
-        FROM returns r
-        JOIN order_items oi ON r.order_item_id = oi.id
-        WHERE oi.order_id = ? AND r.status = 'requested'
-    ");
-    $stmtReturned->bind_param("i", $orderId);
-    $stmtReturned->execute();
-    $resReturned = $stmtReturned->get_result()->fetch_assoc();
-    $returnedItems = $resReturned['returned_items'];
+        $context = stream_context_create([
+            'http' => [
+                'method'  => 'POST',
+                'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
+                'content' => $postData
+            ]
+        ]);
+
+        // Mail triggeren (error suppressed)
+        @file_get_contents('mailing.php', false, $context);
+    }
 
     echo json_encode(['success' => 'Retouraanvraag succesvol ingediend!']);
     exit;

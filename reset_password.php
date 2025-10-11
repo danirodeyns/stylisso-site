@@ -1,11 +1,11 @@
 <?php
 session_start();
-require 'db_connect.php'; // maakt $conn aan (mysqli)
+require 'db_connect.php';
 include 'csrf.php';
 include 'translations.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    csrf_validate(); // stopt script als token fout is
+    csrf_validate();
 
     $token = $_POST["token"] ?? "";
     $password = $_POST["password"] ?? "";
@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     // Token controleren bij users
-    $stmt = $conn->prepare("SELECT id, reset_expires FROM users WHERE reset_token = ? LIMIT 1");
+    $stmt = $conn->prepare("SELECT id, email, reset_expires FROM users WHERE reset_token = ? LIMIT 1");
     $stmt->bind_param("s", $token);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -40,6 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     $userId = $row["id"];
+    $userEmail = $row["email"];
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
     // Wachtwoord updaten
@@ -47,6 +48,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt->bind_param("si", $hashedPassword, $userId);
     $stmt->execute();
     $stmt->close();
+
+    // --- Verstuur bevestigingsmail via mailing.php ---
+    if ($userEmail) {
+        $postData = http_build_query([
+            'task' => 'password_reset_success',
+            'email' => $userEmail,
+            'lang' => 'be-nl' // optie om taal uit user of order op te halen
+        ]);
+
+        $context = stream_context_create([
+            'http' => [
+                'method'  => 'POST',
+                'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
+                'content' => $postData
+            ]
+        ]);
+
+        // Mail triggeren
+        @file_get_contents('mailing.php', false, $context);
+    }
 
     header("Location: reset_succes.html");
     exit;

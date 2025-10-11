@@ -25,7 +25,6 @@ if (!$userData || $userData['toegang'] !== 'staff') {
 
 // --- JSON POST uitlezen ---
 $input = json_decode(file_get_contents('php://input'), true);
-
 $orderId = intval($input['order_id'] ?? 0);
 $approvedItems = $input['approved_items'] ?? [];
 $rejectedItems = $input['rejected_items'] ?? [];
@@ -42,11 +41,12 @@ function updateReturnStatus($conn, $itemId, $newStatus) {
     return $stmt->execute();
 }
 
+// ==========================
 // --- Verwerk approved items ---
+// ==========================
 foreach ($approvedItems as $itemId) {
     $itemId = intval($itemId);
 
-    // Controleer huidige status
     $stmtCheck = $conn->prepare("SELECT status, quantity FROM returns WHERE order_item_id = ? LIMIT 1");
     $stmtCheck->bind_param("i", $itemId);
     $stmtCheck->execute();
@@ -57,7 +57,6 @@ foreach ($approvedItems as $itemId) {
     if ($currentStatus !== 'processed') {
         updateReturnStatus($conn, $itemId, 'approved');
 
-        // --- Update amount in return_ledger naar negatief van prijs * quantity ---
         $stmtAmount = $conn->prepare("
             UPDATE return_ledger rl
             JOIN returns r ON rl.return_id = r.id
@@ -70,18 +69,20 @@ foreach ($approvedItems as $itemId) {
     }
 }
 
-// --- Maak 1 creditnota voor alle goedgekeurde items van deze order ---
+// ==========================
+// --- Creditnota maken ---
+// ==========================
 if (!empty($approvedItems) && function_exists('create_credit_nota')) {
     create_credit_nota($orderId, date('Y-m-d'), $conn);
 }
 
+// ==========================
 // --- Verwerk rejected items ---
+// ==========================
 foreach ($rejectedItems as $itemId) {
     $itemId = intval($itemId);
-
     updateReturnStatus($conn, $itemId, 'rejected');
 
-    // Zet bedrag op 0 in return_ledger
     $stmtLedger = $conn->prepare("
         UPDATE return_ledger rl
         JOIN returns r ON rl.return_id = r.id
@@ -92,7 +93,71 @@ foreach ($rejectedItems as $itemId) {
     $stmtLedger->execute();
 }
 
-// --- Controleer of alle items van deze order approved of processed zijn ---
+// ==========================
+// --- Mail sturen bij approved ---
+// ==========================
+if (!empty($approvedItems)) {
+    // Haal alle goedgekeurde items van deze order
+    $stmtApproved = $conn->prepare("
+        SELECT oi.id AS order_item_id, p.id AS product_id, p.price, oi.quantity, pt.name
+        FROM order_items oi
+        LEFT JOIN products p ON oi.product_id = p.id
+        LEFT JOIN product_translations pt ON p.id = pt.product_id
+        LEFT JOIN returns r ON oi.id = r.order_item_id
+        WHERE oi.order_id = ? AND r.status = 'approved'
+        ORDER BY oi.id ASC
+    ");
+    $stmtApproved->bind_param("i", $orderId);
+    $stmtApproved->execute();
+    $approvedProducts = $stmtApproved->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    if (!empty($approvedProducts)) {
+        // Haal de taal van de order op
+        $stmtOrderLang = $conn->prepare("SELECT taal FROM orders WHERE id = ? LIMIT 1");
+        $stmtOrderLang->bind_param("i", $orderId);
+        $stmtOrderLang->execute();
+        $orderLang = $stmtOrderLang->get_result()->fetch_assoc()['taal'] ?? 'be-nl';
+
+        // Haal e-mail van de gebruiker op
+        $stmtUserEmail = $conn->prepare("SELECT email FROM users WHERE id = ?");
+        $stmtUserEmail->bind_param("i", $userId);
+        $stmtUserEmail->execute();
+        $userEmail = $stmtUserEmail->get_result()->fetch_assoc()['email'] ?? null;
+
+        if ($userEmail) {
+            // Stuur alleen data door naar mailing.php
+            $approvedProductsList = [];
+            foreach ($approvedProducts as $prod) {
+                $approvedProductsList[] = [
+                    'name' => $prod['name'],
+                    'quantity' => $prod['quantity'],
+                    'price' => $prod['price']
+                ];
+            }
+
+            $postData = http_build_query([
+                'task' => 'retour_approved',
+                'email' => $userEmail,
+                'lang' => $orderLang,
+                'approved_products' => json_encode($approvedProductsList)
+            ]);
+
+            $context = stream_context_create([
+                'http' => [
+                    'method' => 'POST',
+                    'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
+                    'content' => $postData
+                ]
+            ]);
+
+            file_get_contents('mailing.php', false, $context);
+        }
+    }
+}
+
+// ==========================
+// --- Controleer of alle items approved of processed zijn ---
+// ==========================
 $stmtAllItems = $conn->prepare("
     SELECT COUNT(*) AS total_items,
         SUM(CASE WHEN r.status IN ('approved','processed') THEN 1 ELSE 0 END) AS processed_items
@@ -105,12 +170,11 @@ $stmtAllItems->execute();
 $resultAll = $stmtAllItems->get_result()->fetch_assoc();
 
 if ($resultAll && $resultAll['total_items'] > 0 && $resultAll['total_items'] == $resultAll['processed_items']) {
-    // --- Update order status naar cancelled ---
     $stmtUpdateOrder = $conn->prepare("UPDATE orders SET status = 'cancelled' WHERE id = ? LIMIT 1");
     $stmtUpdateOrder->bind_param("i", $orderId);
     $stmtUpdateOrder->execute();
 }
 
-// Stuur een vertaald succesbericht terug
+// Stuur vertaald succesbericht terug
 echo json_encode(['success' => true, 'message' => t('processing_retours_alert_success')]);
 ?>

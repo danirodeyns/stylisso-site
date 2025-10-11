@@ -3,13 +3,10 @@ session_start();
 
 include 'db_connect.php';
 include 'translations.php';
-include 'csrf.php';
-csrf_validate(); // stopt script als token fout is
-
-header('Content-Type: application/json'); // JSON response
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $email = trim($_POST["email"]);
+
+    $email = trim($_POST["email"] ?? '');
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo json_encode(['error' => t('invalid_email')]);
@@ -17,16 +14,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     // Controleer of e-mailadres bestaat
-    $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
-    if (!$stmt) {
-        echo json_encode(['error' => t('db_prepare_failed') . ": " . $conn->error]);
-        exit;
-    }
+    $stmt = $conn->prepare("SELECT id, name FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
-    $result = $stmt->get_result();
+    $user = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
 
-    if ($result->num_rows === 0) {
+    if (!$user) {
         echo json_encode(['error' => t('email_not_found')]);
         exit;
     }
@@ -36,30 +30,34 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $expires = date("Y-m-d H:i:s", strtotime("+1 hour"));
 
     // Sla token op in database
-    $stmt = $conn->prepare("UPDATE users SET reset_token = ?, reset_expires = ? WHERE email = ?");
-    if (!$stmt) {
-        echo json_encode(['error' => t('db_prepare_failed') . ": " . $conn->error]);
-        exit;
-    }
-    $stmt->bind_param("sss", $token, $expires, $email);
+    $stmt = $conn->prepare("UPDATE users SET reset_token = ?, reset_expires = ? WHERE id = ?");
+    $stmt->bind_param("ssi", $token, $expires, $user['id']);
     $stmt->execute();
+    $stmt->close();
 
     // Maak resetlink
     $resetLink = "https://stylisso.be/reset_password.html?token=" . $token;
 
-    // Stuur e-mail
-    $to = $email;
-    $subject = t('password_reset_subject');
-    $message = t('password_reset_message', [
-        '{resetLink}' => $resetLink,
-        '{expires}' => '1 ' . t('hour')
+    // --- Verstuur mail via mailing.php ---
+    $postData = http_build_query([
+        'task' => 'password_reset_link',  // task in mailing.php voor wachtwoord reset
+        'email' => $email,
+        'reset_link' => $resetLink,
+        'lang' => 'be-nl' // optie om taal uit user tabel of voorkeur te halen
     ]);
-    $headers = "From: klantendienst@stylisso.be\r\n";
 
-    if (mail($to, $subject, $message, $headers)) {
-        echo json_encode(['success' => t('password_reset_sent')]);
-    } else {
-        echo json_encode(['error' => t('password_reset_failed')]);
-    }
+    $context = stream_context_create([
+        'http' => [
+            'method'  => 'POST',
+            'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
+            'content' => $postData
+        ]
+    ]);
+
+    // Mail triggeren (fouten suppressed zodat script niet crasht)
+    @file_get_contents('mailing.php', false, $context);
+
+    echo json_encode(['success' => t('password_reset_sent')]);
+    exit;
 }
 ?>

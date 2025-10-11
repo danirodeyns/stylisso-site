@@ -160,13 +160,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $total_order = max(0, floatval($checkout['total']) - $used_amount);
 
     // ================================
-    // 8. Order toevoegen
+    // 8. Order toevoegen (met taal)
     // ================================
+
+    // --- Bepaal taal op basis van cookie
+    $allowed_langs = ['be-nl','be-fr','be-en','be-de'];
+    $siteLanguage = $_COOKIE['siteLanguage'] ?? 'be-nl';
+    if (!in_array($siteLanguage, $allowed_langs, true)) {
+        $siteLanguage = 'be-nl';
+    }
+
     $stmt_order = $conn->prepare("
-        INSERT INTO orders (user_id, total_price, payment_method)
-        VALUES (?, ?, ?)
+        INSERT INTO orders (user_id, total_price, payment_method, taal)
+        VALUES (?, ?, ?, ?)
     ");
-    $stmt_order->bind_param("ids", $user_id, $total_order, $payment_method);
+    $stmt_order->bind_param("idss", $user_id, $total_order, $payment_method, $siteLanguage);
     $stmt_order->execute();
     $order_id = $conn->insert_id;
 
@@ -188,7 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $voucher_id = null;
         $maat = $item['maat'] ?? null;
 
-        // --- Voucher genereren & mailen ---
+        // --- Voucher genereren & mail via mailing.php ---
         if ($type === 'voucher') {
             do {
                 $code = strtoupper(bin2hex(random_bytes(6)));
@@ -208,16 +216,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt_v->execute();
             $voucher_id = $conn->insert_id;
 
-            // --- Mailen naar klant ---
+            // --- Mailen via mailing.php ---
             if ($email) {
-                $subject = t('email_subject');
-                $messageTemplate = t('email_message');
-                $message = str_replace(
-                    ['{code}', '{price}', '{expires_at}'],
-                    [$code, number_format($price,2), $expires_at],
-                    $messageTemplate
-                );
-                mail($email, $subject, $message, "From: no-reply@stylisso.be");
+                $postData = http_build_query([
+                    'task' => 'voucher',
+                    'email' => $email,
+                    'code' => $code,
+                    'price' => number_format($price, 2),
+                    'expires_at' => $expires_at
+                ]);
+
+                $context = stream_context_create([
+                    'http' => [
+                        'method' => 'POST',
+                        'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
+                        'content' => $postData
+                    ]
+                ]);
+
+                file_get_contents('mailing.php', false, $context);
             }
         }
 
@@ -226,7 +243,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             INSERT INTO order_items (order_id, product_id, voucher_id, type, quantity, price, maat) 
             VALUES (?, ?, ?, ?, ?, ?, ?)
         ");
-        // ⚡ Correcte types: order_id=i, product_id=i, voucher_id=i, type=s, quantity=i, price=d, maat=s
         $stmt_item->bind_param("iiisids", $order_id, $prod_id, $voucher_id, $type, $qty, $price, $maat);
         $stmt_item->execute();
     }

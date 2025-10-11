@@ -1,7 +1,7 @@
 <?php
 include 'csrf.php';
 include 'translations.php';
-csrf_validate(); // stopt script als token fout is
+csrf_validate();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name    = htmlspecialchars($_POST['name']);
