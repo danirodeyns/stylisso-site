@@ -49,25 +49,28 @@ $userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
 debugLog("User ID: $userId");
 
 // ====================================
-// 🧠 SQL MET VOLLEDIGE TAALONDERSTEUNING EN UNIEKE PRODUCTEN
+// 🧠 SQL MET VERKOCHTE AANTALLEN
 // ====================================
+// sold_count berekenen via order_items
 $sql = "
     SELECT 
         p.id,
-        COALESCE(pt_main.name, p.name) AS name,
-        COALESCE(pt_main.description, p.description) AS description,
-        COALESCE(pt_main.specifications, p.specifications) AS specifications,
-        COALESCE(pt_main.maat, p.maat) AS maat,
+        COALESCE(pt.name, p.name) AS name,
+        COALESCE(pt.description, p.description) AS description,
+        COALESCE(pt.specifications, p.specifications) AS specifications,
+        COALESCE(pt.maat, p.maat) AS maat,
         p.price,
         p.image,
+        p.created_at,
+        COALESCE(SUM(oi.quantity), 0) AS sold_count,
         c.name AS category_name,
         s.name AS subcategory_name,
         MAX(CASE WHEN w.product_id IS NOT NULL THEN 1 ELSE 0 END) AS in_wishlist
     FROM products p
-    LEFT JOIN product_translations pt_main 
-        ON p.id = pt_main.product_id AND pt_main.lang = ?
-    LEFT JOIN product_translations pt_search 
-        ON p.id = pt_search.product_id
+    LEFT JOIN product_translations pt 
+        ON pt.product_id = p.id AND pt.lang = ?
+    LEFT JOIN order_items oi
+        ON oi.product_id = p.id AND oi.type = 'product'
     LEFT JOIN categories c ON p.category_id = c.id
     LEFT JOIN subcategories s ON p.subcategory_id = s.id
     LEFT JOIN wishlist w ON w.product_id = p.id AND w.user_id = ?
@@ -77,18 +80,16 @@ $sql = "
 $params = [$lang, $userId];
 $types = "si";
 
-// ====================================
-// 🔍 DYNAMISCHE LIKE-VOORWAARDEN (meertalig zoeken)
-// ====================================
+// Dynamische LIKE voorwaarden
 foreach ($terms as $term) {
     $sql .= " AND (
-        p.name LIKE ? OR 
-        p.description LIKE ? OR 
-        p.specifications LIKE ? OR 
-        pt_search.name LIKE ? OR 
-        pt_search.description LIKE ? OR 
-        pt_search.specifications LIKE ? OR 
-        c.name LIKE ? OR 
+        p.name LIKE ? OR
+        p.description LIKE ? OR
+        p.specifications LIKE ? OR
+        pt.name LIKE ? OR
+        pt.description LIKE ? OR
+        pt.specifications LIKE ? OR
+        c.name LIKE ? OR
         s.name LIKE ?
     )";
     $like = "%$term%";
@@ -98,11 +99,13 @@ foreach ($terms as $term) {
     $types .= str_repeat("s", 8);
 }
 
-// ====================================
-// 🔹 GROUPEER EN SORTEER
-// ====================================
-$sql .= " GROUP BY p.id, pt_main.name, pt_main.description, pt_main.specifications, pt_main.maat, p.price, p.image, c.name, s.name
-          ORDER BY p.created_at DESC";
+// Groeperen per product zodat SUM(oi.quantity) werkt
+$sql .= "
+    GROUP BY 
+        p.id, pt.name, pt.description, pt.specifications, pt.maat, 
+        p.price, p.image, p.created_at, c.name, s.name
+    ORDER BY p.created_at DESC
+";
 
 debugLog("SQL statement voorbereid: $sql");
 
@@ -131,17 +134,24 @@ if (!$stmt->execute()) {
 // ====================================
 $result = $stmt->get_result();
 $products = [];
+
 while ($row = $result->fetch_assoc()) {
-    // --- Afbeeldingen verwerken ---
-    if (!empty($row['image'])) {
-        $parts = array_map('trim', explode(';', $row['image']));
-        $image = $parts[0]; // eerste afbeelding
-        $images = count($parts) > 1 ? $parts : [];
-        if (count($parts) === 1) $images = [];
-    } else {
-        $image = 'images/placeholder.png';
-        $images = [];
-    }
+    // fallback image
+    $row['image'] = $row['image'] ?: 'images/placeholder.png';
+
+    // meerdere afbeeldingen verwerken
+    $imagesArray = explode(";", $row['image']);
+    $row['image'] = trim($imagesArray[0]); // eerste afbeelding als hoofd
+    $row['images'] = count($imagesArray) > 1 ? array_map('trim', $imagesArray) : [];
+
+    // prijs formatteren
+    $row['price'] = number_format((float)$row['price'], 2, '.', '');
+
+    // sold_count als integer
+    $row['sold_count'] = intval($row['sold_count']);
+
+    // in_wishlist als boolean
+    $row['in_wishlist'] = (bool)$row['in_wishlist'];
 
     $products[] = [
         "id" => (int)$row["id"],
@@ -149,17 +159,18 @@ while ($row = $result->fetch_assoc()) {
         "description" => $row["description"],
         "specifications" => $row["specifications"],
         "maat" => $row["maat"],
-        "price" => (float)$row["price"],
-        "image" => $image,
-        "images" => $images,
+        "price" => $row["price"],
+        "image" => $row["image"],
+        "images" => $row["images"],
         "category" => $row["category_name"],
         "subcategory" => $row["subcategory_name"],
-        "in_wishlist" => (bool)$row["in_wishlist"]
+        "sold_count" => $row["sold_count"],
+        "in_wishlist" => $row["in_wishlist"]
     ];
 }
 
 debugLog("Aantal unieke producten gevonden: " . count($products));
-echo json_encode($products);
+echo json_encode($products, JSON_UNESCAPED_UNICODE);
 
 // ====================================
 // 🧹 CLEANUP

@@ -2842,6 +2842,7 @@ function loadProductGrid() {
     fetchWithLang(`fetch_products.php?cat=${categoryId}&sub=${subcategoryId}`)
       .then(data => {
         products = data;
+        sortSelect.value = 'populariteit';
         renderProducts();
       });
 
@@ -2854,7 +2855,14 @@ function loadProductGrid() {
       });
 
       // Sorteren
-      if (sortSelect.value === 'prijs-oplopend') filtered.sort((a, b) => a.price - b.price);
+      if (sortSelect.value === 'populariteit') {
+        filtered.sort((a, b) => {
+          const diff = b.sold_count - a.sold_count;
+          if (diff !== 0) return diff;
+          return Math.random() - 0.5;
+        });
+      } 
+      else if (sortSelect.value === 'prijs-oplopend') filtered.sort((a, b) => a.price - b.price);
       else if (sortSelect.value === 'prijs-aflopend') filtered.sort((a, b) => b.price - a.price);
       else if (sortSelect.value === 'nieuw') filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
@@ -2944,7 +2952,7 @@ function loadSearchGrid() {
       return;
     }
 
-    // Gebruik universele fetch die taal meestuurt
+    // --- Universele fetch (taal meegeven) ---
     fetchWithLang(`get_search_products.php?q=${encodeURIComponent(q)}`)
       .then(data => {
         if (!Array.isArray(data) || data.length === 0) {
@@ -2958,6 +2966,10 @@ function loadSearchGrid() {
         }
 
         searchProducts = data;
+
+        // ✅ Standaard sortering: populariteit
+        if (sortSelectSearch) sortSelectSearch.value = "populariteit";
+
         renderSearchProducts();
       })
       .catch(err => {
@@ -2976,16 +2988,18 @@ function loadSearchGrid() {
       let filtered = [...searchProducts];
 
       // --- Sorteren ---
-      if (sortSelectSearch && sortSelectSearch.value === "prijs-oplopend") {
-        filtered.sort((a, b) => a.price - b.price);
-      } else if (sortSelectSearch && sortSelectSearch.value === "prijs-aflopend") {
-        filtered.sort((a, b) => b.price - a.price);
-      } else if (sortSelectSearch && sortSelectSearch.value === "nieuw") {
-        filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-      } else if (sortSelectSearch && sortSelectSearch.value === "populariteit") {
-        filtered.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+      if (sortSelectSearch.value === 'populariteit') {
+        filtered.sort((a, b) => {
+          const diff = b.sold_count - a.sold_count;
+          if (diff !== 0) return diff;
+          return Math.random() - 0.5;
+        });
       }
+      else if (sortSelectSearch && sortSelectSearch.value === "prijs-oplopend") filtered.sort((a, b) => a.price - b.price);
+      else if (sortSelectSearch && sortSelectSearch.value === "prijs-aflopend") filtered.sort((a, b) => b.price - a.price);
+      else if (sortSelectSearch && sortSelectSearch.value === "nieuw") filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
+      // --- HTML render ---
       grid3.innerHTML = "";
       filtered.forEach(p => {
         const card = document.createElement("div");
