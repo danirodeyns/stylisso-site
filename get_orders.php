@@ -33,7 +33,7 @@ if ($stmt = $conn->prepare($sqlOrders)) {
                 oi.quantity,
                 oi.price,
                 p.image,
-                COALESCE(pt.maat, p.maat) AS maat
+                oi.maat AS maat
             FROM order_items oi
             JOIN products p ON oi.product_id = p.id
             LEFT JOIN product_translations pt ON pt.product_id = p.id AND pt.lang = ?
