@@ -538,6 +538,11 @@ footer {
   display: none;
 }
 
+.item-image {
+  width: 20vw !important;
+  height: auto !important;
+}
+
 .item-image-light {
   display: block;
 }
@@ -1632,12 +1637,13 @@ label[for="different_billing"] span {
 }
 
 .order-product-img {
-  width: 48px;
-  height: 48px;
+  width: 80px !important;
+  height: 80px !important;
+  min-width: 80px !important;
+  min-height: 80px !important;
   object-fit: cover;
   border-radius: 6px;
   border: 1px solid #ddd;
-  background: #fff;
 }
 
 .order-product-img-light {
@@ -1769,6 +1775,11 @@ label[for="different_billing"] span {
 /* Alleen de eerste kolom in de body links uitlijnen */
 .bedankt-table tbody td:first-child {
   text-align: left;
+}
+
+.bedankt-table img {
+  height: 100px;
+  min-height: 100px;
 }
 
 .summary-section {
@@ -2216,10 +2227,19 @@ label[for="different_billing"] span {
   justify-content: space-between; /* item-info links, vuilbak rechts */
   gap: 1.5rem;
   padding-bottom: 1rem;
+  border-bottom: 1px solid black;
+}
+
+.wishlist-card:last-child {
+  border-bottom: none;
 }
 
 .wishlist-item-image {
-  max-width: 100%;
+  width: 25vw;
+  height: auto;
+  min-width: 100px;
+  min-height: 100px;
+  object-fit: cover;
   cursor: pointer;
 }
 
@@ -2363,16 +2383,49 @@ label[for="different_billing"] span {
 .product-left {
   flex: 1 1 400px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: flex-start;
 }
 
+.main-image-wrapper {
+  height: 420px;
+  width: 100%;
+  min-height: 420px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
 .product-image {
   max-width: 100%;
-  border-radius: 12px;
+  max-height: 100%;
+  will-change: transform;
   object-fit: cover;
-  border: 1px solid var(--card-border, #ccc);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.thumbnails-wrapper {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.thumbnails-wrapper img {
+  width: 80px;
+  height: 80px;
+  min-width: 80px;
+  min-height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 2px solid transparent !important;
+  transition: border 0.3s ease;
+}
+
+.thumbnails-wrapper img:hover,
+.thumbnails-wrapper img.active {
+  border-color: var(--primary-color, black) !important;
 }
 
 /* Rechts: details */
@@ -3568,7 +3621,6 @@ label[for="different_billing"] span {
 
   .order-product-img {
     border: 1px solid #444;
-    background: #222;
   }
 
   .order-product-img-light {
@@ -3827,6 +3879,10 @@ label[for="different_billing"] span {
     color: #fff;
   }
 
+  .wishlist-card {
+    border-bottom: 1px solid white;
+  }
+
   .empty-wishlist-box {
     color: #888;
     background: #222;
@@ -3869,9 +3925,9 @@ label[for="different_billing"] span {
     color: #ffffff;
   }
 
-  .product-image {
-    border: 1px solid #444;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  .thumbnails-wrapper img:hover,
+  .thumbnails-wrapper img.active {
+    border-color: var(--primary-color, white) !important;
   }
 
   .product-description {

@@ -1417,8 +1417,7 @@ async function loadLastOrderDetails() {
         productHtml = `
           <div style="display:flex; align-items:center; gap:8px;">
             <img src="${item.image || 'placeholder.jpg'}" 
-                alt="${item.name}"
-                style="width:40px; height:40px; object-fit:cover; border-radius:6px; border:1px solid #ddd;">
+                alt="${item.name}">
             <span>${item.name}</span>
             ${item.maat ? `<span style="margin-left:8px;">(${item.maat})</span>` : ''}
           </div>
@@ -2411,6 +2410,52 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+// --- Grote afbeelding + thumbnails ---
+let thumbsWrapper = document.getElementById('product-thumbnails');
+if (!thumbsWrapper) {
+  thumbsWrapper = document.createElement('div');
+  thumbsWrapper.id = 'product-thumbnails';
+  document.querySelector('.product-left').appendChild(thumbsWrapper);
+}
+
+function renderProductImages(images, fallbackImage) {
+  if (!Array.isArray(images) || images.length === 0) images = [fallbackImage];
+  if (!images[0]) images[0] = 'images/placeholder.png';
+
+  // Grote afbeelding = eerste
+  imageEl.src = images[0];
+  imageEl.alt = titleEl.textContent || '';
+
+  // Als er maar één afbeelding is, thumbnails verbergen
+  if (images.length === 1) {
+    thumbsWrapper.style.display = 'none';
+    thumbsWrapper.innerHTML = '';
+    return;
+  }
+
+  thumbsWrapper.style.display = 'flex';
+  thumbsWrapper.innerHTML = '';
+
+  // Hoeveelheid kleine afbeeldingen
+  images.slice(0, 5).forEach((imgSrc, index) => {
+    const thumb = document.createElement('img');
+    thumb.src = imgSrc;
+    thumb.alt = titleEl.textContent || '';
+    thumb.dataset.index = index; // eventueel voor CSS active state
+
+    // Eerste thumbnail direct active
+    if (index === 0) thumb.classList.add('active');
+
+    thumb.addEventListener('click', () => {
+      imageEl.src = imgSrc;
+      thumbsWrapper.querySelectorAll('img').forEach(t => t.classList.remove('active'));
+      thumb.classList.add('active');
+    });
+
+    thumbsWrapper.appendChild(thumb);
+  });
+}
+
   // --- Functie om product + gerelateerde data te laden ---
   async function loadProductData() {
     try {
@@ -2422,10 +2467,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // --- Vul HTML ---
       titleEl.textContent = product.name;
-      imageEl.src = product.image;
-      imageEl.alt = product.name;
-      descEl.innerHTML = product.description.replace(/\n/g, "<br>");
-      priceEl.textContent = `€${parseFloat(product.price).toFixed(2)}`;
+      descEl.innerHTML = product.description?.replace(/\n/g, "<br>") || '';
+      priceEl.textContent = `€${parseFloat(product.price || 0).toFixed(2)}`;
+
+      // --- Afbeeldingen ---
+      renderProductImages(product.images, product.image);
 
       // --- Specificaties ---
       if (product.specifications) {
