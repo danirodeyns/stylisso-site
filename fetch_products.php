@@ -74,6 +74,17 @@ while ($row = $result->fetch_assoc()) {
 
     // fallback image
     $row['image'] = $row['image'] ?: 'images/placeholder.png';
+
+    // meerdere afbeeldingen verwerken
+    $imagesArray = explode(";", $row['image']);
+    $row['image'] = trim($imagesArray[0]); // eerste afbeelding als hoofd
+    if (count($imagesArray) > 1) {
+        $row['images'] = array_map('trim', $imagesArray);
+    } else {
+        $row['images'] = []; // leeg als er maar één afbeelding is
+    }
+
+    // prijs formatteren
     $row['price'] = number_format((float)$row['price'], 2, '.', '');
 
     $products[] = $row;
@@ -84,4 +95,6 @@ while ($row = $result->fetch_assoc()) {
 // ===============================
 header('Content-Type: application/json; charset=utf-8');
 echo json_encode($products, JSON_UNESCAPED_UNICODE);
+
+$conn->close();
 ?>

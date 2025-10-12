@@ -194,10 +194,15 @@ input[type="checkbox"]:focus-visible {
   text-align: center;
   background-color: #eaeaea;
   border-radius: 1rem; /* afgeronde hoeken */
+  height: 20rem;
 }
 
 .product-card-index a {
   text-decoration: none;
+}
+
+.product-card-index img {
+  height: 85%;
 }
 
 footer {

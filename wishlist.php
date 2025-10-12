@@ -39,6 +39,16 @@ $result = $stmt->get_result();
 $items = [];
 
 while ($row = $result->fetch_assoc()) {
+    // ✅ Afbeeldingen verwerken
+    if (!empty($row['image'])) {
+        $parts = array_map('trim', explode(';', $row['image']));
+        $row['image'] = $parts[0];                   // eerste afbeelding
+        $row['images'] = count($parts) > 1 ? $parts : [];
+    } else {
+        $row['image'] = 'images/placeholder.png';
+        $row['images'] = [];
+    }
+
     // ✅ Zet maat-string om naar array
     if (!empty($row['maat'])) {
         $row['sizes'] = explode(";", $row['maat']);

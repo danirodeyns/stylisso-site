@@ -3,9 +3,9 @@ session_start();
 require 'db_connect.php';
 include 'translations.php';
 include 'csrf.php';
-csrf_validate(); // stopt script als token fout is
+csrf_validate();
 
-header('Content-Type: application/json'); // JSON response
+header('Content-Type: application/json');
 
 // Controleer of gebruiker ingelogd is
 if (!isset($_SESSION['user_id'])) {
@@ -28,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $conn->prepare("
         SELECT * FROM vouchers 
         WHERE code = ? 
-          AND remaining_value > 0
-          AND (expires_at IS NULL OR expires_at > NOW())
+            AND remaining_value > 0
+            AND (expires_at IS NULL OR expires_at > NOW())
         LIMIT 1
     ");
     $stmt->bind_param("s", $code);

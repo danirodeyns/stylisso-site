@@ -12,7 +12,6 @@ header('Content-Type: application/json');
 
 // --- taal bepalen ---
 $lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
-
 $user_id = $_SESSION['user_id'] ?? null;
 
 // --- POST-handling ---
@@ -165,7 +164,19 @@ if ($user_id) {
         $stmt->bind_param("si", $lang, $user_id);
         $stmt->execute();
         $result = $stmt->get_result();
-        while ($row = $result->fetch_assoc()) $cart[] = $row;
+
+        while ($row = $result->fetch_assoc()) {
+            // ✅ Afbeeldingen verwerken
+            if (!empty($row['image']) && $row['type'] !== 'voucher') {
+                $images = explode(";", $row['image']);
+                $row['image'] = $images[0]; // eerste als hoofdafbeelding
+                $row['images'] = count($images) > 1 ? $images : [];
+            } else {
+                $row['images'] = [];
+            }
+
+            $cart[] = $row;
+        }
     }
 } else {
     if (!empty($_SESSION['cart_products'])) {
@@ -179,6 +190,7 @@ if ($user_id) {
                 'maat' => $p['maat'] ?? null,
                 'name' => 'Product #' . $p['product_id'],
                 'image' => 'placeholder.png',
+                'images' => [],
                 'dark_image' => null,
                 'index' => $i
             ];
@@ -194,6 +206,7 @@ if ($user_id) {
                 'price' => $v['price'],
                 'name' => 'Cadeaubon',
                 'image' => 'cadeaubon/voucher.png',
+                'images' => [],
                 'dark_image' => 'cadeaubon/voucher (dark mode).png',
                 'index' => $i
             ];

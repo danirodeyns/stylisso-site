@@ -1,5 +1,4 @@
 <?php
-// get_related_products.php
 session_start();
 header('Content-Type: application/json');
 
@@ -45,6 +44,18 @@ if ($stmt = $conn->prepare($sql)) {
     while ($row = $result->fetch_assoc()) {
         // Cast in_wishlist naar boolean
         $row['in_wishlist'] = (bool)$row['in_wishlist'];
+
+        // --- Afbeeldingen verwerken ---
+        if (!empty($row['image'])) {
+            $parts = array_map('trim', explode(';', $row['image']));
+            $row['image'] = $parts[0]; // eerste afbeelding
+            $row['images'] = count($parts) > 1 ? $parts : [];
+            if (count($parts) === 1) $row['images'] = [];
+        } else {
+            $row['image'] = 'images/placeholder.png';
+            $row['images'] = [];
+        }
+
         $products[] = $row;
     }
 

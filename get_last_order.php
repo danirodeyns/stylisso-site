@@ -59,13 +59,20 @@ $stmtProd->execute();
 $resProd = $stmtProd->get_result();
 
 while ($row = $resProd->fetch_assoc()) {
+    // --- Afbeeldingen verwerken ---
+    $row['product_image'] = $row['product_image'] ?: 'images/placeholder.png';
+    $imagesArray = explode(';', $row['product_image']);
+    $mainImage = trim($imagesArray[0]);
+    $allImages = (count($imagesArray) > 1) ? array_map('trim', $imagesArray) : [];
+
     $items[] = [
         'order_item_id' => $row['order_item_id'],
-        'product_name' => $row['product_name'],
-        'product_image' => $row['product_image'],
-        'quantity' => $row['quantity'],
-        'size' => $row['size'],
-        'type' => 'product'
+        'product_name'  => $row['product_name'],
+        'image'         => $mainImage,
+        'images'        => $allImages,
+        'quantity'      => (int)$row['quantity'],
+        'size'          => $row['size'],
+        'type'          => 'product'
     ];
 }
 
@@ -85,9 +92,11 @@ $resVoucher = $stmtVoucher->get_result();
 while ($rowVoucher = $resVoucher->fetch_assoc()) {
     $items[] = [
         'order_item_id' => $rowVoucher['id'],
-        'product_name' => 'Cadeaubon(nen)',
-        'quantity' => 1,
-        'type' => 'voucher'
+        'product_name'  => 'Cadeaubon(nen)',
+        'image'         => 'cadeaubon/voucher.png',
+        'images'        => [],
+        'quantity'      => 1,
+        'type'          => 'voucher'
     ];
 }
 
@@ -95,7 +104,7 @@ while ($rowVoucher = $resVoucher->fetch_assoc()) {
 // Resultaat teruggeven
 // -------------------------
 $order['products'] = $items;
-echo json_encode($order);
+echo json_encode($order, JSON_UNESCAPED_UNICODE);
 
 $stmt->close();
 $stmtProd->close();

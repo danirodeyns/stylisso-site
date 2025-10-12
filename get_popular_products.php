@@ -1,5 +1,4 @@
 <?php
-// get_popular_products.php
 header('Content-Type: application/json; charset=utf-8');
 require_once 'db_connect.php';
 require_once 'config.php';
@@ -32,6 +31,8 @@ if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < $cacheTTL)) {
 function getGA4PopularProducts($limit = 6, $lang = 'be-nl') {
     global $conn;
 
+    $products = [];
+
     // Probeer GA4
     if (class_exists('Google\Analytics\Data\V1beta\BetaAnalyticsDataClient')) {
         try {
@@ -46,12 +47,10 @@ function getGA4PopularProducts($limit = 6, $lang = 'be-nl') {
                 'limit' => 100
             ]);
 
-            $products = [];
             foreach ($response->getRows() as $row) {
                 $itemId = (int)$row->getDimensionValues()[0]->getValue();
                 $views  = (int)$row->getMetricValues()[0]->getValue();
 
-                // Meertalige query
                 $stmt = $conn->prepare("
                     SELECT 
                         p.id,
@@ -71,8 +70,19 @@ function getGA4PopularProducts($limit = 6, $lang = 'be-nl') {
                 if ($res && $prod = $res->fetch_assoc()) {
                     $prod['id'] = (int)$prod['id'];
                     $prod['price'] = number_format((float)$prod['price'], 2, '.', '');
-                    $prod['image'] = $prod['image'] ?: 'images/placeholder.png';
                     $prod['popularity'] = $views;
+
+                    // --- Afbeeldingen verwerken ---
+                    if (!empty($prod['image'])) {
+                        $parts = array_map('trim', explode(';', $prod['image']));
+                        $prod['image'] = $parts[0]; // eerste afbeelding als hoofd
+                        $prod['images'] = count($parts) > 1 ? $parts : []; // alle afbeeldingen in images
+                        if (count($parts) === 1) $prod['images'] = [];
+                    } else {
+                        $prod['image'] = 'images/placeholder.png';
+                        $prod['images'] = [];
+                    }
+
                     $products[] = $prod;
                 }
                 $stmt->close();
@@ -115,12 +125,22 @@ function getGA4PopularProducts($limit = 6, $lang = 'be-nl') {
         return ['success' => false, 'message' => 'Databasefout bij ophalen producten (fallback)'];
     }
 
-    $products = [];
     while ($row = $result->fetch_assoc()) {
         $row['id'] = (int)$row['id'];
         $row['price'] = number_format((float)$row['price'], 2, '.', '');
-        $row['image'] = $row['image'] ?: 'images/placeholder.png';
         $row['popularity'] = (int)$row['popularity'];
+
+        // --- Afbeeldingen verwerken ---
+        if (!empty($row['image'])) {
+            $parts = array_map('trim', explode(';', $row['image']));
+            $row['image'] = $parts[0]; // eerste afbeelding als hoofd
+            $row['images'] = count($parts) > 1 ? $parts : []; // alle afbeeldingen in images
+            if (count($parts) === 1) $row['images'] = [];
+        } else {
+            $row['image'] = 'images/placeholder.png';
+            $row['images'] = [];
+        }
+
         $products[] = $row;
     }
     $stmt->close();

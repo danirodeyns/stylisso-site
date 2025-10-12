@@ -4,13 +4,15 @@ include 'db_connect.php';
 include 'translations.php';
 header('Content-Type: application/json');
 
+// --- taal bepalen ---
 $lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl'; // standaard taal
 
 if (isset($_SESSION['user_id'])) {
     $userId = $_SESSION['user_id'];
 
     $stmt = $conn->prepare("
-        SELECT p.id, 
+        SELECT 
+            p.id, 
             COALESCE(t.name, p.name) AS name,
             p.price, 
             p.image,
@@ -26,14 +28,26 @@ if (isset($_SESSION['user_id'])) {
     $stmt->bind_param("sii", $lang, $userId, $userId);
     $stmt->execute();
     $result = $stmt->get_result();
-    $products = $result->fetch_all(MYSQLI_ASSOC);
+    $products = [];
 
-    // Cast in_wishlist naar boolean
-    foreach ($products as &$p) {
-        $p['in_wishlist'] = (bool)$p['in_wishlist'];
+    while ($row = $result->fetch_assoc()) {
+        // --- Afbeeldingen verwerken ---
+        $row['image'] = $row['image'] ?: 'images/placeholder.png';
+        $imagesArray = explode(';', $row['image']);
+        $mainImage = trim($imagesArray[0]);
+        $allImages = (count($imagesArray) > 1) ? array_map('trim', $imagesArray) : [];
+
+        $products[] = [
+            'id'           => (int)$row['id'],
+            'name'         => $row['name'],
+            'price'        => (float)$row['price'],
+            'image'        => $mainImage,
+            'images'       => $allImages,
+            'in_wishlist'  => (bool)$row['in_wishlist']
+        ];
     }
 
-    echo json_encode($products);
+    echo json_encode($products, JSON_UNESCAPED_UNICODE);
 
 } else {
     echo json_encode([]);

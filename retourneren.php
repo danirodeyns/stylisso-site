@@ -10,7 +10,6 @@ if (!$userId) {
     exit;
 }
 
-// taal uit GET (fetchWithLang voegt ?lang=... toe)
 $lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
 
 // SQL: haal productnaam/afbeelding uit product_translations indien beschikbaar, anders fallback op products
@@ -24,7 +23,7 @@ $sql = "
         oi.maat AS size,
         o.created_at AS order_date,
         COALESCE(pt.name, p.name) AS product_name,
-        p.image AS product_image,
+        p.image AS image,
         r.status AS return_status
     FROM order_items oi
     JOIN orders o ON oi.order_id = o.id
@@ -55,6 +54,16 @@ $result = $stmt->get_result();
 
 $orderItems = [];
 while ($row = $result->fetch_assoc()) {
+    // --- Afbeeldingen verwerken ---
+    if (!empty($row['image'])) {
+        $parts = array_map('trim', explode(';', $row['image']));
+        $image = $parts[0]; // eerste afbeelding
+        $images = count($parts) > 1 ? $parts : [];
+    } else {
+        $image = 'images/placeholder.png';
+        $images = [];
+    }
+
     $orderItems[] = [
         'order_item_id' => (int)$row['order_item_id'],
         'order_id'      => (int)$row['order_id'],
@@ -64,7 +73,8 @@ while ($row = $result->fetch_assoc()) {
         'size'          => $row['size'],           // ongewijzigde string; JS toont dit als tekst
         'order_date'    => $row['order_date'],
         'product_name'  => $row['product_name'],
-        'product_image' => $row['product_image'],
+        'image'         => $image,
+        'images'        => $images,
         'return_status' => $row['return_status']   // NULL of status string
     ];
 }

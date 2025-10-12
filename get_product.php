@@ -54,6 +54,15 @@ if ($stmt = $conn->prepare($sql)) {
         $product['maat'] = null;
     }
 
+    // Afbeeldingen verwerken
+    if (!empty($product['image'])) {
+        $images = explode(";", $product['image']);
+        $product['image'] = $images[0]; // eerste afbeelding als hoofd
+        $product['images'] = count($images) > 1 ? $images : []; // enkel als er meerdere zijn
+    } else {
+        $product['images'] = [];
+    }
+
     echo json_encode($product);
 
     $stmt->close();

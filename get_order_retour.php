@@ -74,7 +74,7 @@ $sqlItems = "
         oi.price, 
         oi.type,
         COALESCE(pt.name, p.name) AS product_name,
-        p.image AS product_image
+        p.image AS image
     FROM order_items oi
     LEFT JOIN products p ON oi.product_id = p.id
     LEFT JOIN product_translations pt ON pt.product_id = p.id AND pt.lang = ?
@@ -84,6 +84,19 @@ $stmtItems = $conn->prepare($sqlItems);
 $stmtItems->bind_param("si", $lang, $orderId);
 $stmtItems->execute();
 $items = $stmtItems->get_result()->fetch_all(MYSQLI_ASSOC);
+
+// --- Afbeeldingen verwerken ---
+foreach ($items as &$item) {
+    if (!empty($item['image'])) {
+        $parts = array_map('trim', explode(';', $item['image']));
+        $item['image'] = $parts[0]; // eerste afbeelding
+        $item['images'] = count($parts) > 1 ? $parts : [];
+        if (count($parts) === 1) $item['images'] = [];
+    } else {
+        $item['image'] = 'images/placeholder.png';
+        $item['images'] = [];
+    }
+}
 
 // --- Ophalen retouritems van deze order ---
 $stmtReturn = $conn->prepare("

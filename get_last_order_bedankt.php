@@ -50,7 +50,7 @@ $stmtProd = $conn->prepare("
     FROM order_items oi
     JOIN products p ON oi.product_id = p.id
     LEFT JOIN product_translations pt 
-        ON pt.product_id = p.id AND pt.lang  = ?
+        ON pt.product_id = p.id AND pt.lang = ?
     WHERE oi.order_id = ? AND oi.product_id IS NOT NULL
 ");
 $stmtProd->bind_param("si", $lang, $orderId);
@@ -58,12 +58,19 @@ $stmtProd->execute();
 $resProd = $stmtProd->get_result();
 
 while ($row = $resProd->fetch_assoc()) {
+    // --- Afbeeldingen verwerken ---
+    $row['image'] = $row['image'] ?: 'images/placeholder.png';
+    $imagesArray = explode(";", $row['image']);
+    $mainImage = trim($imagesArray[0]);
+    $allImages = (count($imagesArray) > 1) ? array_map('trim', $imagesArray) : [];
+
     $items[] = [
         'id'       => (int)$row['product_id'],
         'name'     => $row['name'],
         'quantity' => (int)$row['quantity'],
         'price'    => (float)$row['price'],
-        'image'    => $row['image'] ?: 'placeholder.jpg',
+        'image'    => $mainImage,
+        'images'   => $allImages,
         'maat'     => $row['maat'],
         'type'     => 'product',
     ];
@@ -88,6 +95,7 @@ while ($row = $resVoucher->fetch_assoc()) {
         'quantity' => 1,
         'price'    => (float)$row['price'],
         'image'    => null,
+        'images'   => [],
         'maat'     => null,
         'type'     => 'voucher',
     ];
@@ -96,5 +104,5 @@ while ($row = $resVoucher->fetch_assoc()) {
 // --- Combineer alles ---
 $order['products'] = $items;
 
-echo json_encode($order);
+echo json_encode($order, JSON_UNESCAPED_UNICODE);
 ?>

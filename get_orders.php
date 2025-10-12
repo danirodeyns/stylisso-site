@@ -44,12 +44,24 @@ if ($stmt = $conn->prepare($sqlOrders)) {
             $stmtProd->execute();
             $resProd = $stmtProd->get_result();
             while ($row = $resProd->fetch_assoc()) {
+                // Afbeeldingen verwerken
+                if (!empty($row['image'])) {
+                    $parts = array_map('trim', explode(';', $row['image']));
+                    $mainImage = $parts[0];
+                    $images = count($parts) > 1 ? $parts : [];
+                    if (count($parts) === 1) $images = [];
+                } else {
+                    $mainImage = 'placeholder.jpg';
+                    $images = [];
+                }
+
                 $items[] = [
                     'id'       => (int)$row['product_id'],
                     'name'     => $row['name'],
                     'quantity' => (int)$row['quantity'],
                     'price'    => (float)$row['price'],
-                    'image'    => $row['image'] ?: 'placeholder.jpg',
+                    'image'    => $mainImage,
+                    'images'   => $images,
                     'maat'     => $row['maat'] ?: null,
                     'type'     => 'product'
                 ];
@@ -77,6 +89,7 @@ if ($stmt = $conn->prepare($sqlOrders)) {
                     'quantity' => 1,
                     'price'    => (float)$row['price'],
                     'image'    => null,
+                    'images'   => [],
                     'maat'     => null,
                     'type'     => 'voucher'
                 ];

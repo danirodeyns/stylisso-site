@@ -132,6 +132,17 @@ if (!$stmt->execute()) {
 $result = $stmt->get_result();
 $products = [];
 while ($row = $result->fetch_assoc()) {
+    // --- Afbeeldingen verwerken ---
+    if (!empty($row['image'])) {
+        $parts = array_map('trim', explode(';', $row['image']));
+        $image = $parts[0]; // eerste afbeelding
+        $images = count($parts) > 1 ? $parts : [];
+        if (count($parts) === 1) $images = [];
+    } else {
+        $image = 'images/placeholder.png';
+        $images = [];
+    }
+
     $products[] = [
         "id" => (int)$row["id"],
         "name" => $row["name"],
@@ -139,7 +150,8 @@ while ($row = $result->fetch_assoc()) {
         "specifications" => $row["specifications"],
         "maat" => $row["maat"],
         "price" => (float)$row["price"],
-        "image" => $row["image"],
+        "image" => $image,
+        "images" => $images,
         "category" => $row["category_name"],
         "subcategory" => $row["subcategory_name"],
         "in_wishlist" => (bool)$row["in_wishlist"]

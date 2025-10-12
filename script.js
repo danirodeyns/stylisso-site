@@ -1530,7 +1530,7 @@ document.addEventListener('DOMContentLoaded', () => {
             productDiv.style.cursor = 'pointer';
 
             const img = document.createElement('img');
-            img.src = product.product_image;
+            img.src = product.image;
             img.alt = product.product_name;
             img.className = 'return-product-img';
 
@@ -2622,8 +2622,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         let products = [];
         if (loggedIn) {
           try {
-            const resp = await fetch('get_last_seen.php');
-            products = await resp.json();
+            products = await fetchWithLang('get_last_seen.php');
           } catch (err) {
             console.error('Error loading last seen from DB:', err);
           }
@@ -2652,6 +2651,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.addEventListener("languageChanged", async (e) => {
     currentLang = e.detail.lang;
     await loadProductData();
+    await loadLastSeen();
   });
 });
 
