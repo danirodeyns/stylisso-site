@@ -1788,14 +1788,18 @@ label[for="different_billing"] span {
   padding: 1.25rem;
   margin-bottom: 1.5rem;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
 }
 
 .summary-section h2 {
   margin-top: 0rem;
   margin-bottom: 0.25rem;
+  font-size: clamp(1.25rem, 2vw + 0.5rem, 1.5rem);
 }
 
-.summary-section p {
+.summary-section p,
+.summary-section a {
   margin-bottom: 0.25rem;
   line-height: 1.6;
 }
@@ -3147,6 +3151,73 @@ label[for="different_billing"] span {
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
+.newsletter-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.newsletter-header h1 {
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+  margin-bottom: 0.25rem;
+}
+
+.newsletter-header p {
+  margin-bottom: 0.5rem;
+}
+
+.newsletter-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.newsletter-form input,
+.newsletter-form textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: white;
+  color: black;
+  font-size: 1rem;
+}
+
+.newsletter-form textarea {
+  resize: vertical;
+}
+
+.newsletter-form button {
+  padding: 10px;
+  border: 2px solid black;
+  border-radius: 8px;
+  background-color: black;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.newsletter-form button:hover {
+  background-color: white;
+  color: black;
+}
+
+.newsletter-status {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.newsletter-status.success {
+  color: green;
+}
+
+.newsletter-status.error {
+  color: red;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
@@ -4158,6 +4229,24 @@ label[for="different_billing"] span {
 
   .categorieën-menu-page-item {
     background-color: #1f1f1f;
+  }
+
+  .newsletter-form input,
+  .newsletter-form textarea {
+    border: 1px solid #444;
+    background-color: #333;
+    color: white;
+  }
+
+  .newsletter-form button {
+    border: 2px solid white;
+    background-color: white;
+    color: black;
+  }
+
+  .newsletter-form button:hover {
+    background-color: black;
+    color: white;
   }
 }
 

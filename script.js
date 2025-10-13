@@ -2783,6 +2783,50 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  const form = document.getElementById("newsletter-form");
+  const result = document.getElementById("newsletter-result");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const subject = document.getElementById("newsletter-subject").value.trim();
+    const message = document.getElementById("newsletter-message").value.trim();
+
+    // --- Taal bepalen en dictionary ophalen ---
+    const cookieMatch = document.cookie.match(/(?:^|;\s*)siteLanguage=([^;]+)/);
+    const lang = cookieMatch ? decodeURIComponent(cookieMatch[1]) : "be-nl";
+    const dict = translations[lang] || translations["be-nl"];
+
+    if (!subject || !message) {
+      result.textContent = dict["script_newsletter_fill_fields"];
+      result.className = "error";
+      return;
+    }
+
+    try {
+      const response = await fetch("send_newsletter.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `subject=${encodeURIComponent(subject)}&message=${encodeURIComponent(message)}`
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        result.textContent = dict["script_newsletter_success"];
+        result.className = "success";
+        form.reset();
+      } else {
+        result.textContent = dict["script_newsletter_failed"];
+        result.className = "error";
+      }
+    } catch (err) {
+      console.error(err);
+      result.textContent = dict["script_newsletter_error"];
+      result.className = "error";
+    }
+  });
 });
 
 // ==============================

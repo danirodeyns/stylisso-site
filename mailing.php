@@ -136,6 +136,41 @@ switch ($task) {
         break;
 
     // ================================
+    // send_newsletter.php
+    // ================================
+    case 'newsletter':
+        $emailsJson = $_POST['emails'] ?? '';
+        $subject = trim($_POST['subject'] ?? '');
+        $message = trim($_POST['message'] ?? '');
+
+        if (!$emailsJson || !$subject || !$message) {
+            echo json_encode(['error' => 'Ontbrekende nieuwsbriefgegevens']);
+            exit;
+        }
+
+        $emails = json_decode($emailsJson, true);
+        if (!is_array($emails) || empty($emails)) {
+            echo json_encode(['error' => 'Geen geldige e-maillijst ontvangen']);
+            exit;
+        }
+
+        $sentCount = 0;
+        foreach ($emails as $to) {
+            if (filter_var($to, FILTER_VALIDATE_EMAIL)) {
+                if (sendMail($to, $subject, $message)) {
+                    $sentCount++;
+                }
+            }
+        }
+
+        echo json_encode([
+            'success' => true,
+            'sent' => $sentCount,
+            'total' => count($emails)
+        ]);
+        break;
+
+    // ================================
     // submit_returns.php
     // ================================
     case 'return_requested':

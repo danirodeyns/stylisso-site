@@ -378,6 +378,16 @@ const translations = {
     "mijn_stylisso_text_no_vouchers": "Nog geen cadeaubonnen om weer te geven.",
     "mijn_stylisso_btn_view_vouchers": "Bekijk cadeaubonnen",
 
+    // newsletter.html
+    "newsletter_page_title": "Niewsbrief opstellen - Staff",
+    "newsletter_header": "Nieuwsbrief opstellen",
+    "newsletter_subheader": "Stuur een mailing naar alle gebruikers die ingeschreven zijn op de nieuwsbrief.",
+    "newsletter_subject": "Onderwerp:",
+    "newsletter_subject_placeholder": "Bijv. Nieuwe collectie binnen!",
+    "newsletter_textarea": "Bericht (HTML toegestaan):",
+    "newsletter_textarea_placeholder": "Typ hier je nieuwsbrief...",
+    "newsletter_button": "Verstuur nieuwsbrief",    
+
     // over ons.html
     "over_ons_page_title": "Over ons",
     "over_ons_header_main": "Welkom bij Stylisso - Style That Moves",
@@ -575,6 +585,7 @@ const translations = {
     "staff_pages_subheader": "Beheer van interne pagina's en retourverwerking",
     "staff_pages_pages": "Beschikbare pagina's",
     "staff_pages_retours": "Retourverwerking",
+    "staff_pages_newsletter": "Nieuwsbrief opstellen",
 
     // verzending en levering.html
     "verzending en levering_page_title": "Verzending en Levering",
@@ -732,6 +743,10 @@ const translations = {
     "script_processing_retours_alert_general_error": "Er is iets misgegaan bij het verwerken van de retour.",
     "script_ongeldige_betaalmethode": "Ongeldige betaalmethode.",
     "script_wishlist_size": "Maat:",
+    "script_newsletter_fill_fields": "Vul zowel het onderwerp als het bericht in.",
+    "script_newsletter_success": "Nieuwsbrief succesvol verzonden!",
+    "script_newsletter_failed": "Verzenden mislukt. Probeer opnieuw.",
+    "script_newsletter_error": "Er is een fout opgetreden tijdens het verzenden.",
 },
   "be-fr": {
     // index.html
@@ -1112,6 +1127,16 @@ const translations = {
     "mijn_stylisso_text_no_vouchers": "Aucun bon cadeau à afficher.",
     "mijn_stylisso_btn_view_vouchers": "Voir les bons cadeaux",
 
+    // newsletter.html
+    "newsletter_page_title": "Créer une newsletter - Équipe",
+    "newsletter_header": "Créer une newsletter",
+    "newsletter_subheader": "Envoyez un e-mail à tous les utilisateurs abonnés à la newsletter.",
+    "newsletter_subject": "Sujet :",
+    "newsletter_subject_placeholder": "Ex. Nouvelle collection disponible !",
+    "newsletter_textarea": "Message (HTML autorisé) :",
+    "newsletter_textarea_placeholder": "Tapez votre newsletter ici...",
+    "newsletter_button": "Envoyer la newsletter",
+
     // over ons.html
     "over_ons_page_title": "À propos de nous",
     "over_ons_header_main": "Bienvenue chez Stylisso - Style That Moves",
@@ -1309,6 +1334,7 @@ const translations = {
     "staff_pages_subheader": "Gérez les pages du personnel ici.",
     "staff_pages_pages": "Pages disponibles",
     "staff_pages_retours": "Traitement des retours",
+    "staff_pages_newsletter": "Créer une newsletter",
 
     // verzending en levering.html
     "verzending en levering_page_title": "Expédition et Livraison",
@@ -1466,6 +1492,10 @@ const translations = {
     "script_processing_retours_alert_general_error": "Une erreur s'est produite lors du traitement du retour.",
     "script_ongeldige_betaalmethode": "Méthode de paiement invalide.",
     "script_wishlist_size": "Taille:",
+    "script_newsletter_fill_fields": "Veuillez remplir à la fois le sujet et le message.",
+    "script_newsletter_success": "Newsletter envoyée avec succès !",
+    "script_newsletter_failed": "Échec de l'envoi. Veuillez réessayer.",
+    "script_newsletter_error": "Une erreur est survenue lors de l'envoi.",
 },
   "be-en": {
     // index.html
@@ -1846,6 +1876,16 @@ const translations = {
     "mijn_stylisso_text_no_vouchers": "No gift vouchers to display.",
     "mijn_stylisso_btn_view_vouchers": "View Gift Vouchers",
 
+    // newsletter.html
+    "newsletter_page_title": "Create Newsletter - Staff",
+    "newsletter_header": "Create Newsletter",
+    "newsletter_subheader": "Send an email to all users subscribed to the newsletter.",
+    "newsletter_subject": "Subject:",
+    "newsletter_subject_placeholder": "e.g. New collection just in!",
+    "newsletter_textarea": "Message (HTML allowed):",
+    "newsletter_textarea_placeholder": "Type your newsletter here...",
+    "newsletter_button": "Send Newsletter",
+
     //over ons.html
     "over_ons_page_title": "About Us",
     "over_ons_header_main": "Welcome to Stylisso - Style That Moves",
@@ -2043,6 +2083,7 @@ const translations = {
     "staff_pages_subheader": "Access to internal staff pages.",
     "staff_pages_pages": "Available Staff Pages",
     "staff_pages_retours": "Return Processing",
+    "staff_pages_newsletter": "Create newsletter",
 
     // verzending en levering.html
     "verzending en levering_page_title": "Shipping & Delivery",
@@ -2200,6 +2241,10 @@ const translations = {
     "script_processing_retours_alert_general_error": "An error occurred while processing the return.",
     "script_ongeldige_betaalmethode": "Invalid payment method",
     "script_wishlist_size": "Size:",
+    "script_newsletter_fill_fields": "Please fill in both the subject and the message.",
+    "script_newsletter_success": "Newsletter sent successfully!",
+    "script_newsletter_failed": "Sending failed. Please try again.",
+    "script_newsletter_error": "An error occurred while sending.",
 },
 "be-de": {
     // index.html
@@ -2580,6 +2625,16 @@ const translations = {
     "mijn_stylisso_text_no_vouchers": "Noch keine Geschenkkarten vorhanden.",
     "mijn_stylisso_btn_view_vouchers": "Geschenkkarten ansehen",
 
+    // newsletter.html
+    "newsletter_page_title": "Newsletter erstellen - Mitarbeiter",
+    "newsletter_header": "Newsletter erstellen",
+    "newsletter_subheader": "Senden Sie eine E-Mail an alle Benutzer, die den Newsletter abonniert haben.",
+    "newsletter_subject": "Betreff:",
+    "newsletter_subject_placeholder": "Z. B. Neue Kollektion eingetroffen!",
+    "newsletter_textarea": "Nachricht (HTML erlaubt):",
+    "newsletter_textarea_placeholder": "Schreiben Sie hier Ihren Newsletter...",
+    "newsletter_button": "Newsletter senden",
+
     // over ons.html
     "over_ons_page_title": "Über uns",
     "over_ons_header_main": "Willkommen bei Stylisso – Stil, der bewegt",
@@ -2777,6 +2832,7 @@ const translations = {
     "staff_pages_subheader": "Verwaltung interner Seiten und Retouren",
     "staff_pages_pages": "Verfügbare Seiten",
     "staff_pages_retours": "Retourenverarbeitung",
+    "staff_pages_newsletter": "Newsletter erstellen",
 
     // verzending en levering.html
     "verzending en levering_page_title": "Versand & Lieferung",
@@ -2932,4 +2988,8 @@ const translations = {
     "script_processing_retours_alert_general_error": "Beim Verarbeiten der Retoure ist ein Fehler aufgetreten.",
     "script_ongeldige_betaalmethode": "Ungültige Zahlungsmethode.",
     "script_wishlist_size": "Größe:",
+    "script_newsletter_fill_fields": "Bitte geben Sie sowohl den Betreff als auch die Nachricht ein.",
+    "script_newsletter_success": "Newsletter erfolgreich gesendet!",
+    "script_newsletter_failed": "Senden fehlgeschlagen. Bitte erneut versuchen.",
+    "script_newsletter_error": "Beim Senden ist ein Fehler aufgetreten.",
 }};
