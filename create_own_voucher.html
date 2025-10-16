@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="create_own_voucher_page_title">Cadeaubon aanmaken - Staff</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="logo/logo klein.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" href="logo/logo klein (dark mode).png" media="(prefers-color-scheme: dark)">
+</head>
+<body>
+
+    <div id="header-placeholder"></div>
+
+    <main class="voucher-main">
+        <section class="voucher-container">
+            <h1 data-i18n="create_own_voucher_header">Interne cadeaubon aanmaken</h1>
+            <p data-i18n="create_own_voucher_subheader">
+                Gebruik dit formulier om een interne Stylisso-cadeaubon aan te maken voor bijvoorbeeld promoties of influencers.
+            </p>
+
+            <form id="voucher2Form">
+                <label for="voucher2_amount" data-i18n="create_own_voucher_amount">Bedrag (€)</label>
+                <input type="number" id="voucher2_amount" name="amount" step="0.01" min="0" placeholder="Bv. 25" data-i18n-placeholder="create_own_voucher_amount_placeholder" required>
+
+                <label for="voucher2_reason" data-i18n="create_own_voucher_reason">Reden van uitgifte</label>
+                <input type="text" id="voucher2_reason" name="reason" placeholder="Bv. Influencer samenwerking" data-i18n-placeholder="create_own_voucher_reason_placeholder" required>
+
+                <label for="create_own_voucher_user_id" data-i18n="create_own_voucher_user_id">Toewijzen aan (optioneel):</label>
+                <input type="text" id="create_own_voucher_user_id" name="assign" placeholder="Bv. 1234" data-i18n-placeholder="create_own_voucher_user_id_placeholder">
+
+                <button type="submit" id="voucher2_createBtn" data-i18n="create_own_voucher_button">Cadeaubon aanmaken</button>
+            </form>
+
+            <div id="voucher2_result" class="voucher-result hidden">
+                <h2 data-i18n="create_own_voucher_success">Voucher succesvol aangemaakt 🎉</h2>
+                <p><strong data-i18n="create_own_voucher_code">Code:</strong> <span id="voucher2_Code"></span></p>
+                <p><strong data-i18n="create_own_voucher_amount_set">Bedrag:</strong> €<span id="voucher2_amount_set"></span></p>
+                <p><strong data-i18n="create_own_voucher_expiry">Vervalt op:</strong> <span id="voucher2_Expires"></span></p>
+                <p><strong data-i18n="create_own_voucher_assigned">Toegewezen aan:</strong> <span id="voucher2_Receiver"></span></p>
+            </div>
+
+            <div id="voucher2_error" class="voucher-error hidden"></div>
+        </section>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="GA.js"></script>
+    <script src="marketing.js"></script>
+    <script src="translations.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

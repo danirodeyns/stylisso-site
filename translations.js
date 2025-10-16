@@ -108,7 +108,7 @@ const translations = {
     "afrekenen_total": "Totaal:",
     "afrekenen_voucher_use": "Cadeaubon gebruiken",
     "afrekenen_voucher_code_label": "Voer boncode in:",
-    "afrekenen_voucher_code_placeholder": "Bijv. ABC123",
+    "afrekenen_voucher_code_placeholder": "Bv. ABC123",
     "afrekenen_voucher_add": "Toevoegen",
     "afrekenen_voucher_select_label": "Selecteer opgeslagen bon:",
     "afrekenen_voucher_select": "Kies een bon",
@@ -308,6 +308,23 @@ const translations = {
     "cookiebeleid_section6_title": "6. Wijzigingen in dit cookiebeleid",
     "cookiebeleid_section6_text": "Stylisso kan dit cookiebeleid op elk moment wijzigen. Controleer regelmatig deze pagina voor eventuele updates.",
 
+    // create_own_voucher.html
+    "create_own_voucher_page_title": "Cadeaubon aanmaken",
+    "create_own_voucher_header": "Interne cadeaubon aanmaken",
+    "create_own_voucher_subheader": "Gebruik dit formulier om een interne Stylisso-cadeaubon aan te maken voor bijvoorbeeld promoties of influencers.",
+    "create_own_voucher_amount": "Bedrag (€)",
+    "create_own_voucher_amount_placeholder": "Bv. 25",
+    "create_own_voucher_reason": "Reden van uitgifte",
+    "create_own_voucher_reason_placeholder": "Bv. Influencer samenwerking",
+    "create_own_voucher_button": "Cadeaubon aanmaken",
+    "create_own_voucher_success": "Voucher succesvol aangemaakt 🎉",
+    "create_own_voucher_code": "Code:",
+    "create_own_voucher_amount_set": "Bedrag:",
+    "create_own_voucher_expiry": "Vervalt op:",
+    "create_own_voucher_assigned": "Toegewezen aan:",
+    "create_own_voucher_user_id": "Toewijzen aan (optioneel):",
+    "create_own_voucher_user_id_placeholder": "Bv. 1234",
+
     // gegevens.html
     "profile_title_page": "Profielinstellingen",
     "profile_header": "Gegevens & Voorkeuren",
@@ -383,7 +400,7 @@ const translations = {
     "newsletter_header": "Nieuwsbrief opstellen",
     "newsletter_subheader": "Stuur een mailing naar alle gebruikers die ingeschreven zijn op de nieuwsbrief.",
     "newsletter_subject": "Onderwerp:",
-    "newsletter_subject_placeholder": "Bijv. Nieuwe collectie binnen!",
+    "newsletter_subject_placeholder": "Bv. Nieuwe collectie binnen!",
     "newsletter_textarea": "Bericht (HTML toegestaan):",
     "newsletter_textarea_placeholder": "Typ hier je nieuwsbrief...",
     "newsletter_button": "Verstuur nieuwsbrief",    
@@ -425,7 +442,7 @@ const translations = {
     "privacy_section_3_text": "Je kunt zelf bepalen welke persoonsgegevens je deelt en beheren via je accountinstellingen. Daarnaast kun je via je browserinstellingen bepaalde gegevens beperken, zoals cookies, tracking en locatiegegevens. Wij moedigen je aan om de beschikbare hulpmiddelen van je apparaat of browser te gebruiken om je privacy te beheren.",
     "privacy_section_4_title": "4. Extra doeleinden van gegevensverwerking",
     "privacy_section_4_text": "Naast het verwerken van bestellingen en het verzenden van marketingcommunicatie, gebruiken wij jouw gegevens ook voor:",
-    "privacy_section_4_list": "Het personaliseren van je ervaring op onze website (bijv. productaanbevelingen, voorkeuren).",
+    "privacy_section_4_list": "Het personaliseren van je ervaring op onze website (bv. productaanbevelingen, voorkeuren).",
     "privacy_section_4_list_1": "Het verbeteren van onze diensten, functionaliteiten en gebruiksvriendelijkheid van het platform.",
     "privacy_section_4_list_2": "Het beschermen tegen fraude, misbruik of illegale activiteiten op ons platform.",
     "privacy_section_5_title": "5. Marketingcommunicatie",
@@ -586,6 +603,7 @@ const translations = {
     "staff_pages_pages": "Beschikbare pagina's",
     "staff_pages_retours": "Retourverwerking",
     "staff_pages_newsletter": "Nieuwsbrief opstellen",
+    "staff_pages_voucher": "Cadeaubon aanmaken",
 
     // verzending en levering.html
     "verzending en levering_page_title": "Verzending en Levering",
@@ -1057,6 +1075,23 @@ const translations = {
     "cookiebeleid_section6_title": "6. Modifications de cette politique de cookies",
     "cookiebeleid_section6_text": "Stylisso peut modifier cette politique de cookies à tout moment. Vérifiez régulièrement cette page pour les éventuelles mises à jour.",
 
+    // create_own_voucher.html
+    "create_own_voucher_page_title": "Créer un bon cadeau",
+    "create_own_voucher_header": "Créer un bon cadeau interne",
+    "create_own_voucher_subheader": "Utilisez ce formulaire pour créer un bon cadeau Stylisso interne, par exemple pour des promotions ou des influenceurs.",
+    "create_own_voucher_amount": "Montant (€)",
+    "create_own_voucher_amount_placeholder": "Ex. 25",
+    "create_own_voucher_reason": "Raison de l’émission",
+    "create_own_voucher_reason_placeholder": "Ex. Collaboration avec un influenceur",
+    "create_own_voucher_button": "Créer un bon cadeau",
+    "create_own_voucher_success": "Bon créé avec succès 🎉",
+    "create_own_voucher_code": "Code :",
+    "create_own_voucher_amount_set": "Montant :",
+    "create_own_voucher_expiry": "Expire le :",
+    "create_own_voucher_assigned": "Attribué à :",
+    "create_own_voucher_user_id": "Attribuer à (optionnel) :",
+    "create_own_voucher_user_id_placeholder": "Ex. 1234",
+
     // gegevens.html
     "profile_title_page": "Paramètres du profil",
     "profile_header": "Profil & Préférences",
@@ -1335,6 +1370,7 @@ const translations = {
     "staff_pages_pages": "Pages disponibles",
     "staff_pages_retours": "Traitement des retours",
     "staff_pages_newsletter": "Créer une newsletter",
+    "staff_pages_voucher": "Créer un bon cadeau",
 
     // verzending en levering.html
     "verzending en levering_page_title": "Expédition et Livraison",
@@ -1806,6 +1842,23 @@ const translations = {
     "cookiebeleid_section6_title": "6. Changes to this cookie policy",
     "cookiebeleid_section6_text": "Stylisso may modify this cookie policy at any time. Please check this page regularly for updates.",
 
+    // create_own_voucher.html
+    "create_own_voucher_page_title": "Create Gift Card",
+    "create_own_voucher_header": "Create Internal Gift Card",
+    "create_own_voucher_subheader": "Use this form to create an internal Stylisso gift card, for example for promotions or influencers.",
+    "create_own_voucher_amount": "Amount (€)",
+    "create_own_voucher_amount_placeholder": "Eg. 25",
+    "create_own_voucher_reason": "Reason for issue",
+    "create_own_voucher_reason_placeholder": "E.g. Influencer collaboration",
+    "create_own_voucher_button": "Create gift card",
+    "create_own_voucher_success": "Voucher successfully created 🎉",
+    "create_own_voucher_code": "Code:",
+    "create_own_voucher_amount_set": "Amount:",
+    "create_own_voucher_expiry": "Expires on:",
+    "create_own_voucher_assigned": "Assigned to:",
+    "create_own_voucher_user_id": "Assign to (optional):",
+    "create_own_voucher_user_id_placeholder": "E.g. 1234",
+
     // gegevens.html
     "profile_title_page": "Profile settings",
     "profile_header": "Profile & Preferences",
@@ -2084,6 +2137,7 @@ const translations = {
     "staff_pages_pages": "Available Staff Pages",
     "staff_pages_retours": "Return Processing",
     "staff_pages_newsletter": "Create newsletter",
+    "staff_pages_voucher": "Create gift card",
 
     // verzending en levering.html
     "verzending en levering_page_title": "Shipping & Delivery",
@@ -2555,6 +2609,23 @@ const translations = {
     "cookiebeleid_section6_title": "6. Änderungen dieser Cookie-Richtlinie",
     "cookiebeleid_section6_text": "Stylisso kann diese Cookie-Richtlinie jederzeit ändern. Prüfe diese Seite regelmäßig auf Updates.",
 
+    // create_own_voucher.html
+    "create_own_voucher_page_title": "Gutschein erstellen",
+    "create_own_voucher_header": "Internen Gutschein erstellen",
+    "create_own_voucher_subheader": "Verwenden Sie dieses Formular, um einen internen Stylisso-Gutschein zu erstellen, z. B. für Werbeaktionen oder Influencer.",
+    "create_own_voucher_amount": "Betrag (€)",
+    "create_own_voucher_amount_placeholder": "Z.B. 25",
+    "create_own_voucher_reason": "Ausgabegrund",
+    "create_own_voucher_reason_placeholder": "Z. B. Influencer-Kooperation",
+    "create_own_voucher_button": "Gutschein erstellen",
+    "create_own_voucher_success": "Gutschein erfolgreich erstellt 🎉",
+    "create_own_voucher_code": "Code:",
+    "create_own_voucher_amount_set": "Betrag:",
+    "create_own_voucher_expiry": "Gültig bis:",
+    "create_own_voucher_assigned": "Zugewiesen an:",
+    "create_own_voucher_user_id": "Zuweisen an (optional):",
+    "create_own_voucher_user_id_placeholder": "Z. B. 1234",
+
     // gegevens.html
     "profile_title_page": "Profil-Einstellungen",
     "profile_header": "Daten & Einstellungen",
@@ -2833,6 +2904,7 @@ const translations = {
     "staff_pages_pages": "Verfügbare Seiten",
     "staff_pages_retours": "Retourenverarbeitung",
     "staff_pages_newsletter": "Newsletter erstellen",
+    "staff_pages_voucher": "Gutschein erstellen",
 
     // verzending en levering.html
     "verzending en levering_page_title": "Versand & Lieferung",
