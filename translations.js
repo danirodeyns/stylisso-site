@@ -322,7 +322,7 @@ const translations = {
     "create_own_voucher_amount_set": "Bedrag:",
     "create_own_voucher_expiry": "Vervalt op:",
     "create_own_voucher_assigned": "Toegewezen aan:",
-    "create_own_voucher_user_id": "Toewijzen aan (optioneel):",
+    "create_own_voucher_user_id": "Toewijzen aan User ID (optioneel):",
     "create_own_voucher_user_id_placeholder": "Bv. 1234",
 
     // gegevens.html
@@ -1089,7 +1089,7 @@ const translations = {
     "create_own_voucher_amount_set": "Montant :",
     "create_own_voucher_expiry": "Expire le :",
     "create_own_voucher_assigned": "Attribué à :",
-    "create_own_voucher_user_id": "Attribuer à (optionnel) :",
+    "create_own_voucher_user_id": "Attribuer à User ID (optionnel) :",
     "create_own_voucher_user_id_placeholder": "Ex. 1234",
 
     // gegevens.html
@@ -1856,7 +1856,7 @@ const translations = {
     "create_own_voucher_amount_set": "Amount:",
     "create_own_voucher_expiry": "Expires on:",
     "create_own_voucher_assigned": "Assigned to:",
-    "create_own_voucher_user_id": "Assign to (optional):",
+    "create_own_voucher_user_id": "Assign to User ID (optional):",
     "create_own_voucher_user_id_placeholder": "E.g. 1234",
 
     // gegevens.html
@@ -2623,7 +2623,7 @@ const translations = {
     "create_own_voucher_amount_set": "Betrag:",
     "create_own_voucher_expiry": "Gültig bis:",
     "create_own_voucher_assigned": "Zugewiesen an:",
-    "create_own_voucher_user_id": "Zuweisen an (optional):",
+    "create_own_voucher_user_id": "Zuweisen an User ID (optional):",
     "create_own_voucher_user_id_placeholder": "Z. B. 1234",
 
     // gegevens.html
