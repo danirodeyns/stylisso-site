@@ -12,10 +12,11 @@ $lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
  * @param string $order_date Datum van de order (timestamp of string)
  * @param mysqli $conn Databaseverbinding
  * @param string $lang Taalcode, bv. 'be-nl', 'be-fr', 'be-de'
+ * @param array|null $used_voucher Optioneel: array met 'code' en 'amount'
  * @return string|false Bestandsnaam bij succes, false bij fout
  */
-function create_invoice($order_id, $order_date, $conn, $lang) {
-    // Ophalen van orderinformatie + gebruikersgegevens
+function create_invoice($order_id, $order_date, $conn, $lang, $used_voucher = null) {
+    // --- Order + klantgegevens ophalen ---
     $stmt = $conn->prepare("
         SELECT o.id, o.total_price, o.status, o.created_at,
             u.name, u.email, u.company_name, u.vat_number,
@@ -35,9 +36,11 @@ function create_invoice($order_id, $order_date, $conn, $lang) {
     $stmt->bind_param("i", $order_id);
     $stmt->execute();
     $order = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
     if (!$order) return false;
 
-    // Opbouwen van het adres
+    // --- Adres samenstellen ---
     $addressParts = [];
     if (!empty($order['street'])) $addressParts[] = htmlspecialchars($order['street']) . ' ' . htmlspecialchars($order['house_number']);
     if (!empty($order['postal_code'])) $addressParts[] = htmlspecialchars($order['postal_code']);
@@ -45,21 +48,23 @@ function create_invoice($order_id, $order_date, $conn, $lang) {
     if (!empty($order['country'])) $addressParts[] = htmlspecialchars($order['country']);
     $fullAddress = implode(', ', $addressParts);
 
-    // Ophalen van order items inclusief vertaalde productnamen
+    // --- Order items ophalen + productvertalingen + voucher code ---
     $stmt_items = $conn->prepare("
         SELECT oi.quantity, oi.price, oi.type, 
-            COALESCE(pt.name, p.name) AS product_name
+            COALESCE(pt.name, p.name) AS product_name,
+            v.code AS voucher_code
         FROM order_items oi
         LEFT JOIN products p ON oi.product_id = p.id
-        LEFT JOIN product_translations pt 
-            ON pt.product_id = p.id AND pt.lang = ?
+        LEFT JOIN product_translations pt ON pt.product_id = p.id AND pt.lang = ?
+        LEFT JOIN vouchers v ON oi.voucher_id = v.id
         WHERE oi.order_id = ?
     ");
     $stmt_items->bind_param("si", $lang, $order_id);
     $stmt_items->execute();
     $items = $stmt_items->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt_items->close();
 
-    // Begin HTML voor PDF
+    // --- HTML opbouw ---
     $html = '<h1>' . t('invoice_title') . '</h1>';
     $html .= '<p><strong>' . t('order_number') . ':</strong> ' . $order['id'] . '</p>';
     $html .= '<p><strong>' . t('order_date') . ':</strong> ' . date('d-m-Y', strtotime($order['created_at'])) . '</p>';
@@ -69,20 +74,29 @@ function create_invoice($order_id, $order_date, $conn, $lang) {
     if (!empty($order['vat_number'])) $html .= '<strong>' . t('vat_number') . ':</strong> ' . htmlspecialchars($order['vat_number']) . '<br>';
     $html .= '<strong>' . t('address') . ':</strong> ' . $fullAddress . '</p>';
 
+    // --- Producttabel ---
     $html .= '<table width="100%" border="1" cellpadding="5" cellspacing="0">';
-    $html .= '<thead><tr>
-                <th>' . t('quantity') . '</th>
-                <th>' . t('product') . '</th>
-                <th>' . t('price_per_item') . '</th>
-                <th>' . t('total') . '</th>
-              </tr></thead>';
-    $html .= '<tbody>';
+    $html .= '<thead>
+                <tr>
+                    <th>' . t('quantity') . '</th>
+                    <th>' . t('product') . '</th>
+                    <th>' . t('price_per_item') . '</th>
+                    <th>' . t('total') . '</th>
+                </tr>
+              </thead><tbody>';
 
     foreach ($items as $item) {
-        $productName = $item['type'] === 'voucher' ? t('gift_voucher') : $item['product_name'];
+        if ($item['type'] === 'voucher') {
+            $voucherCode = !empty($item['voucher_code']) ? ' - ' . htmlspecialchars($item['voucher_code']) : '';
+            $productName = t('gift_voucher') . $voucherCode;
+        } else {
+            $productName = htmlspecialchars($item['product_name']);
+        }
+
         $qty = intval($item['quantity']);
-        $price = number_format($item['price'], 2);
-        $total = number_format($qty * $item['price'], 2);
+        $price = number_format($item['price'], 2, ',', '.');
+        $total = number_format($qty * $item['price'], 2, ',', '.');
+
         $html .= "<tr>
                     <td style='text-align:center;'>$qty</td>
                     <td>$productName</td>
@@ -92,10 +106,18 @@ function create_invoice($order_id, $order_date, $conn, $lang) {
     }
 
     $html .= '</tbody></table>';
-    $html .= '<p><strong>' . t('total_to_pay') . ':</strong> €' . number_format($order['total_price'], 2) . '</p>';
-    $html .= '<p><strong>' . t('status') . ':</strong> ' . ucfirst($order['status']) . '</p>';
 
-    // Map voor facturen
+    // --- Voucher korting tonen, indien aanwezig ---
+    if (!empty($used_voucher) && isset($used_voucher['code'], $used_voucher['amount'])) {
+        $html .= '<p><strong>' . t('used_voucher') . ':</strong> ' . htmlspecialchars($used_voucher['code']) . ' - €' . number_format($used_voucher['amount'], 2, ',', '.') . '</p>';
+        $html .= '<p><strong>' . t('total_to_pay') . ':</strong> €' . number_format($order['total_price'] - $used_voucher['amount'], 2, ',', '.') . '</p>';
+    } else {
+        $html .= '<p><strong>' . t('total_to_pay') . ':</strong> €' . number_format($order['total_price'], 2, ',', '.') . '</p>';
+    }
+
+    $html .= '<p><strong>' . t('status') . ':</strong> ' . ucfirst(htmlspecialchars($order['status'])) . '</p>';
+
+    // --- PDF genereren ---
     $dir = __DIR__ . '/invoices';
     if (!is_dir($dir)) mkdir($dir, 0755, true);
 
@@ -104,7 +126,7 @@ function create_invoice($order_id, $order_date, $conn, $lang) {
     $filepath = $dir . '/' . $filename;
 
     try {
-        $mpdf = new Mpdf();
+        $mpdf = new Mpdf(['tempDir' => __DIR__ . '/tmp']);
         $mpdf->WriteHTML($html);
         $mpdf->Output($filepath, \Mpdf\Output\Destination::FILE);
         return $filename;

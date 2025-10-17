@@ -23,6 +23,7 @@ $translations = [
         'select_voucher_first' => 'Kies eerst een bon',
         'voucher_applied' => 'Bon toegepast',
         'voucher_redeem_error' => 'Er is een fout opgetreden bij het toepassen van de bon',
+        'used_voucher' => 'Gebruikte cadeaubon',
 
         // create_credit_nota.php
         'credit_note_title' => 'Creditnota',
@@ -108,6 +109,7 @@ $translations = [
         'select_voucher_first' => 'Sélectionnez d’abord un bon',
         'voucher_applied' => 'Bon appliqué',
         'voucher_redeem_error' => 'Une erreur est survenue lors de l’application du bon',
+        'used_voucher' => 'Bon utilisé',
 
         // create_credit_nota.php
         'credit_note_title' => 'Note de crédit',
@@ -197,6 +199,7 @@ $translations = [
         'select_voucher_first' => 'Select a voucher first',
         'voucher_applied' => 'Voucher applied',
         'voucher_redeem_error' => 'An error occurred while applying the voucher',
+        'used_voucher' => 'Used voucher',
 
         // create_credit_nota.php
         'credit_note_title' => 'Credit Note',
@@ -286,6 +289,7 @@ $translations = [
         'select_voucher_first' => 'Bitte zuerst einen Gutschein auswählen',
         'voucher_applied' => 'Gutschein angewendet',
         'voucher_redeem_error' => 'Beim Anwenden des Gutscheins ist ein Fehler aufgetreten',
+        'used_voucher' => 'Verwendeter Gutschein',
 
         // create_credit_nota.php
         'credit_note_title' => 'Gutschrift',

@@ -162,8 +162,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // ================================
     // 8. Order toevoegen (met taal)
     // ================================
-
-    // --- Bepaal taal op basis van cookie
     $allowed_langs = ['be-nl','be-fr','be-en','be-de'];
     $siteLanguage = $_COOKIE['siteLanguage'] ?? 'be-nl';
     if (!in_array($siteLanguage, $allowed_langs, true)) {
@@ -183,7 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // ================================
     $order_date = date('Y-m-d');
     include 'create_invoice.php';
-    create_invoice($order_id, $order_date, $conn);
+    create_invoice($order_id, $order_date, $conn, $siteLanguage, $used_voucher);
 
     // ================================
     // 10. Order items toevoegen (inclusief type + maat)
@@ -248,25 +246,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // ================================
-    // 11. Gebruikte voucher bijwerken
-    // ================================
-    if ($used_voucher) {
-        $stmt_uv = $conn->prepare(
-            "UPDATE vouchers SET remaining_value = GREATEST(remaining_value - ?, 0) WHERE code = ?"
-        );
-        $stmt_uv->bind_param("ds", $used_amount, $used_voucher['code']);
-        $stmt_uv->execute();
-    }
-
-    // ================================
-    // 12. Winkelwagen leegmaken
+    // 11. Winkelwagen leegmaken
     // ================================
     $stmt_cart = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
     $stmt_cart->bind_param("i", $user_id);
     $stmt_cart->execute();
 
     // ================================
-    // 13. Checkout resetten
+    // 12. Checkout resetten
     // ================================
     unset($_SESSION['checkout']);
     unset($_SESSION['used_voucher']);
