@@ -19,6 +19,15 @@
     <aside class="filters">
       <h2 data-i18n="categorie_filters_title">Filters</h2>
       <div id="filters-container"></div>
+      <!-- Prijsfilter -->
+      <div class="price-filter">
+        <h3 data-i18n="categorie_filters_price">Prijs</h3>
+        <div class="price-inputs">
+          <input type="number" id="price-min" placeholder="Min €" min="0">
+          <span>-</span>
+          <input type="number" id="price-max" placeholder="Max €" min="10">
+        </div>
+      </div>
       <button id="reset-filters" class="reset-btn" data-i18n="categorie_filters_reset">Reset filters</button>
     </aside>
 

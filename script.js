@@ -2927,6 +2927,25 @@ function loadProductGrid() {
   const sortSelect = document.getElementById("sort-products");
   const categoryTitle = document.getElementById("category-title");
 
+  // Prijsfilter elementen
+  const priceMinInput = document.getElementById("price-min");
+  const priceMaxInput = document.getElementById("price-max");
+  const priceRangeContainer = document.querySelector(".price-filter");
+
+  // Voeg dubbele schuifbalk toe
+  const rangeWrapper = document.createElement("div");
+  rangeWrapper.className = "double-range";
+  rangeWrapper.innerHTML = `
+    <input type="range" id="range-min" min="0" max="1000" value="0" step="1">
+    <input type="range" id="range-max" min="0" max="1000" value="1000" step="1">
+    <div class="slider-track"></div>
+  `;
+  if (priceRangeContainer) priceRangeContainer.appendChild(rangeWrapper);
+
+  const rangeMin = document.getElementById("range-min");
+  const rangeMax = document.getElementById("range-max");
+  const sliderTrack = document.querySelector(".slider-track");
+
   if (productGrid && filtersContainer && categoryTitle) {
     const urlParams = new URLSearchParams(window.location.search);
     const categoryId = urlParams.get('cat') || 0;
@@ -2934,6 +2953,9 @@ function loadProductGrid() {
 
     let products = [];
     let activeFilters = {};
+    let priceMin = 0;
+    let priceMax = 1000;
+    let priceMaxOverall = 1000;
 
     // --- Titel ophalen via categorie.php ---
     fetchWithLang(`categorie.php?cat=${categoryId}&sub=${subcategoryId}`)
@@ -2945,10 +2967,45 @@ function loadProductGrid() {
     fetchWithLang(`fetch_products.php?cat=${categoryId}&sub=${subcategoryId}`)
       .then(data => {
         products = data;
+
+        // Bepaal hoogste prijs van alle producten
+        const prices = products.map(p => parseFloat(p.price)).filter(p => !isNaN(p));
+        priceMaxOverall = Math.max(...prices, 100); // fallback 100
+
+        // Stel range sliders in op hoogste prijs
+        rangeMin.min = 0;
+        rangeMin.max = priceMaxOverall;
+        rangeMin.value = 0;
+
+        rangeMax.min = 0;
+        rangeMax.max = priceMaxOverall;
+        rangeMax.value = priceMaxOverall;
+
+        priceMin = 0;
+        priceMax = priceMaxOverall;
+
         sortSelect.value = 'populariteit';
         renderProducts();
+        updateSliderTrack();
       });
 
+    // --- Update slider-track ---
+    function updateSliderTrack() {
+      const min = parseFloat(rangeMin.value);
+      const max = parseFloat(rangeMax.value);
+      const minPercent = (min / priceMaxOverall) * 100;
+      const maxPercent = (max / priceMaxOverall) * 100;
+
+      sliderTrack.style.background = `linear-gradient(to right,
+        var(--non-active-range-color, #ddd) 0%,
+        var(--non-active-range-color, #ddd) ${minPercent}%,
+        var(--active-range-color, black) ${minPercent}%,
+        var(--active-range-color, black) ${maxPercent}%,
+        var(--non-active-range-color, #ddd) ${maxPercent}%,
+        var(--non-active-range-color, #ddd) 100%)`;
+    }
+
+    // --- Producten filteren en renderen ---
     function renderProducts() {
       // --- Filter producten ---
       let filtered = products.filter(p => {
@@ -2967,13 +3024,17 @@ function loadProductGrid() {
 
         for (let key in activeFilters) {
           if (!specMap[key]) return false;
-          const matches = activeFilters[key].some(val => specMap[key].includes(val));
-          if (!matches) return false;
+          if (!activeFilters[key].some(val => specMap[key].includes(val))) return false;
         }
+
+        const price = parseFloat(p.price);
+        if (isNaN(price)) return false;
+        if (price < priceMin || price > priceMax) return false;
+
         return true;
       });
 
-      // --- Filters dynamisch opbouwen ---
+      // Dynamisch filters opbouwen
       const availableFilters = {};
       filtered.forEach(p => {
         if (!p.specifications) return;
@@ -3014,23 +3075,22 @@ function loadProductGrid() {
             if (!activeFilters[chk.name]) activeFilters[chk.name] = [];
             activeFilters[chk.name].push(chk.value);
           });
-          renderProducts(); // recursief opnieuw renderen
+          renderProducts();
         });
       });
 
-      // --- Sorteren
-      if (sortSelect.value === 'populariteit') {
-        filtered.sort((a, b) => b.sold_count - a.sold_count || Math.random() - 0.5);
-      } 
-      else if (sortSelect.value === 'prijs-oplopend') filtered.sort((a, b) => a.price - b.price);
-      else if (sortSelect.value === 'prijs-aflopend') filtered.sort((a, b) => b.price - a.price);
-      else if (sortSelect.value === 'nieuw') filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      // Sorteren
+      if (sortSelect.value === 'populariteit') filtered.sort((a,b)=>b.sold_count - a.sold_count || Math.random()-0.5);
+      else if (sortSelect.value === 'prijs-oplopend') filtered.sort((a,b)=>a.price - b.price);
+      else if (sortSelect.value === 'prijs-aflopend') filtered.sort((a,b)=>b.price - a.price);
+      else if (sortSelect.value === 'nieuw') filtered.sort((a,b)=>new Date(b.created_at) - new Date(a.created_at));
 
-      // --- Productgrid vullen
+      // Productgrid vullen
       productGrid.innerHTML = '';
       filtered.forEach(p => {
         const card = document.createElement('div');
         card.className = 'product-card2';
+        card.dataset.price = parseFloat(p.price).toFixed(2);
 
         const inWishlist = p.in_wishlist;
         card.innerHTML = `
@@ -3080,10 +3140,51 @@ function loadProductGrid() {
       });
     }
 
-    // --- Reset filters ---
+    // --- Prijsfilter functionaliteit ---
+    function updatePriceFilter(fromSlider = false) {
+      priceMin = parseFloat(rangeMin.value);
+      priceMax = parseFloat(rangeMax.value);
+
+      if (priceMax - priceMin < 10) { // minimale marge
+        if (fromSlider === "min") rangeMin.value = priceMax - 10;
+        else rangeMax.value = priceMin + 10;
+      }
+
+      priceMin = parseFloat(rangeMin.value);
+      priceMax = parseFloat(rangeMax.value);
+
+      priceMinInput.value = priceMin;
+      priceMaxInput.value = priceMax;
+      updateSliderTrack();
+      renderProducts();
+    }
+
+    if (priceMinInput && priceMaxInput && rangeMin && rangeMax) {
+      priceMinInput.addEventListener('input', () => {
+        rangeMin.value = priceMinInput.value || 0;
+        updatePriceFilter();
+      });
+      priceMaxInput.addEventListener('input', () => {
+        rangeMax.value = priceMaxInput.value || priceMaxOverall;
+        updatePriceFilter();
+      });
+
+      rangeMin.addEventListener('input', () => updatePriceFilter("min"));
+      rangeMax.addEventListener('input', () => updatePriceFilter("max"));
+    }
+
     if (resetBtn) {
       resetBtn.addEventListener('click', () => {
         activeFilters = {};
+        priceMin = 0;
+        priceMax = priceMaxOverall;
+        priceMinInput.value = '';
+        priceMaxInput.value = '';
+        rangeMin.value = 0;
+        rangeMax.value = priceMaxOverall;
+        rangeMin.max = priceMaxOverall;
+        rangeMax.max = priceMaxOverall;
+        updateSliderTrack();
         renderProducts();
       });
     }
