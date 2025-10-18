@@ -2661,6 +2661,7 @@ label[for="different_billing"] span {
   font-size: 1.2rem;
   border-bottom: 1px solid #ddd;
   padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   color: #222;
 }
 
@@ -2671,7 +2672,7 @@ label[for="different_billing"] span {
 .filter-group h3 {
   font-size: 1rem;
   margin-bottom: 0.5rem;
-  color: #555;
+  color: #222;
 }
 
 .filter-group label {
@@ -4210,7 +4211,7 @@ label[for="different_billing"] span {
   }
 
   .filter-group h3 {
-    color: #bbb;
+    color: #eee;
   }
 
   .filter-group label {

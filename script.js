@@ -2941,35 +2941,6 @@ function loadProductGrid() {
         categoryTitle.textContent = data.selected.subcategory || data.selected.category || "Categorie";
       });
 
-    // --- Filters ophalen ---
-    fetch(`filters.php?cat=${categoryId}&sub=${subcategoryId}`)
-      .then(res => res.json())
-      .then(filters => {
-        for (let key in filters) {
-          const group = document.createElement('div');
-          group.className = 'filter-group';
-          group.innerHTML = `<h3>${key.charAt(0).toUpperCase() + key.slice(1)}</h3>`;
-          filters[key].forEach(value => {
-            const label = document.createElement('label');
-            label.innerHTML = `<input type="checkbox" name="${key}" value="${value}"> ${value}`;
-            group.appendChild(label);
-          });
-          filtersContainer.appendChild(group);
-        }
-
-        // Event listeners voor filters
-        document.querySelectorAll('.filter-group input[type=checkbox]').forEach(cb => {
-          cb.addEventListener('change', () => {
-            activeFilters = {};
-            document.querySelectorAll('.filter-group input[type=checkbox]:checked').forEach(chk => {
-              if (!activeFilters[chk.name]) activeFilters[chk.name] = [];
-              activeFilters[chk.name].push(chk.value);
-            });
-            renderProducts();
-          });
-        });
-      });
-
     // --- Producten ophalen ---
     fetchWithLang(`fetch_products.php?cat=${categoryId}&sub=${subcategoryId}`)
       .then(data => {
@@ -2979,26 +2950,83 @@ function loadProductGrid() {
       });
 
     function renderProducts() {
+      // --- Filter producten ---
       let filtered = products.filter(p => {
+        if (!p.specifications) return true;
+
+        const specMap = {};
+        p.specifications.split(';').forEach(s => {
+          const parts = s.split(':');
+          if (parts.length === 2) {
+            const k = parts[0].trim().toLowerCase();
+            const v = parts[1].trim();
+            if (!specMap[k]) specMap[k] = [];
+            specMap[k].push(v);
+          }
+        });
+
         for (let key in activeFilters) {
-          if (!activeFilters[key].includes(p[key])) return false;
+          if (!specMap[key]) return false;
+          const matches = activeFilters[key].some(val => specMap[key].includes(val));
+          if (!matches) return false;
         }
         return true;
       });
 
-      // Sorteren
-      if (sortSelect.value === 'populariteit') {
-        filtered.sort((a, b) => {
-          const diff = b.sold_count - a.sold_count;
-          if (diff !== 0) return diff;
-          return Math.random() - 0.5;
+      // --- Filters dynamisch opbouwen ---
+      const availableFilters = {};
+      filtered.forEach(p => {
+        if (!p.specifications) return;
+        p.specifications.split(';').forEach(s => {
+          const parts = s.split(':');
+          if (parts.length === 2) {
+            const k = parts[0].trim().toLowerCase();
+            const v = parts[1].trim();
+            if (!availableFilters[k]) availableFilters[k] = new Set();
+            availableFilters[k].add(v);
+          }
         });
+      });
+
+      // Filters tonen
+      filtersContainer.innerHTML = '';
+      for (let key in availableFilters) {
+        const values = Array.from(availableFilters[key]);
+        if (values.length === 0) continue;
+
+        const group = document.createElement('div');
+        group.className = 'filter-group';
+        group.innerHTML = `<h3>${key.charAt(0).toUpperCase() + key.slice(1)}</h3>`;
+        values.forEach(value => {
+          const label = document.createElement('label');
+          const checked = activeFilters[key] && activeFilters[key].includes(value) ? 'checked' : '';
+          label.innerHTML = `<input type="checkbox" name="${key}" value="${value}" ${checked}> ${value}`;
+          group.appendChild(label);
+        });
+        filtersContainer.appendChild(group);
+      }
+
+      // Event listeners opnieuw toevoegen
+      document.querySelectorAll('.filter-group input[type=checkbox]').forEach(cb => {
+        cb.addEventListener('change', () => {
+          activeFilters = {};
+          document.querySelectorAll('.filter-group input[type=checkbox]:checked').forEach(chk => {
+            if (!activeFilters[chk.name]) activeFilters[chk.name] = [];
+            activeFilters[chk.name].push(chk.value);
+          });
+          renderProducts(); // recursief opnieuw renderen
+        });
+      });
+
+      // --- Sorteren
+      if (sortSelect.value === 'populariteit') {
+        filtered.sort((a, b) => b.sold_count - a.sold_count || Math.random() - 0.5);
       } 
       else if (sortSelect.value === 'prijs-oplopend') filtered.sort((a, b) => a.price - b.price);
       else if (sortSelect.value === 'prijs-aflopend') filtered.sort((a, b) => b.price - a.price);
       else if (sortSelect.value === 'nieuw') filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-      // Productgrid vullen
+      // --- Productgrid vullen
       productGrid.innerHTML = '';
       filtered.forEach(p => {
         const card = document.createElement('div');
@@ -3055,7 +3083,6 @@ function loadProductGrid() {
     // --- Reset filters ---
     if (resetBtn) {
       resetBtn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-group input[type=checkbox]').forEach(cb => cb.checked = false);
         activeFilters = {};
         renderProducts();
       });
