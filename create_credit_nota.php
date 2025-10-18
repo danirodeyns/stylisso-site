@@ -118,7 +118,30 @@ function create_credit_nota($order_id, $approved_item_ids, $conn, $lang) {
         $mpdf = new Mpdf();
         $mpdf->WriteHTML($html);
         $mpdf->Output($filepath, \Mpdf\Output\Destination::FILE);
+
+        // =====================================
+        // ✅ Verstuur e-mail met creditnota in bijlage
+        // =====================================
+        $postData = [
+            'task' => 'order_credit_nota',
+            'email' => $order['email'],
+            'lang' => $lang,
+            'filename' => $filename
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'mailing.php');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        // Log resultaat voor debugging
+        file_put_contents(__DIR__ . '/credit_note_mail_log.txt', date('Y-m-d H:i:s') . " - Sent to {$order['email']} - Response: {$response}\n", FILE_APPEND);
+
         return $filename;
+
     } catch (\Mpdf\MpdfException $e) {
         error_log('PDF genereren mislukt: ' . $e->getMessage());
         return false;

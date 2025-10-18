@@ -8,22 +8,21 @@ use Mpdf\Mpdf;
 $lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
 
 /**
- * Genereer een interne factuur (PDF) voor een reeds bestaande voucher
+ * Genereer een interne voucherfactuur (PDF) en stuur deze door naar mailing.php
  *
- * @param string $voucher_code De code van de voucher
- * @param float  $amount       Waarde van de voucher
- * @param string $create_date  Datum van creatie (bv. '2025-10-14')
- * @param string $reason       Reden van uitgifte (bv. "Promotie", "Influencer")
- * @param string $lang         Taalcode
- * @return array
+ * @param string $voucher_code
+ * @param float  $amount
+ * @param string $create_date
+ * @param string $reason
+ * @param string $lang
+ * @return string|false PDF-bestandsnaam of false bij fout
  */
 function create_own_voucher_invoice($voucher_code, $amount, $create_date, $reason = 'Interne voucheruitgifte', $lang = 'be-nl') {
 
     $formattedAmount = number_format((float)$amount, 2, ',', '.');
-    $companyName = "Stylisso";
     $date = date('Y-m-d', strtotime($create_date));
 
-    // HTML voor PDF
+    // --- HTML voor PDF ---
     $html = "
     <h1>Interne Voucherfactuur</h1>
     <p><strong>Datum:</strong> {$date}</p>
@@ -51,30 +50,44 @@ function create_own_voucher_invoice($voucher_code, $amount, $create_date, $reaso
         Dit document dient uitsluitend ter boekhoudkundige registratie en vertegenwoordigt geen btw-plichtige verkoop.
     </p>";
 
-    // Map aanmaken indien nodig
+    // --- Map aanmaken indien nodig ---
     $dir = __DIR__ . '/invoices';
     if (!is_dir($dir)) mkdir($dir, 0755, true);
 
     $filename = $date . "-" . preg_replace('/[^A-Za-z0-9]/', '', $voucher_code) . ".pdf";
     $filepath = $dir . '/' . $filename;
 
-    // PDF genereren
+    // --- PDF genereren ---
     try {
-        $mpdf = new Mpdf();
+        $mpdf = new Mpdf(['tempDir' => __DIR__ . '/tmp']);
         $mpdf->WriteHTML($html);
         $mpdf->Output($filepath, \Mpdf\Output\Destination::FILE);
-
-        return [
-            'success' => true,
-            'message' => 'Interne voucherfactuur (PDF) aangemaakt',
-            'file' => $filename
-        ];
     } catch (\Mpdf\MpdfException $e) {
-        return [
-            'success' => false,
-            'message' => 'PDF genereren mislukt: ' . $e->getMessage()
-        ];
+        error_log('PDF genereren mislukt: ' . $e->getMessage());
+        return false;
     }
+
+    // --- POST data voor mailing.php ---
+    $postData = [
+        'task'     => 'own_voucher_invoice',
+        'filename' => $filename,
+        'lang'     => $lang
+    ];
+
+    $context = stream_context_create([
+        'http' => [
+            'method'  => 'POST',
+            'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
+            'content' => http_build_query($postData),
+            'timeout' => 10
+        ]
+    ]);
+
+    // --- Aanroepen mailing.php ---
+    @file_get_contents(__DIR__ . '/mailing.php', false, $context);
+
+    // --- Return PDF-bestandsnaam ---
+    return $filename;
 }
 
 // --- Directe aanroep via GET ---
@@ -85,7 +98,18 @@ if (isset($_GET['voucher_code'], $_GET['amount'], $_GET['create_date'])) {
     $reason = $_GET['reason'] ?? 'Interne voucheruitgifte';
 
     $result = create_own_voucher_invoice($voucher_code, $amount, $create_date, $reason, $lang);
-    echo json_encode($result, JSON_UNESCAPED_UNICODE);
+    if ($result) {
+        echo json_encode([
+            'success'  => true,
+            'message'  => 'Voucherfactuur aangemaakt en mailing.php aangeroepen',
+            'file'     => $result
+        ], JSON_UNESCAPED_UNICODE);
+    } else {
+        echo json_encode([
+            'success'  => false,
+            'message'  => 'PDF genereren of mailing mislukt'
+        ], JSON_UNESCAPED_UNICODE);
+    }
     exit;
 }
 ?>

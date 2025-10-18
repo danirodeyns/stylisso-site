@@ -6,14 +6,14 @@ use Mpdf\Mpdf;
 $lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
 
 /**
- * Genereer een PDF-factuur voor een bestelling
+ * Genereer een PDF-factuur en stuur alle data door naar mailing.php
  *
- * @param int $order_id ID van de order
- * @param string $order_date Datum van de order (timestamp of string)
- * @param mysqli $conn Databaseverbinding
- * @param string $lang Taalcode, bv. 'be-nl', 'be-fr', 'be-de'
- * @param array|null $used_voucher Optioneel: array met 'code' en 'amount'
- * @return string|false Bestandsnaam bij succes, false bij fout
+ * @param int $order_id
+ * @param string $order_date
+ * @param mysqli $conn
+ * @param string $lang
+ * @param array|null $used_voucher
+ * @return string|false
  */
 function create_invoice($order_id, $order_date, $conn, $lang, $used_voucher = null) {
     // --- Order + klantgegevens ophalen ---
@@ -40,7 +40,7 @@ function create_invoice($order_id, $order_date, $conn, $lang, $used_voucher = nu
 
     if (!$order) return false;
 
-    // --- Adres samenstellen ---
+    // --- Adres ---
     $addressParts = [];
     if (!empty($order['street'])) $addressParts[] = htmlspecialchars($order['street']) . ' ' . htmlspecialchars($order['house_number']);
     if (!empty($order['postal_code'])) $addressParts[] = htmlspecialchars($order['postal_code']);
@@ -48,7 +48,7 @@ function create_invoice($order_id, $order_date, $conn, $lang, $used_voucher = nu
     if (!empty($order['country'])) $addressParts[] = htmlspecialchars($order['country']);
     $fullAddress = implode(', ', $addressParts);
 
-    // --- Order items ophalen + productvertalingen + voucher code ---
+    // --- Items ophalen ---
     $stmt_items = $conn->prepare("
         SELECT oi.quantity, oi.price, oi.type, 
             COALESCE(pt.name, p.name) AS product_name,
@@ -64,7 +64,7 @@ function create_invoice($order_id, $order_date, $conn, $lang, $used_voucher = nu
     $items = $stmt_items->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt_items->close();
 
-    // --- HTML opbouw ---
+    // --- HTML ---
     $html = '<h1>' . t('invoice_title') . '</h1>';
     $html .= '<p><strong>' . t('order_number') . ':</strong> ' . $order['id'] . '</p>';
     $html .= '<p><strong>' . t('order_date') . ':</strong> ' . date('d-m-Y', strtotime($order['created_at'])) . '</p>';
@@ -74,25 +74,19 @@ function create_invoice($order_id, $order_date, $conn, $lang, $used_voucher = nu
     if (!empty($order['vat_number'])) $html .= '<strong>' . t('vat_number') . ':</strong> ' . htmlspecialchars($order['vat_number']) . '<br>';
     $html .= '<strong>' . t('address') . ':</strong> ' . $fullAddress . '</p>';
 
-    // --- Producttabel ---
+    // --- Tabel ---
     $html .= '<table width="100%" border="1" cellpadding="5" cellspacing="0">';
-    $html .= '<thead>
-                <tr>
-                    <th>' . t('quantity') . '</th>
-                    <th>' . t('product') . '</th>
-                    <th>' . t('price_per_item') . '</th>
-                    <th>' . t('total') . '</th>
-                </tr>
-              </thead><tbody>';
+    $html .= '<thead><tr>
+                <th>' . t('quantity') . '</th>
+                <th>' . t('product') . '</th>
+                <th>' . t('price_per_item') . '</th>
+                <th>' . t('total') . '</th>
+              </tr></thead><tbody>';
 
     foreach ($items as $item) {
-        if ($item['type'] === 'voucher') {
-            $voucherCode = !empty($item['voucher_code']) ? ' - ' . htmlspecialchars($item['voucher_code']) : '';
-            $productName = t('gift_voucher') . $voucherCode;
-        } else {
-            $productName = htmlspecialchars($item['product_name']);
-        }
-
+        $productName = ($item['type'] === 'voucher')
+            ? t('gift_voucher') . (!empty($item['voucher_code']) ? ' - ' . htmlspecialchars($item['voucher_code']) : '')
+            : htmlspecialchars($item['product_name']);
         $qty = intval($item['quantity']);
         $price = number_format($item['price'], 2, ',', '.');
         $total = number_format($qty * $item['price'], 2, ',', '.');
@@ -107,32 +101,55 @@ function create_invoice($order_id, $order_date, $conn, $lang, $used_voucher = nu
 
     $html .= '</tbody></table>';
 
-    // --- Voucher korting tonen, indien aanwezig ---
+    // --- Voucher gebruikt ---
     if (!empty($used_voucher) && isset($used_voucher['code'], $used_voucher['amount'])) {
-        $html .= '<p><strong>' . t('used_voucher') . ':</strong> ' . htmlspecialchars($used_voucher['code']) . ' - €' . number_format($used_voucher['amount'], 2, ',', '.') . '</p>';
-        $html .= '<p><strong>' . t('total_to_pay') . ':</strong> €' . number_format($order['total_price'] - $used_voucher['amount'], 2, ',', '.') . '</p>';
-    } else {
-        $html .= '<p><strong>' . t('total_to_pay') . ':</strong> €' . number_format($order['total_price'], 2, ',', '.') . '</p>';
+        $html .= '<p><strong>' . t('used_voucher') . ':</strong> ' . htmlspecialchars($used_voucher['code']) . 
+                 ' - €' . number_format($used_voucher['amount'], 2, ',', '.') . '</p>';
     }
 
+    $html .= '<p><strong>' . t('total_to_pay') . ':</strong> €' . number_format($order['total_price'], 2, ',', '.') . '</p>';
     $html .= '<p><strong>' . t('status') . ':</strong> ' . ucfirst(htmlspecialchars($order['status'])) . '</p>';
 
     // --- PDF genereren ---
     $dir = __DIR__ . '/invoices';
     if (!is_dir($dir)) mkdir($dir, 0755, true);
 
-    $orderDateFormatted = date('Y-m-d', strtotime($order_date));
-    $filename = $orderDateFormatted . '-' . $order_id . '.pdf';
+    $filename = date('Y-m-d', strtotime($order_date)) . '-' . $order_id . '.pdf';
     $filepath = $dir . '/' . $filename;
 
     try {
         $mpdf = new Mpdf(['tempDir' => __DIR__ . '/tmp']);
         $mpdf->WriteHTML($html);
         $mpdf->Output($filepath, \Mpdf\Output\Destination::FILE);
-        return $filename;
     } catch (\Mpdf\MpdfException $e) {
         error_log('PDF genereren mislukt: ' . $e->getMessage());
         return false;
     }
+
+    // --- Alle data doorsturen naar mailing.php ---
+    $postData = [
+        'task'         => 'order_invoice',
+        'order_id'     => $order_id,
+        'email'        => $order['email'],
+        'name'         => $order['name'],
+        'total_price'  => $order['total_price'],
+        'invoice_file' => $filename,
+        'lang'         => $lang,
+        'used_voucher' => $used_voucher ? json_encode($used_voucher) : null
+    ];
+
+    $context = stream_context_create([
+        'http' => [
+            'method'  => 'POST',
+            'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
+            'content' => http_build_query($postData),
+            'timeout' => 10
+        ]
+    ]);
+
+    @file_get_contents('mailing.php', false, $context);
+
+    // --- Return PDF-bestandsnaam ---
+    return $filename;
 }
 ?>

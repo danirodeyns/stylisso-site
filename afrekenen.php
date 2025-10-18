@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt_user->execute();
 
     // ================================
-    // 5. Shipping adres updaten of invoegen
+    // 5. Shipping adres opslaan of updaten
     // ================================
     $stmt_check_ship = $conn->prepare("SELECT id FROM addresses WHERE user_id = ? AND type = 'shipping'");
     $stmt_check_ship->bind_param("i", $user_id);
@@ -112,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // ================================
-    // 6. Billing adres updaten of invoegen
+    // 6. Billing adres opslaan of updaten
     // ================================
     if ($differentBilling && $billing_street && $billing_house_number && $billing_postal_code && $billing_city && $billing_country) {
         $stmt_check_bill = $conn->prepare("SELECT id FROM addresses WHERE user_id = ? AND type = 'billing'");
@@ -177,14 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $order_id = $conn->insert_id;
 
     // ================================
-    // 9. PDF factuur genereren
-    // ================================
-    $order_date = date('Y-m-d');
-    include 'create_invoice.php';
-    create_invoice($order_id, $order_date, $conn, $siteLanguage, $used_voucher);
-
-    // ================================
-    // 10. Order items toevoegen (inclusief type + maat)
+    // 9. Order items + vouchers
     // ================================
     foreach ($checkout['cart_items'] as $item) {
         $type = $item['type'] ?? 'product';
@@ -194,7 +187,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $voucher_id = null;
         $maat = $item['maat'] ?? null;
 
-        // --- Voucher genereren & mail via mailing.php ---
         if ($type === 'voucher') {
             do {
                 $code = strtoupper(bin2hex(random_bytes(6)));
@@ -205,40 +197,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $exists = $stmt_check->num_rows > 0;
                 $stmt_check->close();
             } while ($exists);
+
             $expires_at = date('Y-m-d H:i:s', strtotime('+1 year'));
 
-            $stmt_v = $conn->prepare(
-                "INSERT INTO vouchers (code, value, remaining_value, expires_at) VALUES (?, ?, ?, ?)"
-            );
+            $stmt_v = $conn->prepare("INSERT INTO vouchers (code, value, remaining_value, expires_at) VALUES (?, ?, ?, ?)");
             $stmt_v->bind_param("sdds", $code, $price, $price, $expires_at);
             $stmt_v->execute();
             $voucher_id = $conn->insert_id;
 
-            // --- Mailen via mailing.php ---
-            if ($email) {
-                $postData = http_build_query([
-                    'task' => 'voucher',
-                    'email' => $email,
-                    'code' => $code,
-                    'price' => number_format($price, 2),
-                    'expires_at' => $expires_at
-                ]);
-
-                $context = stream_context_create([
-                    'http' => [
-                        'method' => 'POST',
-                        'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
-                        'content' => $postData
-                    ]
-                ]);
-
-                file_get_contents('mailing.php', false, $context);
-            }
+            // --- Mail naar mailing.php voor de cadeaubon
+            $postData = http_build_query([
+                'task' => 'voucher',
+                'email' => $email,
+                'code' => $code,
+                'price' => number_format($price, 2),
+                'expires_at' => $expires_at
+            ]);
+            $context = stream_context_create([
+                'http' => [
+                    'method' => 'POST',
+                    'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
+                    'content' => $postData
+                ]
+            ]);
+            file_get_contents('mailing.php', false, $context);
         }
 
-        // --- Item toevoegen aan order_items ---
+        // Item toevoegen
         $stmt_item = $conn->prepare("
-            INSERT INTO order_items (order_id, product_id, voucher_id, type, quantity, price, maat) 
+            INSERT INTO order_items (order_id, product_id, voucher_id, type, quantity, price, maat)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt_item->bind_param("iiisids", $order_id, $prod_id, $voucher_id, $type, $qty, $price, $maat);
@@ -246,17 +233,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // ================================
-    // 11. Winkelwagen leegmaken
+    // 10. Factuur aanmaken via externe POST naar create_invoice.php
+    // ================================
+    $postInvoice = http_build_query([
+        'order_id' => $order_id,
+        'lang' => $siteLanguage,
+        'email' => $email,
+        'used_voucher' => json_encode($used_voucher)
+    ]);
+
+    $contextInvoice = stream_context_create([
+        'http' => [
+            'method' => 'POST',
+            'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
+            'content' => $postInvoice
+        ]
+    ]);
+    file_get_contents('create_invoice.php', false, $contextInvoice);
+
+    // ================================
+    // 11. Winkelwagen leegmaken & sessie reset
     // ================================
     $stmt_cart = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
     $stmt_cart->bind_param("i", $user_id);
     $stmt_cart->execute();
 
-    // ================================
-    // 12. Checkout resetten
-    // ================================
-    unset($_SESSION['checkout']);
-    unset($_SESSION['used_voucher']);
+    unset($_SESSION['checkout'], $_SESSION['used_voucher']);
 
     echo "success";
     exit;

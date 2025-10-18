@@ -63,6 +63,14 @@ $translations = [
         'password_reset_link_subject' => 'Reset je Stylisso wachtwoord',
         'password_reset_link_message' => 'Beste klant,<br>Er is gevraagd om je wachtwoord te resetten.<br>Klik op onderstaande link om je wachtwoord opnieuw in te stellen:<br><a href="{reset_link}">{reset_link}</a><br>Deze link is 1 uur geldig.<br>Met vriendelijke groet,<br>Stylisso',
         'password_reset_link_missing_data' => 'Ontbrekende data voor wachtwoord reset mail',
+        'create_own_voucher_amount_placeholder' => 'Bv. 25',
+        'used_voucher' => 'Gebruikte cadeaubon',
+        'credit_nota_subject' => 'Uw creditnota',
+        'credit_nota_message' => 'Beste klant,<br>Hierbij ontvangt u uw creditnota in bijlage.',
+        'invoice_subject' => 'Uw factuur',
+        'invoice_message' => 'Beste klant,<br>Hierbij ontvangt u uw factuur in bijlage.',
+        'voucher_invoice_subject' => 'Uw cadeaubonfactuur',
+        'voucher_invoice_message' => 'Beste klant,<br>Hierbij ontvangt u uw cadeaubonfactuur in bijlage.',
 
         // processing_retours.php
         'processing_retours_alert_not_logged_in' => 'Je moet ingelogd zijn om retouren te verwerken.',
@@ -149,6 +157,14 @@ $translations = [
         'password_reset_link_subject' => 'Réinitialisez votre mot de passe Stylisso',
         'password_reset_link_message' => 'Cher client,<br>Une demande de réinitialisation de votre mot de passe a été effectuée.<br>Cliquez sur le lien ci-dessous pour réinitialiser votre mot de passe :<br><a href="{reset_link}">{reset_link}</a><br>Ce lien est valable 1 heure.<br>Cordialement,<br>Stylisso',
         'password_reset_link_missing_data' => 'Données manquantes pour le mail de réinitialisation de mot de passe',
+        'create_own_voucher_amount_placeholder' => 'Ex. 25',
+        'used_voucher' => 'Bon utilisé',
+        'credit_nota_subject' => 'Votre note de crédit',
+        'credit_nota_message' => 'Cher client,<br>Veuillez trouver votre note de crédit en pièce jointe.',
+        'invoice_subject' => 'Votre facture',
+        'invoice_message' => 'Cher client,<br>Veuillez trouver votre facture en pièce jointe.',
+        'voucher_invoice_subject' => 'Votre facture de bon',
+        'voucher_invoice_message' => 'Cher client,<br>Veuillez trouver votre facture de bon en pièce jointe.',
 
         // processing_retours.php
         'script_processing_retours_alert_not_logged_in' => 'Vous devez être connecté pour traiter les retours.',
@@ -239,6 +255,14 @@ $translations = [
         'password_reset_link_subject' => 'Reset your Stylisso password',
         'password_reset_link_message' => 'Dear customer,<br>A request has been made to reset your password.<br>Click the link below to reset your password:<br><a href="{reset_link}">{reset_link}</a><br>This link is valid for 1 hour.<br>Best regards,<br>Stylisso',
         'password_reset_link_missing_data' => 'Missing data for password reset mail',
+        'create_own_voucher_amount_placeholder' => 'Eg. 25',
+        'used_voucher' => 'Used voucher',
+        'credit_nota_subject' => 'Your credit note',
+        'credit_nota_message' => 'Dear customer,<br>Please find your credit note attached.',
+        'invoice_subject' => 'Your invoice',
+        'invoice_message' => 'Dear customer,<br>Please find your invoice attached.',
+        'voucher_invoice_subject' => 'Your voucher invoice',
+        'voucher_invoice_message' => 'Dear customer,<br>Please find your voucher invoice attached.',
 
         // processing_retours.php
         'script_processing_retours_alert_not_logged_in' => 'You must be logged in to process returns.',
@@ -329,6 +353,14 @@ $translations = [
         'password_reset_link_subject' => 'Setzen Sie Ihr Stylisso Passwort zurück',
         'password_reset_link_message' => 'Sehr geehrter Kunde,<br>Es wurde eine Anfrage zur Zurücksetzung Ihres Passworts gestellt.<br>Klicken Sie auf den untenstehenden Link, um Ihr Passwort zurückzusetzen:<br><a href="{reset_link}">{reset_link}</a><br>Dieser Link ist 1 Stunde gültig.<br>Mit freundlichen Grüßen,<br>Stylisso',
         'password_reset_link_missing_data' => 'Fehlende Daten für Passwort-Reset-Mail',
+        'create_own_voucher_amount_placeholder' => 'Z.B. 25',
+        'used_voucher' => 'Verwendeter Gutschein',
+        'credit_nota_subject' => 'Ihre Gutschrift',
+        'credit_nota_message' => 'Sehr geehrter Kunde,<br>anbei erhalten Sie Ihre Gutschrift.',
+        'invoice_subject' => 'Ihre Rechnung',
+        'invoice_message' => 'Sehr geehrter Kunde,<br>anbei erhalten Sie Ihre Rechnung.',
+        'voucher_invoice_subject' => 'Ihre Gutscheine-Rechnung',
+        'voucher_invoice_message' => 'Sehr geehrter Kunde,<br>anbei erhalten Sie Ihre Gutscheine-Rechnung.',
 
         // processing_retours.php
         'processing_retours_alert_not_logged_in' => 'Sie müssen eingeloggt sein, um Rücksendungen zu bearbeiten.',
