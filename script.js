@@ -668,77 +668,78 @@ document.addEventListener('DOMContentLoaded', function () {
   const savedVoucherDropdown = document.getElementById('saved_voucher');
   const taxAmount = document.getElementById('taxAmount');
   const totalAmount = document.getElementById('totalAmount');
+  const shippingCost = document.getElementById('shippingCost');
+
+  // Stop als dit geen winkelwagenpagina is
+  if (!subtotalOrder && !totalAmount) {
+    console.info("Cart-sectie niet aanwezig, script overgeslagen.");
+    return;
+  }
 
   let cartData = [];
   let voucherAmount = 0;
   let vouchers = [];
 
-  // Haal producten uit cart
+  // --- Haal producten uit cart ---
   fetchWithLang('cart.php?action=get_cart')
-      .then(data => {
-          if (!data.success) return;
-          cartData = data.cart;
-          updateTotals();
-      })
-      .catch(err => console.error('Fout bij ophalen cart:', err));
+    .then(data => {
+      if (!data.success) return;
+      cartData = data.cart;
+      updateTotals();
+    })
+    .catch(err => console.error('Fout bij ophalen cart:', err));
 
-  // Haal vouchers op
+  // --- Haal vouchers op ---
   fetch('get_vouchers.php')
-      .then(res => res.json())
-      .then(data => {
-          vouchers = data.filter(v => !v.is_used); // enkel actieve vouchers
-          // vul dropdown
-          vouchers.forEach(v => {
-              const option = document.createElement('option');
-              option.value = v.code;
-              const statusSpan = document.createElement('span');
-              statusSpan.setAttribute('data-i18n', v.is_used ? 'script_voucher_used' : 'script_voucher_available');
-              applyTranslations(statusSpan);
-              option.textContent = `${v.code} - €${v.value.toFixed(2)} (${statusSpan.textContent})`;
-              savedVoucherDropdown.appendChild(option);
-          });
-      })
-      .catch(err => console.error('Fout bij ophalen vouchers:', err));
+    .then(res => res.json())
+    .then(data => {
+      vouchers = data.filter(v => !v.is_used); // enkel actieve vouchers
 
-  // Functie om totaal te berekenen
+      // ✅ Check of dropdown bestaat
+      if (savedVoucherDropdown) {
+        vouchers.forEach(v => {
+          const option = document.createElement('option');
+          option.value = v.code;
+          const statusSpan = document.createElement('span');
+          statusSpan.setAttribute('data-i18n', v.is_used ? 'script_voucher_used' : 'script_voucher_available');
+          applyTranslations(statusSpan);
+          const value = parseFloat(v.value) || 0;
+          option.textContent = `${v.code} - €${value.toFixed(2)} (${statusSpan.textContent})`;
+          savedVoucherDropdown.appendChild(option);
+        });
+      }
+    })
+    .catch(err => console.error('Fout bij ophalen vouchers:', err));
+
+  // --- Functie om totaal te berekenen ---
   function updateTotals() {
-      let subtotal = 0;
-      let allVouchers = true; // Start met de veronderstelling dat alles vouchers zijn
+    let subtotal = 0;
+    let allVouchers = true;
 
-      cartData.forEach(item => {
-          subtotal += parseFloat(item.price) * item.quantity;
-          if (item.type !== 'voucher') {
-              allVouchers = false;
-          }
-      });
-
-      // Voucher = ingezette voucher (maximaal gelijk aan subtotal)
-      const voucher = Math.min(voucherAmount, subtotal);
-
-      // Shipping: standaard 5, behalve als subtotal >= 50 of alle items vouchers zijn
-      let shipping = 5.00;
-      if (subtotal >= 50 || allVouchers) {
-          shipping = 0.00;
+    cartData.forEach(item => {
+      subtotal += parseFloat(item.price) * item.quantity;
+      if (item.type !== 'voucher') {
+        allVouchers = false;
       }
+    });
 
-      // BTW = subtotaal * 0.21 (subtotaal is zonder voucher)
-      const vat = subtotal * 0.21;
+    const voucher = Math.min(voucherAmount, subtotal);
 
-      // Totaal = subtotaal + shipping – voucher
-      const total = subtotal + shipping - voucher;
+    // Verzendkosten
+    let shipping = 5.00;
+    if (subtotal >= 50 || allVouchers) {
+      shipping = 0.00;
+    }
 
-      // Update UI
-      if (subtotalOrder) subtotalOrder.textContent = `€${subtotal.toFixed(2)}`;
-      if (redeemVoucherSpan) {
-        if (voucher > 0) {
-          redeemVoucherSpan.textContent = `-€${voucher.toFixed(2)}`;
-        } else {
-          redeemVoucherSpan.textContent = `€0.00`;
-        }
-      }
-      if (shippingCost) shippingCost.textContent = `€${shipping.toFixed(2)}`;
-      if (taxAmount) taxAmount.textContent = `€${vat.toFixed(2)}`;
-      if (totalAmount) totalAmount.textContent = `€${total.toFixed(2)}`;
+    const vat = subtotal * 0.21;
+    const total = subtotal + shipping - voucher;
+
+    // ✅ Alleen updaten als het element bestaat
+    if (subtotalOrder) subtotalOrder.textContent = `€${subtotal.toFixed(2)}`;
+    if (redeemVoucherSpan) redeemVoucherSpan.textContent = voucher > 0 ? `-€${voucher.toFixed(2)}` : `€0.00`;
+    if (shippingCost) shippingCost.textContent = `€${shipping.toFixed(2)}`;
+    if (taxAmount) taxAmount.textContent = `€${vat.toFixed(2)}`;
+    if (totalAmount) totalAmount.textContent = `€${total.toFixed(2)}`;
   }
 
   // Event bij klikken op "Gebruiken"
@@ -1911,6 +1912,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const buttons = document.querySelectorAll('.amount-buttons button');
     const customButton = document.getElementById('custom-button');
     const customAmountInput = document.getElementById('custom-amount');
+    const form = document.querySelector('.voucher-form');
+
+    // Stoppen als dit gedeelte niet op de pagina aanwezig is
+    if (!buttons.length || !customAmountInput || !form) {
+        return;
+    }
 
     // Standaard input verbergen totdat Aangepast is gekozen
     customAmountInput.style.display = 'none';
@@ -1937,15 +1944,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Optioneel: bij submit checken dat bedrag minimaal 5 is
-    const form = document.querySelector('.voucher-form');
     form.addEventListener('submit', e => {
-      const amount = parseFloat(customAmountInput.value);
-      if (!customAmountInput.disabled && amount < 5) {
-          e.preventDefault();
-          const dict = translations[lang] || translations["be-nl"];
-          alert(dict["script_voucher_min_amount"]);
-      }
-  });
+        const amount = parseFloat(customAmountInput.value);
+        if (!customAmountInput.disabled && amount < 5) {
+            e.preventDefault();
+
+            // --- Veilig ophalen van vertaling ---
+            const cookieMatch = document.cookie.match(/(?:^|;\s*)siteLanguage=([^;]+)/);
+            const lang = cookieMatch ? decodeURIComponent(cookieMatch[1]) : "be-nl";
+            const dict = translations[lang] || translations["be-nl"];
+
+            alert(dict["script_voucher_min_amount"] || "Het minimum bedrag is €5.");
+        }
+    });
 });
 
 (function () {
@@ -2314,10 +2325,13 @@ async function getCsrfToken() {
 
 async function loadWishlist() {
   try {
+    const container = document.getElementById("wishlist-container");
+    if (!container) {
+      return;
+    }
+
     // --- Haal wishlist met vertaling op ---
     const data = await fetchWithLang("wishlist.php");
-
-    const container = document.getElementById("wishlist-container");
     container.innerHTML = "";
 
     // --- leeg lijstje ---
@@ -2325,7 +2339,6 @@ async function loadWishlist() {
       const emptyBox = document.createElement("div");
       emptyBox.className = "empty-wishlist-box";
       emptyBox.setAttribute("data-i18n", "script_wishlist_empty");
-
       container.appendChild(emptyBox);
       setTimeout(() => applyTranslations(emptyBox), 0);
       return;
@@ -2366,22 +2379,20 @@ async function loadWishlist() {
         </div>
       `;
 
-      // Voeg dit toe na het maken van de select-elementen
+      // --- Selectie van maat ---
       const sizeSelect = card.querySelector(".wishlist-product-size");
       if (sizeSelect) {
         sizeSelect.addEventListener("click", (e) => e.stopPropagation());
-        sizeSelect.addEventListener("mousedown", (e) => e.stopPropagation()); // voorkomt dat klik wordt doorgestuurd
-        sizeSelect.addEventListener("change", (e) => {
-          e.stopPropagation();
-        });
+        sizeSelect.addEventListener("mousedown", (e) => e.stopPropagation());
+        sizeSelect.addEventListener("change", (e) => e.stopPropagation());
       }
 
-      // --- klik op de card → naar productpagina ---
+      // --- Klik op kaart → naar productpagina ---
       card.addEventListener("click", () => {
         window.location.href = `productpagina.html?id=${item.id}`;
       });
 
-      // --- add-to-cart knop ---
+      // --- Add-to-cart knop ---
       card.querySelector(".add-to-cart").addEventListener("click", async (e) => {
         e.stopPropagation();
         const productId = e.currentTarget.dataset.id;
@@ -2390,7 +2401,6 @@ async function loadWishlist() {
         // --- maat ophalen indien aanwezig ---
         const sizeSelect = card.querySelector(".wishlist-product-size");
         const selectedSize = sizeSelect ? sizeSelect.value : '';
-
         await fetch("./wishlist_cart_add.php", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -2400,7 +2410,7 @@ async function loadWishlist() {
         window.location.href = "cart.html";
       });
 
-      // --- remove-from-wishlist knop ---
+      // --- Remove-from-wishlist knop ---
       card.querySelector(".remove-from-wishlist").addEventListener("click", async (e) => {
         e.stopPropagation();
         const productId = e.currentTarget.dataset.id;
@@ -2424,6 +2434,7 @@ async function loadWishlist() {
 
   } catch (err) {
     const container = document.getElementById("wishlist-container");
+    if (!container) return;
     container.innerHTML = '';
     const p = document.createElement('p');
     p.setAttribute('data-i18n', 'script_wishlist_load_error');
@@ -2455,9 +2466,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   const id = params.get('id');
 
   if (!id) {
-    errorEl.textContent = '';
-    errorEl.setAttribute('data-i18n', 'script_no_product_selected');
-    applyTranslations(errorEl);
+    if (errorEl) {
+      errorEl.textContent = '';
+      errorEl.setAttribute('data-i18n', 'script_no_product_selected');
+      applyTranslations(errorEl);
+    }
     return;
   }
 
@@ -2471,10 +2484,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     return resp.json();
   }
 
-  // --- Haal CSRF-token op ---
+  // --- Haal CSRF-token op (met veilige JSON parse) ---
   try {
     const csrfResp = await fetch('csrf.php');
-    const csrfData = await csrfResp.json();
+    const text = await csrfResp.text();
+    let csrfData;
+    try {
+      csrfData = JSON.parse(text);
+    } catch (err) {
+      console.error("CSRF response is geen geldige JSON:", text);
+      throw new Error("CSRF JSON parse error");
+    }
+
+    if (!csrfData.csrf_token) throw new Error("Geen CSRF-token ontvangen");
     csrfTokenEl.value = csrfData.csrf_token;
   } catch (err) {
     errorEl.textContent = '';
@@ -2496,51 +2518,47 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-// --- Grote afbeelding + thumbnails ---
-let thumbsWrapper = document.getElementById('product-thumbnails');
-if (!thumbsWrapper) {
-  thumbsWrapper = document.createElement('div');
-  thumbsWrapper.id = 'product-thumbnails';
-  document.querySelector('.product-left').appendChild(thumbsWrapper);
-}
-
-function renderProductImages(images, fallbackImage) {
-  if (!Array.isArray(images) || images.length === 0) images = [fallbackImage];
-  if (!images[0]) images[0] = 'images/placeholder.png';
-
-  // Grote afbeelding = eerste
-  imageEl.src = images[0];
-  imageEl.alt = titleEl.textContent || '';
-
-  // Als er maar één afbeelding is, thumbnails verbergen
-  if (images.length === 1) {
-    thumbsWrapper.style.display = 'none';
-    thumbsWrapper.innerHTML = '';
-    return;
+  // --- Grote afbeelding + thumbnails ---
+  let thumbsWrapper = document.getElementById('product-thumbnails');
+  if (!thumbsWrapper) {
+    thumbsWrapper = document.createElement('div');
+    thumbsWrapper.id = 'product-thumbnails';
+    document.querySelector('.product-left').appendChild(thumbsWrapper);
   }
 
-  thumbsWrapper.style.display = 'flex';
-  thumbsWrapper.innerHTML = '';
+  function renderProductImages(images, fallbackImage) {
+    if (!Array.isArray(images) || images.length === 0) images = [fallbackImage];
+    if (!images[0]) images[0] = 'images/placeholder.png';
 
-  // Hoeveelheid kleine afbeeldingen
-  images.slice(0, 5).forEach((imgSrc, index) => {
-    const thumb = document.createElement('img');
-    thumb.src = imgSrc;
-    thumb.alt = titleEl.textContent || '';
-    thumb.dataset.index = index; // eventueel voor CSS active state
+    imageEl.src = images[0];
+    imageEl.alt = titleEl.textContent || '';
 
-    // Eerste thumbnail direct active
-    if (index === 0) thumb.classList.add('active');
+    if (images.length === 1) {
+      thumbsWrapper.style.display = 'none';
+      thumbsWrapper.innerHTML = '';
+      return;
+    }
 
-    thumb.addEventListener('click', () => {
-      imageEl.src = imgSrc;
-      thumbsWrapper.querySelectorAll('img').forEach(t => t.classList.remove('active'));
-      thumb.classList.add('active');
+    thumbsWrapper.style.display = 'flex';
+    thumbsWrapper.innerHTML = '';
+
+    images.slice(0, 5).forEach((imgSrc, index) => {
+      const thumb = document.createElement('img');
+      thumb.src = imgSrc;
+      thumb.alt = titleEl.textContent || '';
+      thumb.dataset.index = index;
+
+      if (index === 0) thumb.classList.add('active');
+
+      thumb.addEventListener('click', () => {
+        imageEl.src = imgSrc;
+        thumbsWrapper.querySelectorAll('img').forEach(t => t.classList.remove('active'));
+        thumb.classList.add('active');
+      });
+
+      thumbsWrapper.appendChild(thumb);
     });
-
-    thumbsWrapper.appendChild(thumb);
-  });
-}
+  }
 
   // --- Functie om product + gerelateerde data te laden ---
   async function loadProductData() {
@@ -2872,49 +2890,65 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  const form = document.getElementById("newsletter-form");
-  const result = document.getElementById("newsletter-result");
+  const form = document.getElementById("newsletterForm");
+  const result = document.getElementById("statusMessage");
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  if (form && result) {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-    const subject = document.getElementById("newsletter-subject").value.trim();
-    const message = document.getElementById("newsletter-message").value.trim();
+      const subject = document.getElementById("newsletter-subject").value.trim();
+      const message = document.getElementById("newsletter-message").value.trim();
 
-    // --- Taal bepalen en dictionary ophalen ---
-    const cookieMatch = document.cookie.match(/(?:^|;\s*)siteLanguage=([^;]+)/);
-    const lang = cookieMatch ? decodeURIComponent(cookieMatch[1]) : "be-nl";
-    const dict = translations[lang] || translations["be-nl"];
+      // --- Taal bepalen en dictionary ophalen ---
+      const cookieMatch = document.cookie.match(/(?:^|;\s*)siteLanguage=([^;]+)/);
+      const lang = cookieMatch ? decodeURIComponent(cookieMatch[1]) : "be-nl";
+      const dict = translations[lang] || translations["be-nl"];
 
-    if (!subject || !message) {
-      result.textContent = dict["script_newsletter_fill_fields"];
-      result.className = "error";
-      return;
-    }
+      if (!subject || !message) {
+        result.textContent = dict["script_newsletter_fill_fields"];
+        result.className = "error";
+        return;
+      }
 
-    try {
-      const response = await fetch("send_newsletter.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `subject=${encodeURIComponent(subject)}&message=${encodeURIComponent(message)}`
-      });
+      try {
+        const response = await fetch("send_newsletter.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `subject=${encodeURIComponent(subject)}&message=${encodeURIComponent(message)}&csrf_token=${encodeURIComponent(window.csrfToken || '')}`
+        });
 
-      const data = await response.json();
+        // --- Lees response als tekst ---
+        const text = await response.text();
+        let data;
 
-      if (data.success) {
-        result.textContent = dict["script_newsletter_success"];
-        result.className = "success";
-        form.reset();
-      } else {
-        result.textContent = dict["script_newsletter_failed"];
+        try {
+          // Probeer JSON te parsen
+          data = JSON.parse(text);
+        } catch {
+          // Ongeldige JSON → toon fout
+          result.textContent = dict["script_newsletter_error"] + " (" + text + ")";
+          result.className = "error";
+          return;
+        }
+
+        // --- Verwerk JSON ---
+        if (data.success) {
+          result.textContent = dict["script_newsletter_success"];
+          result.className = "success";
+          form.reset();
+        } else {
+          result.textContent = data.error || dict["script_newsletter_failed"];
+          result.className = "error";
+        }
+
+      } catch (err) {
+        console.error(err);
+        result.textContent = dict["script_newsletter_error"];
         result.className = "error";
       }
-    } catch (err) {
-      console.error(err);
-      result.textContent = dict["script_newsletter_error"];
-      result.className = "error";
-    }
-  });
+    });
+  }
 });
 
 // ==============================
@@ -3335,60 +3369,68 @@ document.addEventListener("DOMContentLoaded", () => {
   loadSearchGrid();
 });
 
-document.getElementById('password-reset-form').addEventListener('submit', function(e) {
+const resetForm = document.getElementById('password-reset-form');
+
+if (resetForm) {
+    resetForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const form = this;
+        const formData = new FormData(form);
+        const messageDiv = document.getElementById('form-message');
+
+        fetch('wachtwoord vergeten.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                messageDiv.style.color = 'green';
+                messageDiv.textContent = data.success;
+            } else if (data.error) {
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = data.error;
+            }
+        })
+        .catch(err => {
+            messageDiv.style.color = 'red';
+            messageDiv.textContent = 'Er is een fout opgetreden.';
+        });
+    });
+}
+
+const reviewForm = document.getElementById("reviewForm");
+
+if (reviewForm) {
+  reviewForm.addEventListener("submit", async function(e) {
     e.preventDefault();
 
-    const form = this;
-    const formData = new FormData(form);
-    const messageDiv = document.getElementById('form-message');
+    const formData = new FormData(this);
 
-    fetch('wachtwoord vergeten.php', {
-        method: 'POST',
+    try {
+      const response = await fetch("reviews-mailing.php", {
+        method: "POST",
         body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-        if(data.success) {
-            messageDiv.style.color = 'green';
-            messageDiv.textContent = data.success;
-        } else if(data.error) {
-            messageDiv.style.color = 'red';
-            messageDiv.textContent = data.error;
-        }
-    })
-    .catch(err => {
-        messageDiv.style.color = 'red';
-        messageDiv.textContent = 'Er is een fout opgetreden.';
-    });
-});
+      });
 
-document.getElementById("reviewForm").addEventListener("submit", async function(e) {
-  e.preventDefault();
+      const data = await response.json();
+      const messageBox = document.getElementById("review-message");
 
-  const formData = new FormData(this);
+      if (data.success) {
+        messageBox.textContent = data.success;
+        messageBox.style.color = "green";
+      } else if (data.error) {
+        messageBox.textContent = data.error;
+        messageBox.style.color = "red";
+      }
 
-  try {
-    const response = await fetch("reviews-mailing.php", {
-      method: "POST",
-      body: formData
-    });
-
-    const data = await response.json();
-    const messageBox = document.getElementById("review-message");
-
-    if (data.success) {
-      messageBox.textContent = data.success;
-      messageBox.style.color = "green";
-    } else if (data.error) {
-      messageBox.textContent = data.error;
-      messageBox.style.color = "red";
+      messageBox.style.display = "block";
+    } catch (err) {
+      console.error("Error:", err);
     }
-
-    messageBox.style.display = "block";
-  } catch (err) {
-    console.error("Error:", err);
-  }
-});
+  });
+}
 
 // ---------------- Nieuwste producten laden ----------------
 async function loadNewProducts() {
