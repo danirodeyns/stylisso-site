@@ -432,7 +432,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function getLanguage() {
-      return getCookie("siteLanguage") || "nl"; // fallback naar Nederlands
+      return getCookie("siteLanguage") || "be-nl"; // fallback naar Nederlands
     }
 
     // --- Controleer bestaande consent ---
@@ -672,7 +672,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Stop als dit geen winkelwagenpagina is
   if (!subtotalOrder && !totalAmount) {
-    console.info("Cart-sectie niet aanwezig, script overgeslagen.");
     return;
   }
 
@@ -1696,7 +1695,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function loadOrder() {
-    const orderId = orderIdInput.value.trim();
+    // Guard: alleen uitvoeren op de retour-pagina / als input bestaat
+    if (!orderIdInput) {
+      return;
+    }
+    
+    const orderId = (orderIdInput.value || '').trim();
     if (!orderId) { alert(getStatusText('script_processing_retours_alert_invalid_id')); return; }
 
     fetchWithLang(`get_order_retour.php?order_id=${orderId}`)
@@ -2801,7 +2805,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.addEventListener("languageChanged", async (e) => {
     currentLang = e.detail.lang;
     await loadProductData();
-    await loadLastSeen();
   });
 });
 
@@ -2837,34 +2840,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Staff mag overal heen
             if (loggedIn && toegang === 'staff') {
-                // --- Toon staff link ---
-                  const staffLink = document.querySelector('.staff-link');
-                  if (staffLink) {
-                      staffLink.style.display = 'block';
-                  }
-                  const staffLink2 = document.querySelector('.staff-link2');
-                  if (staffLink2) {
-                      staffLink2.style.display = 'block';
-                  }    
-                return; // geen redirect
+                document.querySelectorAll('.staff-link, .staff-link2').forEach(link => {
+                    if (link) link.style.display = 'block';
+                });
+                return;
             }
 
-            // Niet ingelogd en op private page → redirect naar login
+            const safeRedirect = (target) => {
+                if (currentPage !== target) {
+                    setTimeout(() => window.location.href = target, 50);
+                }
+            };
+
             if (!loggedIn && privatePages.includes(currentPage)) {
-                window.location.href = loginPage;
+                safeRedirect(loginPage);
                 return;
             }
 
             // Ingelogd, geen staff, en op guest-only pagina → redirect naar home
             if (loggedIn && toegang !== 'staff' && guestPages.includes(currentPage)) {
-                window.location.href = homePage;
+                safeRedirect(homePage);
                 return;
             }
         })
         .catch(err => {
             console.error('Fout bij login check:', err);
-            // Optioneel: redirect naar login bij fout
-            window.location.href = loginPage;
+            // Alleen redirect uitvoeren als we op een private page zijn
+            if (privatePages.includes(currentPage) && currentPage !== loginPage) {
+                setTimeout(() => window.location.href = loginPage, 50);
+            }
         });
 });
 
@@ -2966,15 +2970,18 @@ function loadProductGrid() {
   const priceMaxInput = document.getElementById("price-max");
   const priceRangeContainer = document.querySelector(".price-filter");
 
-  // Voeg dubbele schuifbalk toe
-  const rangeWrapper = document.createElement("div");
-  rangeWrapper.className = "double-range";
-  rangeWrapper.innerHTML = `
-    <input type="range" id="range-min" min="0" max="1000" value="0" step="1">
-    <input type="range" id="range-max" min="0" max="1000" value="1000" step="1">
-    <div class="slider-track"></div>
-  `;
-  if (priceRangeContainer) priceRangeContainer.appendChild(rangeWrapper);
+  // Voeg dubbele schuifbalk toe, maar alleen als die nog niet bestaat
+  let rangeWrapper = priceRangeContainer.querySelector(".double-range");
+  if (!rangeWrapper) {
+    rangeWrapper = document.createElement("div");
+    rangeWrapper.className = "double-range";
+    rangeWrapper.innerHTML = `
+      <input type="range" id="range-min" min="0" max="1000" value="0" step="1">
+      <input type="range" id="range-max" min="0" max="1000" value="1000" step="1">
+      <div class="slider-track"></div>
+    `;
+    priceRangeContainer.appendChild(rangeWrapper);
+  }
 
   const rangeMin = document.getElementById("range-min");
   const rangeMax = document.getElementById("range-max");

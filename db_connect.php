@@ -1,9 +1,8 @@
 <?php
-// db_connect.php
 $dbHost = 'localhost';
-$dbUser = 'root';
-$dbPass = '';
-$dbName = 'stylisso_db'; // Pas aan naar jouw db naam
+$dbUser = 'stylisso_website';
+$dbPass = 'rIrho7-fixbes-pijsiq';
+$dbName = 'stylisso_db';
 
 $conn = new mysqli($dbHost, $dbUser, $dbPass, $dbName);
 
