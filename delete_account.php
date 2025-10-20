@@ -68,9 +68,14 @@ if ($userEmail) {
     @file_get_contents('mailing.php', false, $context);
 }
 
-// 7️⃣ Session vernietigen en redirect
+// 7️⃣ Session en cookies vernietigen
 session_unset();
 session_destroy();
+
+// Cookie verwijderen (zelfde naam en pad als bij login.php)
+if (isset($_COOKIE['user_login'])) {
+    setcookie('user_login', '', time() - 3600, '/'); // pad '/' belangrijk
+}
 
 header("Location: index.html");
 exit;
