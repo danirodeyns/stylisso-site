@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const img = selectedFlag.querySelector('img');
       if (!img) return;
       const map = {
-        'be-nl':'flags/be.png','be-fr':'flags/be.png','be-en':'flags/be.png',
+        'be-nl':'flags/be.png','be-fr':'flags/be.png','be-en':'flags/be.png', 'be-de':'flags/be.png',
         'nl-nl':'flags/nl.png','nl-en':'flags/nl.png',
         'fr-fr':'flags/fr.png','fr-en':'flags/fr.png',
         'de-de':'flags/de.png','de-en':'flags/de.png',
@@ -1018,113 +1018,6 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
-
-  // --- Fetch user data ---
-  fetch('get_user_data.php')
-    .then(res => res.json())
-    .then(data => {
-      if (!data.error) {
-        // Profielgegevens invullen
-        const nameInput = document.getElementById('name');
-        const emailInput = document.getElementById('email');
-        const newsletterCheckbox = document.getElementById('newsletter');
-        const companyInput = document.getElementById('company_name');
-        const vatInput = document.getElementById('vat_number');
-
-        if (nameInput) nameInput.value = data.name || '';
-        if (emailInput) emailInput.value = data.email || '';
-        if (newsletterCheckbox) newsletterCheckbox.checked = (data.newsletter == 1);
-        if (companyInput) companyInput.value = data.company_name || '';
-        if (vatInput) vatInput.value = data.vat_number || '';
-
-        // Shipping address
-        const streetInput = document.getElementById('street');
-        const houseInput = document.getElementById('house_number');
-        const postalInput = document.getElementById('postal_code');
-        const cityInput = document.getElementById('city');
-        const countryInput = document.getElementById('country');
-
-        if (data.shipping_address) {
-          if (streetInput) streetInput.value = data.shipping_address.street || '';
-          if (houseInput) houseInput.value = data.shipping_address.house_number || '';
-          if (postalInput) postalInput.value = data.shipping_address.postal_code || '';
-          if (cityInput) cityInput.value = data.shipping_address.city || '';
-          if (countryInput) countryInput.value = data.shipping_address.country || '';
-        }
-
-        // Billing address
-        if (data.billing_address && billingCheckbox) {
-          billingCheckbox.checked = true;
-          toggleBillingFields();
-
-          document.getElementById('billing_street').value = data.billing_address.street || '';
-          document.getElementById('billing_house_number').value = data.billing_address.house_number || '';
-          document.getElementById('billing_postal_code').value = data.billing_address.postal_code || '';
-          document.getElementById('billing_city').value = data.billing_address.city || '';
-          document.getElementById('billing_country').value = data.billing_address.country || '';
-        } else if (billingCheckbox) {
-          billingCheckbox.checked = false;
-          toggleBillingFields();
-        }
-
-        // Mijn Stylisso overzicht
-        const userName = document.getElementById('user-name');
-        const userEmail = document.getElementById('user-email');
-        const userAddressLine = document.getElementById('user-address-line');
-        const userAddress = document.getElementById('user-address');
-        const userBillingAddressLine = document.getElementById('user-billing-address-line');
-        const userBillingAddress = document.getElementById('user-address-billing');
-        const userCompanyLine = document.getElementById('user-company-line');
-        const userCompany = document.getElementById('user-company');
-        const userVatLine = document.getElementById('user-vat-line');
-        const userVat = document.getElementById('user-vat');
-
-        if (userName) userName.textContent = data.name || '';
-        if (userEmail) userEmail.textContent = data.email || '';
-
-        // Shipping adres
-        if (data.shipping_address) {
-          const ship = data.shipping_address;
-          const shippingStr = `${ship.street} ${ship.house_number}, ${ship.postal_code} ${ship.city}`;
-          if (userAddress) userAddress.textContent = shippingStr;
-          if (userAddressLine) userAddressLine.style.display = shippingStr ? '' : 'none';
-        } else if (userAddressLine) {
-          userAddressLine.style.display = 'none';
-        }
-
-        // Billing adres
-        if (data.billing_address) {
-          const bill = data.billing_address;
-          const billingStr = `${bill.street} ${bill.house_number}, ${bill.postal_code} ${bill.city}`;
-          if (userBillingAddress) userBillingAddress.textContent = billingStr;
-          if (userBillingAddressLine) userBillingAddressLine.style.display = '';
-        } else if (userBillingAddressLine) {
-          userBillingAddressLine.style.display = 'none';
-        }
-
-        // Bedrijf
-        if (data.company_name) {
-          if (userCompany) userCompany.textContent = data.company_name;
-          if (userCompanyLine) userCompanyLine.style.display = '';
-        } else if (userCompanyLine) {
-          userCompanyLine.style.display = 'none';
-        }
-
-        // BTW nummer
-        if (data.vat_number) {
-          if (userVat) userVat.textContent = data.vat_number;
-          if (userVatLine) userVatLine.style.display = '';
-        } else if (userVatLine) {
-          userVatLine.style.display = 'none';
-        }
-
-      } else {
-        console.error('Fout bij ophalen van gebruikersgegevens:', data.error);
-        const messages = document.getElementById('messages');
-        if (messages) messages.innerHTML = `<p style="color:red;">${data.error}</p>`;
-      }
-    })
-    .catch(err => console.error('Fout bij ophalen van gebruikersgegevens:', err));
 });
 
 // ---------------------------
@@ -1341,6 +1234,113 @@ window.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('last-order')) {
     loadLastOrder();
   }
+
+  // --- Fetch user data ---
+  fetch('get_user_data.php')
+    .then(res => res.json())
+    .then(data => {
+      if (!data.error) {
+        // Profielgegevens invullen
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const newsletterCheckbox = document.getElementById('newsletter');
+        const companyInput = document.getElementById('company_name');
+        const vatInput = document.getElementById('vat_number');
+
+        if (nameInput) nameInput.value = data.name || '';
+        if (emailInput) emailInput.value = data.email || '';
+        if (newsletterCheckbox) newsletterCheckbox.checked = (data.newsletter == 1);
+        if (companyInput) companyInput.value = data.company_name || '';
+        if (vatInput) vatInput.value = data.vat_number || '';
+
+        // Shipping address
+        const streetInput = document.getElementById('street');
+        const houseInput = document.getElementById('house_number');
+        const postalInput = document.getElementById('postal_code');
+        const cityInput = document.getElementById('city');
+        const countryInput = document.getElementById('country');
+
+        if (data.shipping_address) {
+          if (streetInput) streetInput.value = data.shipping_address.street || '';
+          if (houseInput) houseInput.value = data.shipping_address.house_number || '';
+          if (postalInput) postalInput.value = data.shipping_address.postal_code || '';
+          if (cityInput) cityInput.value = data.shipping_address.city || '';
+          if (countryInput) countryInput.value = data.shipping_address.country || '';
+        }
+
+        // Billing address
+        if (data.billing_address && billingCheckbox) {
+          billingCheckbox.checked = true;
+          toggleBillingFields();
+
+          document.getElementById('billing_street').value = data.billing_address.street || '';
+          document.getElementById('billing_house_number').value = data.billing_address.house_number || '';
+          document.getElementById('billing_postal_code').value = data.billing_address.postal_code || '';
+          document.getElementById('billing_city').value = data.billing_address.city || '';
+          document.getElementById('billing_country').value = data.billing_address.country || '';
+        } else if (billingCheckbox) {
+          billingCheckbox.checked = false;
+          toggleBillingFields();
+        }
+
+        // Mijn Stylisso overzicht
+        const userName = document.getElementById('user-name');
+        const userEmail = document.getElementById('user-email');
+        const userAddressLine = document.getElementById('user-address-line');
+        const userAddress = document.getElementById('user-address');
+        const userBillingAddressLine = document.getElementById('user-billing-address-line');
+        const userBillingAddress = document.getElementById('user-address-billing');
+        const userCompanyLine = document.getElementById('user-company-line');
+        const userCompany = document.getElementById('user-company');
+        const userVatLine = document.getElementById('user-vat-line');
+        const userVat = document.getElementById('user-vat');
+
+        if (userName) userName.textContent = data.name || '';
+        if (userEmail) userEmail.textContent = data.email || '';
+
+        // Shipping adres
+        if (data.shipping_address) {
+          const ship = data.shipping_address;
+          const shippingStr = `${ship.street} ${ship.house_number}, ${ship.postal_code} ${ship.city}`;
+          if (userAddress) userAddress.textContent = shippingStr;
+          if (userAddressLine) userAddressLine.style.display = shippingStr ? '' : 'none';
+        } else if (userAddressLine) {
+          userAddressLine.style.display = 'none';
+        }
+
+        // Billing adres
+        if (data.billing_address) {
+          const bill = data.billing_address;
+          const billingStr = `${bill.street} ${bill.house_number}, ${bill.postal_code} ${bill.city}`;
+          if (userBillingAddress) userBillingAddress.textContent = billingStr;
+          if (userBillingAddressLine) userBillingAddressLine.style.display = '';
+        } else if (userBillingAddressLine) {
+          userBillingAddressLine.style.display = 'none';
+        }
+
+        // Bedrijf
+        if (data.company_name) {
+          if (userCompany) userCompany.textContent = data.company_name;
+          if (userCompanyLine) userCompanyLine.style.display = '';
+        } else if (userCompanyLine) {
+          userCompanyLine.style.display = 'none';
+        }
+
+        // BTW nummer
+        if (data.vat_number) {
+          if (userVat) userVat.textContent = data.vat_number;
+          if (userVatLine) userVatLine.style.display = '';
+        } else if (userVatLine) {
+          userVatLine.style.display = 'none';
+        }
+
+      } else {
+        console.error('Fout bij ophalen van gebruikersgegevens:', data.error);
+        const messages = document.getElementById('messages');
+        if (messages) messages.innerHTML = `<p style="color:red;">${data.error}</p>`;
+      }
+    })
+    .catch(err => console.error('Fout bij ophalen van gebruikersgegevens:', err));
 });
 
 document.addEventListener('languageChanged', () => {

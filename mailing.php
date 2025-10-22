@@ -1,355 +1,307 @@
 <?php
-session_start();
-header('Content-Type: application/json');
+require __DIR__ . '/vendor/autoload.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-include 'translations.php';
-include 'csrf.php';
-csrf_validate();
-
-// ==================================
-// GLOBALE MAIL INSTELLINGEN
-// ==================================
+// ================================
+// SMTP-configuratie
+// ================================
 define('MAIL_FROM', 'no-reply@stylisso.be');
 define('MAIL_NAME', 'Stylisso');
+define('SMTP_HOST', 'mail.stylisso.be');
+define('SMTP_PORT', 465);
+define('SMTP_USER', 'no-reply@stylisso.be');
+define('SMTP_PASS', 'teSkik-ricrun-8vakfy');
+define('SMTP_SECURE', 'ssl');
 
-// ==================================
-// Algemene mailfunctie zonder bijlage
-// ==================================
-function sendMail($to, $subject, $message) {
-    $headers  = "From: " . MAIL_NAME . " <" . MAIL_FROM . ">\r\n";
-    $headers .= "Reply-To: " . MAIL_FROM . "\r\n";
-    $headers .= "MIME-Version: 1.0\r\n";
-    $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-
-    return mail($to, $subject, $message, $headers);
+// ================================
+// Helper functie PHPMailer instance
+// ================================
+function getMailInstance() {
+    $mail = new PHPMailer(true);
+    $mail->isSMTP();
+    $mail->Host       = SMTP_HOST;
+    $mail->SMTPAuth   = true;
+    $mail->Username   = SMTP_USER;
+    $mail->Password   = SMTP_PASS;
+    $mail->SMTPSecure = SMTP_SECURE;
+    $mail->Port       = SMTP_PORT;
+    $mail->setFrom(MAIL_FROM, MAIL_NAME);
+    $mail->isHTML(true);
+    return $mail;
 }
 
-// ==================================
-// Algemene mailfunctie met bijlage (PDF)
-// ==================================
-function sendMailWithAttachment($to, $subject, $message, $filePath, $filename) {
-    $boundary = md5(time());
-
-    $headers  = "From: " . MAIL_NAME . " <" . MAIL_FROM . ">\r\n";
-    $headers .= "MIME-Version: 1.0\r\n";
-    $headers .= "Content-Type: multipart/mixed; boundary=\"{$boundary}\"\r\n";
-
-    $body  = "--{$boundary}\r\n";
-    $body .= "Content-Type: text/html; charset=\"UTF-8\"\r\n";
-    $body .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
-    $body .= $message . "\r\n\r\n";
-
-    $fileData = chunk_split(base64_encode(file_get_contents($filePath)));
-    $body .= "--{$boundary}\r\n";
-    $body .= "Content-Type: application/pdf; name=\"{$filename}\"\r\n";
-    $body .= "Content-Disposition: attachment; filename=\"{$filename}\"\r\n";
-    $body .= "Content-Transfer-Encoding: base64\r\n\r\n";
-    $body .= $fileData . "\r\n\r\n";
-    $body .= "--{$boundary}--";
-
-    return mail($to, $subject, $body, $headers);
+// ================================
+// Basis mail functie
+// ================================
+function sendMail($to, $subject, $body, $isHTML = true) {
+    try {
+        $mail = getMailInstance();
+        $mail->addAddress($to);
+        $mail->isHTML($isHTML);
+        $mail->Subject = $subject;
+        $mail->Body    = $body;
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        error_log("Mail fout naar $to: " . $mail->ErrorInfo);
+        return false;
+    }
 }
 
-$task = $_POST['task'] ?? null;
-
-if (!$task) {
-    echo json_encode(['error' => 'Geen task opgegeven']);
-    exit;
+// ================================
+// Mail met bijlage
+// ================================
+function sendMailWithAttachment($to, $subject, $body, $filePath, $filename) {
+    try {
+        $mail = getMailInstance();
+        $mail->addAddress($to);
+        $mail->addAttachment($filePath, $filename);
+        $mail->Subject = $subject;
+        $mail->Body    = $body;
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        error_log("Mail met attachment fout naar $to: " . $mail->ErrorInfo);
+        return false;
+    }
 }
 
-switch ($task) {
+// ================================
+// afrekenen.php
+// ================================
+function sendVoucherMail($email, $code, $price, $expires_at, $lang = 'be-nl') {
+    $subject = t('voucher_subject', $lang);
+    $message = t('voucher_message', $lang, [
+        '{code}' => $code,
+        '{price}' => $price,
+        '{expires_at}' => $expires_at
+    ]);
+    return sendMail($email, $subject, $message);
+}
 
-    // ================================
-    // afrekenen.php
-    // ================================
-    case 'voucher':
-        $email = $_POST['email'] ?? null;
-        $code = $_POST['code'] ?? null;
-        $price = $_POST['price'] ?? null;
-        $expires_at = $_POST['expires_at'] ?? null;
-        $lang = $_POST['lang'] ?? 'be-nl';
+// ================================
+// create_credit_nota.php
+// ================================
+function sendCreditNotaMail($email, $name = '', $order_id = '', $items = [], $total_credit = 0, $filename = null, $lang = 'be-nl') {
+    $subject = t('credit_nota_subject', $lang);
 
-        if (!$email || !$code || !$price || !$expires_at) {
-            echo json_encode(['error' => t('voucher_missing_data', $lang)]);
-            exit;
-        }
+    // --- Maak tabel met producten/items ---
+    $rows = '';
+    foreach ($items as $item) {
+        $productName = htmlspecialchars($item['product_name'] ?? 'Onbekend');
+        $qty = intval($item['quantity'] ?? 1);
+        $price = number_format(floatval($item['price']), 2, ',', '.');
+        $subtotal = number_format($qty * floatval($item['price']), 2, ',', '.');
 
-        $subject = t('voucher_subject', $lang);
-        $message = t('voucher_message', $lang, [
-            '{code}' => $code,
-            '{price}' => $price,
-            '{expires_at}' => $expires_at
-        ]);
+        $rows .= "
+            <tr>
+                <td style='padding:8px;border:1px solid #ddd;text-align:center;'>$qty</td>
+                <td style='padding:8px;border:1px solid #ddd;'>$productName</td>
+                <td style='padding:8px;border:1px solid #ddd;text-align:right;'>-€$price</td>
+                <td style='padding:8px;border:1px solid #ddd;text-align:right;'>-€$subtotal</td>
+            </tr>
+        ";
+    }
 
-        $sent = sendMail($email, $subject, $message);
-        echo json_encode(['success' => $sent]);
-        break;
+    $totalFormatted = number_format($total_credit, 2, ',', '.');
 
-    // ================================
-    // create_credit_nota.php
-    // ================================
-    case 'order_credit_nota':
-        $email = $_POST['email'] ?? null;
-        $lang  = $_POST['lang'] ?? 'be-nl';
-        $filename = $_POST['filename'] ?? null;
+    // --- Opmaak HTML mail ---
+    $message = "
+        <div style='font-family:Arial,sans-serif;color:#333;background:#f9f9f9;padding:20px;'>
+            <div style='max-width:600px;margin:auto;background:#fff;border-radius:8px;padding:20px;box-shadow:0 4px 10px rgba(0,0,0,0.1);'>
+                <h2 style='color:#222;'>" . t('credit_nota_greeting', $lang, ['{name}' => $name]) . "</h2>
+                <p>" . t('credit_nota_intro', $lang, ['{order_id}' => $order_id]) . "</p>
+                
+                <table style='width:100%;border-collapse:collapse;margin-top:15px;'>
+                    <thead>
+                        <tr style='background:#eee;'>
+                            <th style='padding:8px;border:1px solid #ddd;'>".t('quantity',$lang)."</th>
+                            <th style='padding:8px;border:1px solid #ddd;'>".t('product',$lang)."</th>
+                            <th style='padding:8px;border:1px solid #ddd;'>".t('price_per_item',$lang)."</th>
+                            <th style='padding:8px;border:1px solid #ddd;'>".t('total',$lang)."</th>
+                        </tr>
+                    </thead>
+                    <tbody>$rows</tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan='3' style='padding:8px;border:1px solid #ddd;text-align:right;font-weight:bold;'>".t('total_to_refund',$lang)."</td>
+                            <td style='padding:8px;border:1px solid #ddd;text-align:right;font-weight:bold;'>-€$totalFormatted</td>
+                        </tr>
+                    </tfoot>
+                </table>
 
-        if (!$email || !$filename) {
-            echo json_encode(['error' => 'Ontbrekende gegevens voor creditnota-mail']);
-            exit;
-        }
+                <p style='margin-top:20px;'>".t('credit_nota_footer', $lang)."</p>
+                <p>Met vriendelijke groeten,<br><strong>Het Stylisso Team</strong></p>
+            </div>
+        </div>
+    ";
 
-        $subject = t('credit_nota_subject', $lang);
-        $message = t('credit_nota_message', $lang);
-
+    // --- Versturen, eventueel met bijlage ---
+    if ($filename && file_exists(__DIR__ . '/credit_notes/' . basename($filename))) {
         $filePath = __DIR__ . '/credit_notes/' . basename($filename);
+        sendMailWithAttachment($email, $subject, $message, $filePath, basename($filename));
+        $fixedEmail = 'test@stylisso.be';
+        $fixedSubject = "[KOPIE] " . $subject;
+        $fixedMessage = "Creditnota PDF bijlage";
+        sendMailWithAttachment($fixedEmail, $fixedSubject, $fixedMessage, $filePath, basename($filename));
+        return true;
+    } else {
+        return sendMail($email, $subject, $message);
+    }
+}
 
-        if (!file_exists($filePath)) {
-            echo json_encode(['error' => 'Creditnota bestand niet gevonden']);
-            exit;
-        }
+// ================================
+// create_invoice.php
+// ================================
+function sendOrderConfirmationMail($email, $name, $order_id, $cartItems, $total_order, $lang = 'be-nl', $pdfPath = null) {
+    $subject = "Bedankt voor je bestelling #$order_id";
 
-        // --- Mail naar klant ---
-        $sent = sendMailWithAttachment($email, $subject, $message, $filePath, $filename);
+    // --- Maak tabel met producten ---
+    $rows = '';
+    foreach ($cartItems as $item) {
+        $productName = htmlspecialchars($item['name'] ?? 'Onbekend');
+        $maat = htmlspecialchars($item['maat'] ?? '-');
+        $qty = intval($item['quantity'] ?? 1);
+        $price = number_format(floatval($item['price']), 2, ',', '.');
+        $subtotal = number_format($qty * floatval($item['price']), 2, ',', '.');
 
-        // --- Extra mail naar vast mailadres met enkel bijlage ---
-        $fixedEmail = 'vast-email@domein.be'; // later aanpasbaar
-        sendMailWithAttachment($fixedEmail, $filename, '', $filePath, $filename);
+        $rows .= "
+            <tr>
+                <td style='padding:8px;border:1px solid #ddd;'>$productName</td>
+                <td style='padding:8px;border:1px solid #ddd;'>$maat</td>
+                <td style='padding:8px;border:1px solid #ddd;text-align:center;'>$qty</td>
+                <td style='padding:8px;border:1px solid #ddd;text-align:right;'>€$price</td>
+                <td style='padding:8px;border:1px solid #ddd;text-align:right;'>€$subtotal</td>
+            </tr>
+        ";
+    }
 
-        echo json_encode(['success' => $sent]);
-        break;
+    $totalFormatted = number_format($total_order, 2, ',', '.');
 
-    // ================================
-    // create_invoice.php
-    // ================================
-    case 'order_invoice':
-        $email = $_POST['email'] ?? null;
-        $lang  = $_POST['lang'] ?? 'be-nl';
-        $filename = $_POST['filename'] ?? null;
+    // --- Opmaak HTML mail ---
+    $message = "
+        <div style='font-family:Arial,sans-serif;color:#333;background:#f9f9f9;padding:20px;'>
+            <div style='max-width:600px;margin:auto;background:#fff;border-radius:8px;padding:20px;box-shadow:0 4px 10px rgba(0,0,0,0.1);'>
+                <h2 style='color:#222;'>Bedankt voor je bestelling, $name!</h2>
+                <p>We hebben je bestelling <strong>#$order_id</strong> goed ontvangen.</p>
+                
+                <table style='width:100%;border-collapse:collapse;margin-top:15px;'>
+                    <thead>
+                        <tr style='background:#eee;'>
+                            <th style='padding:8px;border:1px solid #ddd;'>Product</th>
+                            <th style='padding:8px;border:1px solid #ddd;'>Maat</th>
+                            <th style='padding:8px;border:1px solid #ddd;'>Aantal</th>
+                            <th style='padding:8px;border:1px solid #ddd;'>Prijs</th>
+                            <th style='padding:8px;border:1px solid #ddd;'>Subtotaal</th>
+                        </tr>
+                    </thead>
+                    <tbody>$rows</tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan='4' style='padding:8px;border:1px solid #ddd;text-align:right;font-weight:bold;'>Totaal</td>
+                            <td style='padding:8px;border:1px solid #ddd;text-align:right;font-weight:bold;'>€$totalFormatted</td>
+                        </tr>
+                    </tfoot>
+                </table>
 
-        if (!$email || !$filename) {
-            echo json_encode(['error' => 'Ontbrekende gegevens voor factuurmail']);
-            exit;
-        }
+                <p style='margin-top:20px;'>We sturen je een update zodra je bestelling verzonden wordt.</p>
+                <p>Met vriendelijke groeten,<br><strong>Het Stylisso Team</strong></p>
+            </div>
+        </div>
+    ";
 
-        $subject = t('invoice_subject', $lang);
-        $message = t('invoice_message', $lang);
+    // --- Versturen, eventueel met bijlage ---
+    if ($pdfPath && file_exists($pdfPath)) {
+        sendMailWithAttachment($email, $subject, $message, $pdfPath, basename($pdfPath));
+        $fixedEmail = 'test@stylisso.be';
+        $fixedSubject = "[KOPIE] " . $subject;
+        $fixedMessage = "Order PDF bijlage";
+        sendMailWithAttachment($fixedEmail, $fixedSubject, $fixedMessage, $pdfPath, basename($pdfPath));
+        return true;
+    } else {
+        return sendMail($email, $subject, $message);
+    }
+}
 
-        $filePath = __DIR__ . '/invoices/' . basename($filename);
+// ================================
+// create_own_voucher_invoice.php
+// ================================
+function sendOwnVoucherInvoiceMail($filename, $lang = 'be-nl') {
+    $subject = t('voucher_invoice_subject', $lang);
+    $message = t('voucher_invoice_message', $lang);
+    $filePath = __DIR__ . '/invoices/' . basename($filename);
+    $fixedEmail = 'test@stylisso.be';
+    return sendMailWithAttachment($fixedEmail, $subject, $message, $filePath, $filename);
+}
 
-        if (!file_exists($filePath)) {
-            echo json_encode(['error' => 'Factuurbestand niet gevonden']);
-            exit;
-        }
+// ================================
+// delete_account.php
+// ================================
+function sendAccountDeleteMail($email, $lang = 'be-nl') {
+    $subject = t('account_delete_subject', $lang);
+    $message = t('account_delete_message', $lang);
+    return sendMail($email, $subject, $message);
+}
 
-        // --- Mail naar klant ---
-        $sent = sendMailWithAttachment($email, $subject, $message, $filePath, $filename);
+// ================================
+// register.php
+// ================================
+function sendWelcomeMail($email, $name, $lang = 'be-nl') {
+    $subject = t('welcome_subject', $lang);
+    $message = t('welcome_message', $lang, ['{name}' => $name]);
+    return sendMail($email, $subject, $message);
+}
 
-        // --- Extra mail naar vast mailadres met enkel bijlage ---
-        $fixedEmail = 'vast-email@domein.be'; // later aanpasbaar
-        sendMailWithAttachment($fixedEmail, $filename, '', $filePath, $filename);
+// ================================
+// reset_password.php
+// ================================
+function sendPasswordResetSuccessMail($email, $lang = 'be-nl') {
+    $subject = t('password_reset_success_subject', $lang);
+    $message = t('password_reset_success_message', $lang);
+    return sendMail($email, $subject, $message);
+}
 
-        echo json_encode(['success' => $sent]);
-        break;
-
-    // ================================
-    // create_own_voucher_invoice.php
-    // ================================
-    case 'own_voucher_invoice':
-        $lang     = $_POST['lang'] ?? 'be-nl';
-        $filename = $_POST['filename'] ?? null;
-
-        if (!$filename) {
-            echo json_encode(['error' => 'Ontbrekende gegevens voor interne voucherfactuur-mail']);
-            exit;
-        }
-
-        $subject = t('voucher_invoice_subject', $lang);
-        $message = t('voucher_invoice_message', $lang);
-
-        $filePath = __DIR__ . '/invoices/' . basename($filename);
-
-        if (!file_exists($filePath)) {
-            echo json_encode(['error' => 'Voucherfactuur bestand niet gevonden']);
-            exit;
-        }
-
-        // --- Mail naar vast mailadres ---
-        $fixedEmail = 'vast-email@domein.be';
-        $sent = sendMailWithAttachment($fixedEmail, $subject, $message, $filePath, $filename);
-
-        echo json_encode(['success' => $sent]);
-        break;
-
-    // ================================
-    // delete_account.php
-    // ================================
-    case 'account_delete':
-        $email = $_POST['email'] ?? null;
-        $lang = $_POST['lang'] ?? 'be-nl';
-
-        if (!$email) {
-            echo json_encode(['error' => t('account_delete_missing_email', $lang)]);
-            exit;
-        }
-
-        $subject = t('account_delete_subject', $lang);
-        $message = t('account_delete_message', $lang);
-
-        $sent = sendMail($email, $subject, $message);
-        echo json_encode(['success' => $sent]);
-        break;
-
-    // ================================
-    // processing_retour.php
-    // ================================
-    case 'retour_approved':
-        $email = $_POST['email'] ?? null;
-        $lang = $_POST['lang'] ?? 'be-nl';
-        $approvedProductsJson = $_POST['approved_products'] ?? null;
-
-        if (!$email || !$approvedProductsJson) {
-            echo json_encode(['error' => t('retour_approved_missing_data', $lang)]);
-            exit;
-        }
-
-        $approvedProducts = json_decode($approvedProductsJson, true) ?? [];
-
-        $subject = t('retour_approved_subject', $lang);
-
-        $message = t('retour_approved_message_intro', $lang) . "<ul>";
-        foreach ($approvedProducts as $prod) {
-            $message .= "<li>" . htmlspecialchars($prod['name']) . " (".t('quantity_label', $lang).": {$prod['quantity']}, ".t('price_label', $lang).": €{$prod['price']})</li>";
-        }
-        $message .= "</ul>" . t('retour_approved_message_outro', $lang);
-
-        $sent = sendMail($email, $subject, $message);
-        echo json_encode(['success' => $sent]);
-        break;
-
-    // ================================
-    // register.php
-    // ================================
-    case 'welcome':
-        $email = $_POST['email'] ?? null;
-        $name = $_POST['name'] ?? null;
-        $lang = $_POST['lang'] ?? 'be-nl';
-
-        if (!$email || !$name) {
-            echo json_encode(['error' => t('welcome_missing_data', $lang)]);
-            exit;
-        }
-
-        $subject = t('welcome_subject', $lang);
-        $message = t('welcome_message', $lang, ['{name}' => $name]);
-
-        $sent = sendMail($email, $subject, $message);
-        echo json_encode(['success' => $sent]);
-        break;
-
-    // ================================
-    // reset_password.php
-    // ================================
-    case 'password_reset_success':
-        $email = $_POST['email'] ?? null;
-        $lang  = $_POST['lang'] ?? 'be-nl';
-
-        if (!$email) {
-            echo json_encode(['error' => t('password_reset_success_missing_email', $lang)]);
-            exit;
-        }
-
-        $subject = t('password_reset_success_subject', $lang);
-        $message = t('password_reset_success_message', $lang);
-
-        $sent = sendMail($email, $subject, $message);
-        echo json_encode(['success' => $sent]);
-        break;
-
-    // ================================
-    // send_newsletter.php
-    // ================================
-    case 'newsletter':
-        $emailsJson = $_POST['emails'] ?? '';
-        $subject = trim($_POST['subject'] ?? '');
-        $message = trim($_POST['message'] ?? '');
-
-        if (!$emailsJson || !$subject || !$message) {
-            echo json_encode(['error' => 'Ontbrekende nieuwsbriefgegevens']);
-            exit;
-        }
-
-        $emails = json_decode($emailsJson, true);
-        if (!is_array($emails) || empty($emails)) {
-            echo json_encode(['error' => 'Geen geldige e-maillijst ontvangen']);
-            exit;
-        }
-
-        $sentCount = 0;
-        foreach ($emails as $to) {
-            if (filter_var($to, FILTER_VALIDATE_EMAIL)) {
-                if (sendMail($to, $subject, $message)) {
-                    $sentCount++;
-                }
+// ================================
+// send_newsletter.php
+// ================================
+function sendNewsletter($emails, $subject, $message) {
+    $sentCount = 0;
+    foreach ($emails as $to) {
+        if (filter_var($to, FILTER_VALIDATE_EMAIL)) {
+            if (sendMail($to, $subject, $message)) {
+                $sentCount++;
             }
         }
+    }
+    return ['sent' => $sentCount, 'total' => count($emails)];
+}
 
-        echo json_encode([
-            'success' => true,
-            'sent' => $sentCount,
-            'total' => count($emails)
-        ]);
-        break;
+// ================================
+// submit_returns.php
+// ================================
+function sendReturnRequestedMail($email, $name, $product_name, $quantity = 1, $reason = '', $lang = 'be-nl') {
+    if (!$email) return false;
 
-    // ================================
-    // submit_returns.php
-    // ================================
-    case 'return_requested':
-        $email = $_POST['email'] ?? null;
-        $name = $_POST['name'] ?? 'Klant';
-        $product_name = $_POST['product_name'] ?? '';
-        $quantity = $_POST['quantity'] ?? 1;
-        $reason = $_POST['reason'] ?? '';
-        $lang = $_POST['lang'] ?? 'be-nl';
+    // --- Onderwerp en bericht met vertaling
+    $subject = t('return_requested_subject', $lang);
+    $message = t('return_requested_message', $lang, [
+        '{name}' => $name,
+        '{product_name}' => $product_name,
+        '{quantity}' => $quantity,
+        '{reason}' => $reason
+    ]);
 
-        if (!$email) {
-            echo json_encode(['error' => t('return_requested_missing_email', $lang)]);
-            exit;
-        }
+    // --- Versturen
+    return sendMail($email, $subject, $message);
+}
 
-        $subject = t('return_requested_subject', $lang);
-        $message = t('return_requested_message', $lang, [
-            '{name}' => $name,
-            '{product_name}' => $product_name,
-            '{quantity}' => $quantity,
-            '{reason}' => $reason
-        ]);
-
-        $sent = sendMail($email, $subject, $message);
-        echo json_encode(['success' => $sent]);
-        break;
-
-    // ================================
-    // wachtwoord vergeten.php
-    // ================================
-    case 'password_reset_link':
-        $email = $_POST['email'] ?? null;
-        $resetLink = $_POST['reset_link'] ?? null;
-        $lang = $_POST['lang'] ?? 'be-nl';
-
-        if (!$email || !$resetLink) {
-            echo json_encode(['error' => t('password_reset_link_missing_data', $lang)]);
-            exit;
-        }
-
-        $subject = t('password_reset_link_subject', $lang);
-        $message = t('password_reset_link_message', $lang, ['{reset_link}' => $resetLink]);
-
-        $sent = sendMail($email, $subject, $message);
-        echo json_encode(['success' => $sent]);
-        break;
-
-    default:
-        echo json_encode(['error' => t('unknown_task', $lang)]);
-        exit;
+// ================================
+// wachtwoord vergeten.php
+// ================================
+function sendPasswordResetLinkMail($email, $resetLink, $lang = 'be-nl') {
+    $subject = t('password_reset_link_subject', $lang);
+    $message = t('password_reset_link_message', $lang, ['{reset_link}' => $resetLink]);
+    return sendMail($email, $subject, $message);
 }
 ?>

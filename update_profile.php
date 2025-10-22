@@ -1,4 +1,6 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -11,17 +13,12 @@ include 'translations.php';
 include 'csrf.php';
 csrf_validate(); // stopt script als token fout is
 
-$dsn = "mysql:host=$dbHost;dbname=$dbName;charset=utf8mb4";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-];
-
-try {
-    $pdo = new PDO($dsn, $dbUser, $dbPass, $options);
-} catch (PDOException $e) {
-    die("Database verbinding mislukt: " . $e->getMessage());
+// Mysqli connectie
+$conn = new mysqli($dbHost, $dbUser, $dbPass, $dbName);
+if ($conn->connect_error) {
+    die("Database verbinding mislukt: " . $conn->connect_error);
 }
+$conn->set_charset("utf8mb4");
 
 function cleanInput($data) {
     return htmlspecialchars(trim($data));
@@ -32,9 +29,9 @@ function cleanInput($data) {
 // ------------------------
 function normalizeCountry($str) {
     $str = trim($str);
-    $str = mb_strtolower($str, 'UTF-8');                  // kleine letters
-    $str = iconv('UTF-8', 'ASCII//TRANSLIT', $str);      // accenten verwijderen
-    $str = preg_replace('/[^a-z]/', '', $str);           // niet-letters verwijderen
+    $str = mb_strtolower($str, 'UTF-8');
+    $str = iconv('UTF-8', 'ASCII//TRANSLIT', $str);
+    $str = preg_replace('/[^a-z]/', '', $str);
     return $str;
 }
 
@@ -89,25 +86,31 @@ if ($password !== $passwordConfirm) {
 }
 
 // Check of e-mail al bestaat bij andere gebruiker
-$stmt = $pdo->prepare("SELECT id FROM users WHERE email = :email AND id != :id");
-$stmt->execute([':email' => $email, ':id' => $_SESSION['user_id']]);
-if ($stmt->fetch()) {
+$stmt = $conn->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
+$stmt->bind_param("si", $email, $_SESSION['user_id']);
+$stmt->execute();
+$stmt->store_result();
+if ($stmt->num_rows > 0) {
     $errors[] = 'email_exists';
 }
+$stmt->close();
 
 // Check of nieuw wachtwoord anders is dan huidige
 if (!empty($password)) {
-    $stmt = $pdo->prepare("SELECT password FROM users WHERE id = :id");
-    $stmt->execute([':id' => $_SESSION['user_id']]);
-    $currentUser = $stmt->fetch();
+    $stmt = $conn->prepare("SELECT password FROM users WHERE id = ?");
+    $stmt->bind_param("i", $_SESSION['user_id']);
+    $stmt->execute();
+    $stmt->bind_result($currentPasswordHash);
+    $stmt->fetch();
+    $stmt->close();
 
-    if ($currentUser && password_verify($password, $currentUser['password'])) {
+    if ($currentPasswordHash && password_verify($password, $currentPasswordHash)) {
         $errors[] = 'password_same';
     }
 }
 
 // ------------------------
-// Land validatie server-side
+// Land validatie
 // ------------------------
 // Shipping land check
 $normalizedShipping = normalizeCountry($country);
@@ -132,64 +135,51 @@ if (!empty($errors)) {
 // ------------------------
 // Users tabel bijwerken
 // ------------------------
-$params = [
-    ':name'         => $name,
-    ':email'        => $email,
-    ':company_name' => $company_name,
-    ':vat_number'   => $vat_number,
-    ':newsletter'   => $newsletter,
-    ':id'           => $_SESSION['user_id']
-];
-
-$sql = "UPDATE users 
-        SET name = :name, email = :email, company_name = :company_name, vat_number = :vat_number, newsletter = :newsletter";
+$sql = "UPDATE users SET name=?, email=?, company_name=?, vat_number=?, newsletter=?";
+$params = [$name, $email, $company_name, $vat_number, $newsletter];
 
 if (!empty($password)) {
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-    $sql .= ", password = :password";
-    $params[':password'] = $hashedPassword;
+    $sql .= ", password=?";
+    $params[] = $hashedPassword;
 }
 
-$sql .= " WHERE id = :id";
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
+$sql .= " WHERE id=?";
+$params[] = $_SESSION['user_id'];
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param(str_repeat("s", count($params)-1) . "i", ...$params); // laatste is i voor id
+$stmt->execute();
+$stmt->close();
 
 // ------------------------
 // Shippingadres updaten/toevoegen
 // ------------------------
 if ($street && $house_number && $postal_code && $city && $country) {
-    $stmt = $pdo->prepare("SELECT id FROM addresses WHERE user_id = :user_id AND type = 'shipping' LIMIT 1");
-    $stmt->execute([':user_id' => $_SESSION['user_id']]);
-    $shippingAddress = $stmt->fetch();
+    $stmt = $conn->prepare("SELECT id FROM addresses WHERE user_id=? AND type='shipping' LIMIT 1");
+    $stmt->bind_param("i", $_SESSION['user_id']);
+    $stmt->execute();
+    $stmt->bind_result($shippingId);
+    $stmt->fetch();
+    $stmt->close();
 
-    if ($shippingAddress) {
-        $stmt = $pdo->prepare("
+    if ($shippingId) {
+        $stmt = $conn->prepare("
             UPDATE addresses 
-            SET street = :street, house_number = :house_number, postal_code = :postal_code, city = :city, country = :country
-            WHERE id = :address_id AND user_id = :user_id
+            SET street=?, house_number=?, postal_code=?, city=?, country=? 
+            WHERE id=? AND user_id=?
         ");
-        $stmt->execute([
-            ':street'       => $street,
-            ':house_number' => $house_number,
-            ':postal_code'  => $postal_code,
-            ':city'         => $city,
-            ':country'      => $country,
-            ':address_id'   => $shippingAddress['id'],
-            ':user_id'      => $_SESSION['user_id']
-        ]);
+        $stmt->bind_param("ssssssi", $street, $house_number, $postal_code, $city, $country, $shippingId, $_SESSION['user_id']);
+        $stmt->execute();
+        $stmt->close();
     } else {
-        $stmt = $pdo->prepare("
+        $stmt = $conn->prepare("
             INSERT INTO addresses (user_id, type, street, house_number, postal_code, city, country)
-            VALUES (:user_id, 'shipping', :street, :house_number, :postal_code, :city, :country)
+            VALUES (?, 'shipping', ?, ?, ?, ?, ?)
         ");
-        $stmt->execute([
-            ':user_id'      => $_SESSION['user_id'],
-            ':street'       => $street,
-            ':house_number' => $house_number,
-            ':postal_code'  => $postal_code,
-            ':city'         => $city,
-            ':country'      => $country
-        ]);
+        $stmt->bind_param("isssss", $_SESSION['user_id'], $street, $house_number, $postal_code, $city, $country);
+        $stmt->execute();
+        $stmt->close();
     }
 }
 
@@ -197,46 +187,41 @@ if ($street && $house_number && $postal_code && $city && $country) {
 // Factuuradres updaten/verwijderen
 // ------------------------
 if (!$differentBilling) {
-    // Verwijder eventueel bestaand billingadres
-    $stmt = $pdo->prepare("DELETE FROM addresses WHERE user_id = :user_id AND type = 'billing'");
-    $stmt->execute([':user_id' => $_SESSION['user_id']]);
+    $stmt = $conn->prepare("DELETE FROM addresses WHERE user_id=? AND type='billing'");
+    $stmt->bind_param("i", $_SESSION['user_id']);
+    $stmt->execute();
+    $stmt->close();
 } else {
     if ($billing_street && $billing_house_number && $billing_postal_code && $billing_city && $billing_country) {
-        $stmt = $pdo->prepare("SELECT id FROM addresses WHERE user_id = :user_id AND type = 'billing' LIMIT 1");
-        $stmt->execute([':user_id' => $_SESSION['user_id']]);
-        $billingAddress = $stmt->fetch();
+        $stmt = $conn->prepare("SELECT id FROM addresses WHERE user_id=? AND type='billing' LIMIT 1");
+        $stmt->bind_param("i", $_SESSION['user_id']);
+        $stmt->execute();
+        $stmt->bind_result($billingId);
+        $stmt->fetch();
+        $stmt->close();
 
-        if ($billingAddress) {
-            $stmt = $pdo->prepare("
+        if ($billingId) {
+            $stmt = $conn->prepare("
                 UPDATE addresses 
-                SET street = :street, house_number = :house_number, postal_code = :postal_code, city = :city, country = :country
-                WHERE id = :address_id AND user_id = :user_id
+                SET street=?, house_number=?, postal_code=?, city=?, country=? 
+                WHERE id=? AND user_id=?
             ");
-            $stmt->execute([
-                ':street'       => $billing_street,
-                ':house_number' => $billing_house_number,
-                ':postal_code'  => $billing_postal_code,
-                ':city'         => $billing_city,
-                ':country'      => $billing_country,
-                ':address_id'   => $billingAddress['id'],
-                ':user_id'      => $_SESSION['user_id']
-            ]);
+            $stmt->bind_param("ssssiii", $billing_street, $billing_house_number, $billing_postal_code, $billing_city, $billing_country, $billingId, $_SESSION['user_id']);
+            $stmt->execute();
+            $stmt->close();
         } else {
-            $stmt = $pdo->prepare("
+            $stmt = $conn->prepare("
                 INSERT INTO addresses (user_id, type, street, house_number, postal_code, city, country)
-                VALUES (:user_id, 'billing', :street, :house_number, :postal_code, :city, :country)
+                VALUES (?, 'billing', ?, ?, ?, ?, ?)
             ");
-            $stmt->execute([
-                ':user_id'          => $_SESSION['user_id'],
-                ':street'           => $billing_street,
-                ':house_number'     => $billing_house_number,
-                ':postal_code'      => $billing_postal_code,
-                ':city'             => $billing_city,
-                ':country'          => $billing_country
-            ]);
+            $stmt->bind_param("isssss", $_SESSION['user_id'], $billing_street, $billing_house_number, $billing_postal_code, $billing_city, $billing_country);
+            $stmt->execute();
+            $stmt->close();
         }
     }
 }
+
+$conn->close();
 
 header("Location: gegevens.html?success=1");
 exit;

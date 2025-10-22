@@ -3,6 +3,7 @@ session_start();
 
 include 'db_connect.php';
 include 'translations.php';
+include 'mailing.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
@@ -54,8 +55,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         ]
     ]);
 
-    // Mail triggeren (fouten suppressed zodat script niet crasht)
-    @file_get_contents('mailing.php', false, $context);
+    // Mail triggeren
+    sendPasswordResetLinkMail($email, $resetLink);
 
     echo json_encode(['success' => t('password_reset_sent')]);
     exit;

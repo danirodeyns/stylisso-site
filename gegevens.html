@@ -101,6 +101,7 @@
           <p data-i18n="modal_delete_text">Weet je zeker dat je je account permanent wilt verwijderen? Dit kan niet ongedaan worden gemaakt.</p>
           <div class="modal-actions">
             <form id="deleteForm" action="delete_account.php" method="POST">
+              <input type="hidden" name="csrf_token" id="csrf_token2" value="" />
               <button type="submit" class="confirm-btn" data-i18n="modal_delete_confirm">Ja, verwijderen</button>
             </form>
             <button type="button" id="cancelDelete" class="cancel-btn" data-i18n="modal_delete_cancel">Annuleren</button>

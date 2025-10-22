@@ -3,6 +3,7 @@ session_start();
 require 'db_connect.php';
 include 'csrf.php';
 include 'translations.php';
+include 'mailing.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     csrf_validate();
@@ -40,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     $userId = $row["id"];
-    $userEmail = $row["email"];
+    $email = $row["email"];
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
     // Wachtwoord updaten
@@ -50,10 +51,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt->close();
 
     // --- Verstuur bevestigingsmail via mailing.php ---
-    if ($userEmail) {
+    if ($email) {
         $postData = http_build_query([
             'task' => 'password_reset_success',
-            'email' => $userEmail,
+            'email' => $email,
             'lang' => 'be-nl' // optie om taal uit user of order op te halen
         ]);
 
@@ -66,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         ]);
 
         // Mail triggeren
-        @file_get_contents('mailing.php', false, $context);
+        sendPasswordResetSuccessMail($email);
     }
 
     header("Location: reset_succes.html");

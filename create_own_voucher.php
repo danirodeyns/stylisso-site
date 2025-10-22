@@ -1,6 +1,7 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 require_once 'db_connect.php';
+include 'translations.php';
 
 // --- Taal ophalen (fallback: be-nl) ---
 $lang = $_POST['lang'] ?? $_GET['lang'] ?? 'be-nl';

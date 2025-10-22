@@ -6,6 +6,8 @@ include 'db_connect.php';
 include_once 'create_credit_nota.php';
 include 'translations.php';
 
+$lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
+
 // --- Controleer ingelogd en staff ---
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => t('processing_retours_alert_not_logged_in')]);
@@ -73,7 +75,11 @@ foreach ($approvedItems as $itemId) {
 // --- Creditnota maken ---
 // ==========================
 if (!empty($approvedItems) && function_exists('create_credit_nota')) {
-    create_credit_nota($orderId, date('Y-m-d'), $conn);
+    $filename = create_credit_nota($orderId, $approvedItems, $conn, $lang);
+    if (!$filename) {
+        echo json_encode(['success' => false, 'message' => t('processing_retours_alert_creditnota_failed')]);
+        exit;
+    }
 }
 
 // ==========================
@@ -91,68 +97,6 @@ foreach ($rejectedItems as $itemId) {
     ");
     $stmtLedger->bind_param("i", $itemId);
     $stmtLedger->execute();
-}
-
-// ==========================
-// --- Mail sturen bij approved ---
-// ==========================
-if (!empty($approvedItems)) {
-    // Haal alle goedgekeurde items van deze order
-    $stmtApproved = $conn->prepare("
-        SELECT oi.id AS order_item_id, p.id AS product_id, p.price, oi.quantity, pt.name
-        FROM order_items oi
-        LEFT JOIN products p ON oi.product_id = p.id
-        LEFT JOIN product_translations pt ON p.id = pt.product_id
-        LEFT JOIN returns r ON oi.id = r.order_item_id
-        WHERE oi.order_id = ? AND r.status = 'approved'
-        ORDER BY oi.id ASC
-    ");
-    $stmtApproved->bind_param("i", $orderId);
-    $stmtApproved->execute();
-    $approvedProducts = $stmtApproved->get_result()->fetch_all(MYSQLI_ASSOC);
-
-    if (!empty($approvedProducts)) {
-        // Haal de taal van de order op
-        $stmtOrderLang = $conn->prepare("SELECT taal FROM orders WHERE id = ? LIMIT 1");
-        $stmtOrderLang->bind_param("i", $orderId);
-        $stmtOrderLang->execute();
-        $orderLang = $stmtOrderLang->get_result()->fetch_assoc()['taal'] ?? 'be-nl';
-
-        // Haal e-mail van de gebruiker op
-        $stmtUserEmail = $conn->prepare("SELECT email FROM users WHERE id = ?");
-        $stmtUserEmail->bind_param("i", $userId);
-        $stmtUserEmail->execute();
-        $userEmail = $stmtUserEmail->get_result()->fetch_assoc()['email'] ?? null;
-
-        if ($userEmail) {
-            // Stuur alleen data door naar mailing.php
-            $approvedProductsList = [];
-            foreach ($approvedProducts as $prod) {
-                $approvedProductsList[] = [
-                    'name' => $prod['name'],
-                    'quantity' => $prod['quantity'],
-                    'price' => $prod['price']
-                ];
-            }
-
-            $postData = http_build_query([
-                'task' => 'retour_approved',
-                'email' => $userEmail,
-                'lang' => $orderLang,
-                'approved_products' => json_encode($approvedProductsList)
-            ]);
-
-            $context = stream_context_create([
-                'http' => [
-                    'method' => 'POST',
-                    'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
-                    'content' => $postData
-                ]
-            ]);
-
-            file_get_contents('mailing.php', false, $context);
-        }
-    }
 }
 
 // ==========================

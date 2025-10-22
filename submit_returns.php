@@ -6,6 +6,7 @@ include 'db_connect.php';
 include 'translations.php';
 include 'csrf.php';
 csrf_validate();
+include 'mailing.php';
 
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['error' => 'Niet ingelogd']);
@@ -66,29 +67,7 @@ if ($stmt->execute()) {
     $userEmail = $userRow['email'] ?? '';
     $userName = $userRow['name'] ?? 'Klant';
 
-    if ($userEmail) {
-        $postData = http_build_query([
-            'task' => 'return_requested',
-            'email' => $userEmail,
-            'name'  => $userName,
-            'order_item_id' => $orderItemId,
-            'product_name' => $orderItem['product_name'],
-            'quantity' => $orderItem['quantity'],
-            'reason' => $reason,
-            'lang' => 'be-nl' // optie om taal uit user tabel of voorkeur te halen
-        ]);
-
-        $context = stream_context_create([
-            'http' => [
-                'method'  => 'POST',
-                'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
-                'content' => $postData
-            ]
-        ]);
-
-        // Mail triggeren (error suppressed)
-        @file_get_contents('mailing.php', false, $context);
-    }
+    sendReturnRequestedMail($userEmail, $userName, $orderItem['product_name'], $orderItem['quantity'], $reason, $lang);
 
     echo json_encode(['success' => 'Retouraanvraag succesvol ingediend!']);
     exit;

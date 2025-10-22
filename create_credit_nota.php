@@ -1,5 +1,5 @@
 <?php
-include 'translations.php';
+include 'mailing.php';
 require 'vendor/autoload.php';
 use Mpdf\Mpdf;
 
@@ -37,6 +37,8 @@ function create_credit_nota($order_id, $approved_item_ids, $conn, $lang) {
     $stmt->bind_param("i", $order_id);
     $stmt->execute();
     $order = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
     if (!$order) return false;
 
     // --- Adres opbouwen ---
@@ -60,7 +62,9 @@ function create_credit_nota($order_id, $approved_item_ids, $conn, $lang) {
     $stmt_items->bind_param("si", $lang, $order_id);
     $stmt_items->execute();
     $items = $stmt_items->get_result()->fetch_all(MYSQLI_ASSOC);
-    if (!$items) return false;
+    $stmt_items->close();
+
+    if (empty($items)) return false;
 
     // --- HTML genereren ---
     $html = '<h1>' . t('credit_note_title') . '</h1>';
@@ -78,17 +82,17 @@ function create_credit_nota($order_id, $approved_item_ids, $conn, $lang) {
                 <th>' . t('product') . '</th>
                 <th>' . t('price_per_item') . '</th>
                 <th>' . t('total') . '</th>
-              </tr></thead>';
-    $html .= '<tbody>';
+              </tr></thead><tbody>';
 
     $totalCredit = 0;
     $item_ids_for_filename = [];
 
     foreach ($items as $item) {
-        $productName = $item['type'] === 'voucher' ? t('gift_voucher') : $item['product_name'];
+        $productName = $item['type'] === 'voucher' ? t('gift_voucher') : htmlspecialchars($item['product_name']);
         $qty = intval($item['quantity']);
-        $price = number_format($item['price'], 2);
+        $price = number_format($item['price'], 2, ',', '.');
         $total = $qty * $item['price'];
+        $totalFormatted = number_format($total, 2, ',', '.');
         $totalCredit += $total;
         $item_ids_for_filename[] = $item['order_item_id'];
 
@@ -96,12 +100,12 @@ function create_credit_nota($order_id, $approved_item_ids, $conn, $lang) {
                     <td style='text-align:center;'>$qty</td>
                     <td>$productName</td>
                     <td style='text-align:right;'>-€$price</td>
-                    <td style='text-align:right;'>-€" . number_format($total, 2) . "</td>
+                    <td style='text-align:right;'>-€$totalFormatted</td>
                   </tr>";
     }
 
     $html .= '</tbody></table>';
-    $html .= '<p><strong>' . t('total_to_refund') . ':</strong> -€' . number_format($totalCredit, 2) . '</p>';
+    $html .= '<p><strong>' . t('total_to_refund') . ':</strong> -€' . number_format($totalCredit, 2, ',', '.') . '</p>';
 
     // --- Map voor creditnota’s ---
     $dir = __DIR__ . '/credit_notes';
@@ -115,30 +119,13 @@ function create_credit_nota($order_id, $approved_item_ids, $conn, $lang) {
 
     // --- PDF genereren ---
     try {
-        $mpdf = new Mpdf();
+        // Gebruik tmp map zoals bij facturen
+        $mpdf = new Mpdf(['tempDir' => __DIR__ . '/tmp']);
         $mpdf->WriteHTML($html);
         $mpdf->Output($filepath, \Mpdf\Output\Destination::FILE);
 
-        // =====================================
-        // ✅ Verstuur e-mail met creditnota in bijlage
-        // =====================================
-        $postData = [
-            'task' => 'order_credit_nota',
-            'email' => $order['email'],
-            'lang' => $lang,
-            'filename' => $filename
-        ];
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'mailing.php');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($ch);
-        curl_close($ch);
-
-        // Log resultaat voor debugging
-        file_put_contents(__DIR__ . '/credit_note_mail_log.txt', date('Y-m-d H:i:s') . " - Sent to {$order['email']} - Response: {$response}\n", FILE_APPEND);
+        // --- Mail sturen met PDF als bijlage ---
+        sendCreditNotaMail($order['email'], $order['name'], $order['id'], $items, $totalCredit, $filename, $lang);
 
         return $filename;
 

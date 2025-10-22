@@ -1,21 +1,20 @@
 <?php
-include 'translations.php';
 require 'vendor/autoload.php';
 use Mpdf\Mpdf;
 
 $lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
 
 /**
- * Genereer een PDF-factuur en stuur alle data door naar mailing.php
+ * Genereer PDF-factuur en stuur mail met bijlage
  *
  * @param int $order_id
  * @param string $order_date
  * @param mysqli $conn
  * @param string $lang
  * @param array|null $used_voucher
- * @return string|false
+ * @return string|false PDF-bestandsnaam of false bij fout
  */
-function create_invoice($order_id, $order_date, $conn, $lang, $used_voucher = null) {
+function create_invoice($order_id, $conn, $lang, $used_voucher = null) {
     // --- Order + klantgegevens ophalen ---
     $stmt = $conn->prepare("
         SELECT o.id, o.total_price, o.status, o.created_at,
@@ -64,7 +63,7 @@ function create_invoice($order_id, $order_date, $conn, $lang, $used_voucher = nu
     $items = $stmt_items->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt_items->close();
 
-    // --- HTML ---
+    // --- HTML PDF ---
     $html = '<h1>' . t('invoice_title') . '</h1>';
     $html .= '<p><strong>' . t('order_number') . ':</strong> ' . $order['id'] . '</p>';
     $html .= '<p><strong>' . t('order_date') . ':</strong> ' . date('d-m-Y', strtotime($order['created_at'])) . '</p>';
@@ -98,10 +97,9 @@ function create_invoice($order_id, $order_date, $conn, $lang, $used_voucher = nu
                     <td style='text-align:right;'>€$total</td>
                   </tr>";
     }
-
     $html .= '</tbody></table>';
 
-    // --- Voucher gebruikt ---
+    // --- Voucher ---
     if (!empty($used_voucher) && isset($used_voucher['code'], $used_voucher['amount'])) {
         $html .= '<p><strong>' . t('used_voucher') . ':</strong> ' . htmlspecialchars($used_voucher['code']) . 
                  ' - €' . number_format($used_voucher['amount'], 2, ',', '.') . '</p>';
@@ -114,7 +112,7 @@ function create_invoice($order_id, $order_date, $conn, $lang, $used_voucher = nu
     $dir = __DIR__ . '/invoices';
     if (!is_dir($dir)) mkdir($dir, 0755, true);
 
-    $filename = date('Y-m-d', strtotime($order_date)) . '-' . $order_id . '.pdf';
+    $filename = date('Y-m-d', strtotime($order['created_at'])) . '-' . $order_id . '.pdf';
     $filepath = $dir . '/' . $filename;
 
     try {
@@ -126,30 +124,14 @@ function create_invoice($order_id, $order_date, $conn, $lang, $used_voucher = nu
         return false;
     }
 
-    // --- Alle data doorsturen naar mailing.php ---
-    $postData = [
-        'task'         => 'order_invoice',
-        'order_id'     => $order_id,
-        'email'        => $order['email'],
-        'name'         => $order['name'],
-        'total_price'  => $order['total_price'],
-        'invoice_file' => $filename,
-        'lang'         => $lang,
-        'used_voucher' => $used_voucher ? json_encode($used_voucher) : null
-    ];
+    // --- Mail sturen met PDF als bijlage ---
+    $name = $order['name'];
+    $cartItems = $items;
+    $total_order = $order['total_price'];
+    $siteLanguage = $lang;
 
-    $context = stream_context_create([
-        'http' => [
-            'method'  => 'POST',
-            'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
-            'content' => http_build_query($postData),
-            'timeout' => 10
-        ]
-    ]);
+    sendOrderConfirmationMail($order['email'], $name, $order_id, $cartItems, $total_order, $siteLanguage, $filepath);
 
-    @file_get_contents('mailing.php', false, $context);
-
-    // --- Return PDF-bestandsnaam ---
     return $filename;
 }
 ?>

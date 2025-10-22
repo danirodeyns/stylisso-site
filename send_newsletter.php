@@ -4,12 +4,13 @@ header('Content-Type: application/json; charset=utf-8');
 
 require_once 'db_connect.php';
 require_once 'csrf.php';
+include 'mailing.php';
 
 // --- CSRF-validatie ---
 try {
     csrf_validate();
 } catch (Exception $e) {
-    echo json_encode(['error' => 'Invalid CSRF token.']);
+    echo json_encode(['success' => false, 'error' => 'Invalid CSRF token.']);
     exit;
 }
 
@@ -18,7 +19,7 @@ $subject = trim($_POST['subject'] ?? '');
 $message = trim($_POST['message'] ?? '');
 
 if (!$subject || !$message) {
-    echo json_encode(['error' => 'Onderwerp of bericht ontbreekt']);
+    echo json_encode(['success' => false, 'error' => 'Onderwerp of bericht ontbreekt']);
     exit;
 }
 
@@ -33,43 +34,34 @@ while ($row = $result->fetch_assoc()) {
 $conn->close();
 
 if (empty($emails)) {
-    echo json_encode(['error' => 'Geen nieuwsbriefontvangers gevonden']);
+    echo json_encode(['success' => false, 'error' => 'Geen nieuwsbriefontvangers gevonden']);
     exit;
 }
 
 // --- Verstuur via mailing.php ---
-$postData = [
-    'task'       => 'newsletter',
-    'emails'     => json_encode($emails),
-    'subject'    => $subject,
-    'message'    => $message,
-    'csrf_token' => $_POST['csrf_token'] ?? ''
-];
+$response = sendNewsletter($emails, $subject, $message);
 
-$context = stream_context_create([
-    'http' => [
-        'method'  => 'POST',
-        'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
-        'content' => http_build_query($postData)
-    ]
-]);
-
-$response = file_get_contents('mailing.php', false, $context);
-
-// --- Controleer of het antwoord JSON is ---
+// --- Controleer of het antwoord geldig is ---
 if ($response === false) {
-    echo json_encode(['error' => 'Verbinding met mailing.php mislukt']);
+    echo json_encode(['success' => false, 'error' => 'Verbinding met mailing.php mislukt']);
     exit;
 }
 
-$json = json_decode($response, true);
-if ($json === null) {
-    // Ongeldige JSON ontvangen van mailing.php
-    echo json_encode(['error' => 'Ongeldig antwoord van mailing.php: ' . $response]);
-    exit;
+// --- Response verwerken ---
+if (is_array($response)) {
+    // Als sendNewsletter al 'sent' en 'total' terugstuurt
+    $sent = $response['sent'] ?? 0;
+    $total = $response['total'] ?? count($emails);
+    echo json_encode([
+        'success' => $sent === $total,
+        'sent' => $sent,
+        'total' => $total,
+        'message' => $sent === $total ? 'Nieuwsbrief verzonden' : 'Niet alle e-mails konden worden verzonden'
+    ]);
+} else {
+    // fallback
+    echo json_encode(['success' => true, 'message' => 'Nieuwsbrief verzonden']);
 }
 
-// --- Retourneer JSON zoals ontvangen ---
-echo json_encode($json);
 exit;
 ?>

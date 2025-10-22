@@ -3,6 +3,8 @@ session_start();
 include 'db_connect.php';
 include 'csrf.php';
 include 'translations.php';
+include 'mailing.php';
+include 'create_invoice.php';
 
 // ================================
 // 0. Sessie check
@@ -205,22 +207,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt_v->execute();
             $voucher_id = $conn->insert_id;
 
-            // --- Mail naar mailing.php voor de cadeaubon
-            $postData = http_build_query([
-                'task' => 'voucher',
-                'email' => $email,
-                'code' => $code,
-                'price' => number_format($price, 2),
-                'expires_at' => $expires_at
-            ]);
-            $context = stream_context_create([
-                'http' => [
-                    'method' => 'POST',
-                    'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
-                    'content' => $postData
-                ]
-            ]);
-            file_get_contents('mailing.php', false, $context);
+            // --- Cadeaubonmail rechtstreeks versturen via mailing.php
+            sendVoucherMail($email, $code, $price, $expires_at);
         }
 
         // Item toevoegen
@@ -235,21 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // ================================
     // 10. Factuur aanmaken via externe POST naar create_invoice.php
     // ================================
-    $postInvoice = http_build_query([
-        'order_id' => $order_id,
-        'lang' => $siteLanguage,
-        'email' => $email,
-        'used_voucher' => json_encode($used_voucher)
-    ]);
-
-    $contextInvoice = stream_context_create([
-        'http' => [
-            'method' => 'POST',
-            'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
-            'content' => $postInvoice
-        ]
-    ]);
-    file_get_contents('create_invoice.php', false, $contextInvoice);
+    create_invoice($order_id, $conn, $siteLanguage, $used_voucher);
 
     // ================================
     // 11. Winkelwagen leegmaken & sessie reset

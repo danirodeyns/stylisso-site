@@ -4,6 +4,7 @@ include 'db_connect.php';
 include 'translations.php';
 include 'csrf.php';
 csrf_validate();
+include 'mailing.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name           = trim($_POST['register-name'] ?? '');
@@ -50,24 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $update->execute();
         setcookie('user_login', json_encode(['id'=>$_SESSION['user_id'], 'name'=>$name, 'token'=>$token]), time() + (30*24*60*60), "/");
 
-        // ======================
-        // --- MAILING VOOR WELKOM ---
-        // ======================
-        $postData = http_build_query([
-            'task' => 'welcome',
-            'email' => $email,
-            'name' => $name,
-            'lang' => 'be-nl' // default taal bij registratie
-        ]);
-        $context = stream_context_create([
-            'http' => [
-                'method' => 'POST',
-                'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
-                'content' => $postData
-            ]
-        ]);
-        // mail triggeren
-        @file_get_contents('mailing.php', false, $context);
+        // --- WELCOME MAIL TRIGGEREN ---
+        sendWelcomeMail($email, $name);
 
         // --- REDIRECT NAAR HOMEPAGE ---
         header("Location: index.html");
