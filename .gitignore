@@ -1,5 +1,6 @@
 # ⛔ Gevoelige PHP-bestanden en API bestanden
 config.php
+mailing.php
 stylisso-ga4-service-account.json
 
 # ⛔ Systeem- en editorbestanden
