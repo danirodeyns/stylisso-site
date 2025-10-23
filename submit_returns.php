@@ -59,7 +59,7 @@ if ($stmt->execute()) {
     $stmtLedger->bind_param("iiid", $returnId, $orderItem['product_id'], $orderItem['quantity'], $amount);
     $stmtLedger->execute();
 
-    // --- MAILING VIA mailing.php (file_get_contents) ---
+    // --- MAILING VIA mailing.php ---
     $userData = $conn->prepare("SELECT email, name FROM users WHERE id = ?");
     $userData->bind_param("i", $userId);
     $userData->execute();

@@ -2,6 +2,7 @@
 config.php
 mailing.php
 stylisso-ga4-service-account.json
+test_mailing.html
 
 # ⛔ Systeem- en editorbestanden
 .vscode/
