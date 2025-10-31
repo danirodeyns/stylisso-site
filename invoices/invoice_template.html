@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="<?= $lang ?>">
+<head>
+    <meta charset="UTF-8">
+    <title><?= t('invoice_template_invoice_title') ?></title>
+</head>
+<body style="font-family: DejaVu Sans, Arial, sans-serif; font-size:12px; color:#333; margin:0; padding:0;">
+
+    <div style="max-width:800px; margin:0 auto; padding:30px;">
+
+        <!-- Header: Klantgegevens + Logo -->
+        <table style="width:100%; margin-bottom:8px;">
+            <tr>
+                <td style="vertical-align:top;">
+                    <h1 style="text-transform: uppercase;"><?= t('invoice_template_klantgegevens') ?></h1>
+                </td>
+                <td style="text-align:left; vertical-align:top;width: 35%;">
+                    <img src="logo/logo.png" style="width: 15rem;height: 3.15rem;">
+                </td>
+            </tr>
+        </table>
+
+        <!-- Adres & Stylisso gegevens -->
+        <table style="width:100%; border-bottom:1px solid #ddd; margin-bottom:25px;">
+            <tr>
+                <td style="vertical-align:top; line-height:1.6; padding-right:15px;">
+                    <p style="margin:0 0 10px 0;">
+                        <strong style="display:inline-block; min-width:140px;"><?= t('invoice_template_customer') ?>:</strong> <?= htmlspecialchars($order['name']) ?><br>
+                        <strong style="display:inline-block; min-width:140px;"><?= t('invoice_template_address') ?>:</strong> <?= $fullAddress ?><br>
+                        <?php if (!empty($order['company_name'])): ?>
+                            <strong style="display:inline-block; min-width:140px;"><?= t('invoice_template_company') ?>:</strong> <?= htmlspecialchars($order['company_name']) ?><br>
+                        <?php endif; ?>
+                        <?php if (!empty($order['vat_number'])): ?>
+                            <strong style="display:inline-block; min-width:140px;"><?= t('invoice_template_vat_number') ?>:</strong> <?= htmlspecialchars($order['vat_number']) ?><br>
+                        <?php endif; ?>
+                        <strong style="display:inline-block; min-width:140px;"><?= t('invoice_template_facturation_date') ?>:</strong> <?= date('d-m-Y', strtotime($order['created_at'])) ?><br>
+                        <strong style="display:inline-block; min-width:140px;"><?= t('invoice_template_facturation_number') ?>:</strong> <?= pathinfo($filename, PATHINFO_FILENAME) ?><br>
+                        <strong style="display:inline-block; min-width:140px;"><?= t('invoice_template_order_number') ?>:</strong> <?= $order['id'] ?><br>
+                        <strong style="display:inline-block; min-width:140px;"><?= t('invoice_template_order_date') ?>:</strong> <?= date('d-m-Y', strtotime($order['created_at'])) ?><br>
+                        <strong style="display:inline-block; min-width:140px;"><?= t('invoice_template_order_payment_term') ?>:</strong> <?= t('invoice_template_order_payment_term_30') ?><br>
+                        <strong style="display:inline-block; min-width:140px;"><?= t('invoice_template_order_exp_date') ?>:</strong> <?= date('d-m-Y', strtotime('+30 days', strtotime($order['created_at']))) ?>
+                    </p>
+                </td>
+                <td style="vertical-align:top; line-height:1.6; text-align:left; width: 35%;">
+                    <p style="margin:0 0 10px 0;">
+                        Stylisso<br>
+                        Bosveldstraat 21,<br>
+                        3300 <?= t('invoice_template_city') ?><br>
+                        <?= t('invoice_template_country') ?><br>
+                        <?= t('invoice_template_vat_number') ?>: BE1028576617<br>
+                        IBAN: BE90 7310 7050 5332<br>
+                        BIC: KREDBEBB<br>
+                        <?= t('invoice_template_website') ?>: <a href="https://www.stylisso.be" style="text-decoration:none;color:#333;">www.stylisso.be</a><br>
+                        <?= t('invoice_template_contact') ?>: <a href="mailto:klantendienst@stylisso.be" style="text-decoration:none;color:#333;">klantendienst@stylisso.be</a>
+                    </p>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Titel -->
+        <h1 style="text-align:left; font-size:22px; margin-bottom:30px; text-transform:uppercase; letter-spacing:1px;">
+            <?= t('invoice_template_invoice_title') ?>
+        </h1>
+
+        <!-- Items tabel -->
+        <table style="width:100%; border-collapse:collapse; margin-top:15px;">
+            <thead>
+                <tr>
+                    <th style="background-color:#f4f4f4; border:1px solid #ccc; padding:8px; text-align:center; max-width:20px;"><?= t('invoice_template_quantity') ?></th>
+                    <th style="background-color:#f4f4f4; border:1px solid #ccc; padding:8px; text-align:center;"><?= t('invoice_template_product') ?></th>
+                    <th style="background-color:#f4f4f4; border:1px solid #ccc; padding:8px; text-align:center; max-width:20px;"><?= t('invoice_template_price_per_item') ?></th>
+                    <th style="background-color:#f4f4f4; border:1px solid #ccc; padding:8px; text-align:center; max-width:20px;"><?= t('invoice_template_total') ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($items as $item): 
+                    $productName = ($item['type'] === 'voucher')
+                        ? t('invoice_template_gift_voucher') . (!empty($item['voucher_code']) ? ' - ' . htmlspecialchars($item['voucher_code']) : '')
+                        : htmlspecialchars($item['product_name']);
+                    $qty = intval($item['quantity']);
+                    $price = number_format($item['price'], 2, ',', '.');
+                    $total = number_format($qty * $item['price'], 2, ',', '.');
+                ?>
+                <tr>
+                    <td style="border:1px solid #ccc; padding:8px; text-align:center;"><?= $qty ?></td>
+                    <td style="border:1px solid #ccc; padding:8px;"><?= $productName ?></td>
+                    <td style="border:1px solid #ccc; padding:8px; text-align:right;">€ <?= $price ?></td>
+                    <td style="border:1px solid #ccc; padding:8px; text-align:right;">€ <?= $total ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <!-- Totaal bedragen -->
+        <table style="width:100%; margin-top:20px; font-size:13px; line-height:1.6;">
+            <tr>
+                <td style="min-width:180px;"><?= t('invoice_template_subtotal_to_pay') ?>:</td>
+                <td style="text-align:right;">€ <?= number_format($order['subtotal_price'], 2, ',', '.') ?></td>
+            </tr>
+            <?php if (!empty($used_voucher) && isset($used_voucher['code'], $used_voucher['amount'])): ?>
+            <tr>
+                <td><?= t('invoice_template_used_voucher') ?>  (<?= htmlspecialchars($used_voucher['code']) ?>):</td>
+                <td style="text-align:right;">- €<?= number_format($used_voucher['amount'], 2, ',', '.') ?></td>
+            </tr>
+            <?php endif; ?>
+            <tr>
+                <td style="min-width:180px;"><?= t('invoice_template_verzendkosten') ?>:</td>
+                <td style="text-align:right;">€ <?= number_format($order['shipping_costs'], 2, ',', '.') ?></td>
+            </tr>
+            <tr>
+                <td><?= t('invoice_template_vat_number_21') ?>:</td>
+                <td style="text-align:right;">€ <?= number_format($order['VAT_price'], 2, ',', '.') ?></td>
+            </tr>
+            <tr>
+                <td><?= t('invoice_template_total_to_pay') ?>:</td>
+                <td style="text-align:right;">€ <?= number_format($order['total_price'], 2, ',', '.') ?></td>
+            </tr>
+        </table>
+
+        <!-- Bedankt -->
+        <div style="text-align:left; font-size:11px; margin-top:40px; padding-top:10px;">
+            <h2 style="margin:0;"><?= t('invoice_template_thank_you_for_your_purchase') ?? 'Bedankt voor uw aankoop!' ?></h2>
+        </div>
+
+    </div>
+
+</body>
+</html>

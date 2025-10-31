@@ -4,16 +4,6 @@ use Mpdf\Mpdf;
 
 $lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
 
-/**
- * Genereer PDF-factuur en stuur mail met bijlage
- *
- * @param int $order_id
- * @param string $order_date
- * @param mysqli $conn
- * @param string $lang
- * @param array|null $used_voucher
- * @return string|false PDF-bestandsnaam of false bij fout
- */
 function create_invoice($order_id, $conn, $lang, $used_voucher = null) {
     // --- Order + klantgegevens ophalen ---
     $stmt = $conn->prepare("
@@ -63,50 +53,30 @@ function create_invoice($order_id, $conn, $lang, $used_voucher = null) {
     $items = $stmt_items->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt_items->close();
 
-    // --- HTML PDF ---
-    $html = '<h1>' . t('invoice_title') . '</h1>';
-    $html .= '<p><strong>' . t('order_number') . ':</strong> ' . $order['id'] . '</p>';
-    $html .= '<p><strong>' . t('order_date') . ':</strong> ' . date('d-m-Y', strtotime($order['created_at'])) . '</p>';
-    $html .= '<p><strong>' . t('customer') . ':</strong> ' . htmlspecialchars($order['name']) . '<br>';
-    $html .= '<strong>' . t('email') . ':</strong> ' . htmlspecialchars($order['email']) . '<br>';
-    if (!empty($order['company_name'])) $html .= '<strong>' . t('company') . ':</strong> ' . htmlspecialchars($order['company_name']) . '<br>';
-    if (!empty($order['vat_number'])) $html .= '<strong>' . t('vat_number') . ':</strong> ' . htmlspecialchars($order['vat_number']) . '<br>';
-    $html .= '<strong>' . t('address') . ':</strong> ' . $fullAddress . '</p>';
-
-    // --- Tabel ---
-    $html .= '<table width="100%" border="1" cellpadding="5" cellspacing="0">';
-    $html .= '<thead><tr>
-                <th>' . t('quantity') . '</th>
-                <th>' . t('product') . '</th>
-                <th>' . t('price_per_item') . '</th>
-                <th>' . t('total') . '</th>
-              </tr></thead><tbody>';
-
+    // --- Verzendkosten berekenen ---
+    $products_total = 0;
     foreach ($items as $item) {
-        $productName = ($item['type'] === 'voucher')
-            ? t('gift_voucher') . (!empty($item['voucher_code']) ? ' - ' . htmlspecialchars($item['voucher_code']) : '')
-            : htmlspecialchars($item['product_name']);
-        $qty = intval($item['quantity']);
-        $price = number_format($item['price'], 2, ',', '.');
-        $total = number_format($qty * $item['price'], 2, ',', '.');
-
-        $html .= "<tr>
-                    <td style='text-align:center;'>$qty</td>
-                    <td>$productName</td>
-                    <td style='text-align:right;'>€$price</td>
-                    <td style='text-align:right;'>€$total</td>
-                  </tr>";
-    }
-    $html .= '</tbody></table>';
-
-    // --- Voucher ---
-    if (!empty($used_voucher) && isset($used_voucher['code'], $used_voucher['amount'])) {
-        $html .= '<p><strong>' . t('used_voucher') . ':</strong> ' . htmlspecialchars($used_voucher['code']) . 
-                 ' - €' . number_format($used_voucher['amount'], 2, ',', '.') . '</p>';
+        $products_total += $item['price'] * $item['quantity'];
     }
 
-    $html .= '<p><strong>' . t('total_to_pay') . ':</strong> €' . number_format($order['total_price'], 2, ',', '.') . '</p>';
-    $html .= '<p><strong>' . t('status') . ':</strong> ' . ucfirst(htmlspecialchars($order['status'])) . '</p>';
+    // Voucher bedrag (0 als geen voucher gebruikt)
+    $used_voucher_amount = $used_voucher['amount'] ?? 0;
+
+    // Verzendkosten = totaalprijs + voucher - som producten
+    $shipping = $order['total_price'] + $used_voucher_amount - $products_total;
+
+    // Subtotaal exclusief verzendkosten en BTW
+    $total_without_shipping = $order['total_price'] - $shipping;
+
+    // Subtotaal exclusief BTW
+    $subtotal = $total_without_shipping / 1.21;
+
+    // BTW bedrag
+    $vat_total = $total_without_shipping - $subtotal;
+
+    $order['subtotal_price'] = $subtotal;
+    $order['VAT_price'] = $vat_total;
+    $order['shipping_costs'] = $shipping;
 
     // --- PDF genereren ---
     $dir = __DIR__ . '/invoices';
@@ -116,13 +86,45 @@ function create_invoice($order_id, $conn, $lang, $used_voucher = null) {
     $filepath = $dir . '/' . $filename;
 
     try {
-        $mpdf = new Mpdf(['tempDir' => __DIR__ . '/tmp']);
+        $mpdf = new Mpdf([
+            'tempDir' => __DIR__ . '/tmp',
+            'margin_bottom' => 25 // ruimte voor footer
+        ]);
+
+        // --- Footer op elke pagina ---
+        $footerText = t('invoice_template_legal_notice', $lang);
+
+        $mpdf->SetHTMLFooter("
+            <div style='text-align:center; font-size:9px; color:#666; border-top:1px solid #ddd; padding-top:6px;'>
+                <p>
+                    $footerText
+                    <a href='https://www.stylisso.be/algemene%20voorwaarden.html' style='color:#666; text-decoration:none;'>
+                        www.stylisso.be/algemene voorwaarden.html
+                    </a>.
+                </p>
+            </div>
+        ");
+
+        // --- Output bufferen om PHP-template te renderen ---
+        ob_start();
+        include __DIR__ . '/invoices/invoice_template.html';
+        $html = ob_get_clean();
+
+        // --- PDF renderen ---
         $mpdf->WriteHTML($html);
         $mpdf->Output($filepath, \Mpdf\Output\Destination::FILE);
+
     } catch (\Mpdf\MpdfException $e) {
         error_log('PDF genereren mislukt: ' . $e->getMessage());
         return false;
     }
+
+    // --- Pad opslaan in database ---
+    $pdf_path = '/invoices/' . $filename;
+    $update = $conn->prepare("UPDATE orders SET pdf_path = ? WHERE id = ?");
+    $update->bind_param("si", $pdf_path, $order_id);
+    $update->execute();
+    $update->close();
 
     // --- Mail sturen met PDF als bijlage ---
     $name = $order['name'];
@@ -130,7 +132,15 @@ function create_invoice($order_id, $conn, $lang, $used_voucher = null) {
     $total_order = $order['total_price'];
     $siteLanguage = $lang;
 
-    sendOrderConfirmationMail($order['email'], $name, $order_id, $cartItems, $total_order, $siteLanguage, $filepath);
+    sendOrderConfirmationMail(
+        $order['email'],
+        $name,
+        $order_id,
+        $cartItems,
+        $total_order,
+        $siteLanguage,
+        $filepath
+    );
 
     return $filename;
 }

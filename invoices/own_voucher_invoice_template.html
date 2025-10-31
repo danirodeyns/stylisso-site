@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang=nl>
+<head>
+    <meta charset='UTF-8'>
+    <title>Interne Voucherfactuur</title>
+</head>
+<body style='font-family: DejaVu Sans, Arial, sans-serif; font-size:12px; color:#333; margin:0; padding:0;'>
+
+    <div style='max-width:800px; margin:0 auto; padding:30px;'>
+
+        <!-- Header: Logo + Titel -->
+        <table style='width:100%; margin-bottom:20px;'>
+            <tr>
+                <td>
+                    <h1 style='text-transform:uppercase;'>Interne Voucherfactuur</h1>
+                </td>
+                <td style='text-align:right;'>
+                    <img src='logo/logo.png' style='width:15rem; height:3rem;'>
+                </td>
+            </tr>
+        </table>
+
+        <table style="width:100%; border-bottom:1px solid #ddd; margin-bottom:25px;">
+            <tr>
+                <td style="vertical-align:top; line-height:1.6; padding-right:15px;">
+                    <p style="margin:0 0 10px 0;">
+                        <?php if (!empty($order['name'])): ?>
+                            <strong style="display:inline-block; min-width:140px;">Naam:</strong> <?= htmlspecialchars($order['name']) ?><br>
+                        <?php endif; ?>
+                        <?php if (!empty($fullAddress)): ?>
+                            <strong style="display:inline-block; min-width:140px;">Adres:</strong> <?= $fullAddress ?><br>
+                        <?php endif; ?>
+                        <?php if (!empty($order['company_name'])): ?>
+                            <strong style="display:inline-block; min-width:140px;">Bedrijfsnaam:</strong> <?= htmlspecialchars($order['company_name']) ?><br>
+                        <?php endif; ?>
+                        <?php if (!empty($order['vat_number'])): ?>
+                            <strong style="display:inline-block; min-width:140px;">BTW-nummer:</strong> <?= htmlspecialchars($order['vat_number']) ?><br>
+                        <?php endif; ?>
+                        <strong style="display:inline-block; min-width:140px;">Factuurdatum:</strong> <?= date('d-m-Y', strtotime($create_date)) ?><br>
+                        <strong style="display:inline-block; min-width:140px;">Factuurnummer:</strong> <?= pathinfo($filename, PATHINFO_FILENAME) ?><br>
+                    </p>
+                </td>
+                <td style="vertical-align:top; line-height:1.6; text-align:left; width: 35%;">
+                    <p style="margin:0 0 10px 0;">
+                        Stylisso<br>
+                        Bosveldstraat 21,<br>
+                        3300 Tienen<br>
+                        België<br>
+                        BTW -nummer: BE1028576617<br>
+                        IBAN: BE90 7310 7050 5332<br>
+                        BIC: KREDBEBB<br>
+                        Website: <a href="https://www.stylisso.be" style="text-decoration:none;color:#333;">www.stylisso.be</a><br>
+                        Contact: <a href="mailto:klantendienst@stylisso.be" style="text-decoration:none;color:#333;">klantendienst@stylisso.be</a>
+                    </p>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Voucher info -->
+        <table style='width:100%; margin-bottom:20px; font-size:13px;'>
+            <tr>
+                <td><strong>Voucher code:</strong> <?= htmlspecialchars($voucher_code) ?></td>
+            </tr>
+            <tr>
+                <td colspan='2'><strong>Reden:</strong> <?= htmlspecialchars($reason) ?></td>
+            </tr>
+        </table>
+
+        <!-- Bedrag tabel -->
+        <table width='100%' border='1' cellpadding='8' cellspacing='0' style='border-collapse: collapse; margin-top: 15px;'>
+            <thead style='background-color: #f4f4f4;'>
+                <tr>
+                    <th style='text-align:center;'>Omschrijving</th>
+                    <th style='text-align:center;'>Bedrag</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Uitgifte interne waardebon - <?= htmlspecialchars($voucher_code) ?></td>
+                    <td style='text-align:right;'>€ <?= htmlspecialchars($formattedAmount)?></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Totaal bedragen -->
+        <table style="width:100%; margin-top:20px; font-size:13px; line-height:1.6;">
+            <tr>
+                <td><strong>Totaal:</strong></td>
+                <td style="text-align:right;">€ <?= htmlspecialchars($formattedAmount)?></td>
+            </tr>
+        </table>
+    </div>
+
+</body>
+</html>

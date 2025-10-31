@@ -6,20 +6,20 @@ use Mpdf\Mpdf;
 $lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
 
 /**
- * Genereer een PDF-creditnota voor een bestelling
+ * Genereer PDF-creditnota en stuur e-mail met bijlage
  *
- * @param int $order_id ID van de order
+ * @param int $order_id
  * @param array $approved_item_ids Array met order_item_id's die goedgekeurd zijn
- * @param mysqli $conn Databaseverbinding
- * @param string $lang Taalcode, bv. 'be-nl', 'be-fr', 'be-de'
+ * @param mysqli $conn
+ * @param string $lang
  * @return string|false Bestandsnaam bij succes, false bij fout
  */
 function create_credit_nota($order_id, $approved_item_ids, $conn, $lang) {
     if (empty($approved_item_ids)) return false;
 
-    // --- Order + klantinfo ophalen ---
+    // --- Order + klantgegevens ophalen ---
     $stmt = $conn->prepare("
-        SELECT o.id, o.total_price, o.status, o.created_at,
+        SELECT o.id, o.total_price, o.status, o.created_at, o.pdf_path,
             u.name, u.email, u.company_name, u.vat_number,
             COALESCE(b.street, s.street) AS street,
             COALESCE(b.house_number, s.house_number) AS house_number,
@@ -41,6 +41,17 @@ function create_credit_nota($order_id, $approved_item_ids, $conn, $lang) {
 
     if (!$order) return false;
 
+    // --- Factuurnummer uit pdf_path halen (zonder .pdf) ---
+    if (!empty($order['pdf_path'])) {
+        // voorbeeld: /invoices/2025-10-22-20.pdf → 2025-10-22-20
+        $order['invoice_number'] = pathinfo($order['pdf_path'], PATHINFO_FILENAME);
+    } else {
+        $order['invoice_number'] = 'ONBEKEND';
+    }
+
+    // Factuurdatum opmaken (uit o.created_at)
+    $order['invoice_date'] = date('d-m-Y', strtotime($order['created_at']));
+
     // --- Adres opbouwen ---
     $addressParts = [];
     if (!empty($order['street'])) $addressParts[] = htmlspecialchars($order['street']) . ' ' . htmlspecialchars($order['house_number']);
@@ -49,7 +60,7 @@ function create_credit_nota($order_id, $approved_item_ids, $conn, $lang) {
     if (!empty($order['country'])) $addressParts[] = htmlspecialchars($order['country']);
     $fullAddress = implode(', ', $addressParts);
 
-    // --- Alleen goedgekeurde items ophalen inclusief vertaalde productnamen ---
+    // --- Alleen goedgekeurde items ophalen ---
     $in = implode(',', array_map('intval', $approved_item_ids));
     $stmt_items = $conn->prepare("
         SELECT oi.id AS order_item_id, oi.quantity, oi.price, oi.type,
@@ -66,72 +77,91 @@ function create_credit_nota($order_id, $approved_item_ids, $conn, $lang) {
 
     if (empty($items)) return false;
 
-    // --- HTML genereren ---
-    $html = '<h1>' . t('credit_note_title') . '</h1>';
-    $html .= '<p><strong>' . t('credit_note_number') . ':</strong> CN-' . $order['id'] . '</p>';
-    $html .= '<p><strong>' . t('credit_note_date') . ':</strong> ' . date('d-m-Y') . '</p>';
-    $html .= '<p><strong>' . t('customer') . ':</strong> ' . htmlspecialchars($order['name']) . '<br>';
-    $html .= '<strong>' . t('email') . ':</strong> ' . htmlspecialchars($order['email']) . '<br>';
-    if (!empty($order['company_name'])) $html .= '<strong>' . t('company') . ':</strong> ' . htmlspecialchars($order['company_name']) . '<br>';
-    if (!empty($order['vat_number'])) $html .= '<strong>' . t('vat_number') . ':</strong> ' . htmlspecialchars($order['vat_number']) . '<br>';
-    $html .= '<strong>' . t('address') . ':</strong> ' . $fullAddress . '</p>';
-
-    $html .= '<table width="100%" border="1" cellpadding="5" cellspacing="0">';
-    $html .= '<thead><tr>
-                <th>' . t('quantity') . '</th>
-                <th>' . t('product') . '</th>
-                <th>' . t('price_per_item') . '</th>
-                <th>' . t('total') . '</th>
-              </tr></thead><tbody>';
-
+    // --- Totaalbedrag berekenen ---
     $totalCredit = 0;
-    $item_ids_for_filename = [];
-
     foreach ($items as $item) {
-        $productName = $item['type'] === 'voucher' ? t('gift_voucher') : htmlspecialchars($item['product_name']);
-        $qty = intval($item['quantity']);
-        $price = number_format($item['price'], 2, ',', '.');
-        $total = $qty * $item['price'];
-        $totalFormatted = number_format($total, 2, ',', '.');
-        $totalCredit += $total;
-        $item_ids_for_filename[] = $item['order_item_id'];
-
-        $html .= "<tr>
-                    <td style='text-align:center;'>$qty</td>
-                    <td>$productName</td>
-                    <td style='text-align:right;'>-€$price</td>
-                    <td style='text-align:right;'>-€$totalFormatted</td>
-                  </tr>";
+        $totalCredit += $item['quantity'] * $item['price'];
     }
 
-    $html .= '</tbody></table>';
-    $html .= '<p><strong>' . t('total_to_refund') . ':</strong> -€' . number_format($totalCredit, 2, ',', '.') . '</p>';
+    // --- BTW berekenen op basis van totaal incl. BTW (21%) ---
+    $subtotal = $totalCredit / 1.21;         // exclusief BTW
+    $order['VAT_price'] = $totalCredit - $subtotal; // BTW-bedrag
 
-    // --- Map voor creditnota’s ---
+    // --- Creditnota directory ---
     $dir = __DIR__ . '/credit_notes';
     if (!is_dir($dir)) mkdir($dir, 0755, true);
 
-    // Bestandsnaam: YYYY-MM-DD-order_id-itemids-CN.pdf
-    $dateStr = date('Y-m-d');
-    $itemIdsStr = implode('_', $item_ids_for_filename);
-    $filename = $dateStr . '-' . $order_id . '-' . $itemIdsStr . '-CN.pdf';
+    // Bestandsnaam: YYYY-MM-DD-orderid-CN.pdf
+    $filename = date('Y-m-d', strtotime($order['created_at'])) . '-' . $order_id . '-CN.pdf';
     $filepath = $dir . '/' . $filename;
 
-    // --- PDF genereren ---
     try {
-        // Gebruik tmp map zoals bij facturen
-        $mpdf = new Mpdf(['tempDir' => __DIR__ . '/tmp']);
+        $mpdf = new Mpdf([
+            'tempDir' => __DIR__ . '/tmp',
+            'margin_bottom' => 25
+        ]);
+
+        // --- Footer (zelfde stijl als factuur) ---
+        $footerText = t('invoice_template_legal_notice', $lang);
+        $mpdf->SetHTMLFooter("
+            <div style='text-align:center; font-size:9px; color:#666; border-top:1px solid #ddd; padding-top:6px;'>
+                <p>
+                    $footerText
+                    <a href='https://www.stylisso.be/algemene%20voorwaarden.html' style='color:#666; text-decoration:none;'>
+                        www.stylisso.be/algemene voorwaarden.html
+                    </a>.
+                </p>
+            </div>
+        ");
+
+        // --- Template renderen ---
+        ob_start();
+        include __DIR__ . '/credit_notes/credit_nota_template.html';
+        $html = ob_get_clean();
+
+        // --- PDF genereren ---
         $mpdf->WriteHTML($html);
         $mpdf->Output($filepath, \Mpdf\Output\Destination::FILE);
 
-        // --- Mail sturen met PDF als bijlage ---
-        sendCreditNotaMail($order['email'], $order['name'], $order['id'], $items, $totalCredit, $filename, $lang);
-
-        return $filename;
-
     } catch (\Mpdf\MpdfException $e) {
-        error_log('PDF genereren mislukt: ' . $e->getMessage());
+        error_log('Creditnota genereren mislukt: ' . $e->getMessage());
         return false;
     }
+
+    // --- Pad voor database ---
+    $pdf_path_db = '/credit_notes/' . $filename;
+
+    // --- PDF-pad opslaan in return_ledger voor elk goedgekeurd item ---
+    $update_stmt = $conn->prepare("
+        UPDATE return_ledger
+        SET pdf_path = ?
+        WHERE return_id IN (
+            SELECT r.id
+            FROM returns r
+            WHERE r.order_item_id = ?
+        )
+    ");
+    if ($update_stmt) {
+        foreach ($approved_item_ids as $item_id) {
+            $update_stmt->bind_param("si", $pdf_path_db, $item_id);
+            $update_stmt->execute();
+        }
+        $update_stmt->close();
+    } else {
+        error_log("Kon return_ledger niet updaten: " . $conn->error);
+    }
+
+    // --- Mail sturen met PDF als bijlage ---
+    sendCreditNotaMail(
+        $order['email'],
+        $order['name'],
+        $order_id,
+        $items,
+        $totalCredit,
+        $filepath,
+        $lang
+    );
+
+    return $filename;
 }
 ?>

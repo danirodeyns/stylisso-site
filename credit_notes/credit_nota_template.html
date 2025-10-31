@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="<?= $lang ?>">
+<head>
+    <meta charset="UTF-8">
+    <title><?= t('credit_nota_template_title') ?></title>
+</head>
+<body style="font-family: DejaVu Sans, Arial, sans-serif; font-size:12px; color:#333; margin:0; padding:0;">
+
+    <div style="max-width:800px; margin:0 auto; padding:30px;">
+
+        <!-- Header -->
+        <table style="width:100%; margin-bottom:8px;">
+            <tr>
+                <td style="vertical-align:top;">
+                    <h1 style="text-transform: uppercase;"><?= t('credit_nota_template_customer_data') ?></h1>
+                </td>
+                <td style="text-align:left; vertical-align:top; width:35%;">
+                    <img src="logo/logo.png" style="width:15rem;height:3.15rem;">
+                </td>
+            </tr>
+        </table>
+
+        <!-- Adres & Stylisso -->
+        <table style="width:100%; border-bottom:1px solid #ddd; margin-bottom:25px;">
+            <tr>
+                <td style="vertical-align:top; line-height:1.6; padding-right:15px;">
+                    <p style="margin:0 0 10px 0;">
+                        <strong style="display:inline-block; min-width:140px;"><?= t('credit_nota_template_customer') ?>:</strong> <?= htmlspecialchars($order['name']) ?><br>
+                        <strong style="display:inline-block; min-width:140px;"><?= t('credit_nota_template_address') ?>:</strong> <?= $fullAddress ?><br>
+                        <?php if (!empty($order['company_name'])): ?>
+                            <strong style="display:inline-block; min-width:140px;"><?= t('credit_nota_template_company') ?>:</strong> <?= htmlspecialchars($order['company_name']) ?><br>
+                        <?php endif; ?>
+                        <?php if (!empty($order['vat_number'])): ?>
+                            <strong style="display:inline-block; min-width:140px;"><?= t('credit_nota_template_vat_number') ?>:</strong> <?= htmlspecialchars($order['vat_number']) ?><br>
+                        <?php endif; ?>
+                        <strong style="display:inline-block; min-width:140px;"><?= t('credit_nota_template_number') ?>:</strong> <?= pathinfo($filename, PATHINFO_FILENAME) ?><br>
+                        <strong style="display:inline-block; min-width:140px;"><?= t('credit_nota_template_date') ?>:</strong> <?= date('d-m-Y') ?><br>
+                        <strong style="display:inline-block; min-width:140px;"><?= t('invoice_template_facturation_number') ?>:</strong> <?= htmlspecialchars($order['invoice_number'] ?? '-') ?><br>
+                        <strong style="display:inline-block; min-width:140px;"><?= t('invoice_template_facturation_date') ?>:</strong> <?= htmlspecialchars($order['invoice_date'] ?? '-') ?><br>
+                        <strong style="display:inline-block; min-width:140px;"><?= t('credit_nota_template_order_number') ?>:</strong> <?= $order['id'] ?><br>
+                    </p>
+                </td>
+                <td style="vertical-align:top; line-height:1.6; text-align:left; width:35%;">
+                    <p style="margin:0 0 10px 0;">
+                        Stylisso<br>
+                        Bosveldstraat 21,<br>
+                        3300 <?= t('invoice_template_city') ?><br>
+                        <?= t('invoice_template_country') ?><br>
+                        <?= t('invoice_template_vat_number') ?>: BE1028576617<br>
+                        IBAN: BE90 7310 7050 5332<br>
+                        BIC: KREDBEBB<br>
+                        <?= t('invoice_template_website') ?>: <a href="https://www.stylisso.be" style="text-decoration:none;color:#333;">www.stylisso.be</a><br>
+                        <?= t('invoice_template_contact') ?>: <a href="mailto:klantendienst@stylisso.be" style="text-decoration:none;color:#333;">klantendienst@stylisso.be</a>
+                    </p>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Titel -->
+        <h1 style="text-align:left; font-size:22px; margin-bottom:30px; text-transform:uppercase; letter-spacing:1px;">
+            <?= t('credit_nota_template_title') ?>
+        </h1>
+
+        <!-- Items tabel -->
+        <table style="width:100%; border-collapse:collapse; margin-top:15px;">
+            <thead>
+                <tr>
+                    <th style="background-color:#f4f4f4; border:1px solid #ccc; padding:8px; text-align:center;"><?= t('credit_nota_template_quantity') ?></th>
+                    <th style="background-color:#f4f4f4; border:1px solid #ccc; padding:8px; text-align:center;"><?= t('credit_nota_template_product') ?></th>
+                    <th style="background-color:#f4f4f4; border:1px solid #ccc; padding:8px; text-align:center;"><?= t('credit_nota_template_price_per_item') ?></th>
+                    <th style="background-color:#f4f4f4; border:1px solid #ccc; padding:8px; text-align:center;"><?= t('credit_nota_template_total') ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php 
+                $totalCredit = 0;
+                foreach ($items as $item): 
+                    $qty = intval($item['quantity']);
+                    $price = number_format($item['price'], 2, ',', '.');
+                    $total = $qty * $item['price'];
+                    $totalCredit += $total;
+                ?>
+                <tr>
+                    <td style="border:1px solid #ccc; padding:8px; text-align:center;"><?= $qty ?></td>
+                    <td style="border:1px solid #ccc; padding:8px;"><?= htmlspecialchars($item['product_name']) ?></td>
+                    <td style="border:1px solid #ccc; padding:8px; text-align:right;">-€ <?= $price ?></td>
+                    <td style="border:1px solid #ccc; padding:8px; text-align:right;">-€ <?= number_format($total, 2, ',', '.') ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <!-- Totaal -->
+        <table style="width:100%; margin-top:20px; font-size:13px; line-height:1.6;">
+            <tr>
+                <td><?= t('invoice_template_vat_number_21') ?>:</td>
+                <td style="text-align:right;">-€ <?= number_format($order['VAT_price'], 2, ',', '.') ?></td>
+            </tr>
+            <tr>
+                <td style="min-width:180px;"><?= t('credit_nota_template_total_to_refund') ?>:</td>
+                <td style="text-align:right;">-€ <?= number_format($totalCredit, 2, ',', '.') ?></td>
+            </tr>
+        </table>
+
+        <!-- Afsluiter -->
+        <div style="text-align:left; font-size:11px; margin-top:40px; padding-top:10px;">
+            <h2 style="margin:0;"><?= t('credit_nota_template_thank_you') ?? 'Bedankt voor uw vertrouwen!' ?></h2>
+        </div>
+
+    </div>
+
+</body>
+</html>
