@@ -2,7 +2,6 @@
 config.php
 mailing.php
 stylisso-ga4-service-account.json
-test_mailing.html
 
 # ⛔ Systeem- en editorbestanden
 .vscode/
@@ -33,6 +32,9 @@ package-lock.json
 
 # ⛔ Toekomstige wijzigingen (alle bestanden)
 future_changes/
+
+# ⛔ Mailing templates
+mailing/
 
 # ⛔ SQL Database
 stylisso_db.sql

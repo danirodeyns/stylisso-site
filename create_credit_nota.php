@@ -63,7 +63,7 @@ function create_credit_nota($order_id, $approved_item_ids, $conn, $lang) {
     // --- Alleen goedgekeurde items ophalen ---
     $in = implode(',', array_map('intval', $approved_item_ids));
     $stmt_items = $conn->prepare("
-        SELECT oi.id AS order_item_id, oi.quantity, oi.price, oi.type,
+        SELECT oi.id AS order_item_id, oi.quantity, oi.price, oi.type, oi.maat,
             COALESCE(pt.name, p.name) AS product_name
         FROM order_items oi
         LEFT JOIN products p ON oi.product_id = p.id

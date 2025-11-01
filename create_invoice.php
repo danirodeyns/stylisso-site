@@ -39,7 +39,7 @@ function create_invoice($order_id, $conn, $lang, $used_voucher = null) {
 
     // --- Items ophalen ---
     $stmt_items = $conn->prepare("
-        SELECT oi.quantity, oi.price, oi.type, 
+        SELECT oi.quantity, oi.price, oi.type, oi.maat, 
             COALESCE(pt.name, p.name) AS product_name,
             v.code AS voucher_code
         FROM order_items oi

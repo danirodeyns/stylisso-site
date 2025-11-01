@@ -82,7 +82,7 @@
                 ?>
                 <tr>
                     <td style="border:1px solid #ccc; padding:8px; text-align:center;"><?= $qty ?></td>
-                    <td style="border:1px solid #ccc; padding:8px;"><?= htmlspecialchars($item['product_name']) ?></td>
+                    <td style="border:1px solid #ccc; padding:8px;"><?= htmlspecialchars($item['product_name']) ?><?php if (!empty(htmlspecialchars($item['maat']))): ?> (<?= $item['maat'] ?>)<?php endif; ?></td>
                     <td style="border:1px solid #ccc; padding:8px; text-align:right;">-€ <?= $price ?></td>
                     <td style="border:1px solid #ccc; padding:8px; text-align:right;">-€ <?= number_format($total, 2, ',', '.') ?></td>
                 </tr>
