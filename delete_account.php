@@ -16,12 +16,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userId = $_SESSION['user_id'];
 
     // --- 1️⃣ Haal e-mailadres op voor bevestigingsmail ---
-    $stmt = $conn->prepare("SELECT email FROM users WHERE id = ?");
+    $stmt = $conn->prepare("SELECT email, name FROM users WHERE id = ?");
     $stmt->bind_param("i", $userId);
     $stmt->execute();
     $res = $stmt->get_result();
     $user = $res->fetch_assoc();
     $userEmail = $user['email'] ?? null;
+    $userName = $user['name'] ?? 'Gebruiker';
 
     // --- 2️⃣ Anonimiseer gebruiker ---
     $stmt = $conn->prepare("
@@ -56,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // --- 6️⃣ Mail sturen via mailing.php functie ---
     if ($userEmail) {
-        sendAccountDeleteMail($userEmail);
+        sendAccountDeleteMail($userEmail, $userName);
     }
 
     // --- 7️⃣ Session en cookies vernietigen ---

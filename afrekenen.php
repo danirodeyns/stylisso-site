@@ -179,6 +179,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $order_id = $conn->insert_id;
 
     // ================================
+    // 8B. Gebruikersnaam ophalen
+    // ================================
+    $stmt_name = $conn->prepare("SELECT name FROM users WHERE id = ?");
+    $stmt_name->bind_param("i", $user_id);
+    $stmt_name->execute();
+    $stmt_name->bind_result($name);
+    $stmt_name->fetch();
+    $stmt_name->close();
+
+    // ================================
     // 9. Order items + vouchers
     // ================================
     foreach ($checkout['cart_items'] as $item) {
@@ -208,7 +218,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $voucher_id = $conn->insert_id;
 
             // --- Cadeaubonmail rechtstreeks versturen via mailing.php
-            sendVoucherMail($email, $code, $price, $expires_at);
+            sendVoucherMail($email, $name, $code, $price, $expires_at, $siteLanguage);
         }
 
         // Item toevoegen

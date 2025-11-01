@@ -2,6 +2,17 @@
 // Vertalingen centraal in één bestand
 $translations = [
     'be-nl' => [
+        // afrekenen_mail.html
+        'afrekenen_mail_title' => 'Voucher Mail - Stylisso',
+        'afrekenen_mail_greeting' => 'Beste,',
+        'afrekenen_mail_voucher_text' => 'Hierbij je cadeaubon met als code',
+        'afrekenen_mail_voucher_value' => 'ter waarde van',
+        'afrekenen_mail_contact_text' => 'Heb je vragen? Bezoek zeker onze',
+        'afrekenen_mail_contact_link' => 'contactpagina',
+        'afrekenen_mail_greetings' => 'Met vriendelijke groeten,',
+        'afrekenen_mail_signature' => 'Stylisso',
+        'afrekenen_mail_footer' => '© 2025 Stylisso — Alle rechten voorbehouden.',
+
         // contact-mailing.php
         'contact_form_success' => 'Bedankt! Je bericht is verzonden.',
         'contact_form_error' => 'Er is een fout opgetreden. Probeer het later opnieuw.',
@@ -95,6 +106,17 @@ $translations = [
         'order_confirmation_contact_page' => 'contactpagina',
         'order_confirmation_footer_text' => '© {year} Stylisso — Alle rechten voorbehouden.',
 
+        // delete_account_mail.html
+        'delete_account_mail_title' => 'Je account is verwijderd',
+        'logo_alt' => 'Stylisso logo',
+        'delete_account_mail_greeting' => 'Beste,',
+        'delete_account_mail_message' => 'Je account is succesvol verwijderd. We zijn jammer genoeg je aanwezigheid op ons platform kwijt, maar we hopen je in de toekomst misschien terug te zien.',
+        'delete_account_mail_contact_text' => 'Heb je vragen? Neem gerust contact met ons op via onze',
+        'delete_account_mail_contact_link' => 'contactpagina',
+        'delete_account_mail_greetings' => 'Met vriendelijke groeten,',
+        'delete_account_mail_signature' => 'Stylisso',
+        'delete_account_mail_footer' => '© 2025 Stylisso — Alle rechten voorbehouden.',
+
         // get_order_retour.php
         'order_not_found' => 'Order niet gevonden',
 
@@ -162,6 +184,7 @@ $translations = [
         'invoice_message' => 'Beste klant,<br>Hierbij ontvangt u uw factuur in bijlage.',
         'voucher_invoice_subject' => 'Uw cadeaubonfactuur',
         'voucher_invoice_message' => 'Beste klant,<br>Hierbij ontvangt u uw cadeaubonfactuur in bijlage.',
+        'mailing_voucher' => 'Cadeaubon',
 
         // processing_retours.php
         'processing_retours_alert_not_logged_in' => 'Je moet ingelogd zijn om retouren te verwerken.',
@@ -187,6 +210,17 @@ $translations = [
         'password_reset_sent' => 'Er is een e-mail verstuurd met instructies om je wachtwoord te resetten.',
     ],
     'be-fr' => [
+        // afrekenen_mail.html
+        'afrekenen_mail_title' => 'Mail de bon - Stylisso',
+        'afrekenen_mail_greeting' => 'Cher/Chère,',
+        'afrekenen_mail_voucher_text' => 'Voici votre bon cadeau avec le code',
+        'afrekenen_mail_voucher_value' => 'd\'une valeur de',
+        'afrekenen_mail_contact_text' => 'Des questions ? N\'hésitez pas à nous contacter via notre',
+        'afrekenen_mail_contact_link' => 'page de contact',
+        'afrekenen_mail_greetings' => 'Cordialement,',
+        'afrekenen_mail_signature' => 'Stylisso',
+        'afrekenen_mail_footer' => '© 2025 Stylisso — Tous droits réservés.',
+
         // contact-mailing.php
         'contact_form_success' => 'Merci ! Votre message a été envoyé.',
         'contact_form_error' => 'Une erreur est survenue. Veuillez réessayer plus tard.',
@@ -280,6 +314,17 @@ $translations = [
         'order_confirmation_contact_page' => 'page de contact',
         'order_confirmation_footer_text' => '© Stylisso — Tous droits réservés.',
 
+        // delete_account_mail.html
+        'delete_account_mail_title' => 'Votre compte a été supprimé',
+        'logo_alt' => 'Logo Stylisso',
+        'delete_account_mail_greeting' => 'Cher/Chère,',
+        'delete_account_mail_message' => 'Votre compte a été supprimé avec succès. Nous regrettons votre départ de notre plateforme, mais espérons peut-être vous revoir à l\'avenir.',
+        'delete_account_mail_contact_text' => 'Des questions ? N\'hésitez pas à nous contacter via notre',
+        'delete_account_mail_contact_link' => 'page de contact',
+        'delete_account_mail_greetings' => 'Cordialement,',
+        'delete_account_mail_signature' => 'Stylisso',
+        'delete_account_mail_footer' => '© 2025 Stylisso — Tous droits réservés.',
+
         // get_order_retour.php
         'order_not_found' => 'Commande non trouvée',
 
@@ -347,6 +392,7 @@ $translations = [
         'invoice_message' => 'Cher client,<br>Veuillez trouver votre facture en pièce jointe.',
         'voucher_invoice_subject' => 'Votre facture de bon',
         'voucher_invoice_message' => 'Cher client,<br>Veuillez trouver votre facture de bon en pièce jointe.',
+        'mailing_voucher' => 'Bon cadeau',
 
         // processing_retours.php
         'script_processing_retours_alert_not_logged_in' => 'Vous devez être connecté pour traiter les retours.',
@@ -376,6 +422,17 @@ $translations = [
         'hour' => 'heure'
     ],
     'be-en' => [
+        // afrekenen_mail.html
+        'afrekenen_mail_title' => 'Voucher Mail - Stylisso',
+        'afrekenen_mail_greeting' => 'Dear,',
+        'afrekenen_mail_voucher_text' => 'Here is your gift voucher with the code',
+        'afrekenen_mail_voucher_value' => 'worth',
+        'afrekenen_mail_contact_text' => 'Have questions? Be sure to visit our',
+        'afrekenen_mail_contact_link' => 'contact page',
+        'afrekenen_mail_greetings' => 'Best regards,',
+        'afrekenen_mail_signature' => 'Stylisso',
+        'afrekenen_mail_footer' => '© 2025 Stylisso — All rights reserved.',
+
         // contact-mailing.php
         'contact_form_success' => 'Thank you! Your message has been sent.',
         'contact_form_error' => 'An error occurred. Please try again later.',
@@ -469,6 +526,17 @@ $translations = [
         'order_confirmation_contact_page' => 'contact page',
         'order_confirmation_footer_text' => '© Stylisso — All rights reserved.',
 
+        // delete_account_mail.html
+        'delete_account_mail_title' => 'Your Account Has Been Deleted',
+        'logo_alt' => 'Stylisso logo',
+        'delete_account_mail_greeting' => 'Dear,',
+        'delete_account_mail_message' => 'Your account has been successfully deleted. We regret your departure from our platform, but hope to perhaps see you again in the future.',
+        'delete_account_mail_contact_text' => 'Have questions? Feel free to contact us via our',
+        'delete_account_mail_contact_link' => 'contactpage',
+        'delete_account_mail_greetings' => 'Best regards,',
+        'delete_account_mail_signature' => 'Stylisso',
+        'delete_account_mail_footer' => '© 2025 Stylisso — All rights reserved.',
+
         // get_order_retour.php
         'order_not_found' => 'Order not found',
 
@@ -536,6 +604,7 @@ $translations = [
         'invoice_message' => 'Dear customer,<br>Please find your invoice attached.',
         'voucher_invoice_subject' => 'Your voucher invoice',
         'voucher_invoice_message' => 'Dear customer,<br>Please find your voucher invoice attached.',
+        'mailing_voucher' => 'Gift Voucher',
 
         // processing_retours.php
         'script_processing_retours_alert_not_logged_in' => 'You must be logged in to process returns.',
@@ -565,6 +634,17 @@ $translations = [
         'hour' => 'hour'
     ],
     'be-de' => [
+        // afrekenen_mail.html
+        'afrekenen_mail_title' => 'Gutschein-Mail - Stylisso',
+        'afrekenen_mail_greeting' => 'Sehr geehrte/r,',
+        'afrekenen_mail_voucher_text' => 'Hier ist Ihr Geschenkgutschein mit dem Code',
+        'afrekenen_mail_voucher_value' => 'im Wert von',
+        'afrekenen_mail_contact_text' => 'Fragen? Besuchen Sie unbedingt unsere',
+        'afrekenen_mail_contact_link' => 'Kontaktseite',
+        'afrekenen_mail_greetings' => 'Mit freundlichen Grüßen,',
+        'afrekenen_mail_signature' => 'Stylisso',
+        'afrekenen_mail_footer' => '© 2025 Stylisso — Alle Rechte vorbehalten.',
+
         // contact-mailing.php
         'contact_form_success' => 'Danke! Ihre Nachricht wurde gesendet.',
         'contact_form_error' => 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.',
@@ -658,6 +738,17 @@ $translations = [
         'order_confirmation_contact_page' => 'Kontaktseite',
         'order_confirmation_footer_text' => '© Stylisso — Alle Rechte vorbehalten.',
 
+        // delete_account_mail.html
+        'delete_account_mail_title' => 'Ihr Konto wurde gelöscht',
+        'logo_alt' => 'Stylisso Logo',
+        'delete_account_mail_greeting' => 'Sehr geehrte/r,',
+        'delete_account_mail_message' => 'Ihr Konto wurde erfolgreich gelöscht. Wir bedauern Ihren Weggang von unserer Plattform, hoffen jedoch, Sie vielleicht in der Zukunft wiederzusehen.',
+        'delete_account_mail_contact_text' => 'Fragen? Kontaktieren Sie uns gerne über unsere',
+        'delete_account_mail_contact_link' => 'Kontaktseite',
+        'delete_account_mail_greetings' => 'Mit freundlichen Grüßen,',
+        'delete_account_mail_signature' => 'Stylisso',
+        'delete_account_mail_footer' => '© 2025 Stylisso — Alle Rechte vorbehalten.',
+
         // get_order_retour.php
         'order_not_found' => 'Bestellung nicht gefunden',
 
@@ -725,6 +816,7 @@ $translations = [
         'invoice_message' => 'Sehr geehrter Kunde,<br>anbei erhalten Sie Ihre Rechnung.',
         'voucher_invoice_subject' => 'Ihre Gutscheine-Rechnung',
         'voucher_invoice_message' => 'Sehr geehrter Kunde,<br>anbei erhalten Sie Ihre Gutscheine-Rechnung.',
+        'mailing_voucher' => 'Geschenkgutschein',
 
         // processing_retours.php
         'processing_retours_alert_not_logged_in' => 'Sie müssen eingeloggt sein, um Rücksendungen zu bearbeiten.',
