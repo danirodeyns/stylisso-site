@@ -3,8 +3,6 @@ include 'mailing.php';
 require 'vendor/autoload.php';
 use Mpdf\Mpdf;
 
-$lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
-
 /**
  * Genereer PDF-creditnota en stuur e-mail met bijlage
  *
@@ -19,7 +17,7 @@ function create_credit_nota($order_id, $approved_item_ids, $conn, $lang) {
 
     // --- Order + klantgegevens ophalen ---
     $stmt = $conn->prepare("
-        SELECT o.id, o.total_price, o.status, o.created_at, o.pdf_path,
+        SELECT o.id, o.total_price, o.status, o.created_at, o.pdf_path, o.taal,
             u.name, u.email, u.company_name, u.vat_number,
             COALESCE(b.street, s.street) AS street,
             COALESCE(b.house_number, s.house_number) AS house_number,
@@ -40,6 +38,9 @@ function create_credit_nota($order_id, $approved_item_ids, $conn, $lang) {
     $stmt->close();
 
     if (!$order) return false;
+
+    // --- Gebruik taal van de bestelling ---
+    $lang = $order['taal'] ?? 'be-nl';
 
     // --- Factuurnummer uit pdf_path halen (zonder .pdf) ---
     if (!empty($order['pdf_path'])) {
@@ -64,7 +65,8 @@ function create_credit_nota($order_id, $approved_item_ids, $conn, $lang) {
     $in = implode(',', array_map('intval', $approved_item_ids));
     $stmt_items = $conn->prepare("
         SELECT oi.id AS order_item_id, oi.quantity, oi.price, oi.type, oi.maat,
-            COALESCE(pt.name, p.name) AS product_name
+            COALESCE(pt.name, p.name) AS product_name,
+            p.name AS default_name
         FROM order_items oi
         LEFT JOIN products p ON oi.product_id = p.id
         LEFT JOIN product_translations pt ON pt.product_id = p.id AND pt.lang = ?
@@ -74,6 +76,10 @@ function create_credit_nota($order_id, $approved_item_ids, $conn, $lang) {
     $stmt_items->execute();
     $items = $stmt_items->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt_items->close();
+
+    foreach ($items as &$item) {
+        $item['product_name'] = htmlspecialchars($item['product_name'] ?? $item['default_name'] ?? 'Onbekend');
+    }
 
     if (empty($items)) return false;
 

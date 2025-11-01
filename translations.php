@@ -6,28 +6,6 @@ $translations = [
         'contact_form_success' => 'Bedankt! Je bericht is verzonden.',
         'contact_form_error' => 'Er is een fout opgetreden. Probeer het later opnieuw.',
 
-        // create_invoice.php
-        'invoice_title' => 'Factuur',
-        'invoice_number' => 'Factuurnummer',
-        'invoice_date' => 'Factuurdatum',
-        'invoice_due_date' => 'Vervaldatum',
-        'invoice_customer_details' => 'Klantgegevens',
-        'invoice_shipping_address' => 'Leveradres',
-        'invoice_billing_address' => 'Facturatieadres',
-        'invoice_items' => 'Artikelen',
-        'invoice_item' => 'Artikel',
-        'invoice_quantity' => 'Aantal',
-        'invoice_price' => 'Prijs',
-        'invoice_total' => 'Totaal',
-        'invoice_subtotal' => 'Subtotaal',
-        'invoice_voucher_used' => 'Gebruikte cadeaubon',
-        'invoice_grand_total' => 'Totaalbedrag',
-        'invoice_thank_you' => 'Bedankt voor je aankoop bij Stylisso. We hopen je snel weer te zien!',
-        'invoice_template_legal_notice' => 'Conform de Belgische wetgeving gelden onze algemene verkoopsvoorwaarden zoals vermeld op',
-        'invoice_vat_number' => 'Btw-nummer',
-        'invoice_company_name' => 'Bedrijf',
-        'invoice_email' => 'E-mailadres',
-
         // create_credit_nota.php
         'credit_note_title' => 'Creditnota',
         'credit_note_number' => 'Creditnota nummer',
@@ -57,6 +35,63 @@ $translations = [
         'credit_nota_template_total' => 'Totaal',
         'credit_nota_template_total_to_refund' => 'Totaal terug te betalen',
         'credit_nota_template_thank_you' => 'Bedankt voor uw vertrouwen!',
+
+        // create_credit_nota_mail.html
+        'credit_nota_mail_title' => 'Uw creditnota',
+        'credit_nota_mail_logo_alt' => 'Stylisso logo',
+        'credit_nota_mail_greeting' => 'Beste',
+        'credit_nota_mail_intro' => 'Hierbij ontvangt u uw creditnota voor bestelling',
+        'credit_nota_mail_received_on' => 'ontvangen op',
+        'credit_nota_mail_table_quantity' => 'Aantal',
+        'credit_nota_mail_table_product' => 'Product',
+        'credit_nota_mail_table_size' => 'Maat',
+        'credit_nota_mail_table_price' => 'Prijs per stuk',
+        'credit_nota_mail_table_subtotal' => 'Totaal',
+        'credit_nota_mail_table_total' => 'Totaal terug te betalen',
+        'credit_nota_mail_button_view_credit_note' => 'Bekijk uw creditnota',
+        'credit_nota_mail_questions_text' => 'Heb je vragen? Bezoek onze',
+        'credit_nota_mail_contact_page' => 'contactpagina',
+        'credit_nota_mail_footer_text' => 'Met vriendelijke groeten,',
+        'credit_nota_mail_copyright' => '© 2025 Stylisso — Alle rechten voorbehouden.',
+
+        // create_invoice.php
+        'invoice_title' => 'Factuur',
+        'invoice_number' => 'Factuurnummer',
+        'invoice_date' => 'Factuurdatum',
+        'invoice_due_date' => 'Vervaldatum',
+        'invoice_customer_details' => 'Klantgegevens',
+        'invoice_shipping_address' => 'Leveradres',
+        'invoice_billing_address' => 'Facturatieadres',
+        'invoice_items' => 'Artikelen',
+        'invoice_item' => 'Artikel',
+        'invoice_quantity' => 'Aantal',
+        'invoice_price' => 'Prijs',
+        'invoice_total' => 'Totaal',
+        'invoice_subtotal' => 'Subtotaal',
+        'invoice_voucher_used' => 'Gebruikte cadeaubon',
+        'invoice_grand_total' => 'Totaalbedrag',
+        'invoice_thank_you' => 'Bedankt voor je aankoop bij Stylisso. We hopen je snel weer te zien!',
+        'invoice_template_legal_notice' => 'Conform de Belgische wetgeving gelden onze algemene verkoopsvoorwaarden zoals vermeld op',
+        'invoice_vat_number' => 'Btw-nummer',
+        'invoice_company_name' => 'Bedrijf',
+        'invoice_email' => 'E-mailadres',
+
+        // create_invoice_mail.html
+        'order_confirmation_title' => 'Bestelbevestiging',
+        'logo_alt' => 'Stylisso logo',
+        'order_confirmation_greeting' => 'Bedankt voor je bestelling',
+        'order_confirmation_message' => 'Je bestelling',
+        'order_confirmation_received_on' => 'is succesvol ontvangen op',
+        'order_confirmation_table_product' => 'Product',
+        'order_confirmation_table_size' => 'Maat',
+        'order_confirmation_table_quantity' => 'Aantal',
+        'order_confirmation_table_price' => 'Prijs',
+        'order_confirmation_table_subtotal' => 'Subtotaal',
+        'order_confirmation_table_total' => 'Totaal',
+        'order_confirmation_button_view_order' => 'Bekijk bestelling',
+        'order_confirmation_questions_text' => 'Heb je vragen? Bezoek zeker onze',
+        'order_confirmation_contact_page' => 'contactpagina',
+        'order_confirmation_footer_text' => '© {year} Stylisso — Alle rechten voorbehouden.',
 
         // get_order_retour.php
         'order_not_found' => 'Order niet gevonden',
@@ -154,28 +189,6 @@ $translations = [
         'contact_form_success' => 'Merci ! Votre message a été envoyé.',
         'contact_form_error' => 'Une erreur est survenue. Veuillez réessayer plus tard.',
 
-        // create_invoice.php
-        'invoice_title' => 'Facture',
-        'invoice_number' => 'Numéro de facture',
-        'invoice_date' => 'Date de facture',
-        'invoice_due_date' => 'Date d’échéance',
-        'invoice_customer_details' => 'Coordonnées du client',
-        'invoice_shipping_address' => 'Adresse de livraison',
-        'invoice_billing_address' => 'Adresse de facturation',
-        'invoice_items' => 'Articles',
-        'invoice_item' => 'Article',
-        'invoice_quantity' => 'Quantité',
-        'invoice_price' => 'Prix',
-        'invoice_total' => 'Total',
-        'invoice_subtotal' => 'Sous-total',
-        'invoice_voucher_used' => 'Bon cadeau utilisé',
-        'invoice_grand_total' => 'Montant total',
-        'invoice_thank_you' => 'Merci pour votre achat chez Stylisso. Nous espérons vous revoir bientôt !',
-        'invoice_template_legal_notice' => 'Conformément à la législation belge, nos conditions générales de vente s’appliquent comme indiqué sur',
-        'invoice_vat_number' => 'N° TVA',
-        'invoice_company_name' => 'Société',
-        'invoice_email' => 'E-mail',
-
         // create_credit_nota.php
         'credit_note_title' => 'Note de crédit',
         'credit_note_number' => 'Numéro de la note de crédit',
@@ -205,6 +218,63 @@ $translations = [
         'credit_nota_template_total' => 'Total',
         'credit_nota_template_total_to_refund' => 'Total à rembourser',
         'credit_nota_template_thank_you' => 'Merci pour votre confiance !',
+
+        // create_credit_nota_mail.html
+        'credit_nota_mail_title' => 'Votre note de crédit',
+        'credit_nota_mail_logo_alt' => 'Logo Stylisso',
+        'credit_nota_mail_greeting' => 'Cher(e)',
+        'credit_nota_mail_intro' => 'Veuillez trouver ci-joint votre note de crédit pour la commande',
+        'credit_nota_mail_received_on' => 'reçue le',
+        'credit_nota_mail_table_quantity' => 'Quantité',
+        'credit_nota_mail_table_product' => 'Produit',
+        'credit_nota_mail_table_size' => 'Taille',
+        'credit_nota_mail_table_price' => 'Prix par unité',
+        'credit_nota_mail_table_subtotal' => 'Sous-total',
+        'credit_nota_mail_table_total' => 'Total à rembourser',
+        'credit_nota_mail_button_view_credit_note' => 'Voir votre note de crédit',
+        'credit_nota_mail_questions_text' => 'Des questions ? Visitez notre',
+        'credit_nota_mail_contact_page' => 'page de contact',
+        'credit_nota_mail_footer_text' => 'Cordialement,',
+        'credit_nota_mail_copyright' => '© 2025 Stylisso — Tous droits réservés.',
+
+        // create_invoice.php
+        'invoice_title' => 'Facture',
+        'invoice_number' => 'Numéro de facture',
+        'invoice_date' => 'Date de facture',
+        'invoice_due_date' => 'Date d’échéance',
+        'invoice_customer_details' => 'Coordonnées du client',
+        'invoice_shipping_address' => 'Adresse de livraison',
+        'invoice_billing_address' => 'Adresse de facturation',
+        'invoice_items' => 'Articles',
+        'invoice_item' => 'Article',
+        'invoice_quantity' => 'Quantité',
+        'invoice_price' => 'Prix',
+        'invoice_total' => 'Total',
+        'invoice_subtotal' => 'Sous-total',
+        'invoice_voucher_used' => 'Bon cadeau utilisé',
+        'invoice_grand_total' => 'Montant total',
+        'invoice_thank_you' => 'Merci pour votre achat chez Stylisso. Nous espérons vous revoir bientôt !',
+        'invoice_template_legal_notice' => 'Conformément à la législation belge, nos conditions générales de vente s’appliquent comme indiqué sur',
+        'invoice_vat_number' => 'N° TVA',
+        'invoice_company_name' => 'Société',
+        'invoice_email' => 'E-mail',
+
+        // create_invoice_mail.html
+        'order_confirmation_title' => 'Confirmation de commande',
+        'logo_alt' => 'Logo Stylisso',
+        'order_confirmation_greeting' => 'Merci pour votre commande',
+        'order_confirmation_message' => 'Votre commande',
+        'order_confirmation_received_on' => 'a été reçue avec succès le',
+        'order_confirmation_table_product' => 'Produit',
+        'order_confirmation_table_size' => 'Taille',
+        'order_confirmation_table_quantity' => 'Quantité',
+        'order_confirmation_table_price' => 'Prix',
+        'order_confirmation_table_subtotal' => 'Subtotal',
+        'order_confirmation_table_total' => 'Total',
+        'order_confirmation_button_view_order' => 'Voir la commande',
+        'order_confirmation_questions_text' => 'Des questions ? N\'hésitez pas à visiter notre',
+        'order_confirmation_contact_page' => 'page de contact',
+        'order_confirmation_footer_text' => '© Stylisso — Tous droits réservés.',
 
         // get_order_retour.php
         'order_not_found' => 'Commande non trouvée',
@@ -306,28 +376,6 @@ $translations = [
         'contact_form_success' => 'Thank you! Your message has been sent.',
         'contact_form_error' => 'An error occurred. Please try again later.',
 
-        // create_invoice.php
-        'invoice_title' => 'Invoice',
-        'invoice_number' => 'Invoice number',
-        'invoice_date' => 'Invoice date',
-        'invoice_due_date' => 'Due date',
-        'invoice_customer_details' => 'Customer details',
-        'invoice_shipping_address' => 'Shipping address',
-        'invoice_billing_address' => 'Billing address',
-        'invoice_items' => 'Items',
-        'invoice_item' => 'Item',
-        'invoice_quantity' => 'Quantity',
-        'invoice_price' => 'Price',
-        'invoice_total' => 'Total',
-        'invoice_subtotal' => 'Subtotal',
-        'invoice_voucher_used' => 'Used voucher',
-        'invoice_grand_total' => 'Grand total',
-        'invoice_thank_you' => 'Thank you for your purchase at Stylisso. We hope to see you again soon!',
-        'invoice_template_legal_notice' => 'In accordance with Belgian law, our general terms and conditions apply as stated on',
-        'invoice_vat_number' => 'VAT number',
-        'invoice_company_name' => 'Company',
-        'invoice_email' => 'Email',
-
         // create_credit_nota.php
         'credit_note_title' => 'Credit Note',
         'credit_note_number' => 'Credit Note Number',
@@ -357,6 +405,63 @@ $translations = [
         'credit_nota_template_total' => 'Total',
         'credit_nota_template_total_to_refund' => 'Total to Refund',
         'credit_nota_template_thank_you' => 'Thank you for your trust!',
+
+        // create_credit_nota_mail.html
+        'credit_nota_mail_title' => 'Your Credit Note',
+        'credit_nota_mail_logo_alt' => 'Stylisso Logo',
+        'credit_nota_mail_greeting' => 'Dear',
+        'credit_nota_mail_intro' => 'Please find attached your credit note for order',
+        'credit_nota_mail_received_on' => 'received on',
+        'credit_nota_mail_table_quantity' => 'Quantity',
+        'credit_nota_mail_table_product' => 'Product',
+        'credit_nota_mail_table_size' => 'Size',
+        'credit_nota_mail_table_price' => 'Price per Item',
+        'credit_nota_mail_table_subtotal' => 'Subtotal',
+        'credit_nota_mail_table_total' => 'Total to Refund',
+        'credit_nota_mail_button_view_credit_note' => 'View Your Credit Note',
+        'credit_nota_mail_questions_text' => 'Have questions? Visit our',
+        'credit_nota_mail_contact_page' => 'contact page',
+        'credit_nota_mail_footer_text' => 'Best regards,',
+        'credit_nota_mail_copyright' => '© 2025 Stylisso — All rights reserved.',
+
+        // create_invoice.php
+        'invoice_title' => 'Invoice',
+        'invoice_number' => 'Invoice number',
+        'invoice_date' => 'Invoice date',
+        'invoice_due_date' => 'Due date',
+        'invoice_customer_details' => 'Customer details',
+        'invoice_shipping_address' => 'Shipping address',
+        'invoice_billing_address' => 'Billing address',
+        'invoice_items' => 'Items',
+        'invoice_item' => 'Item',
+        'invoice_quantity' => 'Quantity',
+        'invoice_price' => 'Price',
+        'invoice_total' => 'Total',
+        'invoice_subtotal' => 'Subtotal',
+        'invoice_voucher_used' => 'Used voucher',
+        'invoice_grand_total' => 'Grand total',
+        'invoice_thank_you' => 'Thank you for your purchase at Stylisso. We hope to see you again soon!',
+        'invoice_template_legal_notice' => 'In accordance with Belgian law, our general terms and conditions apply as stated on',
+        'invoice_vat_number' => 'VAT number',
+        'invoice_company_name' => 'Company',
+        'invoice_email' => 'Email',
+
+        // create_invoice_mail.html
+        'order_confirmation_title' => 'Order Confirmation',
+        'logo_alt' => 'Stylisso logo',
+        'order_confirmation_greeting' => 'Thank you for your order',
+        'order_confirmation_message' => 'Your order',
+        'order_confirmation_received_on' => 'has been successfully received on',
+        'order_confirmation_table_product' => 'Product',
+        'order_confirmation_table_size' => 'Size',
+        'order_confirmation_table_quantity' => 'Quantity',
+        'order_confirmation_table_price' => 'Price',
+        'order_confirmation_table_subtotal' => 'Subtotal',
+        'order_confirmation_table_total' => 'Total',
+        'order_confirmation_button_view_order' => 'View Order',
+        'order_confirmation_questions_text' => 'Have questions? Be sure to visit our',
+        'order_confirmation_contact_page' => 'contact page',
+        'order_confirmation_footer_text' => '© Stylisso — All rights reserved.',
 
         // get_order_retour.php
         'order_not_found' => 'Order not found',
@@ -458,28 +563,6 @@ $translations = [
         'contact_form_success' => 'Danke! Ihre Nachricht wurde gesendet.',
         'contact_form_error' => 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.',
 
-        // create_invoice.php
-        'invoice_title' => 'Rechnung',
-        'invoice_number' => 'Rechnungsnummer',
-        'invoice_date' => 'Rechnungsdatum',
-        'invoice_due_date' => 'Fälligkeitsdatum',
-        'invoice_customer_details' => 'Kundendaten',
-        'invoice_shipping_address' => 'Lieferadresse',
-        'invoice_billing_address' => 'Rechnungsadresse',
-        'invoice_items' => 'Artikel',
-        'invoice_item' => 'Artikel',
-        'invoice_quantity' => 'Menge',
-        'invoice_price' => 'Preis',
-        'invoice_total' => 'Gesamt',
-        'invoice_subtotal' => 'Zwischensumme',
-        'invoice_voucher_used' => 'Verwendeter Gutschein',
-        'invoice_grand_total' => 'Gesamtbetrag',
-        'invoice_thank_you' => 'Danke für deinen Einkauf bei Stylisso. Wir hoffen, dich bald wiederzusehen!',
-        'invoice_template_legal_notice' => 'Gemäß belgischem Recht gelten unsere allgemeinen Verkaufsbedingungen, wie auf angegeben',
-        'invoice_vat_number' => 'USt-IdNr.',
-        'invoice_company_name' => 'Firma',
-        'invoice_email' => 'E-Mail',
-
         // create_credit_nota.php
         'credit_note_title' => 'Gutschrift',
         'credit_note_number' => 'Gutschriftsnummer',
@@ -509,6 +592,63 @@ $translations = [
         'credit_nota_template_total' => 'Gesamt',
         'credit_nota_template_total_to_refund' => 'Gesamtbetrag zur Rückerstattung',
         'credit_nota_template_thank_you' => 'Danke für Ihr Vertrauen!',
+
+        // create_credit_nota_mail.html
+        'credit_nota_mail_title' => 'Ihre Gutschrift',
+        'credit_nota_mail_logo_alt' => 'Stylisso Logo',
+        'credit_nota_mail_greeting' => 'Sehr geehrte/r',
+        'credit_nota_mail_intro' => 'Anbei finden Sie Ihre Gutschrift für die Bestellung',
+        'credit_nota_mail_received_on' => 'erhalten am',
+        'credit_nota_mail_table_quantity' => 'Menge',
+        'credit_nota_mail_table_product' => 'Produkt',
+        'credit_nota_mail_table_size' => 'Größe',
+        'credit_nota_mail_table_price' => 'Preis pro Stück',
+        'credit_nota_mail_table_subtotal' => 'Zwischensumme',
+        'credit_nota_mail_table_total' => 'Gesamtbetrag zur Rückerstattung',
+        'credit_nota_mail_button_view_credit_note' => 'Ihre Gutschrift ansehen',
+        'credit_nota_mail_questions_text' => 'Fragen? Besuchen Sie unsere',
+        'credit_nota_mail_contact_page' => 'Kontaktseite',
+        'credit_nota_mail_footer_text' => 'Mit freundlichen Grüßen,',
+        'credit_nota_mail_copyright' => '© 2025 Stylisso — Alle Rechte vorbehalten.',
+
+        // create_invoice.php
+        'invoice_title' => 'Rechnung',
+        'invoice_number' => 'Rechnungsnummer',
+        'invoice_date' => 'Rechnungsdatum',
+        'invoice_due_date' => 'Fälligkeitsdatum',
+        'invoice_customer_details' => 'Kundendaten',
+        'invoice_shipping_address' => 'Lieferadresse',
+        'invoice_billing_address' => 'Rechnungsadresse',
+        'invoice_items' => 'Artikel',
+        'invoice_item' => 'Artikel',
+        'invoice_quantity' => 'Menge',
+        'invoice_price' => 'Preis',
+        'invoice_total' => 'Gesamt',
+        'invoice_subtotal' => 'Zwischensumme',
+        'invoice_voucher_used' => 'Verwendeter Gutschein',
+        'invoice_grand_total' => 'Gesamtbetrag',
+        'invoice_thank_you' => 'Danke für deinen Einkauf bei Stylisso. Wir hoffen, dich bald wiederzusehen!',
+        'invoice_template_legal_notice' => 'Gemäß belgischem Recht gelten unsere allgemeinen Verkaufsbedingungen, wie auf angegeben',
+        'invoice_vat_number' => 'USt-IdNr.',
+        'invoice_company_name' => 'Firma',
+        'invoice_email' => 'E-Mail',
+
+        // create_invoice_mail.html
+        'order_confirmation_title' => 'Bestellbestätigung',
+        'logo_alt' => 'Stylisso Logo',
+        'order_confirmation_greeting' => 'Danke für Ihre Bestellung',
+        'order_confirmation_message' => 'Ihre Bestellung',
+        'order_confirmation_received_on' => 'wurde erfolgreich am',
+        'order_confirmation_table_product' => 'Produkt',
+        'order_confirmation_table_size' => 'Größe',
+        'order_confirmation_table_quantity' => 'Menge',
+        'order_confirmation_table_price' => 'Preis',
+        'order_confirmation_table_subtotal' => 'Zwischensumme',
+        'order_confirmation_table_total' => 'Gesamt',
+        'order_confirmation_button_view_order' => 'Bestellung ansehen',
+        'order_confirmation_questions_text' => 'Fragen? Besuchen Sie unbedingt unsere',
+        'order_confirmation_contact_page' => 'Kontaktseite',
+        'order_confirmation_footer_text' => '© Stylisso — Alle Rechte vorbehalten.',
 
         // get_order_retour.php
         'order_not_found' => 'Bestellung nicht gefunden',
@@ -612,5 +752,26 @@ function t($key) {
     global $translations;
     $lang = $_COOKIE['siteLanguage'] ?? 'be-nl'; // cookie bepaalt taal, fallback be-nl
     return $translations[$lang][$key] ?? $key;
+}
+
+function t2($key, $lang = 'be-nl', $placeholders = []) {
+    global $translations;
+
+    // Zorg dat key en lang strings zijn
+    $key = (string)$key;
+    $lang = (string)$lang;
+
+    // Vertaling ophalen
+    $text = isset($translations[$lang][$key]) ? $translations[$lang][$key] : $key;
+
+    // Placeholders vervangen
+    if (is_array($placeholders)) {
+        foreach ($placeholders as $placeholder => $value) {
+            // Let op: placeholder moet string zijn
+            $text = str_replace('{' . (string)$placeholder . '}', $value, $text);
+        }
+    }
+
+    return $text;
 }
 ?>
