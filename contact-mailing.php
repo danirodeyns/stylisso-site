@@ -1,29 +1,33 @@
 <?php
 include 'csrf.php';
 include 'translations.php';
+include 'mailing.php';
+
 csrf_validate();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Verkrijg de formuliervelden
     $name    = htmlspecialchars($_POST['name']);
     $email   = htmlspecialchars($_POST['email']);
     $subject = htmlspecialchars($_POST['subject']);
-
     $message = htmlspecialchars($_POST['message']);
 
-    $to = "klantendienst@stylisso.be";
-    $headers = "From: " . $email . "\r\n";
-    $headers .= "Reply-To: " . $email . "\r\n";
-    $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
-
-    $fullMessage = "Naam: $name\n";
-    $fullMessage .= "E-mail: $email\n";
-    $fullMessage .= "Onderwerp: $subject\n\n";
-    $fullMessage .= "Bericht:\n$message\n";
-
-    if (mail($to, $subject, $fullMessage, $headers)) {
-        echo t('contact_form_success');
+    // Verstuur de e-mail via de functie sendContactEmail
+    if (sendContactEmail($name, $email, $subject, $message)) {
+        // Succesbericht
+        $response = [
+            'success' => true,
+            'message' => t('contact_form_success')  // Succesbericht
+        ];
     } else {
-        echo t('contact_form_error');
+        // Foutbericht
+        $response = [
+            'success' => false,
+            'error' => t('contact_form_error')  // Foutbericht
+        ];
     }
+
+    // Verstuur JSON-antwoord naar de client
+    echo json_encode($response);
 }
 ?>

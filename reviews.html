@@ -43,8 +43,8 @@
 
     <section class="review-form">
       <h2 data-i18n="reviews_form_header">Laat ook een review achter</h2>
-      <form action="reviews-mailing.php" method="POST">
-        <input id="reviewForm" type="hidden" name="csrf_token" id="csrf_token" value="" />
+      <form id="reviewForm" method="POST">
+        <input type="hidden" name="csrf_token" id="csrf_token" value="" />
 
         <label for="name" data-i18n="reviews_form_name_label">Naam:</label><br />
         <input type="text" id="name" name="name" placeholder="Naam" required /><br /><br />
@@ -64,7 +64,7 @@
 
         <button type="submit" data-i18n="reviews_form_submit">Verstuur review</button>
       </form>
-      <div id="review-message" class="review-message" style="display:none;"></div>
+      <div id="review-message" style="display:none;"></div>
     </section>
   </main>
 

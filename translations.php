@@ -17,6 +17,10 @@ $translations = [
         'contact_form_success' => 'Bedankt! Je bericht is verzonden.',
         'contact_form_error' => 'Er is een fout opgetreden. Probeer het later opnieuw.',
 
+        // contact_mailing.html
+        'contact_mailing_title' => 'Contact mailing - Stylisso',
+        'contact_mailing_footer' => '© 2025 Stylisso — Alle rechten voorbehouden.',
+
         // create_credit_nota.php
         'credit_note_title' => 'Creditnota',
         'credit_note_number' => 'Creditnota nummer',
@@ -108,7 +112,6 @@ $translations = [
 
         // delete_account_mail.html
         'delete_account_mail_title' => 'Je account is verwijderd',
-        'logo_alt' => 'Stylisso logo',
         'delete_account_mail_greeting' => 'Beste,',
         'delete_account_mail_message' => 'Je account is succesvol verwijderd. We zijn jammer genoeg je aanwezigheid op ons platform kwijt, maar we hopen je in de toekomst misschien terug te zien.',
         'delete_account_mail_contact_text' => 'Heb je vragen? Neem gerust contact met ons op via onze',
@@ -178,7 +181,7 @@ $translations = [
         'password_reset_link_missing_data' => 'Ontbrekende data voor wachtwoord reset mail',
         'create_own_voucher_amount_placeholder' => 'Bv. 25',
         'used_voucher' => 'Gebruikte cadeaubon',
-        'credit_nota_subject' => 'Uw creditnota',
+        'credit_nota_mail_subject' => 'Uw creditnota',
         'credit_nota_message' => 'Beste klant,<br>Hierbij ontvangt u uw creditnota in bijlage.',
         'invoice_subject' => 'Uw factuur',
         'invoice_message' => 'Beste klant,<br>Hierbij ontvangt u uw factuur in bijlage.',
@@ -199,15 +202,75 @@ $translations = [
         'voucher_link_success' => 'Cadeaubon succesvol gekoppeld aan je account! Waarde:',
         'voucher_already_claimed' => 'Deze cadeaubon is al door een andere gebruiker geclaimd.',
 
+        // register_mail.html
+        'register_mail_title' => 'Welkom bij Stylisso',
+        'register_mail_greeting' => 'Beste,',
+        'register_mail_message' => 'Welkom bij Stylisso! We zijn blij dat je je hebt geregistreerd.',
+        'register_mail_message1' => 'Veel plezier met winkelen op onze website!',
+        'register_mail_contact_text' => 'Heb je vragen? Neem gerust contact met ons op via onze',
+        'register_mail_contact_link' => 'contactpagina',
+        'register_mail_greetings' => 'Met vriendelijke groeten,',
+        'register_mail_signature' => 'Stylisso',
+        'register_mail_footer' => '© 2025 Stylisso — Alle rechten voorbehouden.',
+
+        // reset_password_mail.html
+        'reset_password_mail_title' => 'Reset Succes - Stylisso',
+        'reset_password_mail_greeting' => 'Beste,',
+        'reset_password_mail_message' => 'Je wachtwoord is succesvol gereset.',
+        'reset_password_mail_contact_text' => 'Als jij dit niet was, neem dan gerust contact met ons op via onze',
+        'reset_password_mail_contact_link' => 'contactpagina',
+        'reset_password_mail_greetings' => 'Met vriendelijke groeten,',
+        'reset_password_mail_signature' => 'Stylisso',
+        'reset_password_mail_footer' => '© 2025 Stylisso — Alle rechten voorbehouden.',
+
         // reviews-mailing.php
         'review_success' => 'Bedankt voor je review!',
         'review_error'   => 'Er is iets misgegaan bij het verzenden van je review.',
+
+        // send_newsletter_mail.html
+        'send_newsletter_mail_title' => 'Nieuwsbrief - Stylisso',
+        'send_newsletter_mail_footer' => '© 2025 Stylisso — Alle rechten voorbehouden.',
+
+        // submit_returns_mail.html
+        'submit_returns_title' => 'Retouraanvraag ontvangen - Stylisso',
+        'submit_returns_greeting' => 'Beste,',
+        'submit_returns_message' => 'We hebben je retouraanvraag voor de bestelling',
+        'submit_returns_received_on' => 'ontvangen op',
+        'submit_returns_table_product' => 'Product',
+        'submit_returns_table_size' => 'Maat',
+        'submit_returns_table_quantity' => 'Aantal',
+        'submit_returns_table_price' => 'Prijs',
+        'submit_returns_table_subtotal' => 'Subtotaal',
+        'submit_returns_table_total' => 'Totaal',
+        'submit_returns_questions_text' => 'Heb je vragen? Bezoek zeker onze',
+        'submit_returns_contact_page' => 'contactpagina',
+        'submit_returns_mail_greetings' => 'Met vriendelijke groeten,',
+        'submit_returns_mail_signature' => 'Stylisso',
+        'submit_returns_footer_text' => '© 2025 Stylisso — Alle rechten voorbehouden.',
+
+        // test_mailing.html
+        'test_mailing_title' => 'E-mail tester',
+        'test_mailing_footer' => '© 2025 Stylisso — Alle rechten voorbehouden.',
 
         // wachtwoord vergeten.php
         'invalid_email' => 'Ongeldig e-mailadres.',
         'db_prepare_failed' => 'Database voorbereiding mislukt',
         'email_not_found' => 'Dit e-mailadres is niet bij ons bekend.',
         'password_reset_sent' => 'Er is een e-mail verstuurd met instructies om je wachtwoord te resetten.',
+        'hour' => 'uur',
+
+        // wachtwoord_vergeten_mail.html
+        'wachtwoord_vergeten_mail_title' => 'Wachtwoord reset - Stylisso',
+        'wachtwoord_vergeten_mail_greeting' => 'Beste,',
+        'wachtwoord_vergeten_mail_message' => 'Klik op de onderstaande link om je wachtwoord opnieuw in te stellen:',
+        'wachtwoord_vergeten_mail_reset_link' => 'herstel link',
+        'wachtwoord_vergeten_mail_message1' => 'Deze link is 1 uur geldig.',
+        'wachtwoord_vergeten_mail_message2' => 'Als de herstel link niet werkt, kopieer en plak dan de volgende URL in je browser:',
+        'wachtwoord_vergeten_mail_contact_text' => 'Was je dit niet? Neem gerust contact met ons op via onze',
+        'wachtwoord_vergeten_mail_contact_link' => 'contactpagina',
+        'wachtwoord_vergeten_mail_greetings' => 'Met vriendelijke groeten,',
+        'wachtwoord_vergeten_mail_signature' => 'Stylisso',
+        'wachtwoord_vergeten_mail_footer' => '© 2025 Stylisso — Alle rechten voorbehouden.',
     ],
     'be-fr' => [
         // afrekenen_mail.html
@@ -224,6 +287,10 @@ $translations = [
         // contact-mailing.php
         'contact_form_success' => 'Merci ! Votre message a été envoyé.',
         'contact_form_error' => 'Une erreur est survenue. Veuillez réessayer plus tard.',
+
+        // contact_mailing.html
+        'contact_mailing_title' => 'Mailing de contact - Stylisso',
+        'contact_mailing_footer' => '© 2025 Stylisso — Tous droits réservés.',
 
         // create_credit_nota.php
         'credit_note_title' => 'Note de crédit',
@@ -316,7 +383,6 @@ $translations = [
 
         // delete_account_mail.html
         'delete_account_mail_title' => 'Votre compte a été supprimé',
-        'logo_alt' => 'Logo Stylisso',
         'delete_account_mail_greeting' => 'Cher/Chère,',
         'delete_account_mail_message' => 'Votre compte a été supprimé avec succès. Nous regrettons votre départ de notre plateforme, mais espérons peut-être vous revoir à l\'avenir.',
         'delete_account_mail_contact_text' => 'Des questions ? N\'hésitez pas à nous contacter via notre',
@@ -386,7 +452,7 @@ $translations = [
         'password_reset_link_missing_data' => 'Données manquantes pour le mail de réinitialisation de mot de passe',
         'create_own_voucher_amount_placeholder' => 'Ex. 25',
         'used_voucher' => 'Bon utilisé',
-        'credit_nota_subject' => 'Votre note de crédit',
+        'credit_nota_mail_subject' => 'Votre note de crédit',
         'credit_nota_message' => 'Cher client,<br>Veuillez trouver votre note de crédit en pièce jointe.',
         'invoice_subject' => 'Votre facture',
         'invoice_message' => 'Cher client,<br>Veuillez trouver votre facture en pièce jointe.',
@@ -407,9 +473,55 @@ $translations = [
         'voucher_link_success' => 'Bon cadeau associé avec succès à votre compte ! Valeur :',
         'voucher_already_claimed' => 'Ce bon cadeau a déjà été utilisé par un autre utilisateur.',
 
+        // register_mail.html
+        'register_mail_title' => 'Bienvenue chez Stylisso',
+        'register_mail_greeting' => 'Cher/Chère,',
+        'register_mail_message' => 'Bienvenue chez Stylisso ! Nous sommes ravis que vous vous soyez inscrit.',
+        'register_mail_message1' => 'Bon shopping sur notre site !',
+        'register_mail_contact_text' => 'Des questions ? N\'hésitez pas à nous contacter via notre',
+        'register_mail_contact_link' => 'page de contact',
+        'register_mail_greetings' => 'Cordialement,',
+        'register_mail_signature' => 'Stylisso',
+        'register_mail_footer' => '© 2025 Stylisso — Tous droits réservés.',
+
+        // reset_password_mail.html
+        'reset_password_mail_title' => 'Réinitialisation réussie - Stylisso',
+        'reset_password_mail_greeting' => 'Cher/Chère,',
+        'reset_password_mail_message' => 'Votre mot de passe a été réinitialisé avec succès.',
+        'reset_password_mail_contact_text' => 'Si ce n\'était pas vous, n\'hésitez pas à nous contacter via notre',
+        'reset_password_mail_contact_link' => 'page de contact',
+        'reset_password_mail_greetings' => 'Cordialement,',
+        'reset_password_mail_signature' => 'Stylisso',
+        'reset_password_mail_footer' => '© 2025 Stylisso — Tous droits réservés.',
+
         // reviews-mailing.php
         'review_success' => 'Merci pour votre avis !',
         'review_error'   => 'Une erreur s’est produite lors de l’envoi de votre avis.',
+
+        // send_newsletter_mail.html
+        'send_newsletter_mail_title' => 'Newsletter - Stylisso',
+        'send_newsletter_mail_footer' => '© 2025 Stylisso — Tous droits réservés.',
+
+        // submit_returns_mail.html
+        'submit_returns_title' => 'Demande de retour reçue - Stylisso',
+        'submit_returns_greeting' => 'Cher/Chère,',
+        'submit_returns_message' => 'Nous avons reçu votre demande de retour pour la commande',
+        'submit_returns_received_on' => 'reçue le',
+        'submit_returns_table_product' => 'Produit',
+        'submit_returns_table_size' => 'Taille',
+        'submit_returns_table_quantity' => 'Quantité',
+        'submit_returns_table_price' => 'Prix',
+        'submit_returns_table_subtotal' => 'Sous-total',
+        'submit_returns_table_total' => 'Total',
+        'submit_returns_questions_text' => 'Des questions ? N\'hésitez pas à visiter notre',
+        'submit_returns_contact_page' => 'page de contact',
+        'submit_returns_mail_greetings' => 'Cordialement,',
+        'submit_returns_mail_signature' => 'Stylisso',
+        'submit_returns_footer_text' => '© 2025 Stylisso — Tous droits réservés.',
+
+        // test_mailing.html
+        'test_mailing_title' => 'Testeur d\'e-mail',
+        'test_mailing_footer' => '© 2025 Stylisso — Tous droits réservés.',
 
         // wachtwoord vergeten.php
         'invalid_email' => "Adresse e-mail invalide.",
@@ -419,7 +531,20 @@ $translations = [
         'password_reset_message' => "Bonjour,\n\nCliquez sur le lien ci-dessous pour réinitialiser votre mot de passe :\n{resetLink}\n\nCe lien expire dans {expires}.",
         'password_reset_sent' => 'Un e-mail contenant les instructions pour réinitialiser votre mot de passe a été envoyé.',
         'password_reset_failed' => "Une erreur s'est produite lors de l'envoi de l'e-mail.",
-        'hour' => 'heure'
+        'hour' => 'heure',
+
+        // wachtwoord_vergeten_mail.html
+        'wachtwoord_vergeten_mail_title' => 'Réinitialisation du mot de passe - Stylisso',
+        'wachtwoord_vergeten_mail_greeting' => 'Cher/Chère,',
+        'wachtwoord_vergeten_mail_message' => 'Cliquez sur le lien ci-dessous pour réinitialiser votre mot de passe :',
+        'wachtwoord_vergeten_mail_reset_link' => 'lien de réinitialisation',
+        'wachtwoord_vergeten_mail_message1' => 'Ce lien est valable 1 heure.',
+        'wachtwoord_vergeten_mail_message2' => 'Si le lien de réinitialisation ne fonctionne pas, copiez et collez l\'URL suivante dans votre navigateur :',
+        'wachtwoord_vergeten_mail_contact_text' => 'Si vous n\'êtes pas à l\'origine de cette demande, n\'hésitez pas à nous contacter via notre',
+        'wachtwoord_vergeten_mail_contact_link' => 'page de contact',
+        'wachtwoord_vergeten_mail_greetings' => 'Cordialement,',
+        'wachtwoord_vergeten_mail_signature' => 'Stylisso',
+        'wachtwoord_vergeten_mail_footer' => '© 2025 Stylisso — Tous droits réservés.',
     ],
     'be-en' => [
         // afrekenen_mail.html
@@ -436,6 +561,10 @@ $translations = [
         // contact-mailing.php
         'contact_form_success' => 'Thank you! Your message has been sent.',
         'contact_form_error' => 'An error occurred. Please try again later.',
+
+        // contact_mailing.html
+        'contact_mailing_title' => 'Contact mailing - Stylisso',
+        'contact_mailing_footer' => '© 2025 Stylisso — All rights reserved.',
 
         // create_credit_nota.php
         'credit_note_title' => 'Credit Note',
@@ -528,11 +657,10 @@ $translations = [
 
         // delete_account_mail.html
         'delete_account_mail_title' => 'Your Account Has Been Deleted',
-        'logo_alt' => 'Stylisso logo',
         'delete_account_mail_greeting' => 'Dear,',
         'delete_account_mail_message' => 'Your account has been successfully deleted. We regret your departure from our platform, but hope to perhaps see you again in the future.',
         'delete_account_mail_contact_text' => 'Have questions? Feel free to contact us via our',
-        'delete_account_mail_contact_link' => 'contactpage',
+        'delete_account_mail_contact_link' => 'contact page',
         'delete_account_mail_greetings' => 'Best regards,',
         'delete_account_mail_signature' => 'Stylisso',
         'delete_account_mail_footer' => '© 2025 Stylisso — All rights reserved.',
@@ -598,7 +726,7 @@ $translations = [
         'password_reset_link_missing_data' => 'Missing data for password reset mail',
         'create_own_voucher_amount_placeholder' => 'Eg. 25',
         'used_voucher' => 'Used voucher',
-        'credit_nota_subject' => 'Your credit note',
+        'credit_nota_mail_subject' => 'Your credit note',
         'credit_nota_message' => 'Dear customer,<br>Please find your credit note attached.',
         'invoice_subject' => 'Your invoice',
         'invoice_message' => 'Dear customer,<br>Please find your invoice attached.',
@@ -619,9 +747,55 @@ $translations = [
         'voucher_link_success' => 'Gift voucher successfully linked to your account! Value:',
         'voucher_already_claimed' => 'This voucher has already been claimed by another user.',
 
+        // register_mail.html
+        'register_mail_title' => 'Welcome to Stylisso',
+        'register_mail_greeting' => 'Dear,',
+        'register_mail_message' => 'Welcome to Stylisso! We are glad you registered.',
+        'register_mail_message1' => 'Enjoy shopping on our website!',
+        'register_mail_contact_text' => 'Have questions? Feel free to contact us via our',
+        'register_mail_contact_link' => 'contact page',
+        'register_mail_greetings' => 'Best regards,',
+        'register_mail_signature' => 'Stylisso',
+        'register_mail_footer' => '© 2025 Stylisso — All rights reserved.',
+
+        // reset_password_mail.html
+        'reset_password_mail_title' => 'Successful Reset - Stylisso',
+        'reset_password_mail_greeting' => 'Dear,',
+        'reset_password_mail_message' => 'Your password has been successfully reset.',
+        'reset_password_mail_contact_text' => 'If this wasn\'t you, feel free to contact us via our',
+        'reset_password_mail_contact_link' => 'contact page',
+        'reset_password_mail_greetings' => 'Best regards,',
+        'reset_password_mail_signature' => 'Stylisso',
+        'reset_password_mail_footer' => '© 2025 Stylisso — All rights reserved.',
+
         // reviews-mailing.php
         'review_success' => 'Thank you for your review!',
         'review_error'   => 'There was an error submitting your review.',
+
+        // send_newsletter_mail.html
+        'send_newsletter_mail_title' => 'Newsletter - Stylisso',
+        'send_newsletter_mail_footer' => '© 2025 Stylisso — All rights reserved.',
+
+        // submit_returns_mail.html
+        'submit_returns_title' => 'Return Request Received - Stylisso',
+        'submit_returns_greeting' => 'Dear,',
+        'submit_returns_message' => 'We have received your return request for order',
+        'submit_returns_received_on' => 'received on',
+        'submit_returns_table_product' => 'Product',
+        'submit_returns_table_size' => 'Size',
+        'submit_returns_table_quantity' => 'Quantity',
+        'submit_returns_table_price' => 'Price',
+        'submit_returns_table_subtotal' => 'Subtotal',
+        'submit_returns_table_total' => 'Total',
+        'submit_returns_questions_text' => 'Have questions? Be sure to visit our',
+        'submit_returns_contact_page' => 'contact page',
+        'submit_returns_mail_greetings' => 'Best regards,',
+        'submit_returns_mail_signature' => 'Stylisso',
+        'submit_returns_footer_text' => '© 2025 Stylisso — All rights reserved.',
+
+        // test_mailing.html
+        'test_mailing_title' => 'E-mail tester',
+        'test_mailing_footer' => '© 2025 Stylisso — All rights reserved.',
 
         // wachtwoord vergeten.php
         'invalid_email' => 'Invalid email address.',
@@ -631,7 +805,20 @@ $translations = [
         'password_reset_message' => "Hello,\n\nClick the link below to reset your password:\n{resetLink}\n\nThis link expires in {expires}.",
         'password_reset_sent' => 'An email with instructions to reset your password has been sent.',
         'password_reset_failed' => 'Something went wrong sending the email.',
-        'hour' => 'hour'
+        'hour' => 'hour',
+
+        // wachtwoord_vergeten_mail.html
+        'wachtwoord_vergeten_mail_title' => 'Password Reset - Stylisso',
+        'wachtwoord_vergeten_mail_greeting' => 'Dear,',
+        'wachtwoord_vergeten_mail_message' => 'Click the link below to reset your password:',
+        'wachtwoord_vergeten_mail_reset_link' => 'reset link',
+        'wachtwoord_vergeten_mail_message1' => 'This link is valid for 1 hour.',
+        'wachtwoord_vergeten_mail_message2' => 'If the reset link does not work, please copy and paste the following URL into your browser:',
+        'wachtwoord_vergeten_mail_contact_text' => 'If you did not request this, feel free to contact us via our',
+        'wachtwoord_vergeten_mail_contact_link' => 'contact page',
+        'wachtwoord_vergeten_mail_greetings' => 'Best regards,',
+        'wachtwoord_vergeten_mail_signature' => 'Stylisso',
+        'wachtwoord_vergeten_mail_footer' => '© 2025 Stylisso — All rights reserved.',
     ],
     'be-de' => [
         // afrekenen_mail.html
@@ -648,6 +835,10 @@ $translations = [
         // contact-mailing.php
         'contact_form_success' => 'Danke! Ihre Nachricht wurde gesendet.',
         'contact_form_error' => 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.',
+
+        // contact_mailing.html
+        'contact_mailing_title' => 'Kontakt Mailing - Stylisso',
+        'contact_mailing_footer' => '© 2025 Stylisso — Alle Rechte vorbehalten.',
 
         // create_credit_nota.php
         'credit_note_title' => 'Gutschrift',
@@ -740,7 +931,6 @@ $translations = [
 
         // delete_account_mail.html
         'delete_account_mail_title' => 'Ihr Konto wurde gelöscht',
-        'logo_alt' => 'Stylisso Logo',
         'delete_account_mail_greeting' => 'Sehr geehrte/r,',
         'delete_account_mail_message' => 'Ihr Konto wurde erfolgreich gelöscht. Wir bedauern Ihren Weggang von unserer Plattform, hoffen jedoch, Sie vielleicht in der Zukunft wiederzusehen.',
         'delete_account_mail_contact_text' => 'Fragen? Kontaktieren Sie uns gerne über unsere',
@@ -810,7 +1000,7 @@ $translations = [
         'password_reset_link_missing_data' => 'Fehlende Daten für Passwort-Reset-Mail',
         'create_own_voucher_amount_placeholder' => 'Z.B. 25',
         'used_voucher' => 'Verwendeter Gutschein',
-        'credit_nota_subject' => 'Ihre Gutschrift',
+        'credit_nota_mail_subject' => 'Ihre Gutschrift',
         'credit_nota_message' => 'Sehr geehrter Kunde,<br>anbei erhalten Sie Ihre Gutschrift.',
         'invoice_subject' => 'Ihre Rechnung',
         'invoice_message' => 'Sehr geehrter Kunde,<br>anbei erhalten Sie Ihre Rechnung.',
@@ -831,9 +1021,55 @@ $translations = [
         'voucher_link_success' => 'Geschenkgutschein erfolgreich mit Ihrem Konto verknüpft! Wert:',
         'voucher_already_claimed' => 'Dieser Geschenkgutschein wurde bereits von einem anderen Nutzer eingelöst.',
 
+        // register_mail.html
+        'register_mail_title' => 'Willkommen bei Stylisso',
+        'register_mail_greeting' => 'Sehr geehrte/r,',
+        'register_mail_message' => 'Willkommen bei Stylisso! Wir freuen uns, dass Sie sich registriert haben.',
+        'register_mail_message1' => 'Viel Spaß beim Einkaufen auf unserer Website!',
+        'register_mail_contact_text' => 'Fragen? Kontaktieren Sie uns gerne über unsere',
+        'register_mail_contact_link' => 'Kontaktseite',
+        'register_mail_greetings' => 'Mit freundlichen Grüßen,',
+        'register_mail_signature' => 'Stylisso',
+        'register_mail_footer' => '© 2025 Stylisso — Alle Rechte vorbehalten.',
+
+        // reset_password_mail.html
+        'reset_password_mail_title' => 'Erfolgreiche Rücksetzung - Stylisso',
+        'reset_password_mail_greeting' => 'Sehr geehrte/r,',
+        'reset_password_mail_message' => 'Ihr Passwort wurde erfolgreich zurückgesetzt.',
+        'reset_password_mail_contact_text' => 'Wenn Sie dies nicht waren, kontaktieren Sie uns gerne über unsere',
+        'reset_password_mail_contact_link' => 'Kontaktseite',
+        'reset_password_mail_greetings' => 'Mit freundlichen Grüßen,',
+        'reset_password_mail_signature' => 'Stylisso',
+        'reset_password_mail_footer' => '© 2025 Stylisso — Alle Rechte vorbehalten.',
+
         // reviews-mailing.php
         'review_success' => 'Danke für Ihre Bewertung!',
         'review_error'   => 'Beim Senden Ihrer Bewertung ist ein Fehler aufgetreten.',
+
+        // send_newsletter_mail.html
+        'send_newsletter_mail_title' => 'Newsletter - Stylisso',
+        'send_newsletter_mail_footer' => '© 2025 Stylisso — Alle Rechte vorbehalten.',
+
+        // submit_returns_mail.html
+        'submit_returns_title' => 'Rücksendeanfrage erhalten - Stylisso',
+        'submit_returns_greeting' => 'Sehr geehrte/r,',
+        'submit_returns_message' => 'Wir haben Ihre Rücksendeanfrage für die Bestellung erhalten',
+        'submit_returns_received_on' => 'erhalten am',
+        'submit_returns_table_product' => 'Produkt',
+        'submit_returns_table_size' => 'Größe',
+        'submit_returns_table_quantity' => 'Menge',
+        'submit_returns_table_price' => 'Preis',
+        'submit_returns_table_subtotal' => 'Zwischensumme',
+        'submit_returns_table_total' => 'Gesamt',
+        'submit_returns_questions_text' => 'Fragen? Besuchen Sie unbedingt unsere',
+        'submit_returns_contact_page' => 'Kontaktseite',
+        'submit_returns_mail_greetings' => 'Mit freundlichen Grüßen,',
+        'submit_returns_mail_signature' => 'Stylisso',
+        'submit_returns_footer_text' => '© 2025 Stylisso — Alle Rechte vorbehalten.',
+
+        // test_mailing.html
+        'test_mailing_title' => 'E-mail-Tester',
+        'test_mailing_footer' => '© 2025 Stylisso — Alle Rechte vorbehalten.',
 
         // wachtwoord vergeten.php
         'invalid_email' => 'Ungültige E-Mail-Adresse.',
@@ -843,7 +1079,20 @@ $translations = [
         'password_reset_message' => "Hallo,\n\nKlicken Sie auf den untenstehenden Link, um Ihr Passwort zurückzusetzen:\n{resetLink}\n\nDieser Link läuft in {expires} ab.",
         'password_reset_sent' => 'Eine E-Mail mit Anweisungen zum Zurücksetzen Ihres Passworts wurde gesendet.',
         'password_reset_failed' => 'Beim Senden der E-Mail ist ein Fehler aufgetreten.',
-        'hour' => 'Stunde'
+        'hour' => 'Stunde',
+
+        // wachtwoord_vergeten_mail.html
+        'wachtwoord_vergeten_mail_title' => 'Passwort zurücksetzen - Stylisso',
+        'wachtwoord_vergeten_mail_greeting' => 'Sehr geehrte/r,',
+        'wachtwoord_vergeten_mail_message' => 'Klicken Sie auf den untenstehenden Link, um Ihr Passwort zurückzusetzen:',
+        'wachtwoord_vergeten_mail_reset_link' => 'Reset-Link',
+        'wachtwoord_vergeten_mail_message1' => 'Dieser Link ist 1 Stunde gültig.',
+        'wachtwoord_vergeten_mail_message2' => 'Wenn der Reset-Link nicht funktioniert, kopieren Sie bitte die folgende URL und fügen Sie sie in Ihren Browser ein:',
+        'wachtwoord_vergeten_mail_contact_text' => 'Wenn Sie dies nicht angefordert haben, kontaktieren Sie uns gerne über unsere',
+        'wachtwoord_vergeten_mail_contact_link' => 'Kontaktseite',
+        'wachtwoord_vergeten_mail_greetings' => 'Mit freundlichen Grüßen,',
+        'wachtwoord_vergeten_mail_signature' => 'Stylisso',
+        'wachtwoord_vergeten_mail_footer' => '© 2025 Stylisso — Alle Rechte vorbehalten.',
     ]
 ];
 
@@ -871,6 +1120,22 @@ function t2($key, $lang = 'be-nl', $placeholders = []) {
             $text = str_replace('{' . (string)$placeholder . '}', $value, $text);
         }
     }
+
+    return $text;
+}
+
+function t3($key, $lang = 'be-nl', $localTranslations = null) {
+    // Als er geen expliciete translations-array gegeven is: return key (geen globale fallback)
+    if (!is_array($localTranslations) || empty($localTranslations)) {
+        return (string)$key;
+    }
+
+    // Zorg ervoor dat key en lang strings zijn
+    $key = (string)$key;
+    $lang = (string)$lang;
+
+    // Zoek naar de vertaling in de tijdelijke array
+    $text = isset($translations[$lang][$key]) ? $translations[$lang][$key] : $key;
 
     return $text;
 }

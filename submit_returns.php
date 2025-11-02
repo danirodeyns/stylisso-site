@@ -8,6 +8,9 @@ include 'csrf.php';
 csrf_validate();
 include 'mailing.php';
 
+// --- Taal ophalen (fallback: be-nl) ---
+$lang = $_POST['lang'] ?? $_GET['lang'] ?? 'be-nl';
+
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['error' => 'Niet ingelogd']);
     exit;
@@ -22,12 +25,11 @@ if (!$orderItemId || empty($reason)) {
     exit;
 }
 
-// Controleer of order_item bij deze gebruiker hoort
+// --- Haal order item en order_id op ---
 $stmt = $conn->prepare("
-    SELECT oi.id, oi.product_id, oi.quantity, oi.price, oi.order_id, p.name AS product_name
+    SELECT oi.id, oi.product_id, oi.quantity, oi.price, oi.order_id, oi.maat
     FROM order_items oi
     JOIN orders o ON oi.order_id = o.id
-    JOIN products p ON oi.product_id = p.id
     WHERE oi.id = ? AND o.user_id = ?
 ");
 $stmt->bind_param("ii", $orderItemId, $userId);
@@ -39,6 +41,22 @@ if (!$orderItem) {
     echo json_encode(['error' => 'Dit product hoort niet bij jou of bestaat niet']);
     exit;
 }
+
+// --- Haal productnaam in de juiste taal op ---
+$stmtProd = $conn->prepare("
+    SELECT name 
+    FROM product_translations 
+    WHERE product_id = ? AND lang = ?
+    LIMIT 1
+");
+$stmtProd->bind_param("is", $orderItem['product_id'], $lang);
+$stmtProd->execute();
+$resultProd = $stmtProd->get_result();
+$productRow = $resultProd->fetch_assoc();
+$productName = $productRow['name'] ?? 'Onbekend product';
+
+// --- Vul maat in als beschikbaar, anders '-' ---
+$size = $orderItem['maat'] ?? '-';
 
 // Voeg toe aan returns tabel
 $stmt = $conn->prepare("
@@ -59,7 +77,7 @@ if ($stmt->execute()) {
     $stmtLedger->bind_param("iiid", $returnId, $orderItem['product_id'], $orderItem['quantity'], $amount);
     $stmtLedger->execute();
 
-    // --- MAILING VIA mailing.php ---
+    // --- Haal gebruikersgegevens ---
     $userData = $conn->prepare("SELECT email, name FROM users WHERE id = ?");
     $userData->bind_param("i", $userId);
     $userData->execute();
@@ -67,7 +85,8 @@ if ($stmt->execute()) {
     $userEmail = $userRow['email'] ?? '';
     $userName = $userRow['name'] ?? 'Klant';
 
-    sendReturnRequestedMail($userEmail, $userName, $orderItem['product_name'], $orderItem['quantity'], $reason, $lang);
+    // --- Stuur mail ---
+    sendReturnConfirmationMail($userEmail, $userName, $orderItem['order_id'], $productName, $size, $orderItem['quantity'], $orderItem['price'], $lang);
 
     echo json_encode(['success' => 'Retouraanvraag succesvol ingediend!']);
     exit;

@@ -376,6 +376,16 @@ const translations = {
     "register_terms": "Ik ga akkoord met de algemene voorwaarden en het privacybeleid.",
     "register_button": "Registreren",
 
+    // mail_tester.html
+    "mail_tester_page_title": "E-mail tester - Staff",
+    "mail_tester_header": "E-mail testen",
+    "mail_tester_subheader": "Test een e-mail vooraleer je deze verstuurd.",
+    "mail_tester_subject": "Onderwerp:",
+    "mail_tester_subject_placeholder": "Bijv. Nieuwe collectie binnen!",
+    "mail_tester_textarea": "Bericht (HTML toegestaan):",
+    "mail_tester_textarea_placeholder": "Typ hier je e-mail...",
+    "mail_tester_button": "Verstuur e-mail",
+
     // mijn_stylisso.html
     "mijn_stylisso_page_title": "Mijn Stylisso",
     "mijn_stylisso_welcome_header": "Welkom bij Mijn Stylisso",
@@ -604,6 +614,7 @@ const translations = {
     "staff_pages_retours": "Retourverwerking",
     "staff_pages_newsletter": "Nieuwsbrief opstellen",
     "staff_pages_voucher": "Cadeaubon aanmaken",
+    "staff_pages_mail_tester": "Mail tester",
 
     // verzending en levering.html
     "verzending en levering_page_title": "Verzending en Levering",
@@ -1143,6 +1154,16 @@ const translations = {
     "register_terms": "J'accepte les conditions générales et la politique de confidentialité.",
     "register_button": "S'inscrire",
 
+    // mail_tester.html
+    "mail_tester_page_title": "Testeur d'e-mail - Staff",
+    "mail_tester_header": "Test d'e-mail",
+    "mail_tester_subheader": "Test un e-mail avant de l'envoyer.",
+    "mail_tester_subject": "Objet :",
+    "mail_tester_subject_placeholder": "Par exemple : Nouvelle collection disponible !",
+    "mail_tester_textarea": "Message (HTML autorisé) :",
+    "mail_tester_textarea_placeholder": "Tapez votre e-mail ici...",
+    "mail_tester_button": "Envoyer l'e-mail",
+
     // mijn_stylisso.html
     "mijn_stylisso_page_title": "Mon Stylisso",
     "mijn_stylisso_welcome_header": "Bienvenue sur Mon Stylisso",
@@ -1371,6 +1392,7 @@ const translations = {
     "staff_pages_retours": "Traitement des retours",
     "staff_pages_newsletter": "Créer une newsletter",
     "staff_pages_voucher": "Créer un bon cadeau",
+    "staff_pages_mail_tester": "Testeur de mail",
 
     // verzending en levering.html
     "verzending en levering_page_title": "Expédition et Livraison",
@@ -1910,6 +1932,16 @@ const translations = {
     "register_terms": "I agree with the Terms of Use and Privacy Policy.",
     "register_button": "Register",
 
+    // mail_tester.html
+    "mail_tester_page_title": "E-mail tester - Staff",
+    "mail_tester_header": "E-mail testing",
+    "mail_tester_subheader": "Test an e-mail before sending it.",
+    "mail_tester_subject": "Subject:",
+    "mail_tester_subject_placeholder": "e.g. New collection available!",
+    "mail_tester_textarea": "Message (HTML allowed):",
+    "mail_tester_textarea_placeholder": "Type your e-mail here...",
+    "mail_tester_button": "Send e-mail",
+
     // mijn_stylisso.html
     "mijn_stylisso_page_title": "My Stylisso",
     "mijn_stylisso_welcome_header": "Welcome to My Stylisso",
@@ -2138,6 +2170,7 @@ const translations = {
     "staff_pages_retours": "Return Processing",
     "staff_pages_newsletter": "Create newsletter",
     "staff_pages_voucher": "Create gift card",
+    "staff_pages_mail_tester": "Mail tester",
 
     // verzending en levering.html
     "verzending en levering_page_title": "Shipping & Delivery",
@@ -2677,6 +2710,16 @@ const translations = {
     "register_terms": "Ich akzeptiere die Allgemeinen Geschäftsbedingungen und die Datenschutzrichtlinie.",
     "register_button": "Registrieren",
 
+    // mail_tester.html
+    "mail_tester_page_title": "E-mail-Tester - Staff",
+    "mail_tester_header": "E-mail testen",
+    "mail_tester_subheader": "Testen Sie eine E-Mail, bevor Sie sie senden.",
+    "mail_tester_subject": "Betreff:",
+    "mail_tester_subject_placeholder": "Z.B. Neue Kollektion verfügbar!",
+    "mail_tester_textarea": "Nachricht (HTML erlaubt):",
+    "mail_tester_textarea_placeholder": "Schreiben Sie Ihre E-mail hier...",
+    "mail_tester_button": "E-mail senden",
+
     // mijn_stylisso.html
     "mijn_stylisso_page_title": "Mein Stylisso",
     "mijn_stylisso_welcome_header": "Willkommen bei Mein Stylisso",
@@ -2905,6 +2948,7 @@ const translations = {
     "staff_pages_retours": "Retourenverarbeitung",
     "staff_pages_newsletter": "Newsletter erstellen",
     "staff_pages_voucher": "Gutschein erstellen",
+    "staff_pages_mail_tester": "Mail-Tester",
 
     // verzending en levering.html
     "verzending en levering_page_title": "Versand & Lieferung",

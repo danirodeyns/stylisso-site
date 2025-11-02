@@ -33,8 +33,5 @@ package-lock.json
 # ⛔ Toekomstige wijzigingen (alle bestanden)
 future_changes/
 
-# ⛔ Mailing templates
-mailing/
-
 # ⛔ SQL Database
 stylisso_db.sql

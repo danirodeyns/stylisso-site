@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     // Token controleren bij users
-    $stmt = $conn->prepare("SELECT id, email, reset_expires FROM users WHERE reset_token = ? LIMIT 1");
+    $stmt = $conn->prepare("SELECT id, email, name, reset_expires FROM users WHERE reset_token = ? LIMIT 1");
     $stmt->bind_param("s", $token);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -55,6 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $postData = http_build_query([
             'task' => 'password_reset_success',
             'email' => $email,
+            'name' => $row['name'],
             'lang' => 'be-nl' // optie om taal uit user of order op te halen
         ]);
 
@@ -67,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         ]);
 
         // Mail triggeren
-        sendPasswordResetSuccessMail($email);
+        sendPasswordResetSuccessMail($email, $row['name']);
     }
 
     header("Location: reset_succes.html");

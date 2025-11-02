@@ -1484,7 +1484,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Retourkaarten laden
     async function loadReturns() {
       try {
-        const data = await fetch('retourneren.php').then(res => res.json());
+        const data = await fetchWithLang('retourneren.php');
         returnCardsContainer.innerHTML = '';
 
         if (!data || data.length === 0 || data.error) {
@@ -1583,12 +1583,11 @@ document.addEventListener('DOMContentLoaded', () => {
                       return;
                     }
 
-                    fetch('submit_returns.php', {
+                    fetchWithLang('submit_returns.php', {
                       method: 'POST',
                       headers: { 'Content-Type':'application/x-www-form-urlencoded' },
                       body: `order_item_id=${product.order_item_id}&reason=Retour+verzoek&csrf_token=${csrfToken}`
                     })
-                    .then(res => res.json())
                     .then(resp => {
                       if (resp.success) {
                         returnLink.setAttribute('data-i18n', 'script_return_request_success');
@@ -2953,6 +2952,64 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  const mailTesterForm = document.getElementById("mailTesterForm");
+  const resultMail = document.getElementById("statusMessageMail");
+
+  if (mailTesterForm && resultMail) {
+    mailTesterForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const subject = document.getElementById("mail-tester-subject").value.trim();
+      const message = document.getElementById("mail-tester-message").value.trim();
+
+      // --- Taal bepalen en dictionary ophalen ---
+      const cookieMatch = document.cookie.match(/(?:^|;\s*)siteLanguage=([^;]+)/);
+      const lang = cookieMatch ? decodeURIComponent(cookieMatch[1]) : "be-nl";
+      const dict = translations[lang] || translations["be-nl"];
+
+      if (!subject || !message) {
+        result.textContent = dict["script_newsletter_fill_fields"];
+        result.className = "error";
+        return;
+      }
+
+      try {
+        const response = await fetchWithLang("mail_tester.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `subject=${encodeURIComponent(subject)}&message=${encodeURIComponent(message)}&csrf_token=${encodeURIComponent(window.csrfToken || '')}`
+        });
+
+        let data;
+
+        try {
+          // Probeer JSON te parsen
+          data = JSON.parse(text);
+        } catch {
+          // Ongeldige JSON → toon fout
+          result.textContent = dict["script_newsletter_error"] + " (" + text + ")";
+          result.className = "error";
+          return;
+        }
+
+        // --- Verwerk JSON ---
+        if (data.success) {
+          result.textContent = dict["script_newsletter_success"];
+          result.className = "success";
+          form.reset();
+        } else {
+          result.textContent = data.error || dict["script_newsletter_failed"];
+          result.className = "error";
+        }
+
+      } catch (err) {
+        console.error(err);
+        result.textContent = dict["script_newsletter_error"];
+        result.className = "error";
+      }
+    });
+  }
 });
 
 // ==============================
@@ -3425,7 +3482,7 @@ if (reviewForm) {
       const messageBox = document.getElementById("review-message");
 
       if (data.success) {
-        messageBox.textContent = data.success;
+        messageBox.textContent = data.message;
         messageBox.style.color = "green";
       } else if (data.error) {
         messageBox.textContent = data.error;
@@ -3524,6 +3581,35 @@ function addGA4Tracking(container) {
     });
   });
 }
+
+document.getElementById("contactForm").addEventListener("submit", function(event) {
+    event.preventDefault(); // Voorkom de standaard formulierindiening
+
+    var formData = new FormData(this);
+
+    // AJAX-aanroep naar de PHP-processor
+    fetch('contact-mailing.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())  // Verwacht JSON-antwoord van PHP
+    .then(data => {
+        var messageDiv = document.getElementById("messageContact");
+
+        if (data.success) {
+            messageDiv.style.color = 'green';
+            messageDiv.innerHTML = data.message;
+        } else {
+            messageDiv.style.color = 'red';
+            messageDiv.innerHTML = data.error;
+        }
+
+        messageDiv.style.display = 'block';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+});
 
 function applyTranslations() {
   // 1. Cookie uitlezen

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light only">
+    <meta name="supported-color-schemes" content="light">
+    <title><?= t('test_mailing_title') ?></title>
+</head>
+<body style="margin:0;padding:0;color:#111;font-family:Arial,sans-serif;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:40px 0;">
+        <tr>
+            <td align="center">
+                <table width="600" cellspacing="0" cellpadding="0" style="border-radius:10px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+                    <tr>
+                        <td align="left" style="background-color:#111;padding:24px;cursor:pointer;">
+                            <a href="https://www.stylisso.be" style="text-decoration: none;color: #111;">
+                                <img src="{{logo_dark}}" width="152" height="32" style="display:block;" alt="<?= t('logo_alt') ?>">
+                            </a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding:30px;">
+                            {{mail_tester_content}}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="center" style="background-color:#f3f4f6;text-align:center;font-size:12px;color:#6b7280;padding:16px;">
+                            <?= t('test_mailing_footer') ?>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

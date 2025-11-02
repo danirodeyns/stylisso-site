@@ -20,7 +20,7 @@
       <p data-i18n="contact_intro">Heb je vragen of opmerkingen? Vul het formulier in en wij nemen zo snel mogelijk contact met je op.</p>
     </section>
 
-    <form action="contact-mailing.php" method="POST" class="contact-form">
+    <form action="contact-mailing.php" method="POST" id="contactForm" class="contact-form">
         <input type="hidden" name="csrf_token" id="csrf_token" value="" />
         
         <label for="name" data-i18n="contact_label_name">Naam:</label>
@@ -37,6 +37,8 @@
 
         <button type="submit" data-i18n="contact_button_submit">Verzenden</button>
     </form>
+
+    <div id="messageContact" type="hidden"></div>
   </main>
 
   <div id="footer-placeholder"></div>

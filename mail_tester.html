@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="mail_tester_page_title">Mail tester - Staff</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="logo/logo klein.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" href="logo/logo klein (dark mode).png" media="(prefers-color-scheme: dark)">
+</head>
+<body>
+
+    <div id="header-placeholder"></div>
+
+    <main class="newsletter-container">
+        <section class="newsletter-header">
+            <h1 data-i18n="mail_tester_header">Mail testen</h1>
+            <p data-i18n="mail_tester_subheader">Test een mail vooraleer je deze verstuurd.</p>
+        </section>
+
+        <section class="newsletter-form-section">
+            <form id="mailTesterForm" class="newsletter-form">
+                <label for="subject" data-i18n="mail_tester_subject">Onderwerp:</label>
+                <input type="text" id="mail-tester-subject" name="subject" placeholder="Bijv. Nieuwe collectie binnen!" data-i18n-placeholder="mail_tester_subject_placeholder" required />
+
+                <label for="message" data-i18n="mail_tester_textarea">Bericht (HTML toegestaan):</label>
+                <textarea id="mail-tester-message" name="message" rows="10" placeholder="Typ hier je mail..." data-i18n-placeholder="mail_tester_textarea_placeholder" required></textarea>
+
+                <button type="submit" id="sendButton" data-i18n="mail_tester_button">Verstuur mail</button>
+            </form>
+
+            <div id="statusMessageMail" class="newsletter-status"></div>
+        </section>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="GA.js"></script>
+    <script src="marketing.js"></script>
+    <script src="translations.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

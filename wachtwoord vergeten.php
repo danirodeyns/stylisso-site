@@ -37,12 +37,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt->close();
 
     // Maak resetlink
-    $resetLink = "https://stylisso.be/reset_password.html?token=" . $token;
+    $resetLink = "https://www.stylisso.be/reset_password.html?token=" . $token;
 
     // --- Verstuur mail via mailing.php ---
     $postData = http_build_query([
         'task' => 'password_reset_link',  // task in mailing.php voor wachtwoord reset
         'email' => $email,
+        'name' => $user['name'],
         'reset_link' => $resetLink,
         'lang' => 'be-nl' // optie om taal uit user tabel of voorkeur te halen
     ]);
@@ -56,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     ]);
 
     // Mail triggeren
-    sendPasswordResetLinkMail($email, $resetLink);
+    sendPasswordResetLinkMail($email, $user['name'], $resetLink);
 
     echo json_encode(['success' => t('password_reset_sent')]);
     exit;
