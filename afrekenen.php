@@ -6,6 +6,8 @@ include 'translations.php';
 include 'mailing.php';
 include 'create_invoice.php';
 
+$conn->set_charset("utf8mb4");
+
 // ================================
 // 0. Sessie check
 // ================================
