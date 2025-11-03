@@ -64,6 +64,22 @@ input[type="checkbox"]:focus-visible {
   outline-offset: 2px;
 }
 
+html.no-js body > *:not(noscript) {
+  display: none !important;
+}
+
+html.no-js .no-js-warning {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: #111;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 2rem;
+}
+
 .logo {
   font-size: 1.5rem;
   font-weight: bold;
