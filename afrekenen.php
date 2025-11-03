@@ -163,6 +163,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $used_amount = min($voucher_discount, $order_subtotal);
     $total_order = max(0, floatval($checkout['total']) - $used_amount);
 
+    // --- Als er een voucher is gebruikt ---
+    if ($used_voucher && !empty($used_voucher['code'])) {
+        $voucher_code = $used_voucher['code'];
+
+        // 1️⃣ Huidige waarde ophalen
+        $stmt_get = $conn->prepare("SELECT id, remaining_value FROM vouchers WHERE code = ?");
+        $stmt_get->bind_param("s", $voucher_code);
+        $stmt_get->execute();
+        $result = $stmt_get->get_result();
+
+        if ($voucher = $result->fetch_assoc()) {
+            $voucher_id     = intval($voucher['id']);
+            $current_value  = floatval($voucher['remaining_value']);
+            $new_remaining  = max(0, $current_value - $used_amount);
+
+            // 2️⃣ Remaining value bijwerken
+            $stmt_update = $conn->prepare("UPDATE vouchers SET remaining_value = ? WHERE id = ?");
+            $stmt_update->bind_param("di", $new_remaining, $voucher_id);
+            $stmt_update->execute();
+
+            // 3️⃣ Registreren dat gebruiker de voucher gebruikte (optioneel log)
+            $stmt_log = $conn->prepare("
+                INSERT INTO user_vouchers (user_id, voucher_id)
+                VALUES (?, ?)
+            ");
+            $stmt_log->bind_param("ii", $user_id, $voucher_id);
+            $stmt_log->execute();
+
+            // 4️⃣ Als voucher volledig opgebruikt is, kan je optioneel extra actie doen
+            if ($new_remaining <= 0) {
+                // bijv. melding, archiveren, of mail sturen
+                // sendVoucherEmptyMail($voucher_code, $email, $siteLanguage);
+            }
+        }
+
+        $stmt_get->close();
+    }
+
     // ================================
     // 8. Order toevoegen (met taal)
     // ================================
