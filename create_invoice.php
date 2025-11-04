@@ -4,7 +4,11 @@ use Mpdf\Mpdf;
 
 $lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
 
-function create_invoice($order_id, $conn, $lang, $used_voucher = null) {
+/**
+ * Genereer factuur en stuur via e-mail
+ */
+function create_invoice($order_id, $conn, $lang = 'be-nl', $used_voucher = null, $voucher_discount = 0, $order_subtotal = 0, $used_amount = 0, $total_order = 0)
+{
     // --- Order + klantgegevens ophalen ---
     $stmt = $conn->prepare("
         SELECT o.id, o.total_price, o.status, o.created_at,
@@ -29,7 +33,7 @@ function create_invoice($order_id, $conn, $lang, $used_voucher = null) {
 
     if (!$order) return false;
 
-    // --- Adres ---
+    // --- Volledig adres ---
     $addressParts = [];
     if (!empty($order['street'])) $addressParts[] = htmlspecialchars($order['street']) . ' ' . htmlspecialchars($order['house_number']);
     if (!empty($order['postal_code'])) $addressParts[] = htmlspecialchars($order['postal_code']);
@@ -37,7 +41,7 @@ function create_invoice($order_id, $conn, $lang, $used_voucher = null) {
     if (!empty($order['country'])) $addressParts[] = htmlspecialchars($order['country']);
     $fullAddress = implode(', ', $addressParts);
 
-    // --- Items ophalen ---
+    // --- Order items ophalen ---
     $stmt_items = $conn->prepare("
         SELECT oi.quantity, oi.price, oi.type, oi.maat, 
             COALESCE(pt.name, p.name) AS product_name,
@@ -53,38 +57,30 @@ function create_invoice($order_id, $conn, $lang, $used_voucher = null) {
     $items = $stmt_items->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt_items->close();
 
-    // --- Verzendkosten berekenen ---
+    // --- Berekeningen ---
     $products_total = 0;
     foreach ($items as $item) {
         $products_total += $item['price'] * $item['quantity'];
     }
 
-    // Voucher bedrag (0 als geen voucher gebruikt)
-    $used_voucher_amount = $used_voucher['amount'] ?? 0;
+    // verzendkosten = totaal + voucher - som producten
+    $shipping = $total_order + $voucher_discount - $products_total;
 
-    // Verzendkosten = totaalprijs + voucher - som producten
-    $shipping = $order['total_price'] + $used_voucher_amount - $products_total;
+    $total_without_shipping = $total_order - $shipping;
+    $vat_total = $total_without_shipping * 0.21;
 
-    // Subtotaal exclusief verzendkosten en BTW
-    $total_without_shipping = $order['total_price'] - $shipping;
-
-    // Subtotaal exclusief BTW
-    $subtotal = $total_without_shipping / 1.21;
-
-    // BTW bedrag
-    $vat_total = $total_without_shipping - $subtotal;
-
-    $order['subtotal_price'] = $subtotal;
+    $order['subtotal_price'] = $order_subtotal;
     $order['VAT_price'] = $vat_total;
     $order['shipping_costs'] = $shipping;
 
-    // --- PDF genereren ---
+    // --- Pad voor PDF ---
     $dir = __DIR__ . '/invoices';
     if (!is_dir($dir)) mkdir($dir, 0755, true);
 
     $filename = date('Y-m-d', strtotime($order['created_at'])) . '-' . $order_id . '.pdf';
     $filepath = $dir . '/' . $filename;
 
+    // --- PDF genereren ---
     try {
         $mpdf = new Mpdf([
             'tempDir' => __DIR__ . '/tmp',

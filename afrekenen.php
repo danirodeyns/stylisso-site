@@ -273,7 +273,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // ================================
     // 10. Factuur aanmaken via externe POST naar create_invoice.php
     // ================================
-    create_invoice($order_id, $conn, $siteLanguage, $used_voucher);
+    create_invoice($order_id, $conn, $siteLanguage, $used_voucher, $voucher_discount, $order_subtotal, $used_amount, $total_order);
 
     // ================================
     // 11. Winkelwagen leegmaken & sessie reset

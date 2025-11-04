@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<?= $lang ?>">
+<html lang="nl">
 <head>
     <meta charset="UTF-8">
     <title><?= t('invoice_template_invoice_title') ?></title>
@@ -100,7 +100,7 @@
             <?php if (!empty($used_voucher) && isset($used_voucher['code'], $used_voucher['amount'])): ?>
             <tr>
                 <td><?= t('invoice_template_used_voucher') ?>  (<?= htmlspecialchars($used_voucher['code']) ?>):</td>
-                <td style="text-align:right;">- €<?= number_format($used_voucher['amount'], 2, ',', '.') ?></td>
+                <td style="text-align:right;">€ -<?= number_format($used_voucher['amount'], 2, ',', '.') ?></td>
             </tr>
             <?php endif; ?>
             <tr>
