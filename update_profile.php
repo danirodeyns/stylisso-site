@@ -206,7 +206,7 @@ if (!$differentBilling) {
                 SET street=?, house_number=?, postal_code=?, city=?, country=? 
                 WHERE id=? AND user_id=?
             ");
-            $stmt->bind_param("ssssiii", $billing_street, $billing_house_number, $billing_postal_code, $billing_city, $billing_country, $billingId, $_SESSION['user_id']);
+            $stmt->bind_param("ssssssi", $billing_street, $billing_house_number, $billing_postal_code, $billing_city, $billing_country, $billingId, $_SESSION['user_id']);
             $stmt->execute();
             $stmt->close();
         } else {
