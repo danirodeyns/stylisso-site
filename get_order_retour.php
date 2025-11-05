@@ -5,6 +5,8 @@ header('Content-Type: application/json');
 include 'db_connect.php';
 include 'translations.php';
 
+$conn->set_charset("utf8mb4");
+
 // --- Controleer of ingelogd en staff ---
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Niet ingelogd']);
