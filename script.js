@@ -763,7 +763,9 @@ document.addEventListener('DOMContentLoaded', function () {
       };
       document.getElementById('used_voucher_input').value = JSON.stringify(voucherData);
   });
+});
 
+document.addEventListener("DOMContentLoaded", () => {
   // --- Foutmeldingen en oude waarden uit queryparameters ---
   const params = new URLSearchParams(window.location.search);
 
