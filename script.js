@@ -849,60 +849,72 @@ document.addEventListener('DOMContentLoaded', function () {
     const loginEmailInput = document.getElementById('login-email');
     if (loginEmailInput) loginEmailInput.value = decodeURIComponent(oldLoginEmail);
   }
+});
 
+document.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
   const form = document.getElementById('profileForm');
   const messages = document.getElementById('formMessages');
-  
+
+  if (!form) return; // veiligheid — als de pagina dit formulier niet heeft, stop
+
   if (params.get("errors")) {
     const errors = params.get("errors").split(",");
     errors.forEach(err => {
-      // 1. span maken en data-i18n zetten
       let span = document.createElement('span');
       switch(err) {
         case "name_empty":
-          span.setAttribute('data-i18n', 'script_name_required');
-          break;
+          span.setAttribute('data-i18n', 'script_name_required'); break;
         case "address_empty":
-          span.setAttribute('data-i18n', 'script_address_required');
-          break;
+          span.setAttribute('data-i18n', 'script_address_required'); break;
         case "email_invalid":
-          span.setAttribute('data-i18n', 'script_email_invalid');
-          break;
+          span.setAttribute('data-i18n', 'script_email_invalid'); break;
         case "email_exists":
-          span.setAttribute('data-i18n', 'script_email_exists');
-          break;
+          span.setAttribute('data-i18n', 'script_email_exists'); break;
         case "password_mismatch":
-          span.setAttribute('data-i18n', 'script_password_mismatch');
-          break;
+          span.setAttribute('data-i18n', 'script_password_mismatch'); break;
         case "password_same":
-          span.setAttribute('data-i18n', 'script_password_same');
-          break;
+          span.setAttribute('data-i18n', 'script_password_same'); break;
         default:
-          return; // onbekende error, niks doen
+          return;
       }
 
-      // 2. span tijdelijk toevoegen aan DOM
-      span.style.display = "none"; // zodat het niet zichtbaar is
+      // tijdelijk in DOM zetten voor vertaling
+      span.style.display = "none";
       document.body.appendChild(span);
 
-      // 3. vertaling toepassen
-      applyTranslations();
+      try {
+        if (typeof applyTranslations === "function") applyTranslations();
+      } catch (e) {
+        console.warn("applyTranslations() gaf een fout:", e);
+      }
 
-      // 4. vertaalde tekst lezen
       const message = span.textContent;
-
-      // 5. span verwijderen
       span.remove();
 
-      // 6. error tonen bij juiste input
-      const inputId = err === "name_empty" ? "name" :
-                      err === "address_empty" ? "address" :
-                      err === "email_invalid" || err === "email_exists" ? "email" :
-                      err === "password_mismatch" ? "passwordConfirm" :
-                      err === "password_same" ? "password" :
-                      "";
+      const inputId = 
+        err === "name_empty" ? "name" :
+        err === "address_empty" ? "address" :
+        err === "email_invalid" || err === "email_exists" ? "email" :
+        err === "password_mismatch" ? "passwordConfirm" :
+        err === "password_same" ? "password" : "";
 
-      if (inputId) showError(inputId, message);
+      if (inputId) {
+        if (typeof showError === "function") {
+          showError(inputId, message);
+        } else {
+          console.error("showError() bestaat niet, toon fallback melding.");
+          const input = document.getElementById(inputId);
+          if (input) {
+            const error = document.createElement("div");
+            error.textContent = message;
+            error.style.color = "red";
+            error.style.fontSize = "0.9rem";
+            error.style.marginTop = "4px";
+            input.insertAdjacentElement("afterend", error);
+          }
+        }
+      }
     });
   }
 
@@ -910,7 +922,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const successEl = document.createElement("p");
     successEl.setAttribute('data-i18n', 'script_profile_updated');
     document.body.appendChild(successEl);
-    applyTranslations();
+    if (typeof applyTranslations === "function") applyTranslations();
     const message = successEl.textContent;
     successEl.remove();
     successEl.textContent = message;
