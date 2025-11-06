@@ -58,27 +58,53 @@
         
         <hr>
 
-        <h2 data-i18n="processing_retours_order_items">Orderitems</h2>
-        <table border="1" cellpadding="5" cellspacing="0" width="100%">
-        <thead class="processing-retours-table">
-            <tr>
-            <th data-i18n="processing_retours_product">Product</th>
-            <th data-i18n="processing_retours_quantity">Aantal</th>
-            <th data-i18n="processing_retours_price_per_item">Prijs per stuk</th>
-            <th data-i18n="processing_retours_total">Totaal</th>
-            <th data-i18n="processing_retours_status">Status</th>
-            <th data-i18n="processing_retours_approved">Goedgekeurd</th>
-            <th data-i18n="processing_retours_rejected">Afgekeurd</th>
-            </tr>
-        </thead>
-        <tbody class="processing-retours-table" id="orderItemsBody">
-            <!-- Wordt via JS gevuld -->
-        </tbody>
-        </table>
+        <section id="request-retour">
+          <h2 data-i18n="processing_retours_order_items">Order items</h2>
+          <table border="1" cellpadding="5" cellspacing="0" width="100%">
+          <thead class="processing-retours-table">
+              <tr>
+              <th data-i18n="processing_retours_product">Product</th>
+              <th data-i18n="processing_retours_quantity">Aantal</th>
+              <th data-i18n="processing_retours_price_per_item">Prijs per stuk</th>
+              <th data-i18n="processing_retours_total">Totaal</th>
+              <th data-i18n="processing_retours_status">Status</th>
+              <th data-i18n="processing_retours_approved">Goedgekeurd</th>
+              <th data-i18n="processing_retours_rejected">Afgekeurd</th>
+              </tr>
+          </thead>
+          <tbody class="processing-retours-table" id="orderItemsRequestBody">
+              <!-- Wordt via JS gevuld -->
+          </tbody>
+          </table>
+          
+          <div class="processing-retours-confirm">
+              <button id="RequestBtn" data-i18n="processing_retours_request_return">Retour aanvragen</button>
+          </div>
+        </section>
 
-        <div class="processing-retours-confirm">
-            <button id="ReturnBtn" data-i18n="processing_retours_process_return">Retour verwerken</button>
-        </div>
+        <section id="evaluate-retour">
+          <h2 data-i18n="processing_retours_order_items">Order items</h2>
+          <table border="1" cellpadding="5" cellspacing="0" width="100%">
+          <thead class="processing-retours-table">
+              <tr>
+              <th data-i18n="processing_retours_product">Product</th>
+              <th data-i18n="processing_retours_quantity">Aantal</th>
+              <th data-i18n="processing_retours_price_per_item">Prijs per stuk</th>
+              <th data-i18n="processing_retours_total">Totaal</th>
+              <th data-i18n="processing_retours_status">Status</th>
+              <th data-i18n="processing_retours_approved">Goedgekeurd</th>
+              <th data-i18n="processing_retours_rejected">Afgekeurd</th>
+              </tr>
+          </thead>
+          <tbody class="processing-retours-table" id="orderItemsEvaluateBody">
+              <!-- Wordt via JS gevuld -->
+          </tbody>
+          </table>
+
+          <div class="processing-retours-confirm">
+              <button id="ReturnBtn" data-i18n="processing_retours_process_return">Retour verwerken</button>
+          </div>
+        </section>
     </section>
   </section>
 

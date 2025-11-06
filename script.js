@@ -1643,6 +1643,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const loadOrderBtn = document.getElementById('loadOrderBtn');
   const orderIdInput = document.getElementById('orderIdInput');
   const returnBtn = document.getElementById('ReturnBtn');
+  const requestBtn = document.getElementById('RequestBtn');
 
   function getStatusText(statusKey) {
     const lang = document.cookie.match(/(?:^|;\s*)siteLanguage=([^;]+)/)?.[1] || "be-nl";
@@ -1663,13 +1664,20 @@ document.addEventListener('DOMContentLoaded', () => {
     return { key, text: getStatusText(key) };
   }
 
-  function populateOrderTable(order) {
-    const tbody = document.getElementById('orderItemsBody');
+  function populateOrderTable(order, target = 'request') {
+    const tbodyId = target === 'request' ? 'orderItemsRequestBody' : 'orderItemsEvaluateBody';
+    const tbody = document.getElementById(tbodyId);
+    if (!tbody) {
+      console.warn('Tbody niet gevonden:', tbodyId);
+      return;
+    }
     tbody.innerHTML = '';
+
     if (!order.items) return;
 
     order.items.forEach(item => {
       if (item.type === 'voucher') return;
+
       const qty = Number(item.quantity) || 0;
       const price = Number(item.price) || 0;
       let statusKey = 'none';
@@ -1743,12 +1751,82 @@ document.addEventListener('DOMContentLoaded', () => {
         addressEl.innerHTML = addressText || '-';
         addressEl.style.whiteSpace = 'pre-line';
 
-        populateOrderTable(order);
+        // --- Toon juiste sectie afhankelijk van retourstatus ---
+        const requestSection = document.getElementById('request-retour');
+        const evaluateSection = document.getElementById('evaluate-retour');
+
+        // Controleer of dit order al een retour heeft
+        const hasReturn = order.return_items && order.return_items.length > 0;
+
+        // Reset zichtbaarheid
+        requestSection.style.display = 'none';
+        evaluateSection.style.display = 'none';
+
+        // Als nog geen retour: toon "Retour aanvragen"-knop
+        if (!hasReturn) {
+          requestSection.style.display = 'block';
+          populateOrderTable(order, 'request');
+        } else {
+          // Als retour al bestaat: toon de order items (retour verwerken)
+          evaluateSection.style.display = 'block';
+          populateOrderTable(order, 'evaluate');
+        }
       })
       .catch(err => { console.error(err); alert(getStatusText('script_processing_retours_alert_load_error')); });
   }
 
   loadOrderBtn?.addEventListener('click', loadOrder);
+
+  // ---------------------------
+  // Retour aanvragen knop (door staff)
+  // ---------------------------
+  requestBtn?.addEventListener('click', () => {
+    const orderId = orderIdInput.value.trim();
+    if (!orderId) {
+      alert(getStatusText('script_processing_retours_alert_no_id'));
+      return;
+    }
+
+    // Verzamel geselecteerde items
+    const selectedItems = [];
+    document.querySelectorAll('.approveItem').forEach(cb => {
+      if (cb.checked) selectedItems.push(cb.dataset.itemId);
+    });
+
+    if (selectedItems.length === 0) {
+      alert(getStatusText('script_processing_retours_alert_no_items_selected'));
+      return;
+    }
+
+    // Optionele reden (indien veld aanwezig)
+    const reasonInput = document.getElementById('returnReason');
+    const reason = reasonInput ? reasonInput.value.trim() : '';
+
+    // Bevestiging
+    if (!confirm(getStatusText('script_processing_retours_confirm_request'))) return;
+
+    fetchWithLang('request_retour.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        order_id: orderId,
+        items: selectedItems,
+        reason: reason
+      })
+    })
+    .then(data => {
+      if (data.success) {
+        alert(getStatusText('script_processing_retours_request_success'));
+        loadOrder();
+      } else {
+        alert(getStatusText('script_processing_retours_alert_request_failed') + ': ' + (data.message || 'Onbekende fout'));
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert(getStatusText('script_processing_retours_alert_request_error'));
+    });
+  });
 
   returnBtn?.addEventListener('click', () => {
     const orderId = orderIdInput.value.trim();

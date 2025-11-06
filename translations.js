@@ -515,6 +515,7 @@ const translations = {
     "processing_retours_rejected": "Afgekeurd",
     "processing_retours_process_return": "Retour verwerken",
     "processing_retours_order_id_placeholder": "123456",
+    "processing_retours_request_return": "Retour aanvragen",
     
     // productpagina.html
     "productpagina_page_title": "Productpagina",
@@ -776,6 +777,11 @@ const translations = {
     "script_newsletter_success": "Nieuwsbrief succesvol verzonden!",
     "script_newsletter_failed": "Verzenden mislukt. Probeer opnieuw.",
     "script_newsletter_error": "Er is een fout opgetreden tijdens het verzenden.",
+    "script_processing_retours_alert_no_items_selected": "Selecteer minstens één item om te retourneren.",
+    "script_processing_retours_confirm_request": "Weet je zeker dat je een retouraanvraag wil indienen voor deze items?",
+    "script_processing_retours_request_success": "Retouraanvraag succesvol ingediend.",
+    "script_processing_retours_alert_request_failed": "Retouraanvraag mislukt",
+    "script_processing_retours_alert_request_error": "Er is een fout opgetreden bij het indienen van de retouraanvraag.",
 },
   "be-fr": {
     // index.html
@@ -1293,6 +1299,7 @@ const translations = {
     "processing_retours_rejected": "Rejeté",
     "processing_retours_process_return": "Traiter le retour",
     "processing_retours_order_id_placeholder": "123456",
+    "processing_retours_request_return": "Demander un retour",
     
     // productpagina.html
     "productpagina_page_title": "Page produit",
@@ -1554,6 +1561,11 @@ const translations = {
     "script_newsletter_success": "Newsletter envoyée avec succès !",
     "script_newsletter_failed": "Échec de l'envoi. Veuillez réessayer.",
     "script_newsletter_error": "Une erreur est survenue lors de l'envoi.",
+    "script_processing_retours_alert_no_items_selected": "Sélectionnez au moins un article à retourner.",
+    "script_processing_retours_confirm_request": "Êtes-vous sûr de vouloir soumettre une demande de retour pour ces articles ?",
+    "script_processing_retours_request_success": "Demande de retour soumise avec succès.",
+    "script_processing_retours_alert_request_failed": "La demande de retour a échoué.",
+    "script_processing_retours_alert_request_error": "Une erreur est survenue lors de la soumission de la demande de retour."
 },
   "be-en": {
     // index.html
@@ -2071,6 +2083,7 @@ const translations = {
     "processing_retours_rejected": "Rejected",
     "processing_retours_process_return": "Process return",
     "processing_retours_order_id_placeholder": "123456",
+    "processing_retours_request_return": "Request return",
     
     // productpagina.html
     "productpagina_page_title": "Product Page",
@@ -2332,6 +2345,11 @@ const translations = {
     "script_newsletter_success": "Newsletter sent successfully!",
     "script_newsletter_failed": "Sending failed. Please try again.",
     "script_newsletter_error": "An error occurred while sending.",
+    "script_processing_retours_alert_no_items_selected": "Select at least one item to return.",
+    "script_processing_retours_confirm_request": "Are you sure you want to submit a return request for these items?",
+    "script_processing_retours_request_success": "Return request submitted successfully.",
+    "script_processing_retours_alert_request_failed": "Return request failed.",
+    "script_processing_retours_alert_request_error": "An error occurred while submitting the return request."
 },
 "be-de": {
     // index.html
@@ -2849,6 +2867,7 @@ const translations = {
     "processing_retours_rejected": "Abgelehnt",
     "processing_retours_process_return": "Retour verarbeiten",
     "processing_retours_order_id_placeholder": "123456",
+    "processing_retours_request_return": "Rückgabe anfordern",
 
     // productpagina.html
     "productpagina_page_title": "Produktseite",
@@ -3108,4 +3127,9 @@ const translations = {
     "script_newsletter_success": "Newsletter erfolgreich gesendet!",
     "script_newsletter_failed": "Senden fehlgeschlagen. Bitte erneut versuchen.",
     "script_newsletter_error": "Beim Senden ist ein Fehler aufgetreten.",
+    "script_processing_retours_alert_no_items_selected": "Wählen Sie mindestens einen Artikel zur Rückgabe aus.",
+    "script_processing_retours_confirm_request": "Sind Sie sicher, dass Sie eine Rücksendeanfrage für diese Artikel stellen möchten?",
+    "script_processing_retours_request_success": "Rücksendeanfrage erfolgreich eingereicht.",
+    "script_processing_retours_alert_request_failed": "Rücksendeanfrage fehlgeschlagen.",
+    "script_processing_retours_alert_request_error": "Beim Einreichen der Rücksendeanfrage ist ein Fehler aufgetreten."
 }};

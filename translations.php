@@ -202,6 +202,13 @@ $translations = [
         'voucher_link_success' => 'Cadeaubon succesvol gekoppeld aan je account! Waarde:',
         'voucher_already_claimed' => 'Deze cadeaubon is al door een andere gebruiker geclaimd.',
 
+        // request_retour.php
+        'script_processing_retours_alert_no_items_selected' => 'Selecteer minstens één item om te retourneren.',
+        'script_processing_retours_confirm_request' => 'Weet je zeker dat je een retouraanvraag wil indienen voor deze items?',
+        'script_processing_retours_request_success' => 'Retouraanvraag succesvol ingediend.',
+        'script_processing_retours_alert_request_failed' => 'Retouraanvraag mislukt',
+        'script_processing_retours_alert_request_error' => 'Er is een fout opgetreden bij het indienen van de retouraanvraag.',
+
         // register_mail.html
         'register_mail_title' => 'Welkom bij Stylisso',
         'register_mail_greeting' => 'Beste,',
@@ -472,6 +479,13 @@ $translations = [
         'voucher_already_linked' => 'Ce bon est déjà associé à votre compte.',
         'voucher_link_success' => 'Bon cadeau associé avec succès à votre compte ! Valeur :',
         'voucher_already_claimed' => 'Ce bon cadeau a déjà été utilisé par un autre utilisateur.',
+
+        // request_retour.php
+        'script_processing_retours_alert_no_items_selected' => 'Sélectionnez au moins un article à retourner.',
+        'script_processing_retours_confirm_request' => 'Êtes-vous sûr de vouloir soumettre une demande de retour pour ces articles ?',
+        'script_processing_retours_request_success' => 'Demande de retour soumise avec succès.',
+        'script_processing_retours_alert_request_failed' => 'La demande de retour a échoué.',
+        'script_processing_retours_alert_request_error' => 'Une erreur est survenue lors de la soumission de la demande de retour.',
 
         // register_mail.html
         'register_mail_title' => 'Bienvenue chez Stylisso',
@@ -747,6 +761,13 @@ $translations = [
         'voucher_link_success' => 'Gift voucher successfully linked to your account! Value:',
         'voucher_already_claimed' => 'This voucher has already been claimed by another user.',
 
+        // request_retour.php
+        'script_processing_retours_alert_no_items_selected' => 'Select at least one item to return.',
+        'script_processing_retours_confirm_request' => 'Are you sure you want to submit a return request for these items?',
+        'script_processing_retours_request_success' => 'Return request submitted successfully.',
+        'script_processing_retours_alert_request_failed' => 'Return request failed.',
+        'script_processing_retours_alert_request_error' => 'An error occurred while submitting the return request.',
+
         // register_mail.html
         'register_mail_title' => 'Welcome to Stylisso',
         'register_mail_greeting' => 'Dear,',
@@ -1020,6 +1041,13 @@ $translations = [
         'voucher_already_linked' => 'Dieser Geschenkgutschein ist bereits mit Ihrem Konto verknüpft.',
         'voucher_link_success' => 'Geschenkgutschein erfolgreich mit Ihrem Konto verknüpft! Wert:',
         'voucher_already_claimed' => 'Dieser Geschenkgutschein wurde bereits von einem anderen Nutzer eingelöst.',
+
+        // request_retour.php
+        'script_processing_retours_alert_no_items_selected' => 'Wählen Sie mindestens einen Artikel zur Rückgabe aus.',
+        'script_processing_retours_confirm_request' => 'Sind Sie sicher, dass Sie eine Rücksendeanfrage für diese Artikel stellen möchten?',
+        'script_processing_retours_request_success' => 'Rücksendeanfrage erfolgreich eingereicht.',
+        'script_processing_retours_alert_request_failed' => 'Rücksendeanfrage fehlgeschlagen.',
+        'script_processing_retours_alert_request_error' => 'Beim Einreichen der Rücksendeanfrage ist ein Fehler aufgetreten.',
 
         // register_mail.html
         'register_mail_title' => 'Willkommen bei Stylisso',
