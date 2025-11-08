@@ -474,6 +474,26 @@ document.addEventListener('DOMContentLoaded', function () {
       if (consent && consent.marketing) gtag('config', 'AW-XXXXXXXXX'); // vul je Google Ads ID in
     }
 
+    function deleteGACookies() {
+      const cookiesToDelete = ['_ga', '_ga_33YQ0QLLQS', '_gcl_au'];
+      const domains = [location.hostname, '.' + location.hostname, 'stylisso.be', '.stylisso.be', 'www.stylisso.be', '.www.stylisso.be'];
+      const paths = ['/', ''];
+
+      cookiesToDelete.forEach(name => {
+        domains.forEach(domain => {
+          paths.forEach(path => {
+            document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=' + path + '; domain=' + domain + ';';
+          });
+        });
+      });
+
+      // Optioneel: verwijder dataLayer en gtag
+      if (window.dataLayer) window.dataLayer = [];
+      if (window.gtag) window.gtag = function(){};
+
+      console.log("GA-cookies (_ga, _ga_33YQ0QLLQS, _gcl_au) verwijderd omdat alleen functional consent is.");
+    }
+
     // --- Bij bestaande consent direct laden ---
     if (consent && (consent.analytics || consent.marketing)) {
       loadGTAG();
@@ -501,6 +521,9 @@ document.addEventListener('DOMContentLoaded', function () {
       setCookie("cookieConsent", JSON.stringify(obj), 365);
       banner.style.display = "none";
       consent = obj;
+
+      // ✅ GA cookies verwijderen
+      deleteGACookies();
     });
 
     // --- Pas taal toe bij elke load ---
