@@ -4,6 +4,7 @@ header('Content-Type: application/json');
 
 include 'db_connect.php';
 include 'translations.php';
+include 'mailing.php';
 
 // --- Taal ophalen (fallback: be-nl) ---
 $lang = $_POST['lang'] ?? $_GET['lang'] ?? 'be-nl';
@@ -49,6 +50,22 @@ if (!$orderExists) {
     exit;
 }
 
+// --- Haal klantgegevens van de bestelling op ---
+$stmtUserData = $conn->prepare("
+    SELECT u.email, u.name 
+    FROM users u
+    JOIN orders o ON o.user_id = u.id
+    WHERE o.id = ?
+    LIMIT 1
+");
+$stmtUserData->bind_param("i", $orderId);
+$stmtUserData->execute();
+$userRow = $stmtUserData->get_result()->fetch_assoc();
+$stmtUserData->close();
+
+$userEmail = $userRow['email'] ?? '';
+$userName  = $userRow['name'] ?? 'Klant';
+
 // ===================================
 // --- Retourrecords aanmaken ---
 // ===================================
@@ -66,8 +83,8 @@ foreach ($items as $itemId) {
 
     if ($exists) continue; // al retourrecord, skip
 
-    // Ophalen van item-gegevens
-    $stmtItem = $conn->prepare("SELECT product_id, quantity, price FROM order_items WHERE id = ? AND order_id = ?");
+    // Ophalen itemgegevens
+    $stmtItem = $conn->prepare("SELECT product_id, quantity, price, maat FROM order_items WHERE id = ? AND order_id = ?");
     $stmtItem->bind_param("ii", $itemId, $orderId);
     $stmtItem->execute();
     $itemData = $stmtItem->get_result()->fetch_assoc();
@@ -78,9 +95,19 @@ foreach ($items as $itemId) {
     $quantity = intval($itemData['quantity']);
     $productId = intval($itemData['product_id']);
     $price = floatval($itemData['price']);
+    $size = $itemData['maat'] ?? '-';
     $amount = -1 * ($price * $quantity);
 
-    // Voeg retour toe
+    // Productnaam ophalen
+    $stmtProd = $conn->prepare("SELECT name FROM product_translations WHERE product_id = ? AND lang = ? LIMIT 1");
+    $stmtProd->bind_param("is", $productId, $lang);
+    $stmtProd->execute();
+    $resultProd = $stmtProd->get_result();
+    $productRow = $resultProd->fetch_assoc();
+    $stmtProd->close();
+    $productName = $productRow['name'] ?? 'Onbekend product';
+
+    // Retour toevoegen
     $stmtInsert = $conn->prepare("
         INSERT INTO returns (order_item_id, user_id, quantity, status, comment, requested_at)
         VALUES (?, ?, ?, 'requested', ?, NOW())
@@ -96,9 +123,12 @@ foreach ($items as $itemId) {
             INSERT INTO return_ledger (return_id, product_id, quantity, amount, created_at)
             VALUES (?, ?, ?, ?, NOW())
         ");
-        $stmtLedger->bind_param("iiii", $returnId, $productId, $quantity, $amount);
+        $stmtLedger->bind_param("iiid", $returnId, $productId, $quantity, $amount);
         $stmtLedger->execute();
         $stmtLedger->close();
+
+        // ✅ Mail sturen
+        sendReturnConfirmationMail($userEmail, $userName, $orderId, $productName, $size, $quantity, $price, $lang);
     }
 }
 
