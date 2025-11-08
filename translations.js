@@ -386,6 +386,11 @@ const translations = {
     "mail_tester_textarea_placeholder": "Typ hier je e-mail...",
     "mail_tester_button": "Verstuur e-mail",
 
+    // maintenance.html
+    "maintenance_title": "Onderhoudspagina",
+    "maintenance_header": "Stylisso wordt nog beter!",
+    "maintenance_text": "We zijn even bezig met onderhoud om alles nog beter te maken voor jou. Bedankt voor je geduld!",
+
     // mijn_stylisso.html
     "mijn_stylisso_page_title": "Mijn Stylisso",
     "mijn_stylisso_welcome_header": "Welkom bij Mijn Stylisso",
@@ -1169,6 +1174,11 @@ const translations = {
     "mail_tester_textarea": "Message (HTML autorisé) :",
     "mail_tester_textarea_placeholder": "Tapez votre e-mail ici...",
     "mail_tester_button": "Envoyer l'e-mail",
+
+    // maintenance.html
+    "maintenance_title": "Page de maintenance",
+    "maintenance_header": "Stylisso devient encore meilleur !",
+    "maintenance_text": "Nous effectuons actuellement une maintenance pour améliorer encore davantage votre expérience. Merci pour votre patience !",
 
     // mijn_stylisso.html
     "mijn_stylisso_page_title": "Mon Stylisso",
@@ -1954,6 +1964,11 @@ const translations = {
     "mail_tester_textarea_placeholder": "Type your e-mail here...",
     "mail_tester_button": "Send e-mail",
 
+    // maintenance.html
+    "maintenance_title": "Maintenance page",
+    "maintenance_header": "Stylisso is getting even better!",
+    "maintenance_text": "We’re doing some maintenance to make things even better for you. Thanks for your patience!",
+
     // mijn_stylisso.html
     "mijn_stylisso_page_title": "My Stylisso",
     "mijn_stylisso_welcome_header": "Welcome to My Stylisso",
@@ -2737,6 +2752,11 @@ const translations = {
     "mail_tester_textarea": "Nachricht (HTML erlaubt):",
     "mail_tester_textarea_placeholder": "Schreiben Sie Ihre E-mail hier...",
     "mail_tester_button": "E-mail senden",
+
+    // maintenance.html
+    "maintenance_title": "Wartungsseite",
+    "maintenance_header": "Stylisso wird noch besser!",
+    "maintenance_text": "Wir führen derzeit Wartungsarbeiten durch, um alles noch besser für Sie zu machen. Danke für Ihre Geduld!",
 
     // mijn_stylisso.html
     "mijn_stylisso_page_title": "Mein Stylisso",
