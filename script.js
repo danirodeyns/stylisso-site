@@ -3383,6 +3383,8 @@ function loadProductGrid() {
 // --- SEARCH GRID3 (ZOEKRESULTATEN) ---
 // ==============================
 function loadSearchGrid() {
+  console.log("loadSearchGrid aangeroepen");
+  console.log("grid3 element:", document.getElementById("product-grid3"));
   const grid3 = document.getElementById("product-grid3");
   const sortSelectSearch = document.getElementById("search-sort-products");
 
@@ -3398,6 +3400,7 @@ function loadSearchGrid() {
     }
 
     // --- Universele fetch (taal meegeven) ---
+    console.log("Ga fetchen naar PHP met q=", q);
     fetchWithLang(`get_search_products.php?q=${encodeURIComponent(q)}`)
       .then(data => {
         if (!Array.isArray(data) || data.length === 0) {
@@ -3516,8 +3519,12 @@ function loadSearchGrid() {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  loadProductGrid();
+  if (document.getElementById("product-grid2")) {
+    loadProductGrid();
+  }
+  if (document.getElementById("product-grid3")) {
   loadSearchGrid();
+  }
 });
 
 const resetForm = document.getElementById('password-reset-form');
