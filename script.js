@@ -3676,6 +3676,7 @@ function addGA4Tracking(container) {
   });
 }
 
+if (document.getElementById("contactForm")) {
 document.getElementById("contactForm").addEventListener("submit", function(event) {
     event.preventDefault(); // Voorkom de standaard formulierindiening
 
@@ -3704,6 +3705,7 @@ document.getElementById("contactForm").addEventListener("submit", function(event
         console.error('Error:', error);
     });
 });
+}
 
 function applyTranslations() {
   // 1. Cookie uitlezen
