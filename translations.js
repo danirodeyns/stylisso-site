@@ -622,6 +622,13 @@ const translations = {
     "staff_pages_voucher": "Cadeaubon aanmaken",
     "staff_pages_mail_tester": "Mail tester",
 
+    // unsubscribe.html
+    "unsubscribe_text": "Wil je uitgeschreven worden voor toekomstige nieuwsbrieven?",
+    "unsubscribe_btn": "Uitschrijven",
+
+    // unsubscribe_success.html
+    "unsubscribe_success_text": "Je bent uitgeschreven voor toekomstige nieuwsbrieven. We hopen je snel weer terug te zien!",
+
     // verzending en levering.html
     "verzending en levering_page_title": "Verzending en Levering",
     "verzending en levering_header": "Verzending en Levering",
@@ -1410,6 +1417,13 @@ const translations = {
     "staff_pages_newsletter": "Créer une newsletter",
     "staff_pages_voucher": "Créer un bon cadeau",
     "staff_pages_mail_tester": "Testeur de mail",
+
+    // unsubscribe.html
+    "unsubscribe_text": "Souhaitez-vous vous désabonner des prochaines newsletters ?",
+    "unsubscribe_btn": "Se désabonner",
+
+    // unsubscribe_success.html
+    "unsubscribe_success_text": "Vous vous êtes désabonné des prochaines newsletters. Nous espérons vous revoir bientôt !",
 
     // verzending en levering.html
     "verzending en levering_page_title": "Expédition et Livraison",
@@ -2200,6 +2214,13 @@ const translations = {
     "staff_pages_voucher": "Create gift card",
     "staff_pages_mail_tester": "Mail tester",
 
+    // unsubscribe.html
+    "unsubscribe_text": "Would you like to unsubscribe from future newsletters?",
+    "unsubscribe_btn": "Unsubscribe",
+
+    // unsubscribe_success.html
+    "unsubscribe_success_text": "You have unsubscribed from future newsletters. We hope to see you again soon!",
+
     // verzending en levering.html
     "verzending en levering_page_title": "Shipping & Delivery",
     "verzending en levering_header": "Shipping & Delivery",
@@ -2988,6 +3009,13 @@ const translations = {
     "staff_pages_newsletter": "Newsletter erstellen",
     "staff_pages_voucher": "Gutschein erstellen",
     "staff_pages_mail_tester": "Mail-Tester",
+
+    // unsubscribe.html
+    "unsubscribe_text": "Möchten Sie sich von zukünftigen Newslettern abmelden?",
+    "unsubscribe_btn": "Abmelden",
+
+    // unsubscribe_success.html
+    "unsubscribe_success_text": "Sie haben sich von zukünftigen Newslettern abgemeldet. Wir hoffen, Sie bald wiederzusehen!",
 
     // verzending en levering.html
     "verzending en levering_page_title": "Versand & Lieferung",

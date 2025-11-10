@@ -3437,6 +3437,55 @@ label[for="different_billing"] span {
   display: none;
 }
 
+.newsletter-section {
+  padding: 40px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.newsletter-section table {
+  width: 600px;
+  border-collapse: collapse;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.newsletter-section tr {
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.newsletter-section td {
+  padding: 24px;
+  color: black;
+}
+
+.newsletter-section p {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.unsubscribe-btn {
+  padding: 10px 20px;
+  border: 2px solid black;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  background-color: black;
+  color: white;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.unsubscribe-btn:hover {
+  background-color: #fff;
+  color: black;
+  border-color: black;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {
@@ -4528,6 +4577,26 @@ label[for="different_billing"] span {
     background: #1e1e1e;
     border: 1px solid #1e1e1e;
     color: white;
+  }
+
+  .newsletter-section tr {
+    background-color: #111;
+  }
+
+  .newsletter-section td {
+    color: #fff;
+  }
+
+  .unsubscribe-btn {
+    border-color: white;
+    background-color: #fff;
+    color: #111;
+  }
+
+  .unsubscribe-btn:hover {
+    background-color: #111;
+    color: white;
+    border-color: white;
   }
 }
 

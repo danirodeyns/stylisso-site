@@ -3700,34 +3700,70 @@ function addGA4Tracking(container) {
 }
 
 if (document.getElementById("contactForm")) {
-document.getElementById("contactForm").addEventListener("submit", function(event) {
-    event.preventDefault(); // Voorkom de standaard formulierindiening
+  document.getElementById("contactForm").addEventListener("submit", function(event) {
+      event.preventDefault(); // Voorkom de standaard formulierindiening
 
-    var formData = new FormData(this);
+      var formData = new FormData(this);
 
-    // AJAX-aanroep naar de PHP-processor
-    fetch('contact-mailing.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())  // Verwacht JSON-antwoord van PHP
-    .then(data => {
-        var messageDiv = document.getElementById("messageContact");
+      // AJAX-aanroep naar de PHP-processor
+      fetch('contact-mailing.php', {
+          method: 'POST',
+          body: formData
+      })
+      .then(response => response.json())  // Verwacht JSON-antwoord van PHP
+      .then(data => {
+          var messageDiv = document.getElementById("messageContact");
+
+          if (data.success) {
+              messageDiv.style.color = 'green';
+              messageDiv.innerHTML = data.message;
+          } else {
+              messageDiv.style.color = 'red';
+              messageDiv.innerHTML = data.error;
+          }
+
+          messageDiv.style.display = 'block';
+      })
+      .catch(error => {
+          console.error('Error:', error);
+      });
+  });
+}
+
+if (document.getElementById("unsubscribe-btn")) {
+  document.addEventListener("DOMContentLoaded", function() {
+    const btn = document.querySelector(".unsubscribe-btn");
+
+    // Haal e-mailadres uit de URL (bijv. ?e-mail=jouw@mail.be)
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get("e-mail");
+
+    btn.addEventListener("click", async () => {
+      if (!email) {
+        alert("Geen e-mailadres gevonden in de link.");
+        return;
+      }
+
+      try {
+        const response = await fetch("unsubscribe.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({ email })
+        });
+
+        const data = await response.json();
 
         if (data.success) {
-            messageDiv.style.color = 'green';
-            messageDiv.innerHTML = data.message;
+          window.location.href = "unsubscribe_success.html";
         } else {
-            messageDiv.style.color = 'red';
-            messageDiv.innerHTML = data.error;
+          alert("Er is iets misgelopen: " + data.message);
         }
-
-        messageDiv.style.display = 'block';
-    })
-    .catch(error => {
-        console.error('Error:', error);
+      } catch (error) {
+        console.error(error);
+        alert("Er is een fout opgetreden bij het verbinden met de server.");
+      }
     });
-});
+  });
 }
 
 function applyTranslations() {
