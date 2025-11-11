@@ -46,6 +46,20 @@
 
                     <tr>
                         <td align="center" style="background-color:#f3f4f6;text-align:center;font-size:12px;color:#6b7280;padding:16px;">
+                            <p>
+                                <strong><?= t('mailing_voetnoot_bedrijfsnaam') ?></strong> - <?= t('mailing_voetnoot_address') ?><br>
+                                <?= t('mailing_voetnoot_BTW') ?> - 
+                                <a href="mailto:klantendienst@stylisso.be" style="color:#6b7280;text-decoration:none;">klantendienst@stylisso.be</a> - <a href="https://www.stylisso.be" style="color:#6b7280;text-decoration:none;">www.stylisso.be</a><br>
+                            </p>
+
+                            <p>
+                                <?= t('mailing_voetnoot_contact') ?> <a href="https://www.stylisso.be/contact.html" style="color:#6b7280;text-decoration:none;"><?= t('mailing_voetnoot_contactpage') ?></a>.<br>
+                                <?= t('mailing_voetnoot_text') ?>
+                                <a href="https://www.stylisso.be/algemene%20voorwaarden.html" style="color:#6b7280;text-decoration:none;"><?= t('mailing_voetnoot_algemene_voorwaarden') ?></a>
+                                <?= t('mailing_voetnoot_text1') ?>
+                                <a href="https://www.stylisso.be/privacybeleid.html" style="color:#6b7280;text-decoration:none;"><?= t('mailing_voetnoot_privacybeleid') ?></a>.
+                            </p>
+
                             <?= t('afrekenen_mail_footer', ['year' => date('Y')]) ?>
                         </td>
                     </tr>
