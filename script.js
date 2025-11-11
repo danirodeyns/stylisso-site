@@ -1272,7 +1272,17 @@ async function loadOrders() {
         const orderCard = button.closest('.order-card');
         if (!orderCard) return;
         const orderId = orderCard.getAttribute('data-order-id');
-        openInvoicePDF(orderId);
+        const order = orders.find(o => o.id == orderId);
+        const pdfPath = order?.pdf_path || order?.invoice_path;
+        if (!pdfPath) {
+          alert('Geen factuur beschikbaar voor deze bestelling.');
+          return;
+        }
+        // Controleer of pad al een volledige URL is
+        const fullPath = pdfPath.startsWith('http') ? pdfPath : `${window.location.origin}${pdfPath}`;
+
+        // Open in nieuw tabblad
+        window.open(fullPath, '_blank');
       });
     });
 

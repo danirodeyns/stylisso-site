@@ -14,7 +14,7 @@ $userId = (int)$_SESSION['user_id'];
 $lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
 
 // Haal orders van deze gebruiker
-$sqlOrders = "SELECT id, total_price, status, created_at FROM orders WHERE user_id=? ORDER BY created_at DESC";
+$sqlOrders = "SELECT id, total_price, status, created_at, pdf_path FROM orders WHERE user_id=? ORDER BY created_at DESC";
 if ($stmt = $conn->prepare($sqlOrders)) {
     $stmt->bind_param("i", $userId);
     $stmt->execute();
