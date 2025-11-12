@@ -70,6 +70,7 @@ $translations = [
         'credit_nota_mail_contact_page' => 'contactpagina',
         'credit_nota_mail_footer_text' => 'Met vriendelijke groeten,',
         'credit_nota_mail_copyright' => '© 2025 Stylisso — Alle rechten voorbehouden.',
+        'credit_nota_mail_peppol' => 'Indien mogelijk, wordt de bijgevoegde creditnota ook via het Peppol-netwerk verstuurd.',
 
         // create_invoice.php
         'invoice_title' => 'Factuur',
@@ -109,6 +110,7 @@ $translations = [
         'order_confirmation_questions_text' => 'Heb je vragen? Bezoek zeker onze',
         'order_confirmation_contact_page' => 'contactpagina',
         'order_confirmation_footer_text' => '© 2025 Stylisso — Alle rechten voorbehouden.',
+        'order_confirmation_peppol' => 'Indien mogelijk, wordt de bijgevoegde factuur ook via het Peppol-netwerk verstuurd.',
 
         // delete_account_mail.html
         'delete_account_mail_title' => 'Je account is verwijderd',
@@ -364,6 +366,7 @@ $translations = [
         'credit_nota_mail_contact_page' => 'page de contact',
         'credit_nota_mail_footer_text' => 'Cordialement,',
         'credit_nota_mail_copyright' => '© 2025 Stylisso — Tous droits réservés.',
+        'credit_nota_mail_peppol' => 'Si possible, le note de crédit jointe sera également envoyée via le réseau Peppol.',
 
         // create_invoice.php
         'invoice_title' => 'Facture',
@@ -403,6 +406,7 @@ $translations = [
         'order_confirmation_questions_text' => 'Des questions ? N\'hésitez pas à visiter notre',
         'order_confirmation_contact_page' => 'page de contact',
         'order_confirmation_footer_text' => '© Stylisso — Tous droits réservés.',
+        'order_confirmation_peppol' => 'Si possible, la facture jointe sera également envoyée via le réseau Peppol.',
 
         // delete_account_mail.html
         'delete_account_mail_title' => 'Votre compte a été supprimé',
@@ -661,6 +665,7 @@ $translations = [
         'credit_nota_mail_contact_page' => 'contact page',
         'credit_nota_mail_footer_text' => 'Best regards,',
         'credit_nota_mail_copyright' => '© 2025 Stylisso — All rights reserved.',
+        'credit_nota_mail_peppol' => 'If possible, the attached credit note will also be sent via the Peppol network.',
 
         // create_invoice.php
         'invoice_title' => 'Invoice',
@@ -700,6 +705,7 @@ $translations = [
         'order_confirmation_questions_text' => 'Have questions? Be sure to visit our',
         'order_confirmation_contact_page' => 'contact page',
         'order_confirmation_footer_text' => '© Stylisso — All rights reserved.',
+        'order_confirmation_peppol' => 'If possible, the attached invoice will also be sent via the Peppol network.',
 
         // delete_account_mail.html
         'delete_account_mail_title' => 'Your Account Has Been Deleted',
@@ -958,6 +964,7 @@ $translations = [
         'credit_nota_mail_contact_page' => 'Kontaktseite',
         'credit_nota_mail_footer_text' => 'Mit freundlichen Grüßen,',
         'credit_nota_mail_copyright' => '© 2025 Stylisso — Alle Rechte vorbehalten.',
+        'credit_nota_mail_peppol' => 'Falls möglich, wird die beigefügte Gutschrift auch über das Peppol-Netzwerk versendet.',
 
         // create_invoice.php
         'invoice_title' => 'Rechnung',
@@ -997,6 +1004,7 @@ $translations = [
         'order_confirmation_questions_text' => 'Fragen? Besuchen Sie unbedingt unsere',
         'order_confirmation_contact_page' => 'Kontaktseite',
         'order_confirmation_footer_text' => '© Stylisso — Alle Rechte vorbehalten.',
+        'order_confirmation_peppol' => 'Falls möglich, wird die beigefügte Rechnung auch über das Peppol-Netzwerk versendet.',
 
         // delete_account_mail.html
         'delete_account_mail_title' => 'Ihr Konto wurde gelöscht',

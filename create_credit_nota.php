@@ -165,7 +165,8 @@ function create_credit_nota($order_id, $approved_item_ids, $conn, $lang) {
         $items,
         $totalCredit,
         $filepath,
-        $lang
+        $lang,
+        $order['vat_number']
     );
 
     return $filename;

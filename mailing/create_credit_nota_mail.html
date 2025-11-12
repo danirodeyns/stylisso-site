@@ -58,6 +58,9 @@
                                 <?= t2('credit_nota_mail_payment_text', $lang) ?><?= number_format($total_credit, 2, ',', '.') ?><?= t2('credit_nota_mail_payment_text1', $lang) ?><br><br>
                                 <?= t2('credit_nota_mail_questions_text', $lang) ?>
                                 <a href="https://www.stylisso.be/contact.html" style="color:#111;"><?= t2('credit_nota_mail_contact_page', $lang) ?></a>.
+                                <?php if (!empty($vatNumber) && str_starts_with(strtoupper(trim($vatNumber)), 'BE')): ?>
+                                    <br><?= t('credit_nota_mail_peppol') ?>
+                                <?php endif; ?>
                             </p>
 
                             <p style="margin-top:20px;">

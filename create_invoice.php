@@ -127,6 +127,7 @@ function create_invoice($order_id, $conn, $lang = 'be-nl', $used_voucher = null,
     $cartItems = $items;
     $total_order = $order['total_price'];
     $siteLanguage = $lang;
+    $vatNumber = $order['vat_number'] ?? null;
 
     sendOrderConfirmationMail(
         $order['email'],
@@ -135,7 +136,8 @@ function create_invoice($order_id, $conn, $lang = 'be-nl', $used_voucher = null,
         $cartItems,
         $total_order,
         $siteLanguage,
-        $filepath
+        $filepath,
+        $vatNumber
     );
 
     return $filename;

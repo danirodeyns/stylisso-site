@@ -58,6 +58,9 @@
                             <p style="margin-top:24px;font-size:14px;color:#555;line-height:1.6;">
                                 <?= t('order_confirmation_questions_text') ?> 
                                 <a href="https://www.stylisso.be/contact.html" style="color:#111;"><?= t('order_confirmation_contact_page') ?></a>.
+                                <?php if (!empty($vatNumber) && str_starts_with(strtoupper(trim($vatNumber)), 'BE')): ?>
+                                    <br><?= t('order_confirmation_peppol') ?>
+                                <?php endif; ?>
                             </p>
                         </td>
                     </tr>
