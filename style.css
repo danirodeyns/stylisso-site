@@ -225,6 +225,10 @@ html.no-js .no-js-warning {
   padding: 2rem;
 }
 
+.product-preview a {
+  color: black;
+}
+
 .product-grid-index {
   display: flex;
   gap: 2rem;
@@ -3588,6 +3592,10 @@ label[for="different_billing"] span {
   }
 
   a {
+    color: white;
+  }
+
+  .product-preview a {
     color: white;
   }
 
