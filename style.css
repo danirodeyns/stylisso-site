@@ -3486,6 +3486,10 @@ label[for="different_billing"] span {
   border-color: black;
 }
 
+.paypal-button-wrapper {
+  line-height: 1.6;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   body {

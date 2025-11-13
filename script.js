@@ -776,72 +776,75 @@ document.addEventListener('DOMContentLoaded', function () {
     const countryInput = checkoutForm.querySelector('[name="country"]')?.value || '';
     const land = getCountryCode(countryInput);
 
-    paypal.Buttons({
-      onClick: function(data, actions) {
-        console.log('Geselecteerde methode:', data.fundingSource);
-        window.selectedPaymentMethod = data.fundingSource; // bewaren voor PHP
-      },
+    // Alle funding sources die je wilt tonen
+    const fundingSources = [paypal.FUNDING.APPLEPAY, paypal.FUNDING.GOOGLEPAY, paypal.FUNDING.PAYPAL, paypal.FUNDING.BANCONTACT, paypal.FUNDING.CARD];
 
-      createOrder: function(data, actions) {
-        return actions.order.create({
-          intent: 'CAPTURE',
-          purchase_units: [{
-            amount: {
-              currency_code: 'EUR',
-              value: totalNum.toFixed(2)
-            },
-            shipping: {
-              name: {
-                full_name: `${voornaam} ${achternaam}`
-              },
-              address: {
-                address_line_1: adres,
-                admin_area_2: stad,
-                postal_code: postcode,
-                country_code: land
-              }
-            }
-          }],
-          payer: {
-            name: {
-              given_name: voornaam,
-              surname: achternaam
-            },
-            email_address: email,
-            address: {
-              address_line_1: adres,
-              admin_area_2: stad,
-              postal_code: postcode,
-              country_code: land
-            }
+    // Eén knop per funding source
+    fundingSources.forEach(fundingSource => {
+      // Altijd renderen voor core funding sources
+      const isCore = [paypal.FUNDING.PAYPAL, paypal.FUNDING.CARD, paypal.FUNDING.BANCONTACT].includes(fundingSource);
+      if (isCore || paypal.Buttons.isEligible && paypal.Buttons.isEligible({ fundingSource })) {
+        // Maak een aparte div per knop
+        const btnDiv = document.createElement('div');
+        btnDiv.classList.add('paypal-button-wrapper');
+        container.appendChild(btnDiv);
+
+        paypal.Buttons({
+          fundingSource: fundingSource,
+          onClick: function(data, actions) {
+            window.selectedPaymentMethod = data.fundingSource;
           },
-          application_context: {
-            shipping_preference: "SET_PROVIDED_ADDRESS",
-            user_action: "PAY_NOW",
-            brand_name: "Stylisso"
-          }
-        });
-      },
-
-      onApprove: function(data, actions) {
-        return actions.order.capture().then(function(details) {
-          const formData = new FormData(checkoutForm);
-          // Voeg toe aan formData
-          formData.append('payment_method', window.selectedPaymentMethod || 'paypal');
-          formData.append('paypal_order_id', details.id || data.orderID);
-          // Betaling gelukt, nu PHP aanroepen
-          fetch('afrekenen.php', { method: 'POST', body: formData })
-            .then(res => res.text())
-            .then(result => {
-              if (result.trim() === 'success') {
-                window.location.href = 'bedankt.html';
-              } else {
-                alert('Betaling geslaagd, maar afrekenen.php gaf een fout.');
+          createOrder: function(data, actions) {
+            return actions.order.create({
+              intent: 'CAPTURE',
+              purchase_units: [{
+                amount: { currency_code: 'EUR', value: totalNum.toFixed(2) },
+                shipping: {
+                  name: { full_name: `${voornaam} ${achternaam}` },
+                  address: {
+                    address_line_1: adres,
+                    admin_area_2: stad,
+                    postal_code: postcode,
+                    country_code: land
+                  }
+                }
+              }],
+              payer: {
+                name: { given_name: voornaam, surname: achternaam },
+                email_address: email,
+                address: {
+                  address_line_1: adres,
+                  admin_area_2: stad,
+                  postal_code: postcode,
+                  country_code: land
+                }
+              },
+              application_context: {
+                shipping_preference: "SET_PROVIDED_ADDRESS",
+                user_action: "PAY_NOW",
+                brand_name: "Stylisso"
               }
             });
-        });
+          },
+          onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+              const formData = new FormData(checkoutForm);
+              formData.append('payment_method', window.selectedPaymentMethod || 'paypal');
+              formData.append('paypal_order_id', details.id || data.orderID);
+              fetch('afrekenen.php', { method: 'POST', body: formData })
+                .then(res => res.text())
+                .then(result => {
+                  if (result.trim() === 'success') {
+                    window.location.href = 'bedankt.html';
+                  } else {
+                    alert('Betaling geslaagd, maar afrekenen.php gaf een fout.');
+                  }
+                });
+            });
+          }
+        }).render(btnDiv);
       }
-    }).render('#paypal-button-container');
+    });
   }
 });
 
