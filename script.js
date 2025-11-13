@@ -615,6 +615,9 @@ document.addEventListener('DOMContentLoaded', function () {
       checkoutForm.addEventListener('submit', function(e) {
           e.preventDefault(); // voorkomt standaard form submit
 
+          const totalNum = parseFloat(totalAmount.textContent.replace(/[^\d.-]+/g,""));
+          const method = document.getElementById('payment_method').value;
+
           // Voeg voucher toe aan hidden input als die nog niet bestaat
           let usedVoucherInput = document.getElementById('used_voucher_input');
           if (!usedVoucherInput) {
@@ -630,6 +633,28 @@ document.addEventListener('DOMContentLoaded', function () {
               code: window.voucherCode || '',
               amount: Number(window.voucherAmount) || 0 // <-- fix!
           });
+
+          // ✅ Als totaal 0, skip betaalmethode
+          if (totalNum <= 0) {
+              checkoutForm.submit(); // direct naar afrekenen.php
+              return;
+          }
+
+          switch(method) {
+            case 'paypal':
+              payWithPayPal(totalNum);
+              return;
+            case 'credit card':
+            case 'bancontact':
+            case 'apple pay':
+            case 'google pay':
+              alert(method + ' betaling nog niet geïmplementeerd');
+              return;
+            default:
+              const paymentErrorEl = document.getElementById('payment-error');
+              if (paymentErrorEl) paymentErrorEl.textContent = 'Selecteer een betaalmethode';
+              return;
+          }
 
           const formData = new FormData(checkoutForm);
 
@@ -786,6 +811,128 @@ document.addEventListener('DOMContentLoaded', function () {
       };
       document.getElementById('used_voucher_input').value = JSON.stringify(voucherData);
   });
+
+  // --- PayPal betaling ---
+  function payWithPayPal(totalNum) {
+    const container = document.getElementById('paypal-button-container');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    // --- Helperfunctie: converteer land naar ISO-code ---
+    function getCountryCode(countryInput) {
+        if (!countryInput) return 'BE'; // fallback
+        const country = countryInput.trim().toLowerCase();
+
+        // mapping van variaties naar ISO-code
+        const countryMap = {
+            'belgië': 'BE',
+            'belgie': 'BE',
+            'belgian': 'BE',
+            'belgium': 'BE',
+            'belqique': 'BE',
+            'belqique': 'BE',
+            'be': 'BE',
+
+            'nederland': 'NL',
+            'netherlands': 'NL',
+            'nl': 'NL',
+
+            'duitsland': 'DE',
+            'germany': 'DE',
+            'de': 'DE',
+
+            // voeg hier andere landen toe indien nodig
+        };
+
+        // zoek in de map, anders fallback
+        return countryMap[country] || 'BE';
+    }
+
+    // 🧠 Haal klantgegevens uit formulier
+    const checkoutForm = document.getElementById('checkoutForm');
+
+    // Naam opsplitsen
+    const fullName = checkoutForm.querySelector('[name="name"]')?.value || '';
+    const nameParts = fullName.trim().split(' ');
+    const voornaam = nameParts.shift() || '';   // eerste woord
+    const achternaam = nameParts.join(' ') || ''; // rest
+
+    // Email
+    const email = checkoutForm.querySelector('[name="email"]')?.value || '';
+
+    // Adres samenvoegen
+    const street = checkoutForm.querySelector('[name="street"]')?.value || '';
+    const houseNumber = checkoutForm.querySelector('[name="house_number"]')?.value || '';
+    const adres = `${street} ${houseNumber}`.trim();
+
+    // Overige velden
+    const stad = checkoutForm.querySelector('[name="city"]')?.value || '';
+    const postcode = checkoutForm.querySelector('[name="postal_code"]')?.value || '';
+    const countryInput = checkoutForm.querySelector('[name="country"]')?.value || '';
+    const land = getCountryCode(countryInput);
+
+    paypal.Buttons({
+      createOrder: function(data, actions) {
+        return actions.order.create({
+          intent: 'CAPTURE',
+          purchase_units: [{
+            amount: {
+              currency_code: 'EUR',
+              value: totalNum.toFixed(2)
+            },
+            shipping: {
+              name: {
+                full_name: `${voornaam} ${achternaam}`
+              },
+              address: {
+                address_line_1: adres,
+                admin_area_2: stad,
+                postal_code: postcode,
+                country_code: land
+              }
+            }
+          }],
+          payer: {
+            name: {
+              given_name: voornaam,
+              surname: achternaam
+            },
+            email_address: email,
+            address: {
+              address_line_1: adres,
+              admin_area_2: stad,
+              postal_code: postcode,
+              country_code: land
+            }
+          },
+          application_context: {
+            shipping_preference: "SET_PROVIDED_ADDRESS",
+            user_action: "PAY_NOW",
+            brand_name: "Stylisso"
+          }
+        });
+      },
+
+      onApprove: function(data, actions) {
+        return actions.order.capture().then(function(details) {
+          const formData = new FormData(checkoutForm);
+          formData.append('payment_method', 'paypal');
+          formData.append('paypal_order_id', details.id || data.orderID);
+          // Betaling gelukt, nu PHP aanroepen
+          fetch('afrekenen.php', { method: 'POST', body: formData })
+            .then(res => res.text())
+            .then(result => {
+              if (result.trim() === 'success') {
+                  window.location.href = 'bedankt.html';
+              } else {
+                  alert('Betaling geslaagd, maar afrekenen.php gaf een fout.');
+              }
+            });
+        });
+      }
+    }).render('#paypal-button-container');
+  }
 });
 
 document.addEventListener("DOMContentLoaded", () => {
