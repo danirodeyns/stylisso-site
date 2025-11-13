@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $postal_code   = trim($_POST['postal_code'] ?? '');
     $city          = trim($_POST['city'] ?? '');
     $country       = trim($_POST['country'] ?? '');
-    $payment_method = $_POST['payment_method'] ?? '';
+    $payment_method_raw = $_POST['payment_method'] ?? 'paypal';
     $email         = $_POST['email'] ?? '';
     $company_name  = trim($_POST['company_name'] ?? '');
     $vat_number    = trim($_POST['vat_number'] ?? '');
@@ -40,6 +40,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $billing_postal_code  = trim($_POST['billing_postal_code'] ?? '');
     $billing_city         = trim($_POST['billing_city'] ?? '');
     $billing_country      = trim($_POST['billing_country'] ?? '');
+    // Mapping van PayPal fundingSource naar de gewenste naam in DB
+    $paymentMethodMap = [
+        'paypal'      => 'paypal',
+        'card'        => 'credit card',
+        'bancontact'  => 'bancontact',
+        'applepay'    => 'apple pay',
+        'googlepay'   => 'google pay'
+    ];
+
+    // Zet om naar gewenste naam
+    $payment_method = $paymentMethodMap[strtolower($payment_method_raw)] ?? 'paypal';
 
     // ================================
     // 1B. Validatie van betaalmethode

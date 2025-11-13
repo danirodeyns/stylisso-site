@@ -610,113 +610,13 @@ document.addEventListener('DOMContentLoaded', function () {
   // ================================
   // CHECKOUT FORM: update profiel + afrekenen
   // ================================
-  const checkoutForm = document.getElementById('checkoutForm');
-  if (checkoutForm) {
-      checkoutForm.addEventListener('submit', function(e) {
-          e.preventDefault(); // voorkomt standaard form submit
-
-          const totalNum = parseFloat(totalAmount.textContent.replace(/[^\d.-]+/g,""));
-          const method = document.getElementById('payment_method').value;
-
-          // Voeg voucher toe aan hidden input als die nog niet bestaat
-          let usedVoucherInput = document.getElementById('used_voucher_input');
-          if (!usedVoucherInput) {
-              usedVoucherInput = document.createElement('input');
-              usedVoucherInput.type = 'hidden';
-              usedVoucherInput.name = 'used_voucher';
-              usedVoucherInput.id = 'used_voucher_input';
-              checkoutForm.appendChild(usedVoucherInput);
-          }
-
-          // Zet huidige voucher data
-          usedVoucherInput.value = JSON.stringify({
-              code: window.voucherCode || '',
-              amount: Number(window.voucherAmount) || 0 // <-- fix!
-          });
-
-          // ✅ Als totaal 0, skip betaalmethode
-          if (totalNum <= 0) {
-              checkoutForm.submit(); // direct naar afrekenen.php
-              return;
-          }
-
-          switch(method) {
-            case 'paypal':
-              payWithPayPal(totalNum);
-              return;
-            case 'credit card':
-            case 'bancontact':
-            case 'apple pay':
-            case 'google pay':
-              alert(method + ' betaling nog niet geïmplementeerd');
-              return;
-            default:
-              const paymentErrorEl = document.getElementById('payment-error');
-              if (paymentErrorEl) paymentErrorEl.textContent = 'Selecteer een betaalmethode';
-              return;
-          }
-
-          const formData = new FormData(checkoutForm);
-
-          fetch('afrekenen.php', {
-              method: 'POST',
-              body: formData
-          })
-          .then(response => response.text())
-          .then(data => {
-              console.log("Server response:", data);
-
-              const paymentErrorEl = document.getElementById('payment-error');
-              if (paymentErrorEl) paymentErrorEl.textContent = ''; // wis vorige melding
-
-              if (data.trim() === "success") {
-                  // ✅ Succes: redirect
-                  window.location.href = 'bedankt.html';
-                  return;
-              }
-
-              // 🚫 Alleen deze fout tonen
-              if (data.includes("Ongeldige betaalmethode")) {
-                if (paymentErrorEl) {
-                    // Zet data-i18n attribuut zodat applyTranslations het kan oppakken
-                    paymentErrorEl.setAttribute('data-i18n', 'script_ongeldige_betaalmethode');
-
-                    // Optioneel: fallback tekst direct instellen
-                    paymentErrorEl.textContent = translations['be-nl']['script_ongeldige_betaalmethode'] || 'Ongeldige betaalmethode.';
-
-                    paymentErrorEl.style.color = "red";
-                    paymentErrorEl.style.fontSize = "0.9rem";
-                    paymentErrorEl.style.marginTop = "4px";
-
-                    // Vertaling toepassen (zorgt ervoor dat taalwijziging ook werkt)
-                    if (typeof applyTranslations === 'function') {
-                        applyTranslations();
-                    }
-                }
-                return;
-              }
-
-              // Alle andere responses worden enkel gelogd
-              console.error('Server response (genegeerd):', data);
-          })
-          .catch(err => {
-              console.error('Fout bij afrekenen:', err);
-              const msgBox = document.createElement("div");
-              msgBox.setAttribute("data-i18n", "script_checkout_error");
-              document.body.appendChild(msgBox);
-              applyTranslations(msgBox);
-              alert(msgBox.textContent);
-              msgBox.remove();
-          });
-      });
-  }
-
   const subtotalOrder = document.getElementById('subtotalOrder');
   const redeemVoucherSpan = document.getElementById('redeem_voucher');
   const savedVoucherDropdown = document.getElementById('saved_voucher');
   const taxAmount = document.getElementById('taxAmount');
   const totalAmount = document.getElementById('totalAmount');
   const shippingCost = document.getElementById('shippingCost');
+  const checkoutForm = document.getElementById('checkoutForm');
 
   // Stop als dit geen winkelwagenpagina is
   if (!subtotalOrder && !totalAmount) {
@@ -733,6 +633,10 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!data.success) return;
       cartData = data.cart;
       updateTotals();
+      if (checkoutForm) {
+        const totalNum = parseFloat(totalAmount.textContent.replace(/[^\d.-]+/g,"")) || 0;
+        payWithPayPal(totalNum);
+      }
     })
     .catch(err => console.error('Fout bij ophalen cart:', err));
 
@@ -873,6 +777,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const land = getCountryCode(countryInput);
 
     paypal.Buttons({
+      onClick: function(data, actions) {
+        console.log('Geselecteerde methode:', data.fundingSource);
+        window.selectedPaymentMethod = data.fundingSource; // bewaren voor PHP
+      },
+
       createOrder: function(data, actions) {
         return actions.order.create({
           intent: 'CAPTURE',
@@ -917,16 +826,17 @@ document.addEventListener('DOMContentLoaded', function () {
       onApprove: function(data, actions) {
         return actions.order.capture().then(function(details) {
           const formData = new FormData(checkoutForm);
-          formData.append('payment_method', 'paypal');
+          // Voeg toe aan formData
+          formData.append('payment_method', window.selectedPaymentMethod || 'paypal');
           formData.append('paypal_order_id', details.id || data.orderID);
           // Betaling gelukt, nu PHP aanroepen
           fetch('afrekenen.php', { method: 'POST', body: formData })
             .then(res => res.text())
             .then(result => {
               if (result.trim() === 'success') {
-                  window.location.href = 'bedankt.html';
+                window.location.href = 'bedankt.html';
               } else {
-                  alert('Betaling geslaagd, maar afrekenen.php gaf een fout.');
+                alert('Betaling geslaagd, maar afrekenen.php gaf een fout.');
               }
             });
         });
