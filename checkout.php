@@ -2,6 +2,7 @@
 session_start();
 include 'db_connect.php';
 include 'translations.php';
+include 'bigbuy.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login_registreren.html');
@@ -44,11 +45,11 @@ if (!$user) {
 }
 
 // ================================
-// 2. Producten uit winkelwagen ophalen (inclusief maat)
+// 2. Producten uit winkelwagen ophalen
 // ================================
 $stmt = $conn->prepare("
     SELECT c.product_id, c.type, COALESCE(p.price, c.price) AS price, c.quantity, 
-        COALESCE(p.name, 'Cadeaubon') AS name, c.maat
+        COALESCE(p.name, 'Cadeaubon') AS name, c.maat, p.active
     FROM cart c
     LEFT JOIN products p ON c.product_id = p.id
     WHERE c.user_id = ?
@@ -59,10 +60,53 @@ $result = $stmt->get_result();
 
 $total = 0;
 $items = [];
+$hasInactiveProduct = false;
+$inactiveProductName = null;
+$api = new BigBuyAPI();
 
 while ($row = $result->fetch_assoc()) {
-    $items[] = $row; // 'maat' zit nu ook in $row
+    // 1. Check intern actief
+    if ($row['type'] === 'product' && isset($row['active']) && $row['active'] == 0) {
+        $hasInactiveProduct = true;
+        $inactiveProductId = $row['product_id'];
+        $inactiveProductName = $row['name'];
+        continue;
+    }
+
+    // 2. BigBuy stock check
+    if ($row['type'] === 'product') {
+
+        // API call
+        $stockData = $api->getStockByProduct((int)$row['product_id']);
+        $stockJson = json_decode($stockData['response'], true);
+
+        // Correcte stock berekening: hoogste quantity uit alle 'stocks'
+        $available = 0;
+
+        if (isset($stockJson['stocks']) && is_array($stockJson['stocks'])) {
+            foreach ($stockJson['stocks'] as $stockEntry) {
+                if (isset($stockEntry['quantity']) && $stockEntry['quantity'] > $available) {
+                    $available = (int)$stockEntry['quantity'];
+                }
+            }
+        }
+
+        // Geen voorraad?
+        if ($available <= 0) {
+            header("Location: cart.html?error=nostock&id=" . urlencode($row['product_id']));
+            exit;
+        }
+    }
+
+    // 3. Product OK => toevoegen
+    $items[] = $row;
     $total += $row['price'] * $row['quantity'];
+}
+
+// Bericht als intern inactief product wordt gedetecteerd
+if ($hasInactiveProduct) {
+    header("Location: cart.html?error=inactive&id=" . urlencode($inactiveProductId));
+    exit;
 }
 
 // ================================

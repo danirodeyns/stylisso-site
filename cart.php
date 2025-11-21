@@ -4,10 +4,6 @@ include 'db_connect.php';
 include 'csrf.php';
 include 'translations.php';
 
-ini_set('display_errors', 0);
-ini_set('log_errors', 1);
-ini_set('error_log', __DIR__ . '/php-error.log');
-
 header('Content-Type: application/json');
 
 // --- taal bepalen ---
@@ -92,6 +88,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $price = isset($data['price']) ? floatval($data['price']) : null;
     $maat = $data['maat'] ?? null;
 
+    if ($type === 'product' && $product_id) {
+        $stmt_check_active = $conn->prepare("SELECT active FROM products WHERE id = ?");
+        $stmt_check_active->bind_param("i", $product_id);
+        $stmt_check_active->execute();
+        $res_active = $stmt_check_active->get_result();
+        $product = $res_active->fetch_assoc();
+        $stmt_check_active->close();
+
+        if (!$product || $product['active'] == 0) {
+            echo json_encode(['success' => false, 'message' => 'Dit product is niet beschikbaar.']);
+            exit;
+        }
+    }
+
     if (($type === 'product' && !$product_id) || $quantity < 1) {
         echo json_encode(['success' => false, 'message' => 'Ongeldige data.']);
         exit;
@@ -156,7 +166,7 @@ if ($user_id) {
                 ELSE NULL
             END AS dark_image
         FROM cart c
-        LEFT JOIN products p ON c.product_id = p.id
+        LEFT JOIN products p ON c.product_id = p.id AND (p.active = 1 OR c.type = 'voucher')
         LEFT JOIN product_translations pt ON pt.product_id = p.id AND pt.lang = ?
         WHERE c.user_id = ?
     ");

@@ -74,7 +74,7 @@ $sql = "
     LEFT JOIN categories c ON p.category_id = c.id
     LEFT JOIN subcategories s ON p.subcategory_id = s.id
     LEFT JOIN wishlist w ON w.product_id = p.id AND w.user_id = ?
-    WHERE 1=1
+    WHERE 1=1 AND p.active = 1      -- ✅ Alleen actieve producten
 ";
 
 $params = [$lang, $userId];

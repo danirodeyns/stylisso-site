@@ -21,7 +21,7 @@ if (isset($_SESSION['user_id'])) {
         JOIN products p ON l.product_id = p.id
         LEFT JOIN product_translations t ON t.product_id = p.id AND t.lang = ?
         LEFT JOIN wishlist w ON w.product_id = p.id AND w.user_id = ?
-        WHERE l.user_id = ?
+        WHERE l.user_id = ? AND p.active = 1  -- ✅ Alleen actieve producten
         ORDER BY l.seen_at DESC
         LIMIT 6
     ");

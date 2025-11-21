@@ -30,7 +30,7 @@ $sql = "
         ON t.product_id = p.id AND t.lang = ?
     LEFT JOIN wishlist w 
         ON w.product_id = p.id AND w.user_id = ?
-    WHERE p.category_id = ? AND p.id != ?
+    WHERE p.category_id = ? AND p.id != ? AND p.active = 1  -- ✅ Alleen actieve producten
     ORDER BY p.created_at DESC
     LIMIT 6
 ";

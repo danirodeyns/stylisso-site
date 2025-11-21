@@ -25,13 +25,13 @@ if (!$productId) {
 }
 
 // --- Haal productprijs uit products tabel vóór insert/update ---
-$priceStmt = $conn->prepare("SELECT price FROM products WHERE id = ?");
+$priceStmt = $conn->prepare("SELECT price, active FROM products WHERE id = ?");
 $priceStmt->bind_param("i", $productId);
 $priceStmt->execute();
 $priceResult = $priceStmt->get_result();
 $product = $priceResult->fetch_assoc();
 
-if (!$product) {
+if (!$product || $product['active'] == 0) {
     echo json_encode(['error' => 'Product niet gevonden']);
     exit;
 }

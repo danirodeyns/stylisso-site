@@ -60,7 +60,7 @@ function getGA4PopularProducts($limit = 6, $lang = 'be-nl') {
                     FROM products p
                     LEFT JOIN product_translations pt 
                         ON pt.product_id = p.id AND pt.lang = ?
-                    WHERE p.id = ?
+                    WHERE p.id = ? AND p.active = 1      -- ✅ Alleen actieve producten
                     LIMIT 1
                 ");
                 $stmt->bind_param('si', $lang, $itemId);
@@ -112,6 +112,7 @@ function getGA4PopularProducts($limit = 6, $lang = 'be-nl') {
             ON pt.product_id = p.id AND pt.lang = ?
         LEFT JOIN order_items oi 
             ON oi.product_id = p.id
+        WHERE p.active = 1      -- ✅ Alleen actieve producten
         GROUP BY p.id
         ORDER BY popularity DESC, p.id ASC
         LIMIT 100

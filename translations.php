@@ -183,10 +183,12 @@ $translations = [
         'password_reset_link_missing_data' => 'Ontbrekende data voor wachtwoord reset mail',
         'create_own_voucher_amount_placeholder' => 'Bv. 25',
         'used_voucher' => 'Gebruikte cadeaubon',
-        'credit_nota_mail_subject' => 'Uw creditnota',
+        'credit_nota_mail_subject' => 'Uw creditnota voor bestelling ',
         'credit_nota_message' => 'Beste klant,<br>Hierbij ontvangt u uw creditnota in bijlage.',
-        'invoice_subject' => 'Uw factuur',
+        'invoice_subject' => 'Bedankt voor je bestelling ',
         'invoice_message' => 'Beste klant,<br>Hierbij ontvangt u uw factuur in bijlage.',
+        'return_subject' => 'Retouraanvraag ',
+        'return_subject1' => ' ontvangen',
         'voucher_invoice_subject' => 'Uw cadeaubonfactuur',
         'voucher_invoice_message' => 'Beste klant,<br>Hierbij ontvangt u uw cadeaubonfactuur in bijlage.',
         'mailing_voucher' => 'Cadeaubon',
@@ -255,6 +257,20 @@ $translations = [
         // send_newsletter_mail.html
         'send_newsletter_mail_title' => 'Nieuwsbrief - Stylisso',
         'send_newsletter_mail_footer' => '© 2025 Stylisso — Alle rechten voorbehouden.',
+
+        // shipping_confirmation_mail.html
+        'shipping_confirmation_mail_subject_text' => 'Je bestelling ',
+        'shipping_confirmation_mail_subject_text1' => ' is verzonden!',
+        'shipping_confirmation_mail_title' => 'Je bestelling is verzonden! - Stylisso',
+        'shipping_confirmation_mail_greeting' => 'Beste,',
+        'shipping_confirmation_mail_text' => 'Goed nieuws! Je bestelling',
+        'shipping_confirmation_mail_text1' => 'is verzonden',
+        'shipping_confirmation_mail_text2' => 'Binnenkort ontvang je een track & trace code van de vervoerder zodat je je pakket kunt volgen',
+        'shipping_confirmation_mail_contact_text' => 'Heb je vragen? Neem contact op via onze',
+        'shipping_confirmation_mail_contact_link' => 'contactpagina',
+        'shipping_confirmation_mail_greetings' => 'Met vriendelijke groeten,',
+        'shipping_confirmation_mail_signature' => 'Stylisso',
+        'shipping_confirmation_mail_footer' => '© 2025 Stylisso — Alle rechten voorbehouden.',
 
         // submit_returns_mail.html
         'submit_returns_title' => 'Retouraanvraag ontvangen - Stylisso',
@@ -479,9 +495,9 @@ $translations = [
         'password_reset_link_missing_data' => 'Données manquantes pour le mail de réinitialisation de mot de passe',
         'create_own_voucher_amount_placeholder' => 'Ex. 25',
         'used_voucher' => 'Bon utilisé',
-        'credit_nota_mail_subject' => 'Votre note de crédit',
+        'credit_nota_mail_subject' => 'Votre note de crédit pour la commande ',
         'credit_nota_message' => 'Cher client,<br>Veuillez trouver votre note de crédit en pièce jointe.',
-        'invoice_subject' => 'Votre facture',
+        'invoice_subject' => 'Merci pour votre commande ',
         'invoice_message' => 'Cher client,<br>Veuillez trouver votre facture en pièce jointe.',
         'voucher_invoice_subject' => 'Votre facture de bon',
         'voucher_invoice_message' => 'Cher client,<br>Veuillez trouver votre facture de bon en pièce jointe.',
@@ -551,6 +567,20 @@ $translations = [
         // send_newsletter_mail.html
         'send_newsletter_mail_title' => 'Newsletter - Stylisso',
         'send_newsletter_mail_footer' => '© 2025 Stylisso — Tous droits réservés.',
+
+        // shipping_confirmation_mail.html
+        'shipping_confirmation_mail_subject_text'  => 'Votre commande ',
+        'shipping_confirmation_mail_subject_text1' => ' a été expédiée !',
+        'shipping_confirmation_mail_title' => 'Votre commande a été expédiée ! - Stylisso',
+        'shipping_confirmation_mail_greeting' => 'Cher(e),',
+        'shipping_confirmation_mail_text' => 'Bonne nouvelle ! Votre commande',
+        'shipping_confirmation_mail_text1' => 'a été expédiée',
+        'shipping_confirmation_mail_text2' => 'Vous recevrez bientôt un code de suivi du transporteur afin de suivre votre colis',
+        'shipping_confirmation_mail_contact_text' => 'Des questions ? Contactez-nous via notre',
+        'shipping_confirmation_mail_contact_link' => 'page de contact',
+        'shipping_confirmation_mail_greetings' => 'Cordialement,',
+        'shipping_confirmation_mail_signature' => 'Stylisso',
+        'shipping_confirmation_mail_footer' => '© 2025 Stylisso — Tous droits réservés.',
 
         // submit_returns_mail.html
         'submit_returns_title' => 'Demande de retour reçue - Stylisso',
@@ -778,9 +808,9 @@ $translations = [
         'password_reset_link_missing_data' => 'Missing data for password reset mail',
         'create_own_voucher_amount_placeholder' => 'Eg. 25',
         'used_voucher' => 'Used voucher',
-        'credit_nota_mail_subject' => 'Your credit note',
+        'credit_nota_mail_subject' => 'Your credit note for order ',
         'credit_nota_message' => 'Dear customer,<br>Please find your credit note attached.',
-        'invoice_subject' => 'Your invoice',
+        'invoice_subject' => 'Thank you for your order ',
         'invoice_message' => 'Dear customer,<br>Please find your invoice attached.',
         'voucher_invoice_subject' => 'Your voucher invoice',
         'voucher_invoice_message' => 'Dear customer,<br>Please find your voucher invoice attached.',
@@ -850,6 +880,20 @@ $translations = [
         // send_newsletter_mail.html
         'send_newsletter_mail_title' => 'Newsletter - Stylisso',
         'send_newsletter_mail_footer' => '© 2025 Stylisso — All rights reserved.',
+
+        // shipping_confirmation_mail.html
+        'shipping_confirmation_mail_subject_text'  => 'Your order ',
+        'shipping_confirmation_mail_subject_text1' => ' has been shipped!',
+        'shipping_confirmation_mail_title' => 'Your order has been shipped! - Stylisso',
+        'shipping_confirmation_mail_greeting' => 'Dear,',
+        'shipping_confirmation_mail_text' => 'Good news! Your order',
+        'shipping_confirmation_mail_text1' => 'has been shipped',
+        'shipping_confirmation_mail_text2' => 'Soon you will receive a tracking code from the carrier so you can follow your package',
+        'shipping_confirmation_mail_contact_text' => 'Do you have questions? Contact us via our',
+        'shipping_confirmation_mail_contact_link' => 'contact page',
+        'shipping_confirmation_mail_greetings' => 'Kind regards,',
+        'shipping_confirmation_mail_signature' => 'Stylisso',
+        'shipping_confirmation_mail_footer' => '© 2025 Stylisso — All rights reserved.',
 
         // submit_returns_mail.html
         'submit_returns_title' => 'Return Request Received - Stylisso',
@@ -1077,9 +1121,9 @@ $translations = [
         'password_reset_link_missing_data' => 'Fehlende Daten für Passwort-Reset-Mail',
         'create_own_voucher_amount_placeholder' => 'Z.B. 25',
         'used_voucher' => 'Verwendeter Gutschein',
-        'credit_nota_mail_subject' => 'Ihre Gutschrift',
+        'credit_nota_mail_subject' => 'Ihre Gutschrift für die Bestellung ',
         'credit_nota_message' => 'Sehr geehrter Kunde,<br>anbei erhalten Sie Ihre Gutschrift.',
-        'invoice_subject' => 'Ihre Rechnung',
+        'invoice_subject' => 'Vielen Dank für Ihre Bestellung ',
         'invoice_message' => 'Sehr geehrter Kunde,<br>anbei erhalten Sie Ihre Rechnung.',
         'voucher_invoice_subject' => 'Ihre Gutscheine-Rechnung',
         'voucher_invoice_message' => 'Sehr geehrter Kunde,<br>anbei erhalten Sie Ihre Gutscheine-Rechnung.',
@@ -1149,6 +1193,20 @@ $translations = [
         // send_newsletter_mail.html
         'send_newsletter_mail_title' => 'Newsletter - Stylisso',
         'send_newsletter_mail_footer' => '© 2025 Stylisso — Alle Rechte vorbehalten.',
+
+        // shipping_confirmation_mail.html
+        'shipping_confirmation_mail_subject_text'  => 'Ihre Bestellung ',
+        'shipping_confirmation_mail_subject_text1' => ' wurde versandt!',
+        'shipping_confirmation_mail_title' => 'Ihre Bestellung wurde versandt! - Stylisso',
+        'shipping_confirmation_mail_greeting' => 'Sehr geehrte/r,',
+        'shipping_confirmation_mail_text' => 'Gute Nachrichten! Ihre Bestellung',
+        'shipping_confirmation_mail_text1' => 'wurde versandt',
+        'shipping_confirmation_mail_text2' => 'Bald erhalten Sie einen Sendungsverfolgungscode vom Versanddienstleister, damit Sie Ihr Paket verfolgen können',
+        'shipping_confirmation_mail_contact_text' => 'Haben Sie Fragen? Kontaktieren Sie uns über unsere',
+        'shipping_confirmation_mail_contact_link' => 'Kontaktseite',
+        'shipping_confirmation_mail_greetings' => 'Mit freundlichen Grüßen,',
+        'shipping_confirmation_mail_signature' => 'Stylisso',
+        'shipping_confirmation_mail_footer' => '© 2025 Stylisso — Alle Rechte vorbehalten.',
 
         // submit_returns_mail.html
         'submit_returns_title' => 'Rücksendeanfrage erhalten - Stylisso',

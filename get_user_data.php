@@ -20,9 +20,25 @@ if ($conn->connect_error) {
 }
 $conn->set_charset("utf8mb4");
 
-// Haal gebruikersgegevens op zonder adres
+// Functie om telefoonnummer leesbaar te maken
+function formatTelephone($tel) {
+    $tel = preg_replace('/[^\d\+]/', '', $tel); // alles behalve cijfers en + weghalen
+
+    if (preg_match('/^\+(\d{1,3})(\d+)$/', $tel, $matches)) {
+        $countryCode = $matches[1];
+        $number = $matches[2];
+
+        // Nummer opdelen in groepjes van 2
+        $numberGroups = str_split($number, 2);
+        return '+' . $countryCode . ' ' . implode(' ', $numberGroups);
+    }
+
+    return $tel; // fallback
+}
+
+// Haal gebruikersgegevens op
 $stmt = $conn->prepare("
-    SELECT name, email, newsletter, company_name, vat_number
+    SELECT name, email, telephone, newsletter, company_name, vat_number
     FROM users
     WHERE id = ?
 ");
@@ -30,6 +46,10 @@ $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
+// Telefoonnummer formatteren
+if ($user && !empty($user['telephone'])) {
+    $user['telephone'] = formatTelephone($user['telephone']);
+}
 $stmt->close();
 
 if ($user) {

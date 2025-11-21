@@ -30,7 +30,7 @@ $sql = "
         ON pt.product_id = p.id AND pt.lang = ?
     LEFT JOIN wishlist w 
         ON w.product_id = p.id AND w.user_id = ?
-    WHERE p.id = ?
+    WHERE p.id = ? AND p.active = 1      -- ✅ Alleen actieve producten
 ";
 
 if ($stmt = $conn->prepare($sql)) {

@@ -5,6 +5,7 @@ include 'csrf.php';
 include 'translations.php';
 include 'mailing.php';
 include 'create_invoice.php';
+include 'export_bigbuy.php';
 
 $conn->set_charset("utf8mb4");
 
@@ -25,13 +26,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // ================================
     // 1. Adres- en bedrijfsgegevens ophalen
     // ================================
-    $street        = trim($_POST['street'] ?? '');
-    $house_number  = trim($_POST['house_number'] ?? '');
-    $postal_code   = trim($_POST['postal_code'] ?? '');
-    $city          = trim($_POST['city'] ?? '');
-    $country       = trim($_POST['country'] ?? '');
+    $street        = trim($_POST['street']);
+    $house_number  = trim($_POST['house_number']);
+    $postal_code   = trim($_POST['postal_code']);
+    $city          = trim($_POST['city']);
+    $country       = trim($_POST['country']);
     $payment_method_raw = $_POST['payment_method'] ?? 'paypal';
-    $email         = $_POST['email'] ?? '';
+    $email         = $_POST['email'];
+    $telephone     = $_POST['telephone'];
     $company_name  = trim($_POST['company_name'] ?? '');
     $vat_number    = trim($_POST['vat_number'] ?? '');
     $differentBilling     = isset($_POST['different_billing']);
@@ -51,6 +53,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Zet om naar gewenste naam
     $payment_method = $paymentMethodMap[strtolower($payment_method_raw)] ?? 'paypal';
+
+    // Telephone normaliseren
+    function normalizeTelephone($tel) {
+        $tel = trim($tel);
+
+        // Alles behalve cijfers en plus weghalen
+        $tel = preg_replace('/[^\d\+]/', '', $tel);
+
+        // Controleer op internationaal formaat
+        if (strpos($tel, '+') === 0) {
+            // al in internationaal formaat, ok
+        } elseif (strpos($tel, '00') === 0) {
+            // 00xx naar +xx
+            $tel = '+' . substr($tel, 2);
+        } elseif (strpos($tel, '0') === 0) {
+            // lokaal nummer beginnend met 0, Belgische standaard +32
+            $tel = '+32' . substr($tel, 1);
+        } else {
+            // onbekend formaat, fallback +32
+            $tel = '+32' . $tel;
+        }
+
+        return $tel;
+    }
+
+    // Pas normalisatie toe
+    $telephone = normalizeTelephone($telephone);
+
+    // Optionele validatie
+    if (!preg_match('/^\+\d+$/', $telephone)) {
+        echo "Ongeldig telefoonnummer";
+        exit;
+    }
 
     // ================================
     // 1B. Validatie van betaalmethode
@@ -94,8 +129,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // ================================
     // 4. User updaten met company + VAT
     // ================================
-    $stmt_user = $conn->prepare("UPDATE users SET company_name = ?, vat_number = ? WHERE id = ?");
-    $stmt_user->bind_param("ssi", $company_name, $vat_number, $user_id);
+    $stmt_user = $conn->prepare("UPDATE users SET telephone = ?, company_name = ?, vat_number = ? WHERE id = ?");
+    $stmt_user->bind_param("sssi", $telephone, $company_name, $vat_number, $user_id);
     $stmt_user->execute();
 
     // ================================
@@ -222,8 +257,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $stmt_order = $conn->prepare("
-        INSERT INTO orders (user_id, total_price, payment_method, taal)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO orders (user_id, total_price, status, payment_method, taal)
+        VALUES (?, ?, 'paid', ?, ?)
     ");
     $stmt_order->bind_param("idss", $user_id, $total_order, $payment_method, $siteLanguage);
     $stmt_order->execute();
@@ -293,9 +328,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt_cart->bind_param("i", $user_id);
     $stmt_cart->execute();
 
+    // ================================
+    // 12. Export naar BigBuy
+    // ================================
+    $orderProducts = [];
+    foreach ($checkout['cart_items'] as $item) {
+        $orderProducts[] = [
+            'product_id' => intval($item['product_id'] ?? 0),
+            'quantity'   => intval($item['quantity'] ?? 0),
+            'size'       => $item['maat'] ?? null,
+            'price'      => floatval($item['price'] ?? 0),
+        ];
+    }
+
+    if (empty($orderProducts)) {
+        echo "Geen producten gevonden in de bestelling.";
+        exit;
+    }
+
+    $firstName = strtok($name, ' ');
+    $lastName  = trim(substr($name, strlen($firstName)));
+
+    // Bouw order array
+    $bigBuyOrderData = [
+        'reference' => $order_id,
+        'customer' => [
+            'firstName'   => $firstName,
+            'lastName'    => $lastName,
+            'email'       => $email,
+            'phone'       => $telephone,
+            'language'    => substr($siteLanguage, 3),
+            'companyName' => $company_name,
+            'vatNumber'   => $vat_number
+        ],
+        'shippingAddress' => [
+            'street'      => $street,
+            'houseNumber' => $house_number,
+            'zipCode'     => $postal_code,
+            'city'        => $city,
+            'country'     => 'BE'
+        ],
+        'products' => $orderProducts, // sku & quantity
+        'paymentMethod' => $payment_method,
+        'comment' => $_POST['order_comment'] ?? 'Test'
+    ];
+
+    // Verstuur naar export_bigbuy.php
+    $response = createBigBuyOrder($bigBuyOrderData);
+
     unset($_SESSION['checkout'], $_SESSION['used_voucher']);
 
-    echo "success";
+    if ($response['success']) {
+        echo "success";
+    } else {
+        echo "error: " . $response['message'];
+    }
+
     exit;
 }
 ?>

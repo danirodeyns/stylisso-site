@@ -1,6 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -11,7 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 include 'db_connect.php';
 include 'translations.php';
 include 'csrf.php';
-csrf_validate(); // stopt script als token fout is
+csrf_validate();
 
 // Mysqli connectie
 $conn = new mysqli($dbHost, $dbUser, $dbPass, $dbName);
@@ -43,6 +41,7 @@ $allowedCountries = ['belgie', 'belgium', 'belgique'];
 // ------------------------
 $name = cleanInput($_POST['name'] ?? '');
 $email = cleanInput($_POST['email'] ?? '');
+$telephone = cleanInput($_POST['telephone'] ?? '');
 $company_name = cleanInput($_POST['company_name'] ?? '');
 $vat_number = cleanInput($_POST['vat_number'] ?? '');
 $password = $_POST['password'] ?? '';
@@ -83,6 +82,12 @@ if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
 if ($password !== $passwordConfirm) {
     $errors[] = 'password_mismatch';
+}
+
+$shippingFilled = $street || $house_number || $postal_code || $city || $country;
+
+if ($shippingFilled && (!$street || !$house_number || !$postal_code || !$city || !$country)) {
+    $errors[] = 'address_empty';
 }
 
 // Check of e-mail al bestaat bij andere gebruiker
@@ -126,6 +131,43 @@ if ($differentBilling) {
     }
 }
 
+// ------------------------
+// Telephone normaliseren
+// ------------------------
+function normalizeTelephone($tel) {
+    $tel = trim($tel);
+
+    // Alles behalve cijfers en plus weghalen
+    $tel = preg_replace('/[^\d\+]/', '', $tel);
+
+    // Controleer op internationaal formaat
+    if (strpos($tel, '+') === 0) {
+        // al in internationaal formaat, ok
+        $tel = $tel;
+    } elseif (strpos($tel, '00') === 0) {
+        // 00xx naar +xx
+        $tel = '+' . substr($tel, 2);
+    } elseif (strpos($tel, '0') === 0) {
+        // lokaal nummer beginnend met 0, Belgische standaard +32
+        $tel = '+32' . substr($tel, 1);
+    } else {
+        // onbekend formaat, fallback +32
+        $tel = '+32' . $tel;
+    }
+
+    return $tel;
+}
+
+// ------------------------
+// Pas normalisatie toe
+// ------------------------
+$telephone = normalizeTelephone($telephone);
+
+// Optionele validatie
+if (!preg_match('/^\+\d+$/', $telephone)) {
+    $errors[] = 'telephone_invalid';
+}
+
 // Stop bij fouten
 if (!empty($errors)) {
     header("Location: gegevens.html?success=0&errors=" . implode(',', $errors));
@@ -135,8 +177,8 @@ if (!empty($errors)) {
 // ------------------------
 // Users tabel bijwerken
 // ------------------------
-$sql = "UPDATE users SET name=?, email=?, company_name=?, vat_number=?, newsletter=?";
-$params = [$name, $email, $company_name, $vat_number, $newsletter];
+$sql = "UPDATE users SET name=?, email=?, telephone=?, company_name=?, vat_number=?, newsletter=?";
+$params = [$name, $email, $telephone, $company_name, $vat_number, $newsletter];
 
 if (!empty($password)) {
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
@@ -153,7 +195,7 @@ $stmt->execute();
 $stmt->close();
 
 // ------------------------
-// Shippingadres updaten/toevoegen
+// Shippingadres updaten/toevoegen/verwijderen
 // ------------------------
 if ($street && $house_number && $postal_code && $city && $country) {
     $stmt = $conn->prepare("SELECT id FROM addresses WHERE user_id=? AND type='shipping' LIMIT 1");
@@ -181,6 +223,12 @@ if ($street && $house_number && $postal_code && $city && $country) {
         $stmt->execute();
         $stmt->close();
     }
+} else {
+    // Shipping adres leeg → verwijderen
+    $stmt = $conn->prepare("DELETE FROM addresses WHERE user_id=? AND type='shipping'");
+    $stmt->bind_param("i", $_SESSION['user_id']);
+    $stmt->execute();
+    $stmt->close();
 }
 
 // ------------------------

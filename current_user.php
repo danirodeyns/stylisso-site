@@ -1,39 +1,84 @@
 <?php
 session_start();
-include 'db_connect.php'; // Zorg dat je DB-connectie hier hebt
+include 'db_connect.php';
 include 'translations.php';
 
 header('Content-Type: application/json');
 
 $response = ['loggedIn' => false];
 
+// =============================
+// 1. Controle: sessie actief?
+// =============================
 if (isset($_SESSION['user_id'])) {
-    // Gebruiker is ingelogd via sessie
     $response['loggedIn'] = true;
     $response['userName'] = $_SESSION['user_name'];
-} elseif (isset($_COOKIE['user_login'])) {
-    // Controleer de remember cookie
-    $cookie = json_decode($_COOKIE['user_login'], true);
-
-    if (isset($cookie['id'], $cookie['token'])) {
-        $stmt = $conn->prepare("SELECT name, remember_token FROM users WHERE id = ?");
-        $stmt->bind_param("i", $cookie['id']);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows === 1) {
-            $user = $result->fetch_assoc();
-            // Vergelijk token uit cookie met token in DB
-            if (hash_equals($user['remember_token'], $cookie['token'])) {
-                // Token klopt, log gebruiker in via sessie
-                $_SESSION['user_id'] = $cookie['id'];
-                $_SESSION['user_name'] = $user['name'];
-                $response['loggedIn'] = true;
-                $response['userName'] = $user['name'];
-            }
-        }
-    }
+    echo json_encode($response);
+    exit;
 }
+
+// =============================
+// 2. Controle: remember cookie?
+// =============================
+if (!isset($_COOKIE['user_login'])) {
+    echo json_encode($response);
+    exit;
+}
+
+// Cookie decoderen
+$cookie = json_decode($_COOKIE['user_login'], true);
+
+if (!isset($cookie['user_id']) || !isset($cookie['token'])) {
+    echo json_encode($response);
+    exit;
+}
+
+$user_id = $cookie['user_id'];
+$token   = $cookie['token'];
+
+// =============================
+// 3. Token opzoeken in user_tokens
+// =============================
+$stmt = $conn->prepare("
+    SELECT t.expires_at, u.name 
+    FROM user_tokens t
+    JOIN users u ON u.id = t.user_id
+    WHERE t.user_id = ? AND t.token = ?
+");
+$stmt->bind_param("is", $user_id, $token);
+$stmt->execute();
+$res = $stmt->get_result();
+
+// Token niet gevonden → ongeldig
+if ($res->num_rows !== 1) {
+    echo json_encode($response);
+    exit;
+}
+
+$data = $res->fetch_assoc();
+
+// =============================
+// 4. Token verlopen?
+// =============================
+if ($data['expires_at'] !== null && strtotime($data['expires_at']) < time()) {
+
+    // Token is verlopen → verwijderen
+    $del = $conn->prepare("DELETE FROM user_tokens WHERE user_id = ? AND token = ?");
+    $del->bind_param("is", $user_id, $token);
+    $del->execute();
+
+    echo json_encode($response);
+    exit;
+}
+
+// =============================
+// 5. Token is geldig → login sessie
+// =============================
+$_SESSION['user_id'] = $user_id;
+$_SESSION['user_name'] = $data['name'];
+
+$response['loggedIn'] = true;
+$response['userName'] = $data['name'];
 
 echo json_encode($response);
 ?>

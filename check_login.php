@@ -2,8 +2,8 @@
 session_start();
 header('Content-Type: application/json');
 
-include 'db_connect.php'; // Voeg je database connectie toe
-include 'translations.php'; // Voeg je vertalingen toe
+include 'db_connect.php';
+include 'translations.php';
 
 if (isset($_SESSION['user_id'])) {
     $userId = $_SESSION['user_id'];

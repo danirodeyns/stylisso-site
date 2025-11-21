@@ -8,7 +8,7 @@ if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
 
     $stmt = $conn->prepare("
-        SELECT u.name, u.email, u.company_name, u.vat_number,
+        SELECT u.name, u.email, u.telephone, u.company_name, u.vat_number,
             s.street AS shipping_street, s.house_number AS shipping_house_number, 
             s.postal_code AS shipping_postal_code, s.city AS shipping_city, s.country AS shipping_country,
             b.street AS billing_street, b.house_number AS billing_house_number,
@@ -25,13 +25,29 @@ if (isset($_SESSION['user_id'])) {
     $stmt->close();
 
     // Vul POST automatisch aan als leeg
-    $_POST['name'] = $_POST['name'] ?? $userData['name'];
-    $_POST['email']      = $_POST['email'] ?? $userData['email'];
-    $_POST['address']    = $_POST['address'] ?? $userData['shipping_street'];
+    $_POST['name']         = $_POST['name'] ?? $userData['name'];
+    $_POST['email']        = $_POST['email'] ?? $userData['email'];
+    $_POST['telephone']    = $_POST['telephone'] ?? $userData['telephone'];
+    $_POST['address']      = $_POST['address'] ?? $userData['shipping_street'];
     $_POST['house_number'] = $_POST['house_number'] ?? $userData['shipping_house_number'];
-    $_POST['city']       = $_POST['city'] ?? $userData['shipping_city'];
-    $_POST['postal']     = $_POST['postal'] ?? $userData['shipping_postal_code'];
-    $_POST['country']    = $_POST['country'] ?? $userData['shipping_country'] ?? 'België';
+    $_POST['city']         = $_POST['city'] ?? $userData['shipping_city'];
+    $_POST['postal']       = $_POST['postal'] ?? $userData['shipping_postal_code'];
+    $_POST['country']      = $_POST['country'] ?? $userData['shipping_country'] ?? 'België';
+}
+
+function normalizePhoneForPaypal($tel) {
+    $tel = trim($tel);
+    $tel = preg_replace('/[^\d]/', '', $tel); // alleen cijfers behouden
+
+    // Als nummer in internationaal formaat begint met 32 (België), verwijder 32
+    if (strpos($tel, '32') === 0) {
+        $tel = substr($tel, 2);
+    } elseif (strpos($tel, '0') === 0) {
+        // nummer begint met 0, laat zo (Belgisch lokaal nummer)
+        $tel = $tel;
+    }
+    // anders: nummer wordt gebruikt zoals het is
+    return $tel;
 }
 
 // --- Hulpfunctie: cURL request naar PayPal ---
@@ -74,14 +90,15 @@ $action = $_POST['action'] ?? null;
 $cartTotal = $_POST['total'] ?? 0;
 
 // Extra klantgegevens (optioneel, komen van je checkoutformulier via JS)
-$firstName = $_POST['first_name'] ?? '';
-$lastName  = $_POST['last_name'] ?? '';
-$email     = $_POST['email'] ?? '';
-$phone     = $_POST['phone'] ?? '';
-$address   = $_POST['address'] ?? '';
-$city      = $_POST['city'] ?? '';
-$postal    = $_POST['postal'] ?? '';
-$country   = $_POST['country'] ?? 'BE'; // standaard België
+$firstName   = $_POST['first_name'] ?? '';
+$lastName    = $_POST['last_name'] ?? '';
+$email       = $_POST['email'] ?? '';
+$phone       = $_POST['telephone'] ?? '';
+$phonePaypal = normalizePhoneForPaypal($phone);
+$address     = $_POST['address'] ?? '';
+$city        = $_POST['city'] ?? '';
+$postal      = $_POST['postal'] ?? '';
+$country     = $_POST['country'] ?? 'BE'; // standaard België
 
 if (!$action) {
     echo json_encode(['error' => 'Geen actie opgegeven']);
@@ -126,7 +143,7 @@ switch($action) {
                 "phone" => [
                     "phone_type" => "MOBILE",
                     "phone_number" => [
-                        "national_number" => preg_replace('/\D/', '', $phone)
+                        "national_number" => $phonePaypal
                     ]
                 ],
                 "address" => [

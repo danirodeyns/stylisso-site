@@ -113,12 +113,6 @@ $stmtAllItems->bind_param("i", $orderId);
 $stmtAllItems->execute();
 $resultAll = $stmtAllItems->get_result()->fetch_assoc();
 
-if ($resultAll && $resultAll['total_items'] > 0 && $resultAll['total_items'] == $resultAll['processed_items']) {
-    $stmtUpdateOrder = $conn->prepare("UPDATE orders SET status = 'cancelled' WHERE id = ? LIMIT 1");
-    $stmtUpdateOrder->bind_param("i", $orderId);
-    $stmtUpdateOrder->execute();
-}
-
 // Stuur vertaald succesbericht terug
 echo json_encode(['success' => true, 'message' => t('processing_retours_alert_success')]);
 ?>

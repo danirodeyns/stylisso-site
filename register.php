@@ -45,11 +45,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user_name'] = $name;
 
         // --- REMEMBER COOKIE ---
-        $token = bin2hex(random_bytes(16));
-        $update = $conn->prepare("UPDATE users SET remember_token = ? WHERE id = ?");
-        $update->bind_param("si", $token, $_SESSION['user_id']);
-        $update->execute();
-        setcookie('user_login', json_encode(['id'=>$_SESSION['user_id'], 'name'=>$name, 'token'=>$token]), time() + (30*24*60*60), "/");
+        $token = bin2hex(random_bytes(32)); // 64 chars = overeenkomt met jouw DB
+
+        $expires_at = date("Y-m-d H:i:s", time() + 30*24*60*60); // 30 dagen
+
+        $stmt2 = $conn->prepare("
+            INSERT INTO user_tokens (user_id, token, device, expires_at)
+            VALUES (?, ?, ?, ?)
+        ");
+        $device = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+        $stmt2->bind_param("isss", $user_id, $token, $device, $expires_at);
+        $stmt2->execute();
+
+        // --- COOKIE SETTEN ---
+        setcookie(
+            'user_login',
+            json_encode([
+                'user_id' => $user_id,
+                'token'   => $token
+            ]),
+            time() + 30*24*60*60, // 30 dagen
+            '/',
+            '',
+            false,
+            true
+        );
 
         // --- WELCOME MAIL TRIGGEREN ---
         sendWelcomeMail($email, $name);

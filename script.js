@@ -156,6 +156,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const cartItemsContainer = document.getElementById('cart-items');
   const subtotalDisplay = document.getElementById('cart-subtotal');
   const cartSummary = document.getElementById('cart-summary');
+  const params = new URLSearchParams(window.location.search);
+  const errorType = params.get("error");
+  const errorId = params.get("id");
 
   function calculateSubtotal(cart) {
     if (!subtotalDisplay) return;
@@ -228,6 +231,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // ✅ Vertalingen toepassen op alleen dit nieuwe item
       applyTranslations(itemDiv);
+
+      // === Foutmeldingen tonen onder het betreffende product ===
+      if (errorId && String(item.product_id) === String(errorId)) {
+          const errorBox = document.createElement("div");
+          errorBox.style.color = "red";
+          errorBox.style.marginTop = "6px";
+
+          if (errorType === "nostock") {
+              errorBox.setAttribute("data-i18n", "script_product_no_stock");
+          } 
+          else if (errorType === "inactive") {
+              errorBox.setAttribute("data-i18n", "script_product_inactive");
+          }
+
+          cartItemsContainer.appendChild(errorBox);
+          applyTranslations(errorBox);
+      }
 
       // ✅ Klikbaar maken — alleen als product_id bestaat
       if (item.product_id) {
@@ -770,6 +790,29 @@ document.addEventListener('DOMContentLoaded', function () {
     const houseNumber = checkoutForm.querySelector('[name="house_number"]')?.value || '';
     const adres = `${street} ${houseNumber}`.trim();
 
+    // Helperfunctie: normaliseer Belgische telefoonnummers voor PayPal
+    function normalizePhone(phone) {
+      if (!phone) return '';
+
+      // Verwijder alle niet-cijfers
+      let digits = phone.replace(/\D/g, '');
+
+      // Strip internationale prefixen voor België
+      if (digits.startsWith('0032')) {
+          digits = digits.substring(4);
+      } else if (digits.startsWith('32')) {
+          digits = digits.substring(2);
+      } else if (digits.startsWith('0')) {
+          digits = digits.substring(1);
+      }
+
+      return digits;
+    }
+
+    // Telefoon
+    const phoneInput = checkoutForm.querySelector('[name="telephone"]')?.value || '';
+    const phoneForPaypal = normalizePhone(phoneInput);
+
     // Overige velden
     const stad = checkoutForm.querySelector('[name="city"]')?.value || '';
     const postcode = checkoutForm.querySelector('[name="postal_code"]')?.value || '';
@@ -806,12 +849,20 @@ document.addEventListener('DOMContentLoaded', function () {
                     admin_area_2: stad,
                     postal_code: postcode,
                     country_code: land
+                  },
+                  phone: {
+                    phone_type: "MOBILE",
+                    phone_number: { national_number: phoneForPaypal }
                   }
                 }
               }],
               payer: {
                 name: { given_name: voornaam, surname: achternaam },
                 email_address: email,
+                phone: {
+                  phone_type: "MOBILE",
+                  phone_number: { national_number: phoneForPaypal }
+                },
                 address: {
                   address_line_1: adres,
                   admin_area_2: stad,
@@ -952,6 +1003,8 @@ document.addEventListener("DOMContentLoaded", () => {
           span.setAttribute('data-i18n', 'script_name_required'); break;
         case "address_empty":
           span.setAttribute('data-i18n', 'script_address_required'); break;
+        case "telephone_invalid":
+          span.setAttribute('data-i18n', 'script_telephone_invalid'); break;
         case "email_invalid":
           span.setAttribute('data-i18n', 'script_email_invalid'); break;
         case "email_exists":
@@ -980,6 +1033,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const inputId = 
         err === "name_empty" ? "name" :
         err === "address_empty" ? "address" :
+        err === "telephone_invalid" ? "telephone" :
         err === "email_invalid" || err === "email_exists" ? "email" :
         err === "password_mismatch" ? "passwordConfirm" :
         err === "password_same" ? "password" : "";
@@ -1126,12 +1180,14 @@ window.addEventListener('DOMContentLoaded', () => {
         // Profielgegevens invullen
         const nameInput = document.getElementById('name');
         const emailInput = document.getElementById('email');
+        const telephoneInput = document.getElementById('telephone');
         const newsletterCheckbox = document.getElementById('newsletter');
         const companyInput = document.getElementById('company_name');
         const vatInput = document.getElementById('vat_number');
 
         if (nameInput) nameInput.value = data.name || '';
         if (emailInput) emailInput.value = data.email || '';
+        if (telephoneInput) telephoneInput.value = data.telephone || '';
         if (newsletterCheckbox) newsletterCheckbox.checked = (data.newsletter == 1);
         if (companyInput) companyInput.value = data.company_name || '';
         if (vatInput) vatInput.value = data.vat_number || '';
@@ -1169,6 +1225,8 @@ window.addEventListener('DOMContentLoaded', () => {
         // Mijn Stylisso overzicht
         const userName = document.getElementById('user-name');
         const userEmail = document.getElementById('user-email');
+        const userTelephoneLine = document.getElementById('user-telephone-line');
+        const userTelephone = document.getElementById('user-telephone');
         const userAddressLine = document.getElementById('user-address-line');
         const userAddress = document.getElementById('user-address');
         const userBillingAddressLine = document.getElementById('user-billing-address-line');
@@ -1180,6 +1238,18 @@ window.addEventListener('DOMContentLoaded', () => {
 
         if (userName) userName.textContent = data.name || '';
         if (userEmail) userEmail.textContent = data.email || '';
+
+        if (userTelephoneLine && userTelephone) {
+          if (data.telephone) {
+            userTelephone.textContent = data.telephone;
+            userTelephoneLine.style.display = '';
+            userTelephone.style.display = '';
+          } else {
+            userTelephone.textContent = '';
+            userTelephoneLine.style.display = 'none';
+            userTelephone.style.display = 'none';
+          }
+        }
 
         // Shipping adres
         if (data.shipping_address) {

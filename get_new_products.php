@@ -55,6 +55,7 @@ $query = "
     FROM products p
     LEFT JOIN product_translations pt 
         ON pt.product_id = p.id AND pt.lang = ?
+    WHERE p.active = 1      -- ✅ Alleen actieve producten
     ORDER BY p.created_at DESC
     LIMIT 100
 ";

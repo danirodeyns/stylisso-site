@@ -42,7 +42,8 @@ $sql = "
         ON pt.product_id = p.id AND pt.lang = ?
     LEFT JOIN order_items oi 
         ON oi.product_id = p.id AND oi.type = 'product'
-    WHERE p.category_id = ?
+    WHERE p.category_id = ? 
+        AND p.active = 1
 ";
 
 $params = [$lang, $category_id];

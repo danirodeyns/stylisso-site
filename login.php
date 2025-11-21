@@ -1,10 +1,9 @@
 <?php
-// login.php
 session_start();
 include 'db_connect.php';
 include 'translations.php';
 include 'csrf.php';
-csrf_validate(); // stopt script als token fout is
+csrf_validate();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['login-email'] ?? '';
@@ -20,8 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result->num_rows === 1) {
         $user = $result->fetch_assoc();
         if (password_verify($password, $user['password'])) {
+
             // Zet sessie altijd
-            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_id']   = $user['id'];
             $_SESSION['user_name'] = $user['name'];
 
             // --- Migreer sessie-cart naar database ---
@@ -31,64 +31,80 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $quantity   = (int)$p['quantity'];
                     $price      = (float)$p['price'];
 
-                    // Check of product al in DB-cart bestaat → update quantity
-                    $stmt = $conn->prepare("UPDATE cart SET quantity = quantity + ? 
-                                            WHERE user_id = ? AND product_id = ? AND type = 'product'");
+                    $stmt = $conn->prepare("
+                        UPDATE cart 
+                        SET quantity = quantity + ? 
+                        WHERE user_id = ? AND product_id = ? AND type = 'product'
+                    ");
                     $stmt->bind_param("iii", $quantity, $user['id'], $product_id);
                     $stmt->execute();
 
                     if ($stmt->affected_rows === 0) {
-                        // Bestond nog niet, dus nieuw record
-                        $stmt = $conn->prepare("INSERT INTO cart (user_id, product_id, type, quantity, price) 
-                                                VALUES (?, ?, 'product', ?, ?)");
+                        $stmt = $conn->prepare("
+                            INSERT INTO cart (user_id, product_id, type, quantity, price)
+                            VALUES (?, ?, 'product', ?, ?)
+                        ");
                         $stmt->bind_param("iiid", $user['id'], $product_id, $quantity, $price);
                         $stmt->execute();
                     }
                 }
-                unset($_SESSION['cart_products']); // sessie leegmaken
+                unset($_SESSION['cart_products']);
             }
 
             if (!empty($_SESSION['cart_vouchers'])) {
                 foreach ($_SESSION['cart_vouchers'] as $v) {
                     $quantity = (int)$v['quantity'];
-                    $price   = (float)$v['price'];
+                    $price    = (float)$v['price'];
 
-                    // Voor vouchers gebruiken we product_id = NULL
-                    $stmt = $conn->prepare("INSERT INTO cart (user_id, product_id, type, quantity, price) 
-                                            VALUES (?, NULL, 'voucher', ?, ?)");
+                    $stmt = $conn->prepare("
+                        INSERT INTO cart (user_id, product_id, type, quantity, price)
+                        VALUES (?, NULL, 'voucher', ?, ?)
+                    ");
                     $stmt->bind_param("iid", $user['id'], $quantity, $price);
                     $stmt->execute();
                 }
-                unset($_SESSION['cart_vouchers']); // sessie leegmaken
+                unset($_SESSION['cart_vouchers']);
             }
 
-            // Zet langdurige cookie enkel als banner geaccepteerd
+            // ================================
+            // REMEMBER ME VIA user_tokens TABEL
+            // ================================
             if ($cookiesAccepted === "1") {
-                // Genereer token
-                $token = bin2hex(random_bytes(16));
 
-                // Update database
-                $update = $conn->prepare("UPDATE users SET remember_token = ? WHERE id = ?");
-                $update->bind_param("si", $token, $user['id']);
-                $update->execute();
-                
-                // Zet cookie
-                $cookie_name = "user_login";
-                $cookie_value = json_encode([
-                    'id' => $user['id'],
-                    'name' => $user['name'],
+                $token  = bin2hex(random_bytes(32)); // 256-bit token
+                $device = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+
+                // Nieuw apparaat-token opslaan
+                $insert = $conn->prepare("
+                    INSERT INTO user_tokens (user_id, token, device, expires_at)
+                    VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 30 DAY))
+                ");
+                $insert->bind_param("iss", $user['id'], $token, $device);
+                $insert->execute();
+
+                // Cookie zetten
+                setcookie("user_login", json_encode([
+                    'id'    => $user['id'],
                     'token' => $token
+                ]), [
+                    'expires'  => time() + (30*24*60*60),
+                    'path'     => '/',
+                    'secure'   => true,
+                    'httponly' => true,
+                    'samesite' => 'Strict'
                 ]);
-                setcookie($cookie_name, $cookie_value, time() + (30 * 24 * 60 * 60), "/"); // 30 dagen
             }
 
+            // Klaar
             header("Location: index.html");
             exit;
+
         } else {
             // Verkeerd wachtwoord
             header('Location: login_registreren.html?error=wrong_password&old_email=' . urlencode($email));
             exit;
         }
+
     } else {
         // E-mail niet gevonden
         header('Location: login_registreren.html?error=email_not_found&old_email=' . urlencode($email));
