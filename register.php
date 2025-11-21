@@ -43,15 +43,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // --- AUTOMATISCH INLOGGEN ---
         $_SESSION['user_id'] = $conn->insert_id;
         $_SESSION['user_name'] = $name;
+        $user_id = $conn->insert_id;
 
         // --- REMEMBER COOKIE ---
-        $token = bin2hex(random_bytes(32)); // 64 chars = overeenkomt met jouw DB
+        $token = bin2hex(random_bytes(32));
 
-        $expires_at = date("Y-m-d H:i:s", time() + 30*24*60*60); // 30 dagen
+        $expires_at = date("Y-m-d H:i:s", time() + (365*24*60*60));
 
         $stmt2 = $conn->prepare("
-            INSERT INTO user_tokens (user_id, token, device, expires_at)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO user_tokens (user_id, token, device, expires_at, last_used)
+            VALUES (?, ?, ?, ?, NOW())
         ");
         $device = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
         $stmt2->bind_param("isss", $user_id, $token, $device, $expires_at);
@@ -64,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'user_id' => $user_id,
                 'token'   => $token
             ]),
-            time() + 30*24*60*60, // 30 dagen
+            time() + (365*24*60*60),
             '/',
             '',
             false,

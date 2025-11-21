@@ -71,13 +71,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // ================================
             if ($cookiesAccepted === "1") {
 
-                $token  = bin2hex(random_bytes(32)); // 256-bit token
+                $token  = bin2hex(random_bytes(32));
                 $device = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
 
                 // Nieuw apparaat-token opslaan
                 $insert = $conn->prepare("
-                    INSERT INTO user_tokens (user_id, token, device, expires_at)
-                    VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 30 DAY))
+                    INSERT INTO user_tokens (user_id, token, device, expires_at, last_used)
+                    VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 1 YEAR), NOW())
                 ");
                 $insert->bind_param("iss", $user['id'], $token, $device);
                 $insert->execute();
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'id'    => $user['id'],
                     'token' => $token
                 ]), [
-                    'expires'  => time() + (30*24*60*60),
+                    'expires' => time() + (365*24*60*60),
                     'path'     => '/',
                     'secure'   => true,
                     'httponly' => true,
