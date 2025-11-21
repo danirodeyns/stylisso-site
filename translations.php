@@ -13,6 +13,19 @@ $translations = [
         'afrekenen_mail_signature' => 'Stylisso',
         'afrekenen_mail_footer' => '© 2025 Stylisso — Alle rechten voorbehouden.',
 
+        // cart_reminder_mail.html
+        'cart_reminder_mail_title' => 'Herinnering winkelwagen - Stylisso',
+        'cart_reminder_mail_greeting' => 'Hallo,',
+        'cart_reminder_mail_text' => 'Je hebt nog items in je winkelwagen! Zorg dat je ze niet mist',
+        'cart_reminder_mail_product' => 'Product',
+        'cart_reminder_mail_quantity' => 'Aantal',
+        'cart_reminder_mail_size' => 'Maat',
+        'cart_reminder_mail_text1' => 'Wees er snel bij voordat de items uitverkocht zijn!',
+        'cart_reminder_mail_cart_button' => 'Bekijk je winkelwagen',
+        'cart_reminder_mail_text2' => 'Met vriendelijke groeten,',
+        'cart_reminder_mail_greetings' => 'Stylisso',
+        'cart_reminder_mail_copyright' => '© 2025 Stylisso — Alle rechten voorbehouden.',
+
         // contact-mailing.php
         'contact_form_success' => 'Bedankt! Je bericht is verzonden.',
         'contact_form_error' => 'Er is een fout opgetreden. Probeer het later opnieuw.',
@@ -163,6 +176,7 @@ $translations = [
         'account_delete_subject' => 'Je account is verwijderd',
         'account_delete_message' => 'Je account is succesvol verwijderd.',
         'account_delete_missing_email' => 'Ontbrekende email voor account delete mail',
+        'cart_reminder_subject' => 'Er staan nog items in je winkelwagen bij Stylisso!',
         'retour_approved_subject' => 'Je retour is goedgekeurd',
         'retour_approved_message_intro' => 'Beste klant,<br>De volgende producten van uw retour zijn goedgekeurd:',
         'retour_approved_message_outro' => '<br>Met vriendelijke groet,<br>Stylisso',
@@ -325,6 +339,19 @@ $translations = [
         'afrekenen_mail_signature' => 'Stylisso',
         'afrekenen_mail_footer' => '© 2025 Stylisso — Tous droits réservés.',
 
+        // cart_reminder_mail.html
+        'cart_reminder_mail_title' => 'Rappel panier - Stylisso',
+        'cart_reminder_mail_greeting' => 'Bonjour,',
+        'cart_reminder_mail_text' => 'Vous avez encore des articles dans votre panier ! Ne les manquez pas.',
+        'cart_reminder_mail_product' => 'Produit',
+        'cart_reminder_mail_quantity' => 'Quantité',
+        'cart_reminder_mail_size' => 'Taille',
+        'cart_reminder_mail_text1' => 'Dépêchez-vous avant que les articles soient épuisés !',
+        'cart_reminder_mail_cart_button' => 'Voir votre panier',
+        'cart_reminder_mail_text2' => 'Cordialement,',
+        'cart_reminder_mail_greetings' => 'Stylisso',
+        'cart_reminder_mail_copyright' => '© 2025 Stylisso — Tous droits réservés.',
+
         // contact-mailing.php
         'contact_form_success' => 'Merci ! Votre message a été envoyé.',
         'contact_form_error' => 'Une erreur est survenue. Veuillez réessayer plus tard.',
@@ -475,6 +502,7 @@ $translations = [
         'account_delete_subject' => 'Votre compte a été supprimé',
         'account_delete_message' => 'Votre compte a été supprimé avec succès.',
         'account_delete_missing_email' => 'Email manquant pour le mail de suppression de compte',
+        'cart_reminder_subject' => 'Il y a encore des articles dans votre panier chez Stylisso !',
         'retour_approved_subject' => 'Votre retour a été approuvé',
         'retour_approved_message_intro' => 'Cher client,<br>Les produits suivants de votre retour ont été approuvés :',
         'retour_approved_message_outro' => '<br>Cordialement,<br>Stylisso',
@@ -638,6 +666,19 @@ $translations = [
         'afrekenen_mail_signature' => 'Stylisso',
         'afrekenen_mail_footer' => '© 2025 Stylisso — All rights reserved.',
 
+        // cart_reminder_mail.html
+        'cart_reminder_mail_title' => 'Cart Reminder - Stylisso',
+        'cart_reminder_mail_greeting' => 'Hello,',
+        'cart_reminder_mail_text' => 'You still have items in your cart! Don’t miss them.',
+        'cart_reminder_mail_product' => 'Product',
+        'cart_reminder_mail_quantity' => 'Quantity',
+        'cart_reminder_mail_size' => 'Size',
+        'cart_reminder_mail_text1' => 'Act fast before items sell out!',
+        'cart_reminder_mail_cart_button' => 'View your cart',
+        'cart_reminder_mail_text2' => 'Best regards,',
+        'cart_reminder_mail_greetings' => 'Stylisso',
+        'cart_reminder_mail_copyright' => '© 2025 Stylisso — All rights reserved.',
+
         // contact-mailing.php
         'contact_form_success' => 'Thank you! Your message has been sent.',
         'contact_form_error' => 'An error occurred. Please try again later.',
@@ -788,6 +829,7 @@ $translations = [
         'account_delete_subject' => 'Your account has been deleted',
         'account_delete_message' => 'Your account has been successfully deleted.',
         'account_delete_missing_email' => 'Missing email for account delete mail',
+        'cart_reminder_subject' => 'You still have items in your cart at Stylisso!',
         'retour_approved_subject' => 'Your return has been approved',
         'retour_approved_message_intro' => 'Dear customer,<br>The following products from your return have been approved:',
         'retour_approved_message_outro' => '<br>Best regards,<br>Stylisso',
@@ -951,6 +993,19 @@ $translations = [
         'afrekenen_mail_signature' => 'Stylisso',
         'afrekenen_mail_footer' => '© 2025 Stylisso — Alle Rechte vorbehalten.',
 
+        // cart_reminder_mail.html
+        'cart_reminder_mail_title' => 'Warenkorb-Erinnerung - Stylisso',
+        'cart_reminder_mail_greeting' => 'Hallo,',
+        'cart_reminder_mail_text' => 'Sie haben noch Artikel in Ihrem Warenkorb! Verpassen Sie sie nicht.',
+        'cart_reminder_mail_product' => 'Produkt',
+        'cart_reminder_mail_quantity' => 'Menge',
+        'cart_reminder_mail_size' => 'Größe',
+        'cart_reminder_mail_text1' => 'Seien Sie schnell, bevor die Artikel ausverkauft sind!',
+        'cart_reminder_mail_cart_button' => 'Warenkorb ansehen',
+        'cart_reminder_mail_text2' => 'Mit freundlichen Grüßen,',
+        'cart_reminder_mail_greetings' => 'Stylisso',
+        'cart_reminder_mail_copyright' => '© 2025 Stylisso — Alle Rechte vorbehalten.',
+
         // contact-mailing.php
         'contact_form_success' => 'Danke! Ihre Nachricht wurde gesendet.',
         'contact_form_error' => 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.',
@@ -1101,6 +1156,7 @@ $translations = [
         'account_delete_subject' => 'Ihr Konto wurde gelöscht',
         'account_delete_message' => 'Ihr Konto wurde erfolgreich gelöscht.',
         'account_delete_missing_email' => 'Fehlende E-Mail für Kontolöschungs-Mail',
+        'cart_reminder_subject' => 'Es befinden sich noch Artikel in Ihrem Warenkorb bei Stylisso!',
         'retour_approved_subject' => 'Ihre Rücksendung wurde genehmigt',
         'retour_approved_message_intro' => 'Sehr geehrter Kunde,<br>Die folgenden Produkte Ihrer Rücksendung wurden genehmigt:',
         'retour_approved_message_outro' => '<br>Mit freundlichen Grüßen,<br>Stylisso',
