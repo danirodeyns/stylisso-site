@@ -1614,6 +1614,9 @@ async function loadLastOrderDetails() {
 
     container.innerHTML = html;
     applyTranslations(container);
+    if (window.trackPurchaseOrder) {
+      window.trackPurchaseOrder(data);
+    }
   } catch (err) {
     container.innerHTML = '';
     const p = document.createElement('p');
@@ -2654,14 +2657,27 @@ async function loadWishlist() {
         // --- maat ophalen indien aanwezig ---
         const sizeSelect = card.querySelector(".wishlist-product-size");
         const selectedSize = sizeSelect ? sizeSelect.value : '';
-        await fetch("./wishlist_cart_add.php", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: `product_id=${productId}&quantity=1&size=${encodeURIComponent(selectedSize)}&csrf_token=${encodeURIComponent(token)}`
-        });
+        try {
+          const response = await fetch("./wishlist_cart_add.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `product_id=${productId}&quantity=1&size=${encodeURIComponent(selectedSize)}&csrf_token=${encodeURIComponent(token)}`
+          });
+
+        const result = await response.json();
+
+        // --- Marketing event AddToCart triggeren ---
+        if (result.success && window.trackAddToCart) {
+          // Hier gebruiken we prijs × quantity, maar als wishlist_cart_add.php geen prijs terugstuurt kun je default 0 gebruiken
+          const value = result.price ? result.price * (result.quantity || 1) : 0;
+          window.trackAddToCart(value, 'EUR', productId);
+        }
 
         window.location.href = "cart.html";
-      });
+      } catch (err) {
+        console.error("Add to cart error:", err)
+      };
+    });
 
       // --- Remove-from-wishlist knop ---
       card.querySelector(".remove-from-wishlist").addEventListener("click", async (e) => {
@@ -2906,6 +2922,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           const addResp = await fetch('add_to_cart.php', { method: 'POST', body: formData });
           const result = await addResp.json();
           if (result.success) {
+            // --- Marketing event AddToCart triggeren ---
+            if (window.trackAddToCart) {
+              window.trackAddToCart(result.price * result.quantity, 'EUR', result.product_id);
+            }
             window.location.href = 'cart.html';
           } else {
             const temp = document.createElement('span');
