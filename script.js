@@ -3773,33 +3773,43 @@ if (reviewForm) {
   });
 }
 
-// ---------------- Nieuwste producten laden ----------------
+// Globale map om wishlist status bij te houden
+const wishlistStatus = {};
+
+// ---------------- Nieuwe producten laden ----------------
 async function loadNewProducts() {
   const container = document.getElementById('new-products');
   if (!container) return;
 
   try {
-    // fetchWithLang haalt automatisch de huidige taal op
     const data = await fetchWithLang('get_new_products.php');
-
     if (!data.success || !data.products.length) {
       container.innerHTML = '<p>Geen nieuwe producten gevonden.</p>';
       return;
     }
 
+    // --- HTML renderen met wishlist-knoppen ---
     container.innerHTML = data.products
-      .map(
-        (p) => `
-        <div class="product-card-index">
+      .map(p => {
+        wishlistStatus[p.id] = p.in_wishlist; // status bijhouden
+        return `
+        <div class="product-card-index" data-product-id="${p.id}" style="position:relative;">
+          <div class="wishlist-btn" data-id="${p.id}" style="position:absolute; top:8px; right:8px; cursor:pointer; z-index:10;">
+            <img src="${p.in_wishlist ? 'wishlist/added.png' : 'wishlist/wishlist.png'}" 
+              class="wishlist-icon-light" alt="Wishlist knop">
+            <img src="${p.in_wishlist ? 'wishlist/added (dark mode).png' : 'wishlist/wishlist (dark mode).png'}" 
+              class="wishlist-icon-dark" alt="Wishlist knop dark">
+          </div>
           <a href="productpagina.html?id=${p.id}">
             <img src="${p.image}" alt="${p.name}">
             <h3>${p.name}</h3>
-            <p>€${p.price}</p>
+            <p>€${parseFloat(p.price).toFixed(2)}</p>
           </a>
-        </div>
-      `
-      )
+        </div>`;
+      })
       .join('');
+
+    addWishlistListeners(container);
   } catch (err) {
     console.error('Fout bij laden van nieuwe producten:', err);
     container.innerHTML = '<p>Er ging iets mis bij het laden van de producten.</p>';
@@ -3813,23 +3823,33 @@ async function loadPopularProducts() {
 
   try {
     const data = await fetchWithLang('get_popular_products.php?action=popular');
-
     if (!data.success || !data.products.length) {
       container.innerHTML = '<p>Geen populaire producten gevonden.</p>';
       return;
     }
 
+    // --- HTML renderen met wishlist-knoppen ---
     container.innerHTML = data.products
-      .map(p => `
-        <div class="product-card-index" data-product-id="${p.id}">
+      .map(p => {
+        wishlistStatus[p.id] = p.in_wishlist; // status bijhouden
+        return `
+        <div class="product-card-index" data-product-id="${p.id}" style="position:relative;">
+          <div class="wishlist-btn" data-id="${p.id}" style="position:absolute; top:8px; right:8px; cursor:pointer; z-index:10;">
+            <img src="${p.in_wishlist ? 'wishlist/added.png' : 'wishlist/wishlist.png'}" 
+              class="wishlist-icon-light" alt="Wishlist knop">
+            <img src="${p.in_wishlist ? 'wishlist/added (dark mode).png' : 'wishlist/wishlist (dark mode).png'}" 
+              class="wishlist-icon-dark" alt="Wishlist knop dark">
+          </div>
           <a href="productpagina.html?id=${p.id}">
             <img src="${p.image}" alt="${p.name}">
             <h3>${p.name}</h3>
-            <p>€${p.price}</p>
+            <p>€${parseFloat(p.price).toFixed(2)}</p>
           </a>
-        </div>
-      `)
+        </div>`;
+      })
       .join('');
+
+    addWishlistListeners(container);
 
     // GA4 tracking
     addGA4Tracking(container);
@@ -3837,6 +3857,49 @@ async function loadPopularProducts() {
     console.error(err);
     container.innerHTML = '<p>Fout bij laden van populaire producten.</p>';
   }
+}
+
+// ---------------- Wishlist events toevoegen ----------------
+function addWishlistListeners(container) {
+  container.querySelectorAll('.product-card-index').forEach(card => {
+    const wishlistBtn = card.querySelector('.wishlist-btn');
+    if (!wishlistBtn) return;
+
+    const productId = parseInt(wishlistBtn.dataset.id, 10);
+    const iconLight = wishlistBtn.querySelector('.wishlist-icon-light');
+    const iconDark = wishlistBtn.querySelector('.wishlist-icon-dark');
+
+    wishlistBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const inWishlist = wishlistStatus[productId];
+      const action = inWishlist ? 'remove' : 'add';
+      const url = action === 'add' ? 'wishlist_add.php' : 'wishlist_remove.php';
+      const formData = new URLSearchParams();
+      formData.append('product_id', productId);
+
+      fetch(url, { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(resp => {
+          if (resp.error) return console.error('Wishlist error:', resp.error);
+
+          // Status updaten
+          wishlistStatus[productId] = !inWishlist;
+
+          // Alle knoppen voor dit product bijwerken
+          document.querySelectorAll(`.wishlist-btn[data-id="${productId}"]`).forEach(btn => {
+            btn.querySelector('.wishlist-icon-light').src = wishlistStatus[productId] ? 'wishlist/added.png' : 'wishlist/wishlist.png';
+            btn.querySelector('.wishlist-icon-dark').src = wishlistStatus[productId] ? 'wishlist/added (dark mode).png' : 'wishlist/wishlist (dark mode).png';
+          });
+        })
+        .catch(err => console.error('Wishlist fetch error:', err));
+    });
+
+    // Klik op card (behalve wishlist) → productpagina
+    card.addEventListener('click', e => {
+      if (e.target.closest('.wishlist-btn')) return;
+      window.location.href = `productpagina.html?id=${productId}`;
+    });
+  });
 }
 
 // ---------------- GA4 tracking toevoegen ----------------

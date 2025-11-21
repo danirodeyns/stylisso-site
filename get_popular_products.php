@@ -9,6 +9,9 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
 }
 use Google\Analytics\Data\V1beta\BetaAnalyticsDataClient;
 
+session_start();
+$userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
+
 // ===============================
 // 🔤 Taal bepalen
 // ===============================
@@ -20,9 +23,19 @@ $lang = isset($_GET['lang']) ? $_GET['lang'] : 'be-nl';
 $cacheFile = __DIR__ . '/cache_popular_products_' . $lang . '.json';
 $cacheTTL = 300; // 5 minuten
 
+$products = [];
+$cacheUsed = false;
+
+// ===============================
+// Cache uitlezen
+// ===============================
 if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < $cacheTTL)) {
-    echo file_get_contents($cacheFile);
-    exit;
+    $cached = file_get_contents($cacheFile);
+    $cachedData = json_decode($cached, true);
+    if (!empty($cachedData['products'])) {
+        $products = $cachedData['products'];
+        $cacheUsed = true;
+    }
 }
 
 // ===============================
@@ -33,7 +46,7 @@ function getGA4PopularProducts($limit = 6, $lang = 'be-nl') {
 
     $products = [];
 
-    // Probeer GA4
+    // GA4 ophalen
     if (class_exists('Google\Analytics\Data\V1beta\BetaAnalyticsDataClient')) {
         try {
             $client = new BetaAnalyticsDataClient([
@@ -60,7 +73,7 @@ function getGA4PopularProducts($limit = 6, $lang = 'be-nl') {
                     FROM products p
                     LEFT JOIN product_translations pt 
                         ON pt.product_id = p.id AND pt.lang = ?
-                    WHERE p.id = ? AND p.active = 1      -- ✅ Alleen actieve producten
+                    WHERE p.id = ? AND p.active = 1
                     LIMIT 1
                 ");
                 $stmt->bind_param('si', $lang, $itemId);
@@ -72,11 +85,11 @@ function getGA4PopularProducts($limit = 6, $lang = 'be-nl') {
                     $prod['price'] = number_format((float)$prod['price'], 2, '.', '');
                     $prod['popularity'] = $views;
 
-                    // --- Afbeeldingen verwerken ---
+                    // Afbeeldingen
                     if (!empty($prod['image'])) {
                         $parts = array_map('trim', explode(';', $prod['image']));
-                        $prod['image'] = $parts[0]; // eerste afbeelding als hoofd
-                        $prod['images'] = count($parts) > 1 ? $parts : []; // alle afbeeldingen in images
+                        $prod['image'] = $parts[0];
+                        $prod['images'] = count($parts) > 1 ? $parts : [];
                         if (count($parts) === 1) $prod['images'] = [];
                     } else {
                         $prod['image'] = 'images/placeholder.png';
@@ -89,7 +102,7 @@ function getGA4PopularProducts($limit = 6, $lang = 'be-nl') {
             }
 
             if (!empty($products)) {
-                return ['success' => true, 'products' => array_slice($products, 0, $limit)];
+                return array_slice($products, 0, $limit);
             }
 
         } catch (Exception $e) {
@@ -97,9 +110,8 @@ function getGA4PopularProducts($limit = 6, $lang = 'be-nl') {
         }
     }
 
-    // ===============================
-    // 📊 Fallback via database
-    // ===============================
+    // Fallback via DB
+    global $conn;
     $sql = "
         SELECT 
             p.id,
@@ -112,7 +124,7 @@ function getGA4PopularProducts($limit = 6, $lang = 'be-nl') {
             ON pt.product_id = p.id AND pt.lang = ?
         LEFT JOIN order_items oi 
             ON oi.product_id = p.id
-        WHERE p.active = 1      -- ✅ Alleen actieve producten
+        WHERE p.active = 1
         GROUP BY p.id
         ORDER BY popularity DESC, p.id ASC
         LIMIT 100
@@ -122,20 +134,15 @@ function getGA4PopularProducts($limit = 6, $lang = 'be-nl') {
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if (!$result) {
-        return ['success' => false, 'message' => 'Databasefout bij ophalen producten (fallback)'];
-    }
-
     while ($row = $result->fetch_assoc()) {
         $row['id'] = (int)$row['id'];
         $row['price'] = number_format((float)$row['price'], 2, '.', '');
         $row['popularity'] = (int)$row['popularity'];
 
-        // --- Afbeeldingen verwerken ---
         if (!empty($row['image'])) {
             $parts = array_map('trim', explode(';', $row['image']));
-            $row['image'] = $parts[0]; // eerste afbeelding als hoofd
-            $row['images'] = count($parts) > 1 ? $parts : []; // alle afbeeldingen in images
+            $row['image'] = $parts[0];
+            $row['images'] = count($parts) > 1 ? $parts : [];
             if (count($parts) === 1) $row['images'] = [];
         } else {
             $row['image'] = 'images/placeholder.png';
@@ -158,18 +165,40 @@ function getGA4PopularProducts($limit = 6, $lang = 'be-nl') {
     $selected = array_slice($final, 0, $limit);
     shuffle($selected);
 
-    return ['success' => true, 'products' => $selected];
+    return $selected;
 }
 
 // ===============================
-// 🧾 Endpoint uitvoeren
+// 🧾 Productlijst ophalen (cache of nieuw)
 // ===============================
-$result = getGA4PopularProducts(6, $lang);
-$output = json_encode($result, JSON_UNESCAPED_UNICODE);
+if (!$cacheUsed) {
+    $products = getGA4PopularProducts(6, $lang);
 
-// Cache opslaan
-@file_put_contents($cacheFile, $output);
+    // Cache opslaan (zonder wishlist info)
+    $cacheData = ['products' => $products];
+    @file_put_contents($cacheFile, json_encode($cacheData, JSON_UNESCAPED_UNICODE));
+}
 
-// Output sturen
-echo $output;
+// ===============================
+// 🧠 Wishlist-status dynamisch toevoegen
+// ===============================
+if ($userId > 0 && !empty($products)) {
+    foreach ($products as &$p) {
+        $stmt = $conn->prepare("SELECT 1 FROM wishlist WHERE user_id = ? AND product_id = ?");
+        $stmt->bind_param("ii", $userId, $p['id']);
+        $stmt->execute();
+        $stmt->store_result();
+        $p['in_wishlist'] = $stmt->num_rows > 0;
+        $stmt->close();
+    }
+    unset($p);
+}
+
+// ===============================
+// 🧾 Output sturen
+// ===============================
+echo json_encode([
+    'success' => true,
+    'products' => $products
+], JSON_UNESCAPED_UNICODE);
 ?>
