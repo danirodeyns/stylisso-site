@@ -2,7 +2,6 @@
 session_start();
 include 'db_connect.php';
 include 'translations.php';
-include 'bigbuy.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login_registreren.html');
@@ -62,7 +61,6 @@ $total = 0;
 $items = [];
 $hasInactiveProduct = false;
 $inactiveProductName = null;
-$api = new BigBuyAPI();
 
 while ($row = $result->fetch_assoc()) {
     // 1. Check intern actief
@@ -73,32 +71,7 @@ while ($row = $result->fetch_assoc()) {
         continue;
     }
 
-    // 2. BigBuy stock check
-    if ($row['type'] === 'product') {
-
-        // API call
-        $stockData = $api->getStockByProduct((int)$row['product_id']);
-        $stockJson = json_decode($stockData['response'], true);
-
-        // Correcte stock berekening: hoogste quantity uit alle 'stocks'
-        $available = 0;
-
-        if (isset($stockJson['stocks']) && is_array($stockJson['stocks'])) {
-            foreach ($stockJson['stocks'] as $stockEntry) {
-                if (isset($stockEntry['quantity']) && $stockEntry['quantity'] > $available) {
-                    $available = (int)$stockEntry['quantity'];
-                }
-            }
-        }
-
-        // Geen voorraad?
-        if ($available <= 0) {
-            header("Location: cart.html?error=nostock&id=" . urlencode($row['product_id']));
-            exit;
-        }
-    }
-
-    // 3. Product OK => toevoegen
+    // 2. Product OK => toevoegen
     $items[] = $row;
     $total += $row['price'] * $row['quantity'];
 }

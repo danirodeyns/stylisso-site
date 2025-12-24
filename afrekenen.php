@@ -5,7 +5,6 @@ include 'csrf.php';
 include 'translations.php';
 include 'mailing.php';
 include 'create_invoice.php';
-include 'export_bigbuy.php';
 
 $conn->set_charset("utf8mb4");
 
@@ -257,8 +256,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $stmt_order = $conn->prepare("
-        INSERT INTO orders (user_id, total_price, status, payment_method, taal)
-        VALUES (?, ?, 'paid', ?, ?)
+        INSERT INTO orders (user_id, total_price, payment_method, taal)
+        VALUES (?, ?, ?, ?)
     ");
     $stmt_order->bind_param("idss", $user_id, $total_order, $payment_method, $siteLanguage);
     $stmt_order->execute();
@@ -328,61 +327,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt_cart->bind_param("i", $user_id);
     $stmt_cart->execute();
 
-    // ================================
-    // 12. Export naar BigBuy
-    // ================================
-    $orderProducts = [];
-    foreach ($checkout['cart_items'] as $item) {
-        $orderProducts[] = [
-            'product_id' => intval($item['product_id'] ?? 0),
-            'quantity'   => intval($item['quantity'] ?? 0),
-            'size'       => $item['maat'] ?? null,
-            'price'      => floatval($item['price'] ?? 0),
-        ];
-    }
-
-    if (empty($orderProducts)) {
-        echo "Geen producten gevonden in de bestelling.";
-        exit;
-    }
-
-    $firstName = strtok($name, ' ');
-    $lastName  = trim(substr($name, strlen($firstName)));
-
-    // Bouw order array
-    $bigBuyOrderData = [
-        'reference' => $order_id,
-        'customer' => [
-            'firstName'   => $firstName,
-            'lastName'    => $lastName,
-            'email'       => $email,
-            'phone'       => $telephone,
-            'language'    => substr($siteLanguage, 3),
-            'companyName' => $company_name,
-            'vatNumber'   => $vat_number
-        ],
-        'shippingAddress' => [
-            'street'      => $street,
-            'houseNumber' => $house_number,
-            'zipCode'     => $postal_code,
-            'city'        => $city,
-            'country'     => 'BE'
-        ],
-        'products' => $orderProducts, // sku & quantity
-        'paymentMethod' => $payment_method,
-        'comment' => $_POST['order_comment'] ?? 'Test'
-    ];
-
-    // Verstuur naar export_bigbuy.php
-    $response = createBigBuyOrder($bigBuyOrderData);
-
     unset($_SESSION['checkout'], $_SESSION['used_voucher']);
 
-    if ($response['success']) {
-        echo "success";
-    } else {
-        echo "error: " . $response['message'];
-    }
+    echo "success";
 
     exit;
 }

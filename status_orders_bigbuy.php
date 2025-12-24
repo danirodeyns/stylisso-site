@@ -41,6 +41,7 @@ foreach ($orders as $order) {
     try {
         $bbOrderResponse = $api->getOrderInformation((int)$bigbuyRef);
         $bbOrder = json_decode($bbOrderResponse['response'], true);
+        sleep(1);
 
         if (!is_array($bbOrder) || empty($bbOrder['status'])) {
             echo "Geen status ontvangen voor order $orderId, overslaan.\n";
@@ -54,7 +55,15 @@ foreach ($orders as $order) {
             echo "Onbekende BigBuy status '$bbStatusRaw', overslaan.\n";
             continue;
         }
+
         echo "BigBuy status: $bbStatus, Lokale status: $localStatus\n";
+
+        // --- Voeg dit toe ---
+        $ignoreStatuses = ['pending', 'paid'];
+        if (in_array($bbStatus, $ignoreStatuses)) {
+            echo "BigBuy status is '$bbStatus', update overslaan.\n";
+            continue; // overslaan, geen update
+        }
 
         if ($bbStatus !== $localStatus) {
             $stmt = $conn->prepare("UPDATE orders SET status = ? WHERE id = ?");
@@ -82,8 +91,6 @@ foreach ($orders as $order) {
     } catch (Exception $e) {
         echo "Fout bij ophalen order $orderId: " . $e->getMessage() . "\n";
     }
-
-    sleep(1);
 }
 
 $conn->close();

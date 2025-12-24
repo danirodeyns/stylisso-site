@@ -243,7 +243,9 @@ html.no-js .no-js-warning {
   text-align: center;
   background-color: #eaeaea;
   border-radius: 1rem; /* afgeronde hoeken */
-  height: 20rem;
+  min-height: 20rem;
+  height: auto;
+  overflow: hidden;
 }
 
 .product-card-index a {
@@ -251,7 +253,7 @@ html.no-js .no-js-warning {
 }
 
 .product-card-index img {
-  height: 85%;
+  height: 16rem;
 }
 
 footer {

@@ -13,6 +13,10 @@ $translations = [
         'afrekenen_mail_signature' => 'Stylisso',
         'afrekenen_mail_footer' => '© 2025 Stylisso — Alle rechten voorbehouden.',
 
+        // bigbuy_debug_mailing.html
+        'bigbuy_debug_mailing_title' => 'BigBuy debug Mail - Stylisso',
+        'bigbuy_debug_mailing_footer' => '© 2025 Stylisso — Alle rechten voorbehouden.',
+
         // cart_reminder_mail.html
         'cart_reminder_mail_title' => 'Herinnering winkelwagen - Stylisso',
         'cart_reminder_mail_greeting' => 'Hallo,',
@@ -338,6 +342,10 @@ $translations = [
         'afrekenen_mail_greetings' => 'Cordialement,',
         'afrekenen_mail_signature' => 'Stylisso',
         'afrekenen_mail_footer' => '© 2025 Stylisso — Tous droits réservés.',
+
+        // bigbuy_debug_mailing.html
+        'bigbuy_debug_mailing_title' => 'Mail de BigBuy debug - Stylisso',
+        'bigbuy_debug_mailing_footer' => '© 2025 Stylisso — Tous droits réservés.',
 
         // cart_reminder_mail.html
         'cart_reminder_mail_title' => 'Rappel panier - Stylisso',
@@ -666,6 +674,10 @@ $translations = [
         'afrekenen_mail_signature' => 'Stylisso',
         'afrekenen_mail_footer' => '© 2025 Stylisso — All rights reserved.',
 
+        // bigbuy_debug_mailing.html
+        'bigbuy_debug_mailing_title' => 'BigBuy debug Mail - Stylisso',
+        'bigbuy_debug_mailing_footer' => '© 2025 Stylisso — All rights reserved.',
+
         // cart_reminder_mail.html
         'cart_reminder_mail_title' => 'Cart Reminder - Stylisso',
         'cart_reminder_mail_greeting' => 'Hello,',
@@ -992,6 +1004,10 @@ $translations = [
         'afrekenen_mail_greetings' => 'Mit freundlichen Grüßen,',
         'afrekenen_mail_signature' => 'Stylisso',
         'afrekenen_mail_footer' => '© 2025 Stylisso — Alle Rechte vorbehalten.',
+
+        // bigbuy_debug_mailing.html
+        'bigbuy_debug_mailing_title' => 'BigBuy debug-Mail - Stylisso',
+        'bigbuy_debug_mailing_footer' => '© 2025 Stylisso — Alle Rechte vorbehalten.',
 
         // cart_reminder_mail.html
         'cart_reminder_mail_title' => 'Warenkorb-Erinnerung - Stylisso',
