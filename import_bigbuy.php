@@ -7293,7 +7293,7 @@ $processedProducts = [];
 foreach ($selectedProducts as $productId) {
     echo "🟦 Controleer product $productId...\n";
 
-    // --- 48u import guard ---
+    // --- 72u import guard ---
     $stmtCheck = $conn->prepare("
         SELECT last_import_run
         FROM products
@@ -7309,8 +7309,8 @@ foreach ($selectedProducts as $productId) {
     if ($rowCheck) {
         $lastRun = $rowCheck['last_import_run'];
 
-        if ($lastRun !== null && strtotime($lastRun) > strtotime('-48 hours')) {
-            echo "⏭ Product $productId minder dan 48u geleden geïmporteerd → behouden\n\n";
+        if ($lastRun !== null && strtotime($lastRun) > strtotime('-72 hours')) {
+            echo "⏭ Product $productId minder dan 72u geleden geïmporteerd → behouden\n\n";
             $processedProducts[] = $productId; // 👈 essentieel
             continue;
         }
@@ -7550,17 +7550,7 @@ foreach ($selectedProducts as $productId) {
             sleep(5);
         }
 
-        // --- 7b) Check of alle varianten zonder stock zitten
-        if (!empty($variationsResp) && empty($variants)) {
-            // Varianten bestaan, maar geen enkele heeft stock
-            $active = 0;
-            echo "⚠ Product $productId heeft varianten maar GEEN stock → active=0\n";
-        } else {
-            // Geen varianten, of minstens 1 variant met stock
-            $active = 1;
-        }
-
-        // --- 7c) Maak één string van alle attributen ---
+        // --- 7b) Maak één string van alle attributen ---
         $allAttributes = [];
         foreach ($variants as $attrArray) {
             foreach ($attrArray as $a) {
@@ -7573,6 +7563,40 @@ foreach ($selectedProducts as $productId) {
 
         // 1️⃣ Definieer bekende standaardmaten
         $sizeOrder = ['XXS','XS','S','M','L','XL','XXL','XXXL'];
+
+        // ----------------------------------
+        // Bepaal of product echte MAAT-varianten heeft
+        // ----------------------------------
+        $hasSizeVariants = false;
+
+        foreach ($allAttributes as $attr) {
+            $attr = trim($attr);
+
+            if (
+                in_array($attr, $sizeOrder, true) ||               // S, M, L, XL
+                preg_match('/^\d+$/', $attr) ||                    // 38, 40, 42
+                preg_match('/^\d+\s*years$/i', $attr) ||           // 7 Years
+                preg_match('/^(\d+)-(\d+)\s*years$/i', $attr)      // 4-6 years
+            ) {
+                $hasSizeVariants = true;
+                break;
+            }
+        }
+        echo "DEBUG: hasSizeVariants = " . ($hasSizeVariants ? 'YES' : 'NO') . "\n";
+
+        // --- 7c) Check of alle varianten zonder stock zitten
+        if ($hasSizeVariants) {
+            if (empty($variants)) {
+                $active = 0;
+                echo "⚠ Product $productId heeft MAAT-varianten maar geen stock → active=0\n";
+            } else {
+                $active = 1;
+            }
+        } else {
+            // Variants bestaan maar zijn geen maat-varianten → behandelen als simple product
+            $active = 1;
+            echo "ℹ Product $productId heeft geen maat-varianten → behandeld als simple product\n";
+        }
 
         // 2️⃣ Categoriseer sizes
         $standard = [];

@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light only">
     <meta name="supported-color-schemes" content="light">
-    <title><?= t2('send_newsletter_mail_title', $lang) ?></title>
+    <title><?= t2('review_request_mail_title', $lang) ?></title>
 </head>
 <body style="margin:0;padding:0;color:#111;font-family:Arial,sans-serif;">
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:40px 0;">
         <tr>
             <td align="center">
                 <table width="600" cellspacing="0" cellpadding="0" style="border-radius:10px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+                    <!-- Header / Logo -->
                     <tr>
                         <td align="left" style="background-color:#111;padding:24px;cursor:pointer;">
                             <a href="https://www.stylisso.be" style="text-decoration: none;color: #111;">
@@ -20,12 +21,31 @@
                         </td>
                     </tr>
 
+                    <!-- Body -->
                     <tr>
                         <td style="padding:30px;">
-                            {{newsletter_content}}
+                            <h1 style="font-size:22px;margin:0 0 16px;color:#111;">
+                                <?= t2('review_request_mail_greeting', $lang) ?> {{name}}!
+                            </h1>
+
+                            <p style="font-size:15px;line-height:1.6;margin:0 0 12px;color:#333;">
+                                <?= t2('review_request_mail_text_intro', $lang) ?>
+                            </p>
+
+                            <p style="text-align:center;margin:30px 0;">
+                                <a href="{{review_link}}" style="display:inline-block;padding:12px 24px;background-color:#111;color:#fff;text-decoration:none;border-radius:5px;font-weight:bold;">
+                                    <?= t2('review_request_mail_button', $lang) ?>
+                                </a>
+                            </p>
+
+                            <p style="margin-top:24px;font-size:14px;color:#555;line-height:1.6;">
+                                <?= t2('review_request_mail_thanks', $lang) ?><br>
+                                <strong><?= t2('review_request_mail_signature', $lang) ?></strong>
+                            </p>
                         </td>
                     </tr>
 
+                    <!-- Footer -->
                     <tr>
                         <td align="center" style="background-color:#f3f4f6;text-align:center;font-size:12px;color:#6b7280;padding:16px;">
                             <p>
@@ -35,15 +55,11 @@
                             </p>
 
                             <p>
-                                <?= t2('mailing_voetnoot_text5', $lang) ?> <strong><a href="https://www.stylisso.be" style="color:#6b7280;text-decoration:underline;"><?= t2('mailing_voetnoot_bedrijfsnaam', $lang) ?></strong>.
-                            </p>
-
-                            <p>
                                 <?= t2('mailing_voetnoot_contact', $lang) ?> <a href="https://www.stylisso.be/contact.html" style="color:#6b7280;text-decoration:none;"><?= t2('mailing_voetnoot_contactpage', $lang) ?></a>.<br>
                                 <?= t2('mailing_voetnoot_text', $lang) ?>
-                                <a href="https://www.stylisso.be/algemene%20voorwaarden.html" style="color:#6b7280;text-decoration:underline;"><?= t2('mailing_voetnoot_algemene_voorwaarden', $lang) ?></a>
+                                <a href="https://www.stylisso.be/algemene%20voorwaarden.html" style="color:#6b7280;text-decoration:none;"><?= t2('mailing_voetnoot_algemene_voorwaarden', $lang) ?></a>
                                 <?= t2('mailing_voetnoot_text1', $lang) ?>
-                                <a href="https://www.stylisso.be/privacybeleid.html" style="color:#6b7280;text-decoration:underline;"><?= t2('mailing_voetnoot_privacybeleid', $lang) ?></a>.
+                                <a href="https://www.stylisso.be/privacybeleid.html" style="color:#6b7280;text-decoration:none;"><?= t2('mailing_voetnoot_privacybeleid', $lang) ?></a>.
                             </p>
 
                             <table style="margin-bottom:0.75rem;">
@@ -71,7 +87,7 @@
                                 <a href="https://www.stylisso.be/unsubscribe.html?e-mail={{email}}" style="color:#6b7280;text-decoration:underline;"><?= t2('mailing_voetnoot_unsubscribe', $lang) ?></a>
                             </p>
 
-                            <?= t2('send_newsletter_mail_footer', $lang) ?>
+                            <?= t2('review_request_mail_footer', $lang) ?>
                         </td>
                     </tr>
                 </table>

@@ -209,6 +209,7 @@ $translations = [
         'return_subject1' => ' ontvangen',
         'voucher_invoice_subject' => 'Uw cadeaubonfactuur',
         'voucher_invoice_message' => 'Beste klant,<br>Hierbij ontvangt u uw cadeaubonfactuur in bijlage.',
+        'review_request_mail_subject' => 'We horen graag je mening over je recente order ',
         'mailing_voucher' => 'Cadeaubon',
         'mailing_voetnoot_bedrijfsnaam' => 'Stylisso',
         'mailing_voetnoot_address' => 'Bosveldstraat 21, 3300 Tienen, België',
@@ -271,6 +272,15 @@ $translations = [
         // reviews-mailing.php
         'review_success' => 'Bedankt voor je review!',
         'review_error'   => 'Er is iets misgegaan bij het verzenden van je review.',
+
+        // review_request_mail.html
+        'review_request_mail_title' => 'We horen graag uw mening!',
+        'review_request_mail_greeting' => 'Hallo',
+        'review_request_mail_text_intro' => 'Bedankt voor uw bestelling bij Stylisso. Wilt u ons een review geven?',
+        'review_request_mail_button' => 'Laat een review achter',
+        'review_request_mail_thanks' => 'Alvast bedankt voor uw feedback!',
+        'review_request_mail_signature' => 'Stylisso',
+        'review_request_mail_footer' => '© 2025 Stylisso. Alle rechten voorbehouden.',
 
         // send_newsletter_mail.html
         'send_newsletter_mail_title' => 'Nieuwsbrief - Stylisso',
@@ -537,6 +547,7 @@ $translations = [
         'invoice_message' => 'Cher client,<br>Veuillez trouver votre facture en pièce jointe.',
         'voucher_invoice_subject' => 'Votre facture de bon',
         'voucher_invoice_message' => 'Cher client,<br>Veuillez trouver votre facture de bon en pièce jointe.',
+        'review_request_mail_subject' => 'Nous aimerions connaître votre avis sur votre commande récente ',
         'mailing_voucher' => 'Bon cadeau',
         'mailing_voetnoot_bedrijfsnaam' => 'Stylisso',
         'mailing_voetnoot_address' => 'Bosveldstraat 21, 3300 Tienen, Belgique',
@@ -599,6 +610,15 @@ $translations = [
         // reviews-mailing.php
         'review_success' => 'Merci pour votre avis !',
         'review_error'   => 'Une erreur s’est produite lors de l’envoi de votre avis.',
+
+        // review_request_mail.html
+        'review_request_mail_title' => 'Nous aimerions connaître votre avis !',
+        'review_request_mail_greeting' => 'Bonjour',
+        'review_request_mail_text_intro' => 'Merci pour votre commande chez Stylisso. Voulez-vous nous laisser un avis ?',
+        'review_request_mail_button' => 'Laisser un avis',
+        'review_request_mail_thanks' => 'Merci d’avance pour votre retour !',
+        'review_request_mail_signature' => 'Stylisso',
+        'review_request_mail_footer' => '© 2025 Stylisso. Tous droits réservés.',
 
         // send_newsletter_mail.html
         'send_newsletter_mail_title' => 'Newsletter - Stylisso',
@@ -868,6 +888,7 @@ $translations = [
         'invoice_message' => 'Dear customer,<br>Please find your invoice attached.',
         'voucher_invoice_subject' => 'Your voucher invoice',
         'voucher_invoice_message' => 'Dear customer,<br>Please find your voucher invoice attached.',
+        'review_request_mail_subject' => 'We would love your feedback on your recent order ',
         'mailing_voucher' => 'Gift Voucher',
         'mailing_voetnoot_bedrijfsnaam' => 'Stylisso',
         'mailing_voetnoot_address' => 'Bosveldstraat 21, 3300 Tienen, Belgium',
@@ -930,6 +951,15 @@ $translations = [
         // reviews-mailing.php
         'review_success' => 'Thank you for your review!',
         'review_error'   => 'There was an error submitting your review.',
+
+        // review_request_mail.html
+        'review_request_mail_title' => 'We would love your feedback!',
+        'review_request_mail_greeting' => 'Hello',
+        'review_request_mail_text_intro' => 'Thank you for your order at Stylisso. Would you like to leave us a review?',
+        'review_request_mail_button' => 'Leave a review',
+        'review_request_mail_thanks' => 'Thank you in advance for your feedback!',
+        'review_request_mail_signature' => 'Stylisso',
+        'review_request_mail_footer' => '© 2025 Stylisso. All rights reserved.',
 
         // send_newsletter_mail.html
         'send_newsletter_mail_title' => 'Newsletter - Stylisso',
@@ -1199,6 +1229,7 @@ $translations = [
         'invoice_message' => 'Sehr geehrter Kunde,<br>anbei erhalten Sie Ihre Rechnung.',
         'voucher_invoice_subject' => 'Ihre Gutscheine-Rechnung',
         'voucher_invoice_message' => 'Sehr geehrter Kunde,<br>anbei erhalten Sie Ihre Gutscheine-Rechnung.',
+        'review_request_mail_subject' => 'Wir würden uns über Ihr Feedback zu Ihrer letzten Bestellung freuen ',
         'mailing_voucher' => 'Geschenkgutschein',
         'mailing_voetnoot_bedrijfsnaam' => 'Stylisso',
         'mailing_voetnoot_address' => 'Bosveldstraat 21, 3300 Tienen, Belgien',
@@ -1261,6 +1292,15 @@ $translations = [
         // reviews-mailing.php
         'review_success' => 'Danke für Ihre Bewertung!',
         'review_error'   => 'Beim Senden Ihrer Bewertung ist ein Fehler aufgetreten.',
+
+        // review_request_mail.html
+        'review_request_mail_title' => 'Wir würden uns über Ihr Feedback freuen!',
+        'review_request_mail_greeting' => 'Hallo',
+        'review_request_mail_text_intro' => 'Vielen Dank für Ihre Bestellung bei Stylisso. Möchten Sie uns eine Bewertung hinterlassen?',
+        'review_request_mail_button' => 'Eine Bewertung abgeben',
+        'review_request_mail_thanks' => 'Vielen Dank im Voraus für Ihr Feedback!',
+        'review_request_mail_signature' => 'Stylisso',
+        'review_request_mail_footer' => '© 2025 Stylisso. Alle Rechte vorbehalten.',
 
         // send_newsletter_mail.html
         'send_newsletter_mail_title' => 'Newsletter - Stylisso',
