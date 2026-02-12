@@ -238,11 +238,10 @@ html.no-js .no-js-warning {
 }
 
 .product-card-index {
-  border: 1px solid #ccc;
+  border: 1px solid transparent;
   padding: 1rem;
   flex: 1 1 250px;
   text-align: center;
-  background-color: #eaeaea;
   border-radius: 1rem; /* afgeronde hoeken */
   min-height: 20rem;
   height: auto;
@@ -255,6 +254,10 @@ html.no-js .no-js-warning {
 
 .product-card-index img {
   height: 16rem;
+}
+
+.product-card-index:hover {
+  border-color: #ccc;
 }
 
 footer {
@@ -966,7 +969,8 @@ footer {
   align-items: center;          /* alles netjes verticaal gecentreerd */
   justify-content: space-between; /* item-info links, vuilbak rechts */
   gap: 1.5rem;
-  border-bottom: 1px solid #ddd;
+  border: 1px solid transparent;
+  border-bottom: 1px solid #ccc;
   padding-bottom: 1rem;
 }
 
@@ -974,6 +978,11 @@ footer {
   width: 100px;
   height: auto;
   border-radius: 4px;
+}
+
+.cart-item:hover {
+  border-color: #ccc;
+  border-radius: 0.5rem;
 }
 
 /* --- Aantal input zonder pijltjes --- */
@@ -2283,11 +2292,18 @@ label[for="different_billing"] span {
   justify-content: space-between; /* item-info links, vuilbak rechts */
   gap: 1.5rem;
   padding-bottom: 1rem;
+  border: 1px solid transparent;
   border-bottom: 1px solid black;
 }
 
 .wishlist-card:last-child {
-  border-bottom: none;
+  border-bottom: 1px solid transparent;
+}
+
+.wishlist-card:hover {
+  border-color: #ccc;
+  border-bottom: 1px solid #ccc;
+  border-radius: 0.5rem;
 }
 
 .wishlist-item-image {
@@ -2883,8 +2899,7 @@ label[for="different_billing"] span {
 /* Product card */
 .product-card2 {
   width: 100%;
-  background: #fff;
-  border: 1px solid #ddd;
+  border: 1px solid transparent;
   border-radius: 8px;
   overflow: hidden;
   text-align: center;
@@ -2920,6 +2935,10 @@ label[for="different_billing"] span {
   text-decoration: none; /* geen underline */
   color: inherit;         /* kleur overnemen van de card */
   display: block;         /* hele card klikbaar */
+}
+
+.product-card2:hover {
+  border-color: #ccc;
 }
 
 /* Specificaties lijst */
@@ -3543,9 +3562,17 @@ label[for="different_billing"] span {
     display: block;
   }
 
-  .hero, .product-card-index {
+  .hero {
     background-color: #222;
     color: white;
+    border-color: #444;
+  }
+
+  .product-card-index {
+    color: white;
+  }
+
+  .product-card-index:hover {
     border-color: #444;
   }
 
@@ -4434,8 +4461,6 @@ label[for="different_billing"] span {
   }
 
   .product-card2 {
-    background: #222;
-    border: 1px solid #444;
     color: #eee;
   }
 
@@ -4445,6 +4470,10 @@ label[for="different_billing"] span {
 
   .product-card2 p {
     color: #fff;
+  }
+
+    .product-card2:hover {
+    border-color: #444;
   }
 
   .wishlist-container {
