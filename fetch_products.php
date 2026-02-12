@@ -18,7 +18,29 @@ $user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 0;
 // Categorie / Subcategorie
 // ===============================
 $category_id = isset($_GET['cat']) ? intval($_GET['cat']) : 0;
-$subcategory_id = isset($_GET['sub']) ? intval($_GET['sub']) : null;
+$subcategory_ids = [];
+
+// Check of er meerdere sub parameters zijn
+if (!empty($_GET['sub'])) {
+    if (is_array($_GET['sub'])) {
+        // als het een array is (bijv. sub[]=10&sub[]=11)
+        $subcategory_ids = array_map('intval', $_GET['sub']);
+    } else {
+        // sub=10&sub=11 komt hier binnen als string, we pakken alles van $_GET handmatig
+        foreach ($_GET as $key => $val) {
+            if ($key === 'sub') {
+                if (is_array($val)) {
+                    $subcategory_ids = array_map('intval', $val);
+                } else {
+                    // kan meerdere sub=... in $_GET zitten als string
+                    $subcategory_ids[] = intval($val);
+                }
+            }
+        }
+        // filter negatieve/0 waarden
+        $subcategory_ids = array_filter($subcategory_ids, fn($v) => $v > 0);
+    }
+}
 
 // ===============================
 // SQL query met vertalingen + verkochte aantallen
@@ -49,10 +71,14 @@ $sql = "
 $params = [$lang, $category_id];
 $types = "si";
 
-if ($subcategory_id) {
-    $sql .= " AND p.subcategory_id = ?";
-    $types .= "i";
-    $params[] = $subcategory_id;
+if (!empty($subcategory_ids)) {
+    $placeholders = implode(',', array_fill(0, count($subcategory_ids), '?'));
+    $sql .= " AND p.subcategory_id IN ($placeholders)";
+    
+    foreach ($subcategory_ids as $sub_id) {
+        $types .= "i";
+        $params[] = $sub_id;
+    }
 }
 
 // Groeperen per product zodat SUM(oi.quantity) werkt

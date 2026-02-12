@@ -3317,7 +3317,7 @@ function loadProductGrid() {
   if (productGrid && filtersContainer && categoryTitle) {
     const urlParams = new URLSearchParams(window.location.search);
     const categoryId = urlParams.get('cat') || 0;
-    const subcategoryId = urlParams.get('sub') || 0;
+    const subcategoryId = urlParams.getAll('sub');
 
     let products = [];
     let activeFilters = {};
@@ -3326,13 +3326,27 @@ function loadProductGrid() {
     let priceMaxOverall = 1000;
 
     // --- Titel ophalen via categorie.php ---
-    fetchWithLang(`categorie.php?cat=${categoryId}&sub=${subcategoryId}`)
+    let categoryQuery = `categorie.php?cat=${categoryId}`;
+
+    if (subcategoryId.length > 0) {
+      const subQuery = subcategoryId.map(id => `sub[]=${id}`).join('&');
+      categoryQuery += `&${subQuery}`;
+    }
+
+    fetchWithLang(categoryQuery)
       .then(data => {
         categoryTitle.textContent = data.selected.subcategory || data.selected.category || "Categorie";
       });
 
     // --- Producten ophalen ---
-    fetchWithLang(`fetch_products.php?cat=${categoryId}&sub=${subcategoryId}`)
+    let query = `fetch_products.php?cat=${categoryId}`;
+
+    if (subcategoryId.length > 0) {
+      const subQuery = subcategoryId.map(id => `sub[]=${id}`).join('&');
+      query += `&${subQuery}`;
+    }
+
+    fetchWithLang(query)
       .then(data => {
         products = data;
 

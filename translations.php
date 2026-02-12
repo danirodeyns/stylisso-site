@@ -30,6 +30,11 @@ $translations = [
         'cart_reminder_mail_greetings' => 'Stylisso',
         'cart_reminder_mail_copyright' => '© 2025 Stylisso — Alle rechten voorbehouden.',
 
+        // categorie.php
+        'products_subgroup1' => 'Trainingsmateriaal',
+        'products_subgroup2' => 'Sportaccessoires',
+        'products_subgroup3' => 'Supplementen',
+
         // contact-mailing.php
         'contact_form_success' => 'Bedankt! Je bericht is verzonden.',
         'contact_form_error' => 'Er is een fout opgetreden. Probeer het later opnieuw.',
@@ -369,6 +374,11 @@ $translations = [
         'cart_reminder_mail_text2' => 'Cordialement,',
         'cart_reminder_mail_greetings' => 'Stylisso',
         'cart_reminder_mail_copyright' => '© 2025 Stylisso — Tous droits réservés.',
+
+        // categorie.php
+        'products_subgroup1' => 'Équipement de sport',
+        'products_subgroup2' => 'Accessoires de sport',
+        'products_subgroup3' => 'Suppléments',
 
         // contact-mailing.php
         'contact_form_success' => 'Merci ! Votre message a été envoyé.',
@@ -711,6 +721,11 @@ $translations = [
         'cart_reminder_mail_greetings' => 'Stylisso',
         'cart_reminder_mail_copyright' => '© 2025 Stylisso — All rights reserved.',
 
+        // categorie.php
+        'products_subgroup1' => 'Workout Equipment',
+        'products_subgroup2' => 'Sport Accessories',
+        'products_subgroup3' => 'Supplements',
+
         // contact-mailing.php
         'contact_form_success' => 'Thank you! Your message has been sent.',
         'contact_form_error' => 'An error occurred. Please try again later.',
@@ -1051,6 +1066,11 @@ $translations = [
         'cart_reminder_mail_text2' => 'Mit freundlichen Grüßen,',
         'cart_reminder_mail_greetings' => 'Stylisso',
         'cart_reminder_mail_copyright' => '© 2025 Stylisso — Alle Rechte vorbehalten.',
+
+        // categorie.php
+        'products_subgroup1' => 'Trainingsausrüstung',
+        'products_subgroup2' => 'Sportzubehör',
+        'products_subgroup3' => 'Ergänzungen',
 
         // contact-mailing.php
         'contact_form_success' => 'Danke! Ihre Nachricht wurde gesendet.',

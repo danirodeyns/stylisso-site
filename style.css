@@ -22,6 +22,7 @@ header {
   border-bottom: 1px solid #f4f4f4;
   flex-wrap: wrap;
   gap: 0.5rem;
+  line-height: 1.6;
 }
 
 input[type="checkbox"] {
