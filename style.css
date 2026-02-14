@@ -19,7 +19,6 @@ header {
   align-items: center;
   padding: 1rem 2rem;
   background-color: white;
-  border-bottom: 1px solid #f4f4f4;
   flex-wrap: wrap;
   gap: 0.5rem;
   line-height: 1.6;
@@ -616,7 +615,7 @@ footer {
 .header-center {
   display: flex;
   gap: 0rem;
-  margin-left: -1rem;
+  margin-left: -5rem;
   justify-content: center;
   flex: 1; /* neemt alle beschikbare ruimte tussen links en rechts in */
 }
@@ -697,12 +696,20 @@ footer {
   display: block;
 }
 
+.hero-background-light {
+  display: block;
+}
+
+.hero-background-dark {
+  display: none;
+}
+
 .hero-overlay {
   position: absolute;
   bottom: 2rem;
   left: 2rem;
   z-index: 2;  
-  color: white;
+  color: black;
   max-width: 60%;
 }
 
@@ -3208,6 +3215,7 @@ label[for="different_billing"] span {
   text-decoration: none;
   position: relative;
   border-radius: 0.5rem;
+  display: none;
 }
 
 .categorie-menu {
@@ -3526,7 +3534,6 @@ label[for="different_billing"] span {
   header {
     background-color: black;
     color: #eee;
-    border-bottom: 1px solid #333;
   }
 
   nav {
@@ -3744,6 +3751,18 @@ label[for="different_billing"] span {
 
   .logo-icon-dark {
     display: block;
+  }
+
+  .hero-background-light {
+    display: none;
+  }
+
+  .hero-background-dark {
+    display: block;
+  }
+
+  .hero-overlay { 
+    color: white;
   }
 
   .header-dropdown {
@@ -4655,6 +4674,10 @@ label[for="different_billing"] span {
 
   .menu-icon-dark {
     display: none;
+  }
+
+  .categorie-menu-button {
+    display: block;
   }
 
   @media (prefers-color-scheme: dark) {
